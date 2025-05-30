@@ -1,5 +1,8 @@
 package com.example.bcube.service.impl;
 
+import com.example.bcube.exception.EmailAlreadyTakenException;
+import com.example.bcube.exception.InvalidCredentialsException;
+import com.example.bcube.exception.UserNotFoundException;
 import com.example.bcube.persistence.entity.Role;
 import com.example.bcube.persistence.entity.User;
 import com.example.bcube.persistence.repository.UserRepository;
@@ -42,7 +45,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public JwtResponse register(RegisterRequest registerRequest) {
         if (userRepository.existsByEmail(registerRequest.getEmail())) {
-            throw new RuntimeException("Error: Email is already in use!");
+            throw new EmailAlreadyTakenException("E-Mail-Adresse ist bereits registriert.");
         }
 
         User user = User.builder()
@@ -67,16 +70,21 @@ public class AuthServiceImpl implements AuthService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         User user = userRepository.findByEmail(email);
         if (user == null) {
-            throw new UsernameNotFoundException("User Not Found with username: " + email);
+            throw new UserNotFoundException("Kein Benutzer mit der E-Mail-Adresse gefunden: " + email);
         }
 
         return UserDetailsImpl.build(user);
     }
 
     private JwtResponse authenticateAndCreateJwt(String email, String password) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(email, password)
-        );
+        Authentication authentication;
+        try {
+            authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(email, password)
+            );
+        } catch (Exception ex) {
+            throw new InvalidCredentialsException("Falsche Benutzerdaten");
+        }
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
         Object principal = authentication.getPrincipal();
@@ -87,6 +95,9 @@ public class AuthServiceImpl implements AuthService {
         } else {
             // Backup-Fall: userDetails manuell aus DB holen
             User user = userRepository.findByEmail(email);
+            if (user == null) {
+                throw new UserNotFoundException("Benutzer nicht gefunden: " + email);
+            }
             userDetails = UserDetailsImpl.build(user);
         }
 
@@ -100,6 +111,7 @@ public class AuthServiceImpl implements AuthService {
                 "Bearer",
                 userDetails.getId(),
                 userDetails.getEmail(),
-                userDetails.getRole());
+                userDetails.getRole(),
+                userDetails.getFirstName());
     }
 }

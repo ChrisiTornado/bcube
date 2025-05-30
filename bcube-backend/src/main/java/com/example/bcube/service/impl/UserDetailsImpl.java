@@ -20,6 +20,7 @@ public class UserDetailsImpl implements UserDetails {
     private String email;
     private String password;
     private Role role;
+    private String firstName;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -56,7 +57,8 @@ public class UserDetailsImpl implements UserDetails {
                 user.getId(),
                 user.getEmail(),
                 user.getPassword(),
-                user.getRole()
+                user.getRole(),
+                user.getFirstName()
         );
     }
 }

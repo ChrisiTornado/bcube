@@ -28,9 +28,6 @@ public class Studio {
     @Column(nullable = false, length = 50)
     private String location;
 
-    @Column(nullable = false, length = 50)
-    private String equipment;
-
     @Column(name = "is_active", nullable = false, length = 50)
     private boolean isActive;
 
