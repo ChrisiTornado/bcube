@@ -1,5 +1,6 @@
 package com.example.bcube.security;
 
+import com.example.bcube.persistence.entity.Role;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Component;
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.List;
 
 @Component
 public class JwtTokenProvider {
@@ -26,9 +28,10 @@ public class JwtTokenProvider {
     }
 
     // Generate JWT token
-    public String generateToken(String email) {
+    public String generateToken(String email, List<String> roles) {
         return Jwts.builder()
                 .setSubject(email)
+                .claim("roles", roles)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date((new Date()).getTime() + jwtExpiration))
                 .signWith(key, SignatureAlgorithm.HS256)
@@ -42,6 +45,24 @@ public class JwtTokenProvider {
                 .parseClaimsJws(token)
                 .getBody()
                 .getSubject();
+    }
+
+    public List<String> getRolesFromToken(String token) {
+        Object rawRoles = Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .get("roles");
+
+        if (rawRoles instanceof List<?>) {
+            return ((List<?>) rawRoles).stream()
+                    .filter(String.class::isInstance)
+                    .map(String.class::cast)
+                    .toList();
+        } else {
+            return List.of();
+        }
     }
 
     // Validate JWT token

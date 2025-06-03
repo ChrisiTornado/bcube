@@ -41,6 +41,10 @@ public class User {
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 
+    @ManyToOne
+    @JoinColumn(name = "studio_id")
+    private Studio studio;
+
     @PrePersist
     public void prePersist() {
         this.createdAt = Instant.now();

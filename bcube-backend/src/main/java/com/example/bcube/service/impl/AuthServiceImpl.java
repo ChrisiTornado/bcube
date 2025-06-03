@@ -101,11 +101,11 @@ public class AuthServiceImpl implements AuthService {
             userDetails = UserDetailsImpl.build(user);
         }
 
-        String jwt = jwtTokenProvider.generateToken(userDetails.getUsername());
-
         List<String> roles = userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .toList();
+
+        String jwt = jwtTokenProvider.generateToken(userDetails.getUsername(), roles);
 
         return new JwtResponse(jwt,
                 "Bearer",

@@ -1,0 +1,89 @@
+<div class="card flex justify-content-center">
+    <p-button  (click)="openDialog()" icon="pi pi-pencil"
+               styleClass="p-button-secondary"></p-button>
+
+    <p-dialog header="Studio aktualisieren" [(visible)]="visible" [modal]="true" [style]="{ width: '50vw' }"
+              [draggable]="false" [resizable]="false" (onHide)="closeDialog()">
+      <form [formGroup]="createForm">
+        <div class="mb-4">
+            <label for="name" class="block text-900 font-medium mb-2">Name</label>
+            <input id="name" formControlName="name" type="text" placeholder="Name" pInputText pAutoFocus [autofocus]="true" class="w-full">
+  
+            <div style="position: relative">
+              <small style="position: absolute; color: red" *ngIf="name.hasError('required') && submitted">Name ist erforderlich</small>
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <label for="description" class="block text-900 font-medium mb-2">Beschreibung</label>
+            <input id="description" formControlName="description" type="text" placeholder="Beschreibung" pInputText pAutoFocus [autofocus]="true" class="w-full">
+  
+            <div style="position: relative">
+              <small style="position: absolute; color: red" *ngIf="description.hasError('required') && submitted">Beschreibung ist erforderlich</small>
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <label for="city" class="block text-900 font-medium mb-2">Stadt</label>
+            <input id="city" formControlName="city" type="text" placeholder="Stadt" pInputText pAutoFocus [autofocus]="true" class="w-full">
+  
+            <div style="position: relative">
+              <small style="position: absolute; color: red" *ngIf="city.hasError('required') && submitted">Stadt ist erforderlich</small>
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <label for="country" class="block text-900 font-medium mb-2">Land</label>
+            <input id="country" formControlName="country" type="text" placeholder="Land" pInputText pAutoFocus [autofocus]="true" class="w-full">
+  
+            <div style="position: relative">
+              <small style="position: absolute; color: red" *ngIf="country.hasError('required') && submitted">Land ist erforderlich</small>
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <label for="plz" class="block text-900 font-medium mb-2">Postleitzahl</label>
+            <input id="plz" formControlName="plz" type="plz" placeholder="Postleitzahl" pInputText pAutoFocus [autofocus]="true" class="w-full">
+  
+            <div style="position: relative">
+              <small style="position: absolute; color: red" *ngIf="plz.hasError('required') && submitted">Postleitzahl ist erforderlich</small>
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <label for="street" class="block text-900 font-medium mb-2">Straße</label>
+            <input id="street" formControlName="street" type="text" placeholder="Straße" pInputText pAutoFocus [autofocus]="true" class="w-full">
+  
+            <div style="position: relative">
+              <small style="position: absolute; color: red" *ngIf="street.hasError('required') && submitted">Stadtname ist erforderlich</small>
+            </div>
+          </div>
+
+          <div *ngIf="studio.imageBase64" class="mb-4">
+            <label class="block text-900 font-medium mb-2">Aktuelles Studiobild</label>
+            <img [src]="getImageSrc()" 
+                alt="Studiobild" 
+                class="max-w-full h-auto border-round shadow-2" 
+                style="max-height: 200px;">
+          </div>
+        <div class="mb-4">
+            <label for="image" class="block text-900 font-medium mb-2">Studiobild</label>
+            <p-fileUpload 
+                #fileUpload
+                name="image" 
+                accept="image/*" 
+                (onSelect)="onFileSelected($event)" 
+                chooseLabel="Datei auswählen"
+                auto="true"
+                class="w-full">
+            </p-fileUpload>
+          </div>
+
+        <div class="flex justify-content-end">
+          <p-button  (click)="submit()" pRipple label="Erstellen" [loading]="loading" icon="pi pi-save"
+                     styleClass="p-button-primary"></p-button>
+        </div>
+
+      </form>
+    </p-dialog>
+  </div>

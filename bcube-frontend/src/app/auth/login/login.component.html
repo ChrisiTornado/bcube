@@ -1,0 +1,28 @@
+<app-auth-container [title]="'Willkommen zurück!'">
+  <div class="w-full text-center">
+  <img src="assets/images/nice.jpg" alt="FH Logo" class="mb-3 w-6 sm:w-4 inline-block">
+</div>
+  <ng-container *ngIf="!loading; else loadingTemplate">
+    <form [formGroup]="loginForm">
+      <label for="email" class="block text-900 font-medium mb-2">Benutzer</label>
+      <input id="email" formControlName="email" type="text" placeholder="E-Mail-Adresse" pInputText pAutoFocus class="w-full mb-3"/>
+
+      <label for="password" class="block text-900 font-medium mb-2">Passwort</label>
+      <input id="password" formControlName="password" type="password" placeholder="Passwort" pInputText class="w-full mb-3"/>
+
+      <div class="flex align-items-center justify-content-between mb-4">
+        <a class="font-medium no-underline ml-2 text-blue-500 text-right cursor-pointer">Passwort vergessen?</a>
+      </div>
+
+      <div class="card flex justify-content-center">
+        <p-button pRipple label="Einloggen" icon="pi pi-sign-in" iconPos="left" [loading]="loading" (click)="login()"></p-button>
+      </div> 
+      <p-button [routerLink]="['/register']">Registrieren</p-button>
+    </form>
+  </ng-container>
+
+  <ng-template #loadingTemplate>
+    <app-loading-spinner></app-loading-spinner>
+  </ng-template>
+
+</app-auth-container>

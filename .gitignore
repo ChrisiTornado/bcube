@@ -1,0 +1,61 @@
+# === SPRING BOOT / JAVA ===
+HELP.md
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### VS Code ###
+.vscode/
+
+# === ANGULAR / FRONTEND ===
+# node modules
+bcube-frontend/node_modules/
+
+# build output
+bcube-frontend/dist/
+bcube-frontend/.angular/
+
+# IDE/project settings
+bcube-frontend/.vscode/
+bcube-frontend/.idea/
+
+# test coverage
+bcube-frontend/coverage/
+
+# Angular-specific logs
+bcube-frontend/npm-debug.log*
+bcube-frontend/yarn-error.log*
+bcube-frontend/pnpm-debug.log*
+
+# optional: Tailwind cache (falls verwendet)
+bcube-frontend/.tailwind-cache/
+
+# optional: env files
+environment*
+node_modules

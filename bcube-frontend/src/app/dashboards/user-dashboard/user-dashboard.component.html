@@ -1,0 +1,20 @@
+<p-toast key="main" position="top-right"></p-toast>
+
+<p-confirmDialog></p-confirmDialog>
+<h2>User Dashboard</h2>
+<div class="flex">
+  <p-megaMenu [model]="items" orientation="vertical" styleClass="admin-menu">
+    <ng-template pTemplate="start">
+      <div class="flex justify-content-center">
+        <!-- <img src="assets/images/logo-transparent.png" height="65"  alt="FH Logo"/>
+        <img src="assets/images/logo-innovations-transparent.png" height="65"  alt="Innovations Logo"/> -->
+      </div>
+    </ng-template>
+  </p-megaMenu>
+
+  <div class="page-content p-4 flex-grow-1">
+<!--    <p-card>-->
+      <router-outlet></router-outlet>
+<!--    </p-card>-->
+  </div>
+</div>

@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.Instant;
+import java.util.List;
 
 @Entity
 @Table(name = "studios")
@@ -26,13 +27,35 @@ public class Studio {
     private String description;
 
     @Column(nullable = false, length = 50)
-    private String location;
+    private String street;
 
-    @Column(name = "is_active", nullable = false, length = 50)
+    @Column(nullable = false)
+    private int plz;
+
+    @Column(nullable = false, length = 50)
+    private String city;
+
+    @Column(nullable = false, length = 50)
+    private String country;
+
+    @Column
+    private Double latitude;
+
+    @Column
+    private Double longitude;
+
+    @Lob
+    @Column(name = "image_data")
+    private byte[] image;
+
+    @Column(name = "is_active", nullable = false)
     private boolean isActive;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
+
+    @OneToMany(mappedBy = "studio", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<User> users;
 
     @PrePersist
     public void prePersist() {

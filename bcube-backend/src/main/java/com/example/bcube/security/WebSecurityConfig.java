@@ -40,10 +40,9 @@ public class WebSecurityConfig {
     }
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        // Updated configuration for Spring Security 6.x
         http
-                .csrf(csrf -> csrf.disable()) // Disable CSRF
-                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Disable CORS (or configure if needed)
+                .csrf(csrf -> csrf.disable())
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .exceptionHandling(exceptionHandling ->
                         exceptionHandling.authenticationEntryPoint(unauthorizedHandler)
                 )
@@ -52,7 +51,8 @@ public class WebSecurityConfig {
                 )
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
-                                .requestMatchers("/api/auth/**", "/api/test/all").permitAll() // Use 'requestMatchers' instead of 'antMatchers'
+                                .requestMatchers("/api/auth/**").permitAll()
+                                .requestMatchers("/api/admin/**").hasRole("ADMIN")
                                 .anyRequest().authenticated()
                 );
         // Add the JWT Token filter before the UsernamePasswordAuthenticationFilter
@@ -63,8 +63,8 @@ public class WebSecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of(frontendUrl)); // Angular frontend
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedOrigins(List.of(frontendUrl));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
         configuration.setAllowCredentials(true); // important if using cookies or JWT in headers
 

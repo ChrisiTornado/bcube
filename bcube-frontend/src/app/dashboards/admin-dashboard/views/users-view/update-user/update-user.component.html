@@ -1,0 +1,54 @@
+<div class="card flex justify-content-center">
+  <p-button (click)="openDialog()" icon="pi pi-pencil"
+            styleClass="p-button-secondary"></p-button>
+
+  <p-dialog header="Benutzer aktualisieren" [(visible)]="visible" [modal]="true" [style]="{ width: '50vw' }"
+            [draggable]="false" [resizable]="false" (onHide)="closeDialog()">
+    <form [formGroup]="updateForm">
+      <div class="mb-4">
+        <label for="firstName" class="block text-900 font-medium mb-2">Vorname</label>
+        <input id="firstName" formControlName="firstName" type="text" placeholder="Vorname"
+               pInputText class="w-full" autofocus>
+        <small style="color: red" *ngIf="firstName.invalid && submitted">Vorname ist erforderlich</small>
+      </div>
+
+      <div class="mb-4">
+        <label for="lastName" class="block text-900 font-medium mb-2">Nachname</label>
+        <input id="lastName" formControlName="lastName" type="text" placeholder="Nachname"
+               pInputText class="w-full">
+        <small style="color: red" *ngIf="lastName.invalid && submitted">Nachname ist erforderlich</small>
+      </div>
+
+      <div class="mb-4">
+        <label for="email" class="block text-900 font-medium mb-2">E-Mail</label>
+        <input id="email" formControlName="email" type="email" placeholder="E-Mail"
+               pInputText class="w-full">
+        <small style="color: red" *ngIf="email.hasError('required') && submitted">E-Mail ist erforderlich</small>
+        <small style="color: red" *ngIf="email.hasError('email') && submitted">Ungültige E-Mail</small>
+      </div>
+
+      <div class="mb-4">
+        <label for="phone" class="block text-900 font-medium mb-2">Telefonnummer</label>
+        <input id="phone" formControlName="phone" type="text" placeholder="Telefonnummer"
+               pInputText class="w-full">
+        <small style="color: red" *ngIf="phone.invalid && submitted">Telefonnummer ist erforderlich</small>
+      </div>
+
+      <div class="mb-4">
+        <label for="isAdmin" class="block text-900 font-medium mb-2">Rolle</label>
+        <p-dropdown id="isAdmin"
+                    formControlName="isAdmin"
+                    [options]="[{ label: 'Benutzer', value: false }, { label: 'Administrator', value: true }]"
+                    placeholder="Rolle auswählen"
+                    class="w-full">
+        </p-dropdown>
+        <small style="color: red" *ngIf="isAdmin.invalid && submitted">Rolle ist erforderlich</small>
+      </div>
+
+      <div class="flex justify-content-end">
+        <p-button (click)="submit()" pRipple label="Speichern" [loading]="loading"
+                  icon="pi pi-save" styleClass="p-button-primary"></p-button>
+      </div>
+    </form>
+  </p-dialog>
+</div>
