@@ -15,6 +15,7 @@ import { DialogModule } from 'primeng/dialog';
 import { CommonModule } from '@angular/common';
 import { LoadingSpinnerComponent } from '../../../../shared/loading-spinner/loading-spinner.component';
 import { InputTextModule } from 'primeng/inputtext';
+import { AuthService } from '../../../../services/auth/auth.service';
 
 @Component({
   selector: 'app-studios',
@@ -30,12 +31,14 @@ export class StudiosComponent implements OnInit{
   loading: boolean = false;
   studios: studio[] = [];
   @ViewChild('fileUpload') fileUpload: any;
+  isAdmin = false;
 
   selectedImage: File | null = null;
 
   constructor(private fb: FormBuilder,
               public studioService: StudioService,
-              private messageService: MessageService) { }
+              private messageService: MessageService,
+              private authService: AuthService) { }
 
    ngOnInit(): void {
     this.createForm = this.fb.group({
@@ -47,6 +50,7 @@ export class StudiosComponent implements OnInit{
       street: [null, Validators.required],
       image: [null, Validators.required]
     });
+    this.isAdmin = this.authService.getRole() === "ADMIN"
   }
 
   onFileSelected(event: any): void {

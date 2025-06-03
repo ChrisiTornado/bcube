@@ -1,1 +1,12 @@
-<p>studio-details works!</p>
+<div *ngIf="studio; else loading">
+  <h2>{{ studio.name }}</h2>
+  <img [src]="studio.imageBase64" alt="Studiobild" style="max-width: 300px; max-height: 300px">
+  <p><strong>Adresse:</strong> {{ studio.street }}, {{ studio.plz }} {{ studio.city }}</p>
+  <p><strong>Land:</strong> {{ studio.country }}</p>
+
+  <button pButton type="button" label="Studio buchen" *ngIf="isUser"></button>
+</div>
+
+<ng-template #loading>
+  <p>Lade Studiodetails...</p>
+</ng-template>

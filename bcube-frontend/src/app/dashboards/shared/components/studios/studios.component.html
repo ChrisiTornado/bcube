@@ -1,4 +1,4 @@
-<div class="card flex justify-content-center">
+<div *ngIf="isAdmin" class="card flex justify-content-center">
     <p-button  (click)="openDialog()" pRipple label="Studio anlegen" icon="pi pi-plus"
                styleClass="p-button-primary"></p-button>
 

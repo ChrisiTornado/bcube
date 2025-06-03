@@ -11,6 +11,7 @@ import { DeleteStudioComponent } from './delete-studio/delete-studio.component';
 import { LoadingSpinnerComponent } from '../../../../shared/loading-spinner/loading-spinner.component';
 import { CommonModule } from '@angular/common';
 import { StudiosComponent } from '../../../shared/components/studios/studios.component';
+import { AuthService } from '../../../../services/auth/auth.service';
 
 @Component({
   selector: 'app-studios-view',
@@ -22,18 +23,21 @@ import { StudiosComponent } from '../../../shared/components/studios/studios.com
 export class StudiosViewComponent implements OnInit {
   studios$!: Observable<studio[]>;
   loading$ = this.studioService.loading$;
+  isAdmin = false;
 
   ngOnInit(): void {
     this.studios$ = this.studioService.studios$;
     this.studioService.reloadStudios()
+    this.isAdmin = this.authService.getRole() === "ADMIN" 
   }
 
-  constructor(private studioService: StudioService, private router: Router, private route: ActivatedRoute) {}
+  constructor(private studioService: StudioService, private router: Router, private route: ActivatedRoute, private authService: AuthService) {}
 
-  navigateToDetails(studio: studio) {
-      const navigationUrl = ['/admin/studio-details', studio.id];
-      this.router.navigate(navigationUrl, {
-        queryParams: { company: JSON.stringify(studio) }
-      });
-    }
+  navigateToDetails(studio: studio): void {
+    const basePath = this.isAdmin ? '/admin-dashboard' : '/user-dashboard';
+    const navigationUrl = [basePath, 'studio-details', studio.id];
+    this.router.navigate(navigationUrl, {
+      queryParams: { company: JSON.stringify(studio) }
+    });
+  }
 }

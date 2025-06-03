@@ -10,6 +10,7 @@ import { StudiosViewComponent } from './dashboards/admin-dashboard/views/studios
 import { MapViewComponent } from './dashboards/shared/views/map-view/map-view.component';
 import { CalendarViewComponent } from './dashboards/shared/views/calendar-view/calendar-view.component';
 import { BookingsViewComponent } from './dashboards/shared/views/bookings-view/bookings-view.component';
+import { StudioDetailsComponent } from './dashboards/admin-dashboard/views/studios-view/studio-details/studio-details.component';
 
 export const routes: Routes = [
     { path: 'login', component: LoginComponent },
@@ -27,7 +28,8 @@ export const routes: Routes = [
             { path: 'studio', component: StudiosViewComponent },
             { path: 'map', component: MapViewComponent },
             { path: 'bookings', component: BookingsViewComponent },
-            { path: 'calendar', component: CalendarViewComponent }
+            { path: 'calendar', component: CalendarViewComponent },
+            { path: 'studio-details/:id', component: StudioDetailsComponent }
         ]
     },
     {
@@ -42,7 +44,8 @@ export const routes: Routes = [
             { path: 'studio', component: StudiosViewComponent },
             { path: 'map', component: MapViewComponent },
             { path: 'bookings', component: BookingsViewComponent },
-            { path: 'calendar', component: CalendarViewComponent }
+            { path: 'calendar', component: CalendarViewComponent },
+            { path: 'studio-details/:id', component: StudioDetailsComponent }
         ]
     },
 

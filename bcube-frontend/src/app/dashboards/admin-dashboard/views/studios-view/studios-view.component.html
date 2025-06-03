@@ -11,8 +11,8 @@
           <th pSortableColumn="name" style="width:20%">Name<p-sortIcon field="name"></p-sortIcon></th>
           <th pSortableColumn="address" style="width:20%">Adresse<p-sortIcon field="address"></p-sortIcon></th>
           <th pSortableColumn="country" style="width:20%">Land<p-sortIcon field="country"></p-sortIcon></th>
-          <th>Bearbeiten</th>
-          <th>Löschen</th>
+          <th *ngIf="isAdmin">Bearbeiten</th>
+          <th *ngIf="isAdmin">Löschen</th>
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-studio>
@@ -21,10 +21,10 @@
           <td>{{studio.name}}</td>
           <td>{{studio.street}}, {{studio.plz}} {{studio.city}}</td>
           <td>{{studio.country}}</td>
-          <td>
+          <td *ngIf="isAdmin">
             <app-update-studio style="display: flex !important;" [studio]="studio" (click)="$event.stopPropagation()"></app-update-studio>
           </td>
-          <td>
+          <td *ngIf="isAdmin">
             <app-delete-studio [studio]="studio" (click)="$event.stopPropagation()"></app-delete-studio>
           </td>
         </tr>

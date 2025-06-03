@@ -21,6 +21,12 @@ public class StudioController {
         return ResponseEntity.ok(new ApiResponse<>("Studios erfolgreich gesendet", response));
     }
 
+    @GetMapping("/get-studio-by-id")
+    public ResponseEntity<ApiResponse<StudioResponse>> getStudioById(@RequestParam long id)   {
+        StudioResponse response = studioService.getStudioById(id);
+        return ResponseEntity.ok(new ApiResponse<>("Studio erfolgreich gesendet", response));
+    }
+
     @PostMapping("/admin/create-studio")
     public ResponseEntity<ApiResponse<StudioResponse>> createStudio(@Valid @RequestBody CreateStudioRequest createStudioRequest) {
         StudioResponse response = studioService.createStudio(createStudioRequest);

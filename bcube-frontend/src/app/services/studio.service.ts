@@ -31,6 +31,16 @@ export class StudioService {
     );
 }
 
+getStudioById(id: number): Observable<studio> {
+  this.loadingSubject.next(true);
+  return this.http
+    .get<{ message: string; data: studio }>(`${environment.apiUrl}get-studio-by-id/${id}`)
+    .pipe(
+      map(res => res.data),
+      finalize(() => this.loadingSubject.next(false))
+    );
+}
+
 reloadStudios(): void {
   this.getAll().subscribe(studios => this.studiosSubject.next(studios));
 }

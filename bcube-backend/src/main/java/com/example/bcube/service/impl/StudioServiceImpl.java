@@ -56,6 +56,39 @@ public class StudioServiceImpl implements StudioService {
     }
 
     @Override
+    public StudioResponse getStudioById(long id) {
+        Studio studio = studioRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Studio mit ID " + id + " nicht gefunden"));
+
+        return new StudioResponse(
+                studio.getId(),
+                studio.getName(),
+                studio.getDescription(),
+                studio.getStreet(),
+                studio.getPlz(),
+                studio.getCity(),
+                studio.getCountry(),
+                studio.getLatitude(),
+                studio.getLongitude(),
+                studio.getImage() != null
+                        ? "data:image/jpeg;base64," + Base64.getEncoder().encodeToString(studio.getImage())
+                        : null,
+                studio.isActive(),
+                studio.getCreatedAt(),
+                studio.getUsers().stream()
+                        .map(user -> new UserResponse(
+                                user.getId(),
+                                user.getRole() == Role.ADMIN,
+                                user.getEmail(),
+                                user.getFirstName(),
+                                user.getLastName(),
+                                user.getPhone()
+                        ))
+                        .toList()
+        );
+    }
+
+    @Override
     public StudioResponse createStudio(CreateStudioRequest createStudioRequest) {
         // 1. Adresse zusammenbauen
         String fullAddress = String.format("%s, %d %s, %s",
