@@ -38,17 +38,7 @@ public class StudioServiceImpl implements StudioService {
                                 ? "data:image/jpeg;base64," + Base64.getEncoder().encodeToString(studio.getImage())
                                 : null,
                         true,
-                        studio.getCreatedAt(),
-                        studio.getUsers().stream()
-                                .map(user -> new UserResponse(
-                                        user.getId(),
-                                        user.getRole() == Role.ADMIN,
-                                        user.getEmail(),
-                                        user.getFirstName(),
-                                        user.getLastName(),
-                                        user.getPhone()
-                                ))
-                                .toList()
+                        studio.getCreatedAt()
                 ))
                 .toArray(StudioResponse[]::new);
     }
@@ -72,17 +62,7 @@ public class StudioServiceImpl implements StudioService {
                         ? "data:image/jpeg;base64," + Base64.getEncoder().encodeToString(studio.getImage())
                         : null,
                 studio.isActive(),
-                studio.getCreatedAt(),
-                studio.getUsers().stream()
-                        .map(user -> new UserResponse(
-                                user.getId(),
-                                user.getRole() == Role.ADMIN,
-                                user.getEmail(),
-                                user.getFirstName(),
-                                user.getLastName(),
-                                user.getPhone()
-                        ))
-                        .toList()
+                studio.getCreatedAt()
         );
     }
 
@@ -131,8 +111,7 @@ public class StudioServiceImpl implements StudioService {
                         ? "data:image/jpeg;base64," + Base64.getEncoder().encodeToString(studio.getImage())
                         : null,
                 saved.isActive(),
-                saved.getCreatedAt(),
-                List.of()
+                saved.getCreatedAt()
         );
     }
 
@@ -194,8 +173,7 @@ public class StudioServiceImpl implements StudioService {
                         ? "data:image/jpeg;base64," + Base64.getEncoder().encodeToString(updated.getImage())
                         : null,
                 updated.isActive(),
-                updated.getCreatedAt(),
-                List.of()
+                updated.getCreatedAt()
         );
     }
 

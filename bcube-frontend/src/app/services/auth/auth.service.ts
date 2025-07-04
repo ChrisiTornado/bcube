@@ -21,12 +21,12 @@ export class AuthService {
 
   login(payload: LoginRequest): Observable<ApiResponse<JwtResponse>> {
     return this.http.post<ApiResponse<JwtResponse>>(
-      environment.authUrl + "/login", payload);
+      environment.authUrl + "login", payload);
   }
 
   register(payload: RegisterRequest): Observable<ApiResponse<JwtResponse>> {
     return this.http.post<ApiResponse<JwtResponse>>(
-      environment.authUrl + "/register", payload);
+      environment.authUrl + "register", payload);
   }
 
   storeAuth(token: string, user: User): void {

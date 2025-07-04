@@ -54,9 +54,6 @@ public class Studio {
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 
-    @OneToMany(mappedBy = "studio", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<User> users;
-
     @PrePersist
     public void prePersist() {
         this.createdAt = Instant.now();

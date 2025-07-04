@@ -36,8 +36,7 @@ export class StudiosViewComponent implements OnInit {
   navigateToDetails(studio: studio): void {
     const basePath = this.isAdmin ? '/admin-dashboard' : '/user-dashboard';
     const navigationUrl = [basePath, 'studio-details', studio.id];
-    this.router.navigate(navigationUrl, {
-      queryParams: { company: JSON.stringify(studio) }
-    });
+
+    this.router.navigate(navigationUrl);
   }
 }

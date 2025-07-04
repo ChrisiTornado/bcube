@@ -22,5 +22,4 @@ public class StudioResponse {
     private String imageBase64;
     private boolean isActive;
     private Instant createdAt;
-    private List<UserResponse> users;
 }
