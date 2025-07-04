@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
@@ -43,5 +45,16 @@ public class StudioController {
     public ResponseEntity<ApiResponse<StudioResponse>> updateStudio(@PathVariable long id, @Valid @RequestBody UpdateStudioRequest updateStudioRequest) {
         StudioResponse response = studioService.updateStudio(id, updateStudioRequest);
         return ResponseEntity.ok(new ApiResponse<>("Studio erfolgreich aktuallisiert", response));
+    }
+
+    @GetMapping("/studios/{id}/booked-times")
+    public ResponseEntity<ApiResponse<TimeSlotResponse>> getFreeTimeSlots(@PathVariable long id, @RequestParam LocalDate date) {
+        TimeSlotResponse response = studioService.getValidBookings(id, date);
+        return  ResponseEntity.ok(new ApiResponse<>("Dates sent", response));
+    }
+
+    @PostMapping("/studios/{id}/bookings")
+    public ResponseEntity<ApiResponse<TimeSlotResponse>> bookStudio(@PathVariable long id) {
+        return null;
     }
 }

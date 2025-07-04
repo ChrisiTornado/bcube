@@ -27,6 +27,7 @@ import { InputTextModule } from 'primeng/inputtext';
 export class LoginComponent implements OnInit {
   loginForm!: FormGroup;
   loading!: boolean;
+  submitted: boolean = false;
 
   constructor(private fb: FormBuilder, private messageService: MessageService, private auth: AuthService, private router: Router) {}
 
@@ -40,6 +41,7 @@ export class LoginComponent implements OnInit {
   }
 
   login(): void {
+    this.submitted = true;
     if (this.loginForm.invalid) return;
 
     this.loading = true;

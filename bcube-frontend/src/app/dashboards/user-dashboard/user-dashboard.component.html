@@ -1,7 +1,7 @@
 <p-toast key="main" position="top-right"></p-toast>
 
 <p-confirmDialog></p-confirmDialog>
-<h2>User Dashboard</h2>
+<h2 class="px-2">User Dashboard</h2>
 <div class="flex">
   <p-megaMenu [model]="items" orientation="vertical" styleClass="admin-menu">
     <ng-template pTemplate="start">
@@ -12,7 +12,7 @@
     </ng-template>
   </p-megaMenu>
 
-  <div class="page-content p-4 flex-grow-1">
+  <div class="page-content px-4 flex-grow-1">
 <!--    <p-card>-->
       <router-outlet></router-outlet>
 <!--    </p-card>-->

@@ -3,7 +3,7 @@
     <app-studios></app-studios>
   </div>
   <app-loading-spinner *ngIf="loading$ | async"></app-loading-spinner>
-  <ng-container *ngIf="studios$ | async as studios">
+  <ng-container *ngIf="!(loading$ | async) && (studios$ | async) as studios">
     <p-table [value]="studios">
       <ng-template pTemplate="header">
         <tr>

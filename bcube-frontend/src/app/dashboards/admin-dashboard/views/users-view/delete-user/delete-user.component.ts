@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { finalize } from 'rxjs';
 import { ButtonModule } from 'primeng/button';
-import { MessageService } from 'primeng/api';
+import { MessageService, ConfirmationService  } from 'primeng/api';
 import { UserService } from '../../../../../services/user.service';
 import { User } from '../../../../../models/user';
 
@@ -13,7 +13,7 @@ import { User } from '../../../../../models/user';
     <p-button icon="pi pi-trash"
               styleClass="p-button-danger"
               [loading]="loading"
-              (click)="delete()">
+              (click)="confirmDelete()">
     </p-button>
   `
 })
@@ -21,7 +21,18 @@ export class DeleteUserComponent {
   @Input() user!: User;
   loading = false;
 
-  constructor(private userService: UserService, private messageService: MessageService) {}
+  constructor(private userService: UserService, private messageService: MessageService, private confirmationService: ConfirmationService) {}
+
+  confirmDelete(): void {
+    this.confirmationService.confirm({
+      message: `Möchten Sie den Benutzer "${this.user.firstName} ${this.user.lastName}" wirklich löschen?`,
+      header: 'Löschen bestätigen',
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Ja',
+      rejectLabel: 'Nein',
+      accept: () => this.delete()
+    });
+  }
 
   delete(): void {
     this.loading = true;

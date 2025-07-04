@@ -79,6 +79,10 @@ export class StudiosComponent implements OnInit{
     this.createForm.reset();
     this.submitted = false;
     this.selectedImage = null;
+
+    if (this.fileUpload) {
+      this.fileUpload.clear();
+    }
   }
 
   async submit(): Promise<void> {

@@ -26,6 +26,7 @@ import { InputTextModule } from 'primeng/inputtext';
 export class RegisterComponent implements OnInit {
   registerForm!: FormGroup;
   loading!: boolean;
+  submitted: boolean = false;
 
   constructor(private fb: FormBuilder, private messageService: MessageService, private auth: AuthService, private router: Router) {}
 
@@ -40,6 +41,7 @@ export class RegisterComponent implements OnInit {
   }
 
   register(): void {
+    this.submitted = true;
     if (this.registerForm.invalid) return;
 
     this.loading = true;

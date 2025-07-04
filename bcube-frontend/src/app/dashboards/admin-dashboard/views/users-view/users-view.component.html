@@ -5,7 +5,7 @@
 
 <app-loading-spinner *ngIf="loading$ | async"></app-loading-spinner>
 
-<ng-container *ngIf="users$ | async as users">
+<ng-container *ngIf="!(loading$ | async) && (users$ | async) as users">
   <p-table [value]="users">
     <ng-template pTemplate="header">
       <tr>
@@ -19,7 +19,7 @@
       </tr>
     </ng-template>
     <ng-template pTemplate="body" let-user>
-      <tr (click)="navigateToDetails(user)" style="cursor: pointer;">
+      <tr style="cursor: pointer;">
         <td>{{ user.firstName }}</td>
         <td>{{ user.lastName }}</td>
         <td>{{ user.email }}</td>

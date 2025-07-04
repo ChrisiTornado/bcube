@@ -9,7 +9,10 @@ import lombok.NoArgsConstructor;
 import java.time.Instant;
 
 @Entity
-@Table(name = "bookings")
+@Table(
+    name = "bookings",
+    uniqueConstraints = @UniqueConstraint(columnNames = {"studio_id", "start_time"})
+)
 @Data
 @Builder
 @AllArgsConstructor

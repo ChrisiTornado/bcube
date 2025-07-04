@@ -15,11 +15,12 @@ import { DialogModule } from 'primeng/dialog';
 import { CommonModule } from '@angular/common';
 import { LoadingSpinnerComponent } from '../../../../../shared/loading-spinner/loading-spinner.component';
 import { InputTextModule } from 'primeng/inputtext';
+import { ToastModule } from 'primeng/toast';
 
 @Component({
   selector: 'app-update-studio',
   standalone: true,
-  imports: [InputTextModule, LoadingSpinnerComponent, CommonModule, DialogModule, TableModule, ButtonModule, FileUploadModule, ReactiveFormsModule],
+  imports: [ToastModule, InputTextModule, LoadingSpinnerComponent, CommonModule, DialogModule, TableModule, ButtonModule, FileUploadModule, ReactiveFormsModule],
   templateUrl: './update-studio.component.html',
   styleUrl: './update-studio.component.css'
 })
@@ -99,11 +100,9 @@ submit() {
   let imageBytes: number[] | null = null;
 
   if (this.selectedImageBytes) {
-    // Neues Bild wurde hochgeladen → verwende es
     imageBytes = this.selectedImageBytes;
   } else if (this.image?.value && typeof this.image.value === 'string') {
-    // Bestehendes Bild verwenden → Base64-Header entfernen und dekodieren
-    const base64String = this.image.value.split(',')[1] || this.image.value; // falls kein Komma vorhanden
+    const base64String = this.image.value.split(',')[1] || this.image.value;
     imageBytes = convertBase64ToByteArray(base64String);
   }
 
@@ -123,12 +122,12 @@ submit() {
     .subscribe({
       next: (res: ApiResponse<StudioResponse>) => {
         this.studioService.reloadStudios();
-        this.messageService.add({ severity: 'success', summary: 'Erfolgreich', detail: res.message });
+        this.messageService.add({ key: 'main', severity: 'success', summary: 'Erfolgreich', detail: res.message });
         this.closeDialog();
       },
       error: (e: any) => {
         const message = e?.error?.message ?? 'Ein unbekannter Fehler ist aufgetreten.';
-        this.messageService.add({ severity: 'error', summary: 'Fehler', detail: message });
+        this.messageService.add({ key: 'main', severity: 'error', summary: 'Fehler', detail: message });
       }
     });
 }
