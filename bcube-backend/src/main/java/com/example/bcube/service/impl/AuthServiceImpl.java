@@ -8,9 +8,9 @@ import com.example.bcube.persistence.entity.User;
 import com.example.bcube.persistence.repository.UserRepository;
 import com.example.bcube.security.JwtTokenProvider;
 import com.example.bcube.service.AuthService;
-import com.example.bcube.service.dto.JwtResponse;
-import com.example.bcube.service.dto.LoginRequest;
-import com.example.bcube.service.dto.RegisterRequest;
+import com.example.bcube.service.dto.response.JwtResponse;
+import com.example.bcube.service.dto.request.LoginRequest;
+import com.example.bcube.service.dto.request.RegisterRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -23,9 +23,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 @Service
 @RequiredArgsConstructor

@@ -1,7 +1,6 @@
-package com.example.bcube.service.dto;
+package com.example.bcube.service.dto.request;
 
 import com.example.bcube.persistence.entity.User;
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -10,12 +9,14 @@ import java.util.List;
 
 @Data
 @AllArgsConstructor
-public class CreateStudioRequest {
+public class UpdateStudioRequest {
     private String street;
     private int plz;
     private String city;
     private String country;
     private byte[] image;
+    private List<User> users;
+    private int id;
     private String name;
     private String description;
     private String location;

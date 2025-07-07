@@ -1,5 +1,3 @@
-import { User } from "./user";
-
 export interface studio {
     id: number;
     name: string;
@@ -13,5 +11,4 @@ export interface studio {
     longitude?: number | null;
     image: number[];
     imageBase64: string;
-    users: User[];
 }

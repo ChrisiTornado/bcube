@@ -1,6 +1,6 @@
 package com.example.bcube.exception;
 
-import com.example.bcube.service.dto.ApiResponse;
+import com.example.bcube.service.dto.response.ApiResponse;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

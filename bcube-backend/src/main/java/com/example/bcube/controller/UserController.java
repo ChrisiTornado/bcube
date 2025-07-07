@@ -1,6 +1,9 @@
 package com.example.bcube.controller;
 
-import com.example.bcube.service.dto.*;
+import com.example.bcube.service.dto.request.CreateUserRequest;
+import com.example.bcube.service.dto.request.UpdateUserRequest;
+import com.example.bcube.service.dto.response.ApiResponse;
+import com.example.bcube.service.dto.response.UserResponse;
 import com.example.bcube.service.impl.UserServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/admin")
 public class UserController {
     @Autowired
-    private UserServiceImpl userService;
+    private final UserServiceImpl userService;
 
     @GetMapping("/get-all-users")
     public ResponseEntity<ApiResponse<UserResponse[]>> getAllUsers()   {

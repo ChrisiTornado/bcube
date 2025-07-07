@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.Instant;
+import java.time.LocalDate;
 
 @Entity
 @Table(
@@ -29,6 +30,9 @@ public class Booking {
     @ManyToOne(optional = false)
     @JoinColumn(name = "studio_id")
     private Studio studio;
+
+    @Column(nullable = false)
+    private LocalDate date;
 
     @Column(name = "start_time", nullable = false)
     private Instant startTime;

@@ -5,11 +5,15 @@ import { FormsModule } from '@angular/forms';
 import { CalendarModule } from 'primeng/calendar';
 import { DropdownModule } from 'primeng/dropdown';
 import { ButtonModule } from 'primeng/button';
-
+import { finalize } from "rxjs";
 import { AuthService } from '../../../../../services/auth/auth.service';
 import { StudioService } from '../../../../../services/studio.service';
 import { LoadingSpinnerComponent } from '../../../../../shared/loading-spinner/loading-spinner.component';
 import { studio } from '../../../../../models/studio';
+import { BookingService } from '../../../../../services/booking.service';
+import { CreateBookingRequest } from '../../../../../models/requests/CreateBookingRequest';
+import { ApiResponse } from '../../../../../models/responses/ApiResponse';
+import { BookingResponse } from '../../../../../models/responses/BookingResponse';
 
 @Component({
   selector: 'app-studio-details',
@@ -31,6 +35,7 @@ export class StudioDetailsComponent implements OnInit {
   studio: studio | null = null;
   isUser = false;
   date: Date | null = null;
+  loading!: boolean;
 
   /* Dropdown-Daten */
   startHours: { label: string; value: string; disabled?: boolean }[] = [];
@@ -50,7 +55,8 @@ export class StudioDetailsComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private studioService: StudioService,
-    private authService: AuthService
+    private authService: AuthService,
+    private bookingService: BookingService
   ) {}
 
   /* ------------------------- Lifecycle ------------------------- */
@@ -81,6 +87,7 @@ export class StudioDetailsComponent implements OnInit {
   }
 
   book() {
+    this.loading = true;
     let formattedDate: string | null = null;
 
     console.log(this.date)
@@ -88,16 +95,29 @@ export class StudioDetailsComponent implements OnInit {
       formattedDate = this.formatDate(this.date);
     }
 
-    console.log(formattedDate)
-    console.log(this.selectedStartHour + ":" + this.selectedStartMinute)
-    console.log(this.selectedEndHour + ":" + this.selectedEndMinute)
+    const payload: CreateBookingRequest = {
+        userID: this.authService.getUser()!.id,
+        studioID: this.studio!.id,
+        date: formattedDate!,
+        startTime: `${this.selectedStartHour}:${this.selectedStartMinute}`,
+        endTime: `${this.selectedEndHour}:${this.selectedEndMinute}`
+    }
+
+    this.bookingService.create(payload)
+      .pipe(finalize(() => this.loading = false))
+      .subscribe({
+        next: (res: ApiResponse<BookingResponse>) => {
+            const bookingResult = res.data;
+            console.log(bookingResult)
+        }
+      })
   }
 
   formatDate(date: Date): string {
     const day = date.getDate().toString().padStart(2, '0');
-    const month = (date.getMonth() + 1).toString().padStart(2, '0'); // getMonth() ist 0-basiert
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
     const year = date.getFullYear();
   
-    return `${day}.${month}.${year}`; // z. B. 17.07.2025
+    return `${day}.${month}.${year}`;
   }
 }

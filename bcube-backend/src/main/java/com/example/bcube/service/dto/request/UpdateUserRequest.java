@@ -1,4 +1,4 @@
-package com.example.bcube.service.dto;
+package com.example.bcube.service.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

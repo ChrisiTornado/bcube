@@ -1,4 +1,4 @@
-package com.example.bcube.service.dto;
+package com.example.bcube.service.dto.response;
 
 import com.example.bcube.persistence.entity.User;
 import lombok.AllArgsConstructor;

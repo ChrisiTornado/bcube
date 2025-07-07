@@ -1,6 +1,8 @@
 package com.example.bcube.service;
 
-import com.example.bcube.service.dto.*;
+import com.example.bcube.service.dto.request.CreateUserRequest;
+import com.example.bcube.service.dto.request.UpdateUserRequest;
+import com.example.bcube.service.dto.response.UserResponse;
 
 public interface UserService {
     UserResponse[] getAllUsers();

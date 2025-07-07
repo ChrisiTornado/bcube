@@ -1,4 +1,4 @@
-package com.example.bcube.service.dto;
+package com.example.bcube.service.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;

@@ -1,9 +1,9 @@
 package com.example.bcube.controller;
 
-import com.example.bcube.service.dto.ApiResponse;
-import com.example.bcube.service.dto.JwtResponse;
-import com.example.bcube.service.dto.LoginRequest;
-import com.example.bcube.service.dto.RegisterRequest;
+import com.example.bcube.service.dto.response.ApiResponse;
+import com.example.bcube.service.dto.response.JwtResponse;
+import com.example.bcube.service.dto.request.LoginRequest;
+import com.example.bcube.service.dto.request.RegisterRequest;
 import com.example.bcube.service.impl.AuthServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

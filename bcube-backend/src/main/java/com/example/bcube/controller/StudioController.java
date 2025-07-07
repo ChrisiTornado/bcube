@@ -1,6 +1,9 @@
 package com.example.bcube.controller;
 
-import com.example.bcube.service.dto.*;
+import com.example.bcube.service.dto.request.CreateStudioRequest;
+import com.example.bcube.service.dto.request.UpdateStudioRequest;
+import com.example.bcube.service.dto.response.ApiResponse;
+import com.example.bcube.service.dto.response.StudioResponse;
 import com.example.bcube.service.impl.StudioServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -8,14 +11,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
 public class StudioController {
     @Autowired
-    private StudioServiceImpl studioService;
+    private final StudioServiceImpl studioService;
 
     @GetMapping("/get-all-studios")
     public ResponseEntity<ApiResponse<StudioResponse[]>> getAllStudios()   {
@@ -45,16 +46,5 @@ public class StudioController {
     public ResponseEntity<ApiResponse<StudioResponse>> updateStudio(@PathVariable long id, @Valid @RequestBody UpdateStudioRequest updateStudioRequest) {
         StudioResponse response = studioService.updateStudio(id, updateStudioRequest);
         return ResponseEntity.ok(new ApiResponse<>("Studio erfolgreich aktuallisiert", response));
-    }
-
-    @GetMapping("/studios/{id}/booked-times")
-    public ResponseEntity<ApiResponse<TimeSlotResponse>> getFreeTimeSlots(@PathVariable long id, @RequestParam LocalDate date) {
-        TimeSlotResponse response = studioService.getValidBookings(id, date);
-        return  ResponseEntity.ok(new ApiResponse<>("Dates sent", response));
-    }
-
-    @PostMapping("/studios/{id}/bookings")
-    public ResponseEntity<ApiResponse<TimeSlotResponse>> bookStudio(@PathVariable long id) {
-        return null;
     }
 }

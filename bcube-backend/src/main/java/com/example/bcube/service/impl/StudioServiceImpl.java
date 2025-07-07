@@ -1,16 +1,16 @@
 package com.example.bcube.service.impl;
 
-import com.example.bcube.persistence.entity.Role;
 import com.example.bcube.persistence.entity.Studio;
 import com.example.bcube.persistence.repository.StudioRepository;
 import com.example.bcube.service.StudioService;
-import com.example.bcube.service.dto.*;
+import com.example.bcube.service.dto.request.CreateStudioRequest;
+import com.example.bcube.service.dto.request.UpdateStudioRequest;
+import com.example.bcube.service.dto.response.StudioResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.LocalDate;
 import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
@@ -175,11 +175,6 @@ public class StudioServiceImpl implements StudioService {
                 updated.isActive(),
                 updated.getCreatedAt()
         );
-    }
-
-    @Override
-    public TimeSlotResponse getValidBookings(long id, LocalDate date) {
-        return null;
     }
 
     private Double geocodeLatitude(String address) {
