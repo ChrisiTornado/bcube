@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -26,5 +27,11 @@ public class BookingController {
     public ResponseEntity<ApiResponse<BookingResponse>> bookStudio(@RequestBody BookStudioRequest bookStudioRequest) {
         BookingResponse booking = bookingService.bookTimeSlot(bookStudioRequest);
         return ResponseEntity.ok(new ApiResponse<>("Studio erfolgreich gebucht", booking));
+    }
+
+    @GetMapping("/bookings/user/{userId}")
+    public ResponseEntity<ApiResponse<BookingResponse[]>> getBookingsByUserId(@PathVariable Long userId) {
+        BookingResponse[] bookings = bookingService.getBookingsByUserId(userId);
+        return  ResponseEntity.ok(new ApiResponse<>("Bookings sent", bookings));
     }
 }

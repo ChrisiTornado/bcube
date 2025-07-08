@@ -6,6 +6,6 @@ export interface BookingResponse {
     studioID: number,
     date: string,
     startTime: string,
-    endTime: string
-    status: BookingStatus;
+    endTime: string,
+    status: BookingStatus
 }

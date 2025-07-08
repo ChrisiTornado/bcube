@@ -24,11 +24,25 @@ export class BookingService {
   getAll(): Observable<booking[]> {
     this.loadingSubject.next(true);
     return this.http
-      .get<{ message: string; data: booking[] }>(`${environment.apiUrl}get-all-bookings`)
+      .get<{ message: string; data: booking[] }>(`${environment.apiUrl}bookings`)
       .pipe(
         map(res => res.data),
         finalize(() => this.loadingSubject.next(false))
       );
+  }
+
+  getBookingByUserId(userId: number): Observable<booking[]> {
+    this.loadingSubject.next(true);
+    return this.http
+      .get<{ message: string; data: booking[] }>(`${environment.apiUrl}bookings/user/${userId}`)
+      .pipe(
+        map(res => res.data),
+        finalize(() => this.loadingSubject.next(false))
+      );
+  }
+
+  setBookings(bookings: booking[]): void {
+    this.bookingSubject.next(bookings);
   }
 
   getStudioById(id: number): Observable<booking> {
@@ -39,6 +53,10 @@ export class BookingService {
         map(res => res.data),
         finalize(() => this.loadingSubject.next(false))
       );
+  }
+
+  reloadBookings(): void {
+    this.getAll().subscribe(bookings => this.bookingSubject.next(bookings));
   }
 
   create(payload: CreateBookingRequest): Observable<ApiResponse<BookingResponse>> {

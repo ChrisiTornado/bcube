@@ -12,12 +12,15 @@ import com.example.bcube.service.dto.request.BookStudioRequest;
 import com.example.bcube.service.dto.response.BookingResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class BookingServiceImpl implements BookingService {
@@ -27,7 +30,44 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingResponse[] getAllBookings() {
-        return new BookingResponse[0];
+        List<Booking> bookings = bookingRepository.findAll();
+
+        List<BookingResponse> responses = bookings.stream()
+                .map(booking -> new BookingResponse(
+                        booking.getId(),
+                        booking.getUser(),
+                        booking.getStudio(),
+                        booking.getDate(),
+                        booking.getEndTime(),
+                        booking.getStartTime(),
+                        booking.getStatus()
+                ))
+                .toList();
+
+        return responses.toArray(new BookingResponse[0]);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public BookingResponse[] getBookingsByUserId(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User mit ID " + userId + " nicht gefunden"));
+
+        List<Booking> bookings = bookingRepository.findAllByUser(user);
+
+        List<BookingResponse> responses = bookings.stream()
+                .map(booking -> new BookingResponse(
+                        booking.getId(),
+                        booking.getUser(),
+                        booking.getStudio(),
+                        booking.getDate(),
+                        booking.getEndTime(),
+                        booking.getStartTime(),
+                        booking.getStatus()
+                ))
+                .toList();
+
+        return responses.toArray(new BookingResponse[0]);
     }
 
     @Override
