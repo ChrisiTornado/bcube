@@ -10,4 +10,6 @@ public interface BookingService {
     BookingResponse bookTimeSlot(BookStudioRequest bookStudioRequest);
 
     BookingResponse[] getBookingsByUserId(Long userId);
+
+    BookingResponse getBookingById(Long bookingId);
 }

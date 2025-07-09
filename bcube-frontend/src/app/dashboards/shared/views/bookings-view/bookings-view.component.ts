@@ -34,7 +34,7 @@ export class BookingsViewComponent implements OnInit {
     } else {
       const userId = this.authService.getUser()?.id;
       if (userId) {
-        this.bookingService.getBookingByUserId(userId).subscribe(bookings => {
+        this.bookingService.getBookingsByUserId(userId).subscribe(bookings => {
           this.bookingService.setBookings(bookings);
         });
       }

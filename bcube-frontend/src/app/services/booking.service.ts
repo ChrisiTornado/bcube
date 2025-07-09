@@ -31,7 +31,7 @@ export class BookingService {
       );
   }
 
-  getBookingByUserId(userId: number): Observable<booking[]> {
+  getBookingsByUserId(userId: number): Observable<booking[]> {
     this.loadingSubject.next(true);
     return this.http
       .get<{ message: string; data: booking[] }>(`${environment.apiUrl}bookings/user/${userId}`)
@@ -39,6 +39,16 @@ export class BookingService {
         map(res => res.data),
         finalize(() => this.loadingSubject.next(false))
       );
+  }
+
+  getBookingById(bookingId: number): Observable<booking> {
+    this.loadingSubject.next(true);
+    return this.http
+      .get<{ message: string; data:booking }>(`${environment.apiUrl}bookings/${bookingId}`)
+      .pipe(
+        map(res => res.data),
+        finalize(() => this.loadingSubject.next(false))
+      )
   }
 
   setBookings(bookings: booking[]): void {

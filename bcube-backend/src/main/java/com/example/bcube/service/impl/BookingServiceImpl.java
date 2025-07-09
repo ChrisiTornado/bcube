@@ -71,6 +71,22 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
+    public BookingResponse getBookingById(Long bookingId) {
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new IllegalArgumentException("Buchung mit ID " + bookingId + "nicht gefunden"));
+
+        return new BookingResponse(
+                booking.getId(),
+                booking.getUser(),
+                booking.getStudio(),
+                booking.getDate(),
+                booking.getEndTime(),
+                booking.getStartTime(),
+                booking.getStatus()
+        );
+    }
+
+    @Override
     public BookingResponse bookTimeSlot(BookStudioRequest bookStudioRequest) {
         User user = userRepository.findById((long) bookStudioRequest.getUserID())
                 .orElseThrow(() -> new IllegalArgumentException("User mit ID " + bookStudioRequest.getUserID() + " nicht gefunden"));
