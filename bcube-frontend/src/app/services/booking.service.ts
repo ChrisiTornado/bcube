@@ -74,4 +74,10 @@ export class BookingService {
     return this.http.post<ApiResponse<BookingResponse>>(
       environment.apiUrl + "bookings", payload);
   }
+
+  storno(id: number): Observable<ApiResponse<number>>{
+    return this.http.delete<ApiResponse<number>>(
+      environment.apiUrl + "bookings/storno/" + id
+    )
+  }
 }

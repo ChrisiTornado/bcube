@@ -14,6 +14,7 @@ import { BookingService } from '../../../../../services/booking.service';
 import { CreateBookingRequest } from '../../../../../models/requests/CreateBookingRequest';
 import { ApiResponse } from '../../../../../models/responses/ApiResponse';
 import { BookingResponse } from '../../../../../models/responses/BookingResponse';
+import { MessageService, ConfirmationService } from 'primeng/api';
 
 @Component({
   selector: 'app-studio-details',
@@ -56,7 +57,9 @@ export class StudioDetailsComponent implements OnInit {
     private route: ActivatedRoute,
     private studioService: StudioService,
     private authService: AuthService,
-    private bookingService: BookingService
+    private bookingService: BookingService,
+    private confirmationService: ConfirmationService,
+    private messageService: MessageService
   ) {}
 
   /* ------------------------- Lifecycle ------------------------- */
@@ -84,6 +87,17 @@ export class StudioDetailsComponent implements OnInit {
       const label = m.toString().padStart(2, '0');
       this.startMinutes.push({ label, value: label });
     }
+  }
+
+  confirmBooking(): void {
+    this.confirmationService.confirm({
+      message: `Möchten Sie das Studio "${this.studio!.name}" wirklich buchen?`,
+      header: 'Buchung bestätigen',
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Ja',
+      rejectLabel: 'Nein',
+      accept: () => this.book()
+    });
   }
 
   book() {
@@ -120,4 +134,15 @@ export class StudioDetailsComponent implements OnInit {
   
     return `${day}.${month}.${year}`;
   }
+
+  canBook(): boolean {
+    return (
+      this.date !== null &&
+      this.selectedStartHour !== '' &&
+      this.selectedStartMinute !== '' &&
+      this.selectedEndHour !== '' &&
+      this.selectedEndMinute !== ''
+    );
+  }
+  
 }

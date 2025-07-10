@@ -9,14 +9,48 @@ import { MessageService, ConfirmationService } from 'primeng/api';
   selector: 'app-storno-booking',
   standalone: true,
   imports: [ButtonModule],
-  templateUrl: './storno-booking.component.html',
-  styleUrl: './storno-booking.component.css'
+  template: `<p-button icon="pi pi-trash" [loading]="loading" (click)="confirmStorno()"></p-button>`,
 })
 export class StornoBookingComponent {
   @Input() booking!: booking;
    loading!: boolean;
+   
+   constructor(private bookingService: BookingService, private messageService: MessageService, private confirmationService: ConfirmationService) {}
 
-   confirmStorno() {
+   confirmStorno(): void {
+    this.confirmationService.confirm({
+      message: `Möchten Sie die Buchung "${this.booking.id}" für den Kube "${this.booking.studio.name}" wirklich stornieren?`,
+      header: 'Stornieren bestätigen',
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Ja',
+      rejectLabel: 'Nein',
+      accept: () => this.storno()
+    });
+  }
 
+   storno() {
+    this.loading = true;
+    this.bookingService.storno(this.booking.id)
+      .pipe(finalize(() => this.loading = false))
+      .subscribe({
+        next: (res) => {
+          this.messageService.add({
+            key: 'main',
+            severity: 'success',
+            summary: 'Erfolg',
+            detail: res.message
+          });
+  
+          this.bookingService.reloadBookings();
+        },
+        error: (err) => {
+          this.messageService.add({
+            key: 'main',
+            severity: 'error',
+            summary: 'Fehler',
+            detail: err?.error?.message ?? 'Löschen fehlgeschlagen.'
+          });
+        }
+      });
    }
 }

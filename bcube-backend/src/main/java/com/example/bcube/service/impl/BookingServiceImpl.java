@@ -38,8 +38,8 @@ public class BookingServiceImpl implements BookingService {
                         booking.getUser(),
                         booking.getStudio(),
                         booking.getDate(),
-                        booking.getEndTime(),
                         booking.getStartTime(),
+                        booking.getEndTime(),
                         booking.getStatus()
                 ))
                 .toList();
@@ -61,8 +61,8 @@ public class BookingServiceImpl implements BookingService {
                         booking.getUser(),
                         booking.getStudio(),
                         booking.getDate(),
-                        booking.getEndTime(),
                         booking.getStartTime(),
+                        booking.getEndTime(),
                         booking.getStatus()
                 ))
                 .toList();
@@ -80,8 +80,26 @@ public class BookingServiceImpl implements BookingService {
                 booking.getUser(),
                 booking.getStudio(),
                 booking.getDate(),
-                booking.getEndTime(),
                 booking.getStartTime(),
+                booking.getEndTime(),
+                booking.getStatus()
+        );
+    }
+
+    @Override
+    public BookingResponse stornoBooking(Long bookingId) {
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new IllegalArgumentException("Buchung mit ID " + bookingId + "nicht gefunden"));
+
+        booking.setStatus(BookingStatus.CANCELLED);
+        bookingRepository.save(booking);
+        return new BookingResponse(
+                booking.getId(),
+                booking.getUser(),
+                booking.getStudio(),
+                booking.getDate(),
+                booking.getStartTime(),
+                booking.getEndTime(),
                 booking.getStatus()
         );
     }

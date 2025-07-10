@@ -6,5 +6,17 @@
     <p><strong>Tag:</strong> {{ booking.date | date: 'dd.MM.yyyy'}}</p>
     <p><strong>Uhrzeit:</strong> {{ booking.startTime | date: 'HH:mm' }}-{{ booking.endTime | date: 'HH:mm'}}</p>
     <p><strong>Status:</strong> {{ booking.status }}</p>
+    <p><strong>Studio:</strong> {{ booking.studio.name }}</p>
+    <!-- <img [src]="booking.studio.imageBase64" alt="Studiobild" style="max-width: 300px; max-height: 300px"> -->
+    <p><strong>Straße:</strong> {{ booking.studio.street }}</p>
+    <p><strong>Stadt:</strong> {{ booking.studio.city }}</p>
+    <p><strong>Postleitzahl:</strong> {{ booking.studio.plz }}</p>
+    <p><strong>Land:</strong> {{ booking.studio.country }}</p>
+    <div *ngIf="!isUser">
+        <h2>Kunde:</h2>
+        <p><strong>Name:</strong> {{ booking.user.firstName }} {{ booking.user.lastName }}</p>
+        <p><strong>E-Mail:</strong> {{ booking.user.email }}</p>
+        <p><strong>Telefonnummer:</strong> {{ booking.user.phone }}</p>
+    </div>
   </ng-container>
 </ng-container>

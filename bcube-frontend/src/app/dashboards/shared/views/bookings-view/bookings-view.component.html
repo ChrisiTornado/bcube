@@ -28,7 +28,7 @@
           <td>
             {{ booking.studio.name }}
           </td>
-          <td>
+          <td *ngIf="booking.status === bookingStatus.CONFIRMED">
             <app-storno-booking [booking]="booking" (click)="$event.stopPropagation()"></app-storno-booking>
           </td>
         </tr>

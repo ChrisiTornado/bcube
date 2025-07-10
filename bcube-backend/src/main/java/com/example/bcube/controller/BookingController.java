@@ -40,4 +40,10 @@ public class BookingController {
         BookingResponse booking = bookingService.getBookingById(bookingId);
         return ResponseEntity.ok(new ApiResponse<>("Booking sent", booking));
     }
+
+    @DeleteMapping("bookings/storno/{bookingId}")
+    public ResponseEntity<ApiResponse<BookingResponse>> stornoBookingById(@PathVariable Long bookingId) {
+        BookingResponse booking = bookingService.stornoBooking(bookingId);
+        return ResponseEntity.ok(new ApiResponse<>("Booking sent", booking));
+    }
 }

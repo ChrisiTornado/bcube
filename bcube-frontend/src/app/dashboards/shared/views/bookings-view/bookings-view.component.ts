@@ -11,6 +11,7 @@ import { BookingService } from '../../../../services/booking.service';
 import { booking } from '../../../../models/booking';
 import { BookingsComponent } from '../../components/bookings/bookings.component';
 import { StornoBookingComponent } from './storno-booking/storno-booking.component';
+import { BookingStatus } from '../../../../models/BookingStatus';
 
 @Component({
   selector: 'app-bookings-view',
@@ -23,6 +24,7 @@ export class BookingsViewComponent implements OnInit {
   bookings$!: Observable<booking[]>;
   loading$ = this.bookingService.loading$;
   isAdmin = false;
+  bookingStatus = BookingStatus;
 
   ngOnInit(): void {
     this.isAdmin = this.authService.getRole() === "ADMIN";

@@ -64,8 +64,14 @@
       <label class="my-auto -ml-2">Uhr</label>
     </div>
     
-      <div class="mt-6 flex justify-center" *ngIf="isUser">
-        <button pButton type="button" label="Studio buchen" (click)="book()"></button>
-      </div>
+    <div class="mt-6 flex justify-center" *ngIf="isUser">
+      <button
+        pButton
+        type="button"
+        label="Studio buchen"
+        [disabled]="!canBook()"
+        (click)="confirmBooking()"
+      ></button>
+    </div>
   </ng-container>
 </ng-container>

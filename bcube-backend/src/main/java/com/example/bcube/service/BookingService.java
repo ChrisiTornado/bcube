@@ -12,4 +12,6 @@ public interface BookingService {
     BookingResponse[] getBookingsByUserId(Long userId);
 
     BookingResponse getBookingById(Long bookingId);
+
+    BookingResponse stornoBooking(Long bookingId);
 }

@@ -47,7 +47,8 @@ export const routes: Routes = [
             { path: 'map', component: MapViewComponent },
             { path: 'bookings', component: BookingsViewComponent },
             { path: 'calendar', component: CalendarViewComponent },
-            { path: 'studio-details/:id', component: StudioDetailsComponent }
+            { path: 'studio-details/:id', component: StudioDetailsComponent },
+            { path: 'booking-details/:id', component: BookingDetailsComponent }
         ]
     },
 

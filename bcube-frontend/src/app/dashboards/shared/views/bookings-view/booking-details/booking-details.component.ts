@@ -34,7 +34,6 @@ export class BookingDetailsComponent implements OnInit {
 
   ngOnInit(): void {
     this.isUser = this.authService.getRole() === 'USER';
-
     const studioId = this.route.snapshot.paramMap.get('id');
     if (studioId) {
       this.bookingService.getBookingById(+studioId).subscribe(data => (this.booking = data));
