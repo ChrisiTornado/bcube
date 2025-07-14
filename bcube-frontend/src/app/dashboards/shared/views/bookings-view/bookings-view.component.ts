@@ -57,7 +57,7 @@ export class BookingsViewComponent implements OnInit {
   getStatusLabel(status: string): string {
     switch (status) {
       case 'CONFIRMED': return 'Bestätigt';
-      case 'CANCELED': return 'Storniert';
+      case 'CANCELLED': return 'Storniert';
       case 'PENDING': return 'Ausstehend';
       default: return status;
     }

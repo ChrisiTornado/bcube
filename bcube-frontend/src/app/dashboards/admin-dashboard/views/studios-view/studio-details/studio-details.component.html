@@ -2,6 +2,15 @@
 
 <ng-container *ngIf="!(loading$ | async)">
   <ng-container *ngIf="studio">
+    <div class="mb-4">
+      <button
+        pButton
+        type="button"
+        icon="pi pi-arrow-left"
+        label="Zurück"
+        (click)="goBack()"
+      ></button>
+    </div>
     <h2>{{ studio.name }}</h2>
     <img [src]="studio.imageBase64" alt="Studiobild" style="max-width: 300px; max-height: 300px">
     <p><strong>Beschreibung:</strong> {{ studio.description }}</p>

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CalendarModule } from 'primeng/calendar';
@@ -54,6 +54,7 @@ export class StudioDetailsComponent implements OnInit {
   loading$ = this.studioService.loading$;
 
   constructor(
+    private router: Router,
     private route: ActivatedRoute,
     private studioService: StudioService,
     private authService: AuthService,
@@ -144,5 +145,16 @@ export class StudioDetailsComponent implements OnInit {
       this.selectedEndMinute !== ''
     );
   }
-  
+
+  navigateToDetails(studio: studio): void {
+    const basePath = this.isUser ? '/user-dashboard' : '/admin-dashboard';
+    const navigationUrl = [basePath, 'studio-details', studio.id];
+
+    this.router.navigate(navigationUrl);
+  }
+
+  goBack(): void {
+    const basePath = this.isUser ? '/user-dashboard' : '/admin-dashboard';
+    this.router.navigate([basePath + '/studios']);
+  }
 }

@@ -1,25 +1,31 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MegaMenuItem } from "primeng/api";
+import { MegaMenuItem } from 'primeng/api';
 import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
 import { AuthService } from '../../services/auth/auth.service';
 import { MegaMenuModule } from 'primeng/megamenu';
-import { RouterModule } from '@angular/router';
+import { Router, NavigationEnd } from '@angular/router';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService } from 'primeng/api';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [CommonModule, ToastModule, MegaMenuModule, RouterModule, ConfirmDialogModule],
+  imports: [CommonModule, ToastModule, MegaMenuModule, ConfirmDialogModule],
   templateUrl: './admin-dashboard.component.html',
   styleUrl: './admin-dashboard.component.css'
 })
 export class AdminDashboardComponent implements OnInit {
-  items: MegaMenuItem[] | undefined;
+  items: MegaMenuItem[] = [];
 
-  constructor(private messageService: MessageService, private authService: AuthService, private confirmationService: ConfirmationService) {}
+  constructor(
+    private router: Router,
+    private messageService: MessageService,
+    private authService: AuthService,
+    private confirmationService: ConfirmationService
+  ) {}
 
   ngOnInit(): void {
     const message = sessionStorage.getItem('loginSuccessMessage');
@@ -36,36 +42,55 @@ export class AdminDashboardComponent implements OnInit {
       sessionStorage.removeItem('loginSuccessMessage');
     }
 
+    this.buildMenu();
+
+    this.router.events
+      .pipe(filter(event => event instanceof NavigationEnd))
+      .subscribe(() => {
+        this.buildMenu();
+      });
+  }
+
+  private isRouteActive(prefixes: string[]): boolean {
+    const currentUrl = this.router.url;
+    return prefixes.some(prefix => new RegExp(`/${prefix}(/|$)`).test(currentUrl));
+  }
+
+  private buildMenu(): void {
     this.items = [
       {
         label: 'Studios',
         icon: 'pi pi-fw pi-building',
-        routerLink: 'studios'
+        routerLink: 'studios',
+        styleClass: this.isRouteActive(['studios', 'studio-details']) ? 'p-menuitem-link-active' : ''
       },
       {
         label: 'Users',
         icon: 'pi pi-fw pi-users',
-        routerLink: 'users'
+        routerLink: 'users',
+        styleClass: this.isRouteActive(['users']) ? 'p-menuitem-link-active' : ''
       },
       {
         label: 'Karte',
         icon: 'pi pi-fw pi-map',
-        routerLink: 'map'
+        routerLink: 'map',
+        styleClass: this.isRouteActive(['map']) ? 'p-menuitem-link-active' : ''
       },
       {
         label: 'Buchungen',
         icon: 'pi pi-fw pi-folder-open',
-        routerLink: 'bookings'
+        routerLink: 'bookings',
+        styleClass: this.isRouteActive(['bookings', 'booking-details', 'booking-confirmation']) ? 'p-menuitem-link-active' : ''
       },
       {
         label: 'Kalendar',
         icon: 'pi pi-fw pi-calendar',
-        routerLink: 'calendar'
+        routerLink: 'calendar',
+        styleClass: this.isRouteActive(['calendar']) ? 'p-menuitem-link-active' : ''
       },
       {
         label: 'Logout',
         icon: 'pi pi-fw pi-sign-out',
-        // routerLink: ['..', '..'],
         command: () => {
           this.confirmationService.confirm({
             message: 'Sind Sie sicher, dass Sie sich abmelden möchten?',

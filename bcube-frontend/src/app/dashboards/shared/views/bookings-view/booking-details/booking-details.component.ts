@@ -1,16 +1,15 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CalendarModule } from 'primeng/calendar';
 import { DropdownModule } from 'primeng/dropdown';
 import { ButtonModule } from 'primeng/button';
-import { finalize } from "rxjs";
 import { LoadingSpinnerComponent } from '../../../../../shared/loading-spinner/loading-spinner.component';
 import { AuthService } from '../../../../../services/auth/auth.service';
 import { booking } from '../../../../../models/booking';
 import { BookingService } from '../../../../../services/booking.service';
-
+import { BookingActionService } from '../../../../../services/booking-action.service';
 
 @Component({
   selector: 'app-booking-details',
@@ -32,15 +31,45 @@ export class BookingDetailsComponent implements OnInit {
   loading!: boolean;
   loading$ = this.bookingService.loading$;
 
+  // Mapping von Enum-Text zu deutsch
+  statusLabels: { [key: string]: string } = {
+    CONFIRMED: 'Bestätigt',
+    CANCELLED: 'Storniert',
+    PENDING: 'Ausstehend'
+  };
+
+  constructor(
+    private router: Router,
+    private route: ActivatedRoute,
+    private bookingActionService: BookingActionService,
+    private authService: AuthService,
+    private bookingService: BookingService
+  ) {}
+
   ngOnInit(): void {
     this.isUser = this.authService.getRole() === 'USER';
-    const studioId = this.route.snapshot.paramMap.get('id');
-    if (studioId) {
-      this.bookingService.getBookingById(+studioId).subscribe(data => (this.booking = data));
+    const bookingId = this.route.snapshot.paramMap.get('id');
+    if (bookingId) {
+      this.bookingService.getBookingById(+bookingId).subscribe(data => (this.booking = data));
     }
   }
 
-  constructor(private authService: AuthService, private route: ActivatedRoute, private bookingService: BookingService) {
+  triggerStorno(): void {
+    this.bookingActionService.confirmStorno(
+      this.booking!,
+      () => {
+        const basePath = this.isUser ? '/user-dashboard' : '/admin-dashboard';
+        this.router.navigate([basePath + '/bookings']);
+      },
+      () => {
+        // optional: onError
+      },
+      isLoading => (this.loading = isLoading)
+    );
+  }
 
+  goBack(): void {
+    const basePath = this.isUser ? '/user-dashboard' : '/admin-dashboard';
+    this.router.navigate([basePath + '/bookings']);
   }
 }
