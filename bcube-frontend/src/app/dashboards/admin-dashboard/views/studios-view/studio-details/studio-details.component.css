@@ -1,0 +1,4 @@
+::ng-deep .partially-booked > span {
+    background-color: #fff3cd !important; /* light yellow */
+    border-radius: 50% !important;
+  }

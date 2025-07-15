@@ -41,6 +41,16 @@ export class BookingService {
       );
   }
 
+  getBookingsByStudioId(studioId: number): Observable<booking[]> {
+    this.loadingSubject.next(true);
+    return this.http
+      .get<{ message: string; data: booking[] }>(`${environment.apiUrl}bookings/studio/${studioId}`)
+      .pipe(
+        map(res => res.data),
+        finalize(() => this.loadingSubject.next(false))
+      );
+  }
+
   getBookingById(bookingId: number): Observable<booking> {
     this.loadingSubject.next(true);
     return this.http

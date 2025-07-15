@@ -10,6 +10,7 @@ import com.example.bcube.persistence.repository.UserRepository;
 import com.example.bcube.service.BookingService;
 import com.example.bcube.service.dto.request.BookStudioRequest;
 import com.example.bcube.service.dto.response.BookingResponse;
+import com.example.bcube.service.dto.response.StudioResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -68,6 +69,28 @@ public class BookingServiceImpl implements BookingService {
                 .toList();
 
         return responses.toArray(new BookingResponse[0]);
+    }
+
+    @Override
+    public BookingResponse[] getBookingsByStudioId(long studioId) {
+        Studio studio = studioRepository.findById(studioId)
+                .orElseThrow(() -> new IllegalArgumentException("Studio mit ID " + studioId + "nicht gefunden"));
+
+        List<Booking> bookings = bookingRepository.findAllByStudio(studio);
+
+        List<BookingResponse> result = bookings.stream()
+                .map(booking -> new BookingResponse(
+                        booking.getId(),
+                        booking.getUser(),
+                        booking.getStudio(),
+                        booking.getDate(),
+                        booking.getStartTime(),
+                        booking.getEndTime(),
+                        booking.getStatus()
+                ))
+                .toList();
+
+        return result.toArray(new BookingResponse[0]);
     }
 
     @Override

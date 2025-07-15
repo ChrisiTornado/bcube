@@ -17,17 +17,11 @@
     <p><strong>Adresse:</strong> {{ studio.street }}, {{ studio.plz }} {{ studio.city }}</p>
     <p><strong>Land:</strong> {{ studio.country }}</p>
 
-    <p-calendar
-      class="max-w-full"
-      [(ngModel)]="date"
-      [inline]="true"
-      [showWeek]="true"
-      [showOtherMonths]="true"
-      [selectOtherMonths]="false"
-      [monthNavigator]="true"
-      [yearNavigator]="true"
-      yearRange="2025:2035"
-    />
+    <full-calendar [options]="calendarOptions"></full-calendar>
+
+    <div *ngIf="date" class="mt-2 text-center text-sm text-gray-600">
+      Gewähltes Datum: {{ date | date: 'fullDate' }}
+    </div>
 
     <div class="flex gap-2 mt-4">
       <label for="Start" class="my-auto">Startzeitpunkt:</label>

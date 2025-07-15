@@ -46,4 +46,10 @@ public class BookingController {
         BookingResponse booking = bookingService.stornoBooking(bookingId);
         return ResponseEntity.ok(new ApiResponse<>("Booking sent", booking));
     }
+
+    @GetMapping("/bookings/studio/{studioId}")
+    public ResponseEntity<ApiResponse<BookingResponse[]>> getBookingsByStudio(@PathVariable Long studioId) {
+        BookingResponse[] bookings = bookingService.getBookingsByStudioId(studioId);
+        return ResponseEntity.ok(new ApiResponse<>("Studio-Bookings geladen", bookings));
+    }
 }
