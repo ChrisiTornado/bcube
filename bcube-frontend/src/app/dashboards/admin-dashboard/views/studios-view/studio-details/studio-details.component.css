@@ -2,3 +2,8 @@
     background-color: #fff3cd !important; /* light yellow */
     border-radius: 50% !important;
   }
+
+  ::ng-deep .fc {
+    max-width: 600px; /* oder eine andere feste Breite */
+    font-size: 0.85rem; /* optional: kleinerer Text */
+  }

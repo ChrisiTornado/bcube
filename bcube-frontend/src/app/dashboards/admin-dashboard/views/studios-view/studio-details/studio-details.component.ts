@@ -64,6 +64,14 @@ export class StudioDetailsComponent implements OnInit {
   disabledDates: Date[] = [];
   highlightedDates: { date: Date; styleClass: string }[] = [];
 
+  calendarOptions: CalendarOptions = {
+      plugins: this.calendarPlugins,
+      initialView: 'dayGridMonth',
+      events: this.calendarEvents,
+      locale: 'de',
+      weekends: true,
+      dateClick: this.handleDateClick.bind(this)
+    };
 
   /* Loading-Stream aus Service */
   loading$ = this.studioService.loading$;
@@ -76,68 +84,75 @@ export class StudioDetailsComponent implements OnInit {
     private bookingService: BookingService,
     private confirmationService: ConfirmationService,
     private messageService: MessageService
-  ) {}
+  ) { }
 
   /* ------------------------- Lifecycle ------------------------- */
   ngOnInit(): void {
     this.isUser = this.authService.getRole() === 'USER';
     this.generateTimeParts();
-  
+
     const studioId = this.route.snapshot.paramMap.get('id');
     if (studioId) {
       this.studioService.getStudioById(+studioId).subscribe(data => (this.studio = data));
     }
-  
+
     this.bookingService.getBookingsByStudioId(+studioId!).subscribe(bookings => {
       this.bookings = bookings.filter(b => b.status === 'CONFIRMED');
-this.markCalendarDates();
+      this.markCalendarDates();
 
-const events = this.bookings.map(b => {
-  const start = new Date(b.startTime);
-  const end = new Date(b.endTime);
+      const events = this.bookings.map(b => {
+        const start = new Date(b.startTime);
+        const end = new Date(b.endTime);
 
-  const formatTime = (d: Date) =>
-    d.toLocaleTimeString('de-AT', { hour: '2-digit', minute: '2-digit', hour12: false });
+        const formatTime = (d: Date) =>
+          d.toLocaleTimeString('de-AT', { hour: '2-digit', minute: '2-digit', hour12: false });
 
-  return {
-    title: `${formatTime(start)} – ${formatTime(end)}`,
-    date: new Date(b.date).toISOString().split('T')[0]
-  };
-});
+        return {
+          title: `${formatTime(start)} – ${formatTime(end)}`,
+          date: new Date(b.date).toISOString().split('T')[0]
+        };
+      });
 
-this.calendarOptions = {
-  plugins: this.calendarPlugins,
-  initialView: 'dayGridMonth',
-  events: events,
-  locale: 'de',
-  weekends: true,
-  dateClick: this.handleDateClick.bind(this)
-};
+      const today = new Date();
+      today.setDate(today.getDate())
+
+      this.calendarOptions = {
+        plugins: this.calendarPlugins,
+        initialView: 'dayGridMonth',
+        events: events,
+        locale: 'de',
+        weekends: true,
+        dateClick: this.handleDateClick.bind(this),
+        ...(this.isUser && {
+          validRange: {
+            start: today.toISOString().split('T')[0]
+          }
+        })
+      };
     });
   }
 
   handleDateClick(arg: any): void {
     const clickedDate = new Date(arg.dateStr);
     this.date = clickedDate;
-  
+
     const isoDate = clickedDate.toISOString().split('T')[0];
 
     this.selectedStartHour = '';
-  this.selectedStartMinute = '';
-  this.selectedEndHour = '';
-  this.selectedEndMinute = '';
+    this.selectedStartMinute = '';
+    this.selectedEndHour = '';
+    this.selectedEndMinute = '';
 
-  
     // Nur filtern, wenn es ein Array ist
     const currentEvents = Array.isArray(this.calendarOptions.events)
       ? this.calendarOptions.events as EventInput[]
       : [];
-  
+
     // Filtere vorherige Highlights raus
     const otherEvents = currentEvents.filter(
       (e: any) => e.display !== 'background' || e.color !== '#cce5ff'
     );
-  
+
     // Neuer "highlight"-Hintergrundevent
     const highlightEvent: EventInput = {
       start: isoDate,
@@ -145,7 +160,7 @@ this.calendarOptions = {
       display: 'background',
       color: '#cce5ff'
     };
-  
+
     // Aktualisiere events
     this.calendarOptions = {
       ...this.calendarOptions,
@@ -157,13 +172,13 @@ this.calendarOptions = {
 
   updateAvailableTimesForDate(dateStr: string): void {
     const bookingsOnDay = this.bookings.filter(b => b.date === dateStr);
-  
+
     const bookedSlots: Set<string> = new Set();
-  
+
     bookingsOnDay.forEach(b => {
       const start = new Date(b.startTime);
       const end = new Date(b.endTime);
-  
+
       for (
         let t = new Date(start);
         t < end;
@@ -174,17 +189,17 @@ this.calendarOptions = {
         bookedSlots.add(`${hour}:${minute}`);
       }
     });
-  
+
     // Stunden und Minuten neu generieren
     this.startHours = [];
     this.startMinutes = [];
-  
+
     for (let h = 0; h < 24; h++) {
       const hour = h.toString().padStart(2, '0');
       const isDisabled = [0, 15, 30, 45].every(m => bookedSlots.has(`${hour}:${m.toString().padStart(2, '0')}`));
       this.startHours.push({ label: hour, value: hour, disabled: isDisabled });
     }
-  
+
     for (let m of [0, 15, 30, 45]) {
       const minute = m.toString().padStart(2, '0');
       const isDisabled = [...Array(24).keys()].every(h =>
@@ -198,25 +213,16 @@ this.calendarOptions = {
     return new Date(dateStr).toISOString().split('T')[0];
   }
 
-  calendarOptions: CalendarOptions = {
-    plugins: this.calendarPlugins,
-    initialView: 'dayGridMonth',
-    events: this.calendarEvents,
-    locale: 'de',
-    weekends: true,
-    dateClick: this.handleDateClick.bind(this)
-  };
-
   /* ------------------------- Time-Helpers ------------------------- */
   generateTimeParts(): void {
     this.startHours = [];
     this.startMinutes = [];
-  
+
     for (let h = 0; h < 24; h++) {
       const label = h.toString().padStart(2, '0');
       this.startHours.push({ label, value: label });
     }
-  
+
     for (let m of [0, 15, 30, 45]) {
       const label = m.toString().padStart(2, '0');
       this.startMinutes.push({ label, value: label });
@@ -237,11 +243,11 @@ this.calendarOptions = {
   book() {
     this.loading = true;
     let formattedDate: string | null = null;
-  
+
     if (this.date) {
       formattedDate = this.formatDate(this.date);
     }
-  
+
     const payload: CreateBookingRequest = {
       userID: this.authService.getUser()!.id,
       studioID: this.studio!.id,
@@ -249,14 +255,14 @@ this.calendarOptions = {
       startTime: `${this.selectedStartHour}:${this.selectedStartMinute}`,
       endTime: `${this.selectedEndHour}:${this.selectedEndMinute}`
     };
-  
+
     this.bookingService.create(payload)
       .pipe(finalize(() => this.loading = false))
       .subscribe({
         next: (res: ApiResponse<BookingResponse>) => {
           const bookingResult = res.data;
           console.log('Neue Buchung:', bookingResult);
-  
+
           // Nach erfolgreicher Buchung: Kalender neu laden
           this.refreshCalendar();
         },
@@ -273,37 +279,36 @@ this.calendarOptions = {
   refreshCalendar(): void {
     const studioId = this.route.snapshot.paramMap.get('id');
     if (!studioId) return;
-  
+
     this.bookingService.getBookingsByStudioId(+studioId).subscribe(bookings => {
       this.bookings = bookings.filter(b => b.status === 'CONFIRMED');
       this.markCalendarDates();
-  
+
       const events = this.bookings.map(b => {
         const start = new Date(b.startTime);
         const end = new Date(b.endTime);
-  
+
         const formatTime = (d: Date) =>
           d.toLocaleTimeString('de-AT', { hour: '2-digit', minute: '2-digit', hour12: false });
-  
+
         return {
           title: `${formatTime(start)} – ${formatTime(end)}`,
           date: new Date(b.date).toISOString().split('T')[0]
         };
       });
-  
+
       this.calendarOptions = {
         ...this.calendarOptions,
         events: events
       };
     });
   }
-  
 
   formatDate(date: Date): string {
     const day = date.getDate().toString().padStart(2, '0');
     const month = (date.getMonth() + 1).toString().padStart(2, '0');
     const year = date.getFullYear();
-  
+
     return `${day}.${month}.${year}`;
   }
 
@@ -332,7 +337,7 @@ this.calendarOptions = {
 
   markCalendarDates(): void {
     const bookingsByDate = new Map<string, booking[]>();
-  
+
     for (const booking of this.bookings) {
       const dateStr = booking.date;
       if (!bookingsByDate.has(dateStr)) {
@@ -340,20 +345,20 @@ this.calendarOptions = {
       }
       bookingsByDate.get(dateStr)!.push(booking);
     }
-  
+
     this.disabledDates = [];
     this.calendarEvents = [];
-  
+
     bookingsByDate.forEach((bookingsOnDate, dateStr) => {
       const totalMinutes = 24 * 60;
       let bookedMinutes = 0;
-  
+
       for (const b of bookingsOnDate) {
         const [startH, startM] = b.startTime.split(':').map(Number);
         const [endH, endM] = b.endTime.split(':').map(Number);
         bookedMinutes += (endH * 60 + endM) - (startH * 60 + startM);
       }
-  
+
       const ratio = bookedMinutes / totalMinutes;
       const dateObj = new Date(dateStr); // funktioniert bei ISO-Date
       if (isNaN(dateObj.getTime())) {
@@ -361,7 +366,7 @@ this.calendarOptions = {
         return;
       }
       const isoDate = dateObj.toISOString().split('T')[0];
-  
+
       // Alle Einzelbuchungen (Events)
       for (const b of bookingsOnDate) {
         this.calendarEvents.push({
@@ -369,7 +374,7 @@ this.calendarOptions = {
           date: isoDate,
         });
       }
-  
+
       // Hintergrund-Blockade für vollgebuchte Tage
       if (ratio >= 0.95) {
         this.disabledDates.push(dateObj); // zum Vergleichen in canBook
@@ -381,30 +386,29 @@ this.calendarOptions = {
       }
     });
   }
-  
 
   isDisabledDate(date: Date): boolean {
     return this.disabledDates.some(d => this.sameDate(d, date));
   }
-  
+
   isHighlightedDate(date: Date): boolean {
     return this.highlightedDates.some(h => this.sameDate(h.date, date));
   }
-  
+
   sameDate(a: Date, b: Date): boolean {
     return a.getDate() === b.getDate() &&
-           a.getMonth() === b.getMonth() &&
-           a.getFullYear() === b.getFullYear();
+      a.getMonth() === b.getMonth() &&
+      a.getFullYear() === b.getFullYear();
   }
 
   highlightDaysInCalendar(): void {
     setTimeout(() => {
       const allTdElements = document.querySelectorAll('td[aria-label]');
-  
+
       allTdElements.forEach((td: Element) => {
         const label = td.getAttribute('aria-label'); // e.g. "15 July 2025"
         if (!label) return;
-  
+
         const parsedDate = new Date(label);
         if (this.isHighlightedDate(parsedDate)) {
           td.classList.add('partially-booked');

@@ -19,62 +19,64 @@
 
     <full-calendar [options]="calendarOptions"></full-calendar>
 
-    <div *ngIf="date" class="mt-2 text-center text-sm text-gray-600">
+    <div *ngIf="date" class="mt-2 text-sm text-gray-600">
       Gewähltes Datum: {{ date | date: 'fullDate' }}
     </div>
 
-    <div class="flex gap-2 mt-4">
-      <label for="Start" class="my-auto">Startzeitpunkt:</label>
-      <div class="flex items-center">
-        <p-dropdown
-          [options]="startHours"
-          [(ngModel)]="selectedStartHour"
-          placeholder="Stunde wählen"
-        ></p-dropdown>
-    
-        <span class="mx-1 text-lg leading-none my-auto">:</span>
-    
-        <p-dropdown
-          [options]="startMinutes"
-          [(ngModel)]="selectedStartMinute"
-          placeholder="Minute wählen"
-          [disabled]="!selectedStartHour"
-        ></p-dropdown>
+    <div class="booking-elements" *ngIf="isUser">
+      <div class="flex gap-2 mt-4">
+        <label for="Start" class="my-auto">Startzeitpunkt:</label>
+        <div class="flex items-center">
+          <p-dropdown
+            [options]="startHours"
+            [(ngModel)]="selectedStartHour"
+            placeholder="Stunde wählen"
+          ></p-dropdown>
+      
+          <span class="mx-1 text-lg leading-none my-auto">:</span>
+      
+          <p-dropdown
+            [options]="startMinutes"
+            [(ngModel)]="selectedStartMinute"
+            placeholder="Minute wählen"
+            [disabled]="!selectedStartHour"
+          ></p-dropdown>
+        </div>
+        <label class="my-auto">Uhr</label>
       </div>
-      <label class="my-auto">Uhr</label>
-    </div>
-
-    <div class="flex gap-3 mt-4">
-      <label for="End" class="my-auto">Endzeitpunkt:</label>
-    
-      <div class="flex items-center">
-        <p-dropdown
-          [options]="startHours"
-          [(ngModel)]="selectedEndHour"
-          placeholder="Stunde wählen"
-        ></p-dropdown>
-    
-        <span class="mx-1 text-lg leading-none my-auto">:</span>
-    
-        <p-dropdown
-          [options]="startMinutes"
-          [(ngModel)]="selectedEndMinute" 
-          placeholder="Minute wählen"
-          [disabled]="!selectedEndHour"
-        ></p-dropdown>
+  
+      <div class="flex gap-3 mt-4">
+        <label for="End" class="my-auto">Endzeitpunkt:</label>
+      
+        <div class="flex items-center">
+          <p-dropdown
+            [options]="startHours"
+            [(ngModel)]="selectedEndHour"
+            placeholder="Stunde wählen"
+          ></p-dropdown>
+      
+          <span class="mx-1 text-lg leading-none my-auto">:</span>
+      
+          <p-dropdown
+            [options]="startMinutes"
+            [(ngModel)]="selectedEndMinute" 
+            placeholder="Minute wählen"
+            [disabled]="!selectedEndHour"
+          ></p-dropdown>
+        </div>
+      
+        <label class="my-auto -ml-2">Uhr</label>
       </div>
-    
-      <label class="my-auto -ml-2">Uhr</label>
-    </div>
-    
-    <div class="mt-6 flex justify-center" *ngIf="isUser">
-      <button
-        pButton
-        type="button"
-        label="Studio buchen"
-        [disabled]="!canBook()"
-        (click)="confirmBooking()"
-      ></button>
+      
+      <div class="mt-6 flex justify-center">
+        <button
+          pButton
+          type="button"
+          label="Studio buchen"
+          [disabled]="!canBook()"
+          (click)="confirmBooking()"
+        ></button>
+      </div>
     </div>
   </ng-container>
 </ng-container>

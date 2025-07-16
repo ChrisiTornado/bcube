@@ -82,12 +82,12 @@ export class AdminDashboardComponent implements OnInit {
         routerLink: 'bookings',
         styleClass: this.isRouteActive(['bookings', 'booking-details', 'booking-confirmation']) ? 'p-menuitem-link-active' : ''
       },
-      {
-        label: 'Kalendar',
-        icon: 'pi pi-fw pi-calendar',
-        routerLink: 'calendar',
-        styleClass: this.isRouteActive(['calendar']) ? 'p-menuitem-link-active' : ''
-      },
+      // {
+      //   label: 'Kalendar',
+      //   icon: 'pi pi-fw pi-calendar',
+      //   routerLink: 'calendar',
+      //   styleClass: this.isRouteActive(['calendar']) ? 'p-menuitem-link-active' : ''
+      // },
       {
         label: 'Logout',
         icon: 'pi pi-fw pi-sign-out',
