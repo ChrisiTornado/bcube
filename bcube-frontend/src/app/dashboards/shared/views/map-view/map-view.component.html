@@ -1,2 +1,22 @@
 <h1 class="m-0">Karte</h1>
+
 <div id="map" class="map-container"></div>
+
+<app-loading-spinner *ngIf="loading$ | async"></app-loading-spinner>
+
+<ng-container *ngIf="!(loading$ | async) && (studios$ | async) as studios">
+    <div *ngIf="selectedStudio" class="studio-details">
+      <h2>{{ selectedStudio.name }}</h2>
+      <p>{{ selectedStudio.description }}</p>
+      <p>{{ selectedStudio.street }}, {{ selectedStudio.plz }} {{ selectedStudio.city }}</p>
+  
+      <a
+        *ngIf="selectedStudio.latitude && selectedStudio.longitude"
+        [href]="'https://www.google.com/maps/dir/?api=1&destination=' + selectedStudio.latitude + ',' + selectedStudio.longitude"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Route in Google Maps öffnen
+      </a>
+    </div>
+  </ng-container>
