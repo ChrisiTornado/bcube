@@ -31,7 +31,7 @@ public class StudioController {
     }
 
     @PostMapping("/admin/create-studio")
-    public ResponseEntity<ApiResponse<StudioResponse>> createStudio(@Valid @RequestBody CreateStudioRequest createStudioRequest) {
+    public ResponseEntity<ApiResponse<StudioResponse>> createStudio(@RequestBody CreateStudioRequest createStudioRequest) {
         StudioResponse response = studioService.createStudio(createStudioRequest);
         return ResponseEntity.ok(new ApiResponse<>("Studio erfolgreich erstellt", response));
     }

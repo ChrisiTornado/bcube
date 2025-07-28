@@ -7,18 +7,22 @@ import com.example.bcube.service.dto.request.CreateStudioRequest;
 import com.example.bcube.service.dto.request.UpdateStudioRequest;
 import com.example.bcube.service.dto.response.StudioResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Base64;
-import java.util.List;
-import java.util.Optional;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
 public class StudioServiceImpl implements StudioService {
     private final StudioRepository studioRepository;
+    private Map<String, double[]> geocodeCache = new HashMap<>();
 
     @Override
     public StudioResponse[] getAllStudios() {
@@ -177,13 +181,46 @@ public class StudioServiceImpl implements StudioService {
         );
     }
 
+    private double[] geocodeCoordinates(String address) {
+        try {
+            String encodedAddress = URLEncoder.encode(address, StandardCharsets.UTF_8)
+                    .replace("+", "%20");
+
+            String url = "https://nominatim.openstreetmap.org/search?q=" + encodedAddress + "&format=json&limit=1";
+
+            System.out.println("https://nominatim.openstreetmap.org/search?q=" + encodedAddress + "&format=json&limit=1");
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("User-Agent", "geocoder-java/1.0 (mailto:christophe.andunda@gmail.com)");
+            headers.set("Accept", "application/json"); // <<< WICHTIG
+
+            HttpEntity<String> entity = new HttpEntity<>(headers);
+            RestTemplate restTemplate = new RestTemplate();
+            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+
+            JSONArray results = new JSONArray(response.getBody());
+
+            String body = response.getBody();
+            System.out.println(">>> RESPONSE: " + body);
+
+            if (results.isEmpty()) {
+                throw new IllegalArgumentException("Adresse konnte nicht gefunden werden.");
+            }
+
+            JSONObject location = results.getJSONObject(0);
+            double lat = Double.parseDouble(location.getString("lat"));
+            double lon = Double.parseDouble(location.getString("lon"));
+
+            return new double[]{lat, lon};
+        } catch (Exception e) {
+            throw new RuntimeException("Geocoding fehlgeschlagen für Adresse: " + address, e);
+        }
+    }
+
     private Double geocodeLatitude(String address) {
-        // TODO: echten Geocoder einbauen
-        return 48.2082; // Beispiel: Wien
+        return geocodeCoordinates(address)[0];
     }
 
     private Double geocodeLongitude(String address) {
-        // TODO: echten Geocoder einbauen
-        return 16.3738; // Beispiel: Wien
+        return geocodeCoordinates(address)[1];
     }
 }
