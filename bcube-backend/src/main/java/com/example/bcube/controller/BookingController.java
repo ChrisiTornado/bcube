@@ -16,6 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/api")
 public class BookingController {
+
     private final BookingServiceImpl bookingService;
     @GetMapping("/bookings")
     public ResponseEntity<ApiResponse<BookingResponse[]>> getFreeTimeSlots() {

@@ -1,5 +1,6 @@
 package com.example.bcube.service.impl;
 
+import com.example.bcube.exception.GeocodingException;
 import com.example.bcube.persistence.entity.Studio;
 import com.example.bcube.persistence.repository.StudioRepository;
 import com.example.bcube.service.StudioService;
@@ -13,6 +14,16 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.net.URI;
+import java.net.URLEncoder;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -183,27 +194,27 @@ public class StudioServiceImpl implements StudioService {
 
     private double[] geocodeCoordinates(String address) {
         try {
+            // URL encode the address
             String encodedAddress = URLEncoder.encode(address, StandardCharsets.UTF_8)
                     .replace("+", "%20");
 
             String url = "https://nominatim.openstreetmap.org/search?q=" + encodedAddress + "&format=json&limit=1";
+            System.out.println("Request URL: " + url);
 
-            System.out.println("https://nominatim.openstreetmap.org/search?q=" + encodedAddress + "&format=json&limit=1");
-            HttpHeaders headers = new HttpHeaders();
-            headers.set("User-Agent", "geocoder-java/1.0 (mailto:christophe.andunda@gmail.com)");
-            headers.set("Accept", "application/json"); // <<< WICHTIG
+            HttpClient client = HttpClient.newHttpClient();
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(url))
+                    .header("User-Agent", "bcube (christophe.andunda@gmail.com)") // must include contact info
+                    .header("Accept", "application/json")
+                    .build();
 
-            HttpEntity<String> entity = new HttpEntity<>(headers);
-            RestTemplate restTemplate = new RestTemplate();
-            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            System.out.println("Response Body: " + response.body());
 
-            JSONArray results = new JSONArray(response.getBody());
-
-            String body = response.getBody();
-            System.out.println(">>> RESPONSE: " + body);
+            JSONArray results = new JSONArray(response.body());
 
             if (results.isEmpty()) {
-                throw new IllegalArgumentException("Adresse konnte nicht gefunden werden.");
+                throw new IllegalArgumentException("Address not found: " + address);
             }
 
             JSONObject location = results.getJSONObject(0);
@@ -212,7 +223,7 @@ public class StudioServiceImpl implements StudioService {
 
             return new double[]{lat, lon};
         } catch (Exception e) {
-            throw new RuntimeException("Geocoding fehlgeschlagen für Adresse: " + address, e);
+            throw new GeocodingException("Geocoding fehlgeschlagen für Adresse: " + address);
         }
     }
 

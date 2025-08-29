@@ -39,4 +39,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Void>> handleUserNotFound(UserNotFoundException ex) {
         return new ResponseEntity<>(new ApiResponse<>(ex.getMessage(), null), HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler(GeocodingException.class)
+    public ResponseEntity<ApiResponse<Void>> handleStudioNotFound(GeocodingException ex) {
+        return new ResponseEntity<>(
+                new ApiResponse<>(ex.getMessage(), null),
+                HttpStatus.NOT_FOUND
+        );
+    }
 }
