@@ -3,16 +3,21 @@
 <ng-container *ngIf="!(loading$ | async)">
   <ng-container *ngIf="studio">
     <div class="mb-4">
-      <button
-        pButton
-        type="button"
-        icon="pi pi-arrow-left"
-        label="Zurück"
-        (click)="goBack()"
-      ></button>
+      <button pButton type="button" icon="pi pi-arrow-left" label="Zurück" (click)="goBack()"></button>
     </div>
-    <h2>{{ studio.name }}</h2>
-    <img [src]="studio.imageBase64" alt="Studiobild" style="max-width: 300px; max-height: 300px">
+
+    <div class="flex mb-4">
+      <h2 class="text-2xl font-semibold mb-2">{{ studio.name }}</h2>
+      <img [src]="studio.imageBase64" alt="Studiobild"
+        style="max-width: 75px; max-height: 75px; margin-top: 0.5rem; margin-left: 0.5rem;"
+        (click)="showOverlay(studio.imageBase64)">
+    </div>
+
+    <div *ngIf="overlayVisible" class="overlay" (click)="hideOverlay()">
+      <img [src]="overlayImage" alt="Großes Bild" class="overlay-img" (click)="$event.stopPropagation()">
+      <button class="close-btn" (click)="hideOverlay()">✖</button>
+    </div>
+
     <p><strong>Beschreibung:</strong> {{ studio.description }}</p>
     <p><strong>Adresse:</strong> {{ studio.street }}, {{ studio.plz }} {{ studio.city }}</p>
     <p><strong>Land:</strong> {{ studio.country }}</p>
@@ -27,55 +32,37 @@
       <div class="flex gap-2 mt-4">
         <label for="Start" class="my-auto">Startzeitpunkt:</label>
         <div class="flex items-center">
-          <p-dropdown
-            [options]="startHours"
-            [(ngModel)]="selectedStartHour"
-            placeholder="Stunde wählen"
-          ></p-dropdown>
-      
+          <p-dropdown [options]="startHours" [(ngModel)]="selectedStartHour" placeholder="Stunde wählen"></p-dropdown>
+
           <span class="mx-1 text-lg leading-none my-auto">:</span>
-      
-          <p-dropdown
-            [options]="startMinutes"
-            [(ngModel)]="selectedStartMinute"
-            placeholder="Minute wählen"
-            [disabled]="!selectedStartHour"
-          ></p-dropdown>
+
+          <p-dropdown [options]="startMinutes" [(ngModel)]="selectedStartMinute" placeholder="Minute wählen"
+            [disabled]="!selectedStartHour"></p-dropdown>
         </div>
         <label class="my-auto">Uhr</label>
       </div>
-  
+
       <div class="flex gap-3 mt-4">
         <label for="End" class="my-auto">Endzeitpunkt:</label>
-      
+
         <div class="flex items-center">
-          <p-dropdown
-            [options]="startHours"
-            [(ngModel)]="selectedEndHour"
-            placeholder="Stunde wählen"
-          ></p-dropdown>
-      
+          <p-dropdown [options]="startHours" [(ngModel)]="selectedEndHour" placeholder="Stunde wählen"></p-dropdown>
+
           <span class="mx-1 text-lg leading-none my-auto">:</span>
-      
-          <p-dropdown
-            [options]="startMinutes"
-            [(ngModel)]="selectedEndMinute" 
-            placeholder="Minute wählen"
-            [disabled]="!selectedEndHour"
-          ></p-dropdown>
+
+          <p-dropdown [options]="startMinutes" [(ngModel)]="selectedEndMinute" placeholder="Minute wählen"
+            [disabled]="!selectedEndHour"></p-dropdown>
         </div>
-      
+
         <label class="my-auto -ml-2">Uhr</label>
       </div>
-      
+
+      <p style="color: red" *ngIf="!isEndTimeValid()">
+  Endzeit muss nach der Startzeit liegen.
+</p>
+
       <div class="mt-6 flex justify-center">
-        <button
-          pButton
-          type="button"
-          label="Studio buchen"
-          [disabled]="!canBook()"
-          (click)="confirmBooking()"
-        ></button>
+        <button pButton type="button" label="Studio buchen" [disabled]="!canBook()" (click)="confirmBooking()"></button>
       </div>
     </div>
   </ng-container>

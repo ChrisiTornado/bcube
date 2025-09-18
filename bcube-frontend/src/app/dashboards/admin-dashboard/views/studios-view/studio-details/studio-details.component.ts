@@ -20,8 +20,7 @@ import { FullCalendarModule } from '@fullcalendar/angular';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import { CalendarOptions, EventInput } from '@fullcalendar/core';
 import interactionPlugin from '@fullcalendar/interaction';
-
-
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-studio-details',
@@ -33,27 +32,26 @@ import interactionPlugin from '@fullcalendar/interaction';
     DropdownModule,
     ButtonModule,
     LoadingSpinnerComponent,
-    FullCalendarModule
+    FullCalendarModule,
   ],
   templateUrl: './studio-details.component.html',
   styleUrl: './studio-details.component.css'
 })
 export class StudioDetailsComponent implements OnInit {
-
-  /* ------------------------- State ------------------------- */
   studio: studio | null = null;
   isUser = false;
   date: Date | null = null;
   loading!: boolean;
 
+  overlayVisible = false;
+  overlayImage: string | null = null;
+
   calendarPlugins = [dayGridPlugin, interactionPlugin];
   calendarEvents: EventInput[] = [];
 
-  /* Dropdown-Daten */
   startHours: { label: string; value: string; disabled?: boolean }[] = [];
   startMinutes: { label: string; value: string; disabled?: boolean }[] = [];
 
-  /* Gewählte Werte */
   selectedStartHour = '';
   selectedStartMinute = '';
 
@@ -65,15 +63,14 @@ export class StudioDetailsComponent implements OnInit {
   highlightedDates: { date: Date; styleClass: string }[] = [];
 
   calendarOptions: CalendarOptions = {
-      plugins: this.calendarPlugins,
-      initialView: 'dayGridMonth',
-      events: this.calendarEvents,
-      locale: 'de',
-      weekends: true,
-      dateClick: this.handleDateClick.bind(this)
-    };
+    plugins: this.calendarPlugins,
+    initialView: 'dayGridMonth',
+    events: this.calendarEvents,
+    locale: 'de',
+    weekends: true,
+    dateClick: this.handleDateClick.bind(this)
+  };
 
-  /* Loading-Stream aus Service */
   loading$ = this.studioService.loading$;
 
   constructor(
@@ -83,10 +80,10 @@ export class StudioDetailsComponent implements OnInit {
     private authService: AuthService,
     private bookingService: BookingService,
     private confirmationService: ConfirmationService,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private location: Location
   ) { }
 
-  /* ------------------------- Lifecycle ------------------------- */
   ngOnInit(): void {
     this.isUser = this.authService.getRole() === 'USER';
     this.generateTimeParts();
@@ -137,11 +134,6 @@ export class StudioDetailsComponent implements OnInit {
     this.date = clickedDate;
 
     const isoDate = clickedDate.toISOString().split('T')[0];
-
-    this.selectedStartHour = '';
-    this.selectedStartMinute = '';
-    this.selectedEndHour = '';
-    this.selectedEndMinute = '';
 
     // Nur filtern, wenn es ein Array ist
     const currentEvents = Array.isArray(this.calendarOptions.events)
@@ -213,7 +205,6 @@ export class StudioDetailsComponent implements OnInit {
     return new Date(dateStr).toISOString().split('T')[0];
   }
 
-  /* ------------------------- Time-Helpers ------------------------- */
   generateTimeParts(): void {
     this.startHours = [];
     this.startMinutes = [];
@@ -265,6 +256,11 @@ export class StudioDetailsComponent implements OnInit {
 
           // Nach erfolgreicher Buchung: Kalender neu laden
           this.refreshCalendar();
+
+          this.selectedStartHour = '';
+        this.selectedStartMinute = '';
+        this.selectedEndHour = '';
+        this.selectedEndMinute = '';
         },
         error: () => {
           this.messageService.add({
@@ -319,9 +315,22 @@ export class StudioDetailsComponent implements OnInit {
       this.selectedStartHour !== '' &&
       this.selectedStartMinute !== '' &&
       this.selectedEndHour !== '' &&
-      this.selectedEndMinute !== ''
+      this.selectedEndMinute !== '' &&
+      this.isEndTimeValid()
     );
   }
+
+
+isEndTimeValid(): boolean {
+  if (!this.selectedStartHour || !this.selectedStartMinute || !this.selectedEndHour || !this.selectedEndMinute) {
+    return true; // noch keine Auswahl getroffen
+  }
+
+  const start = Number(this.selectedStartHour) * 60 + Number(this.selectedStartMinute);
+  const end = Number(this.selectedEndHour) * 60 + Number(this.selectedEndMinute);
+
+  return end > start;
+}
 
   navigateToDetails(studio: studio): void {
     const basePath = this.isUser ? '/user-dashboard' : '/admin-dashboard';
@@ -331,8 +340,12 @@ export class StudioDetailsComponent implements OnInit {
   }
 
   goBack(): void {
-    const basePath = this.isUser ? '/user-dashboard' : '/admin-dashboard';
-    this.router.navigate([basePath + '/studios']);
+    if (window.history.length > 1) {
+      this.location.back();
+    } else {
+      const basePath = this.isUser ? '/user-dashboard' : '/admin-dashboard';
+      this.router.navigate([basePath + '/studios']);
+    }
   }
 
   markCalendarDates(): void {
@@ -385,6 +398,16 @@ export class StudioDetailsComponent implements OnInit {
         });
       }
     });
+  }
+
+  showOverlay(image: string) {
+    this.overlayImage = image;
+    this.overlayVisible = true;
+  }
+
+  hideOverlay() {
+    this.overlayVisible = false;
+    this.overlayImage = null;
   }
 
   isDisabledDate(date: Date): boolean {

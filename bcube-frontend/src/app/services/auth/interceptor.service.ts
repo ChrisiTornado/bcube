@@ -9,12 +9,10 @@ import {
 import { Observable, catchError, throwError } from 'rxjs';
 import { Router } from '@angular/router';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class InterceptorService implements HttpInterceptor {
+  constructor(private router: Router) {}
 
-  constructor(private router: Router) { }
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     const token = localStorage.getItem('auth_token');
     let modifiedReq = req;
@@ -30,9 +28,9 @@ export class InterceptorService implements HttpInterceptor {
     return next.handle(modifiedReq).pipe(
       catchError((err: HttpErrorResponse) => {
         if (err.status === 401) {
-          // Optionale Aufräumarbeiten
+          // Token ungültig → Logout und Redirect
           localStorage.removeItem('auth_token');
-          // Redirect zum Login
+          localStorage.removeItem('auth_user');
           this.router.navigate(['/login']);
         }
         return throwError(() => err);

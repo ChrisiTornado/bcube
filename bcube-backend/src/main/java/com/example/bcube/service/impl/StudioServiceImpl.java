@@ -194,7 +194,6 @@ public class StudioServiceImpl implements StudioService {
 
     private double[] geocodeCoordinates(String address) {
         try {
-            // URL encode the address
             String encodedAddress = URLEncoder.encode(address, StandardCharsets.UTF_8)
                     .replace("+", "%20");
 
@@ -204,7 +203,7 @@ public class StudioServiceImpl implements StudioService {
             HttpClient client = HttpClient.newHttpClient();
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(url))
-                    .header("User-Agent", "bcube (christophe.andunda@gmail.com)") // must include contact info
+                    .header("User-Agent", "bcube (christophe.andunda@gmail.com)")
                     .header("Accept", "application/json")
                     .build();
 

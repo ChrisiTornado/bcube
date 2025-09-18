@@ -10,6 +10,7 @@ import { AuthService } from '../../../../../services/auth/auth.service';
 import { booking } from '../../../../../models/booking';
 import { BookingService } from '../../../../../services/booking.service';
 import { BookingActionService } from '../../../../../services/booking-action.service';
+import { CardModule } from 'primeng/card';
 
 @Component({
   selector: 'app-booking-details',
@@ -20,7 +21,8 @@ import { BookingActionService } from '../../../../../services/booking-action.ser
     CalendarModule,
     DropdownModule,
     ButtonModule,
-    LoadingSpinnerComponent
+    LoadingSpinnerComponent,
+    CardModule
   ],
   templateUrl: './booking-details.component.html',
   styleUrl: './booking-details.component.css'
@@ -31,7 +33,8 @@ export class BookingDetailsComponent implements OnInit {
   loading!: boolean;
   loading$ = this.bookingService.loading$;
 
-  // Mapping von Enum-Text zu deutsch
+  overlayVisible = false;
+  overlayImage: string | null = null;
   statusLabels: { [key: string]: string } = {
     CONFIRMED: 'Bestätigt',
     CANCELLED: 'Storniert',
@@ -44,7 +47,7 @@ export class BookingDetailsComponent implements OnInit {
     private bookingActionService: BookingActionService,
     private authService: AuthService,
     private bookingService: BookingService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.isUser = this.authService.getRole() === 'USER';
@@ -66,6 +69,18 @@ export class BookingDetailsComponent implements OnInit {
       },
       isLoading => (this.loading = isLoading)
     );
+  }
+
+
+
+  showOverlay(image: string) {
+    this.overlayImage = image;
+    this.overlayVisible = true;
+  }
+
+  hideOverlay() {
+    this.overlayVisible = false;
+    this.overlayImage = null;
   }
 
   goBack(): void {

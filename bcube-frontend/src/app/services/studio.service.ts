@@ -7,8 +7,7 @@ import { CreateStudioRequest } from '../models/requests/CreateStudioRequest';
 import { ApiResponse } from '../models/responses/ApiResponse';
 import { StudioResponse } from '../models/responses/StudioResponse';
 import { UpdateStudioRequest } from '../models/requests/UpdateStudioRequest';
-import { finalize } from 'rxjs/operators';
-import { map } from 'rxjs/operators';
+import { finalize, map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -16,48 +15,56 @@ import { map } from 'rxjs/operators';
 export class StudioService {
   private loadingSubject = new BehaviorSubject<boolean>(false);
   public loading$ = this.loadingSubject.asObservable();
+
   private studiosSubject = new BehaviorSubject<studio[]>([]);
   public studios$ = this.studiosSubject.asObservable();
 
-  constructor(private http: HttpClient) {}
-  
+  constructor(private http: HttpClient) {
+    // direkt beim Service-Init alle Studios laden
+    this.reloadStudios();
+  }
+
   getAll(): Observable<studio[]> {
-  this.loadingSubject.next(true);
-  return this.http
-    .get<{ message: string; data: studio[] }>(`${environment.apiUrl}get-all-studios`)
-    .pipe(
-      map(res => res.data),
-      finalize(() => this.loadingSubject.next(false))
-    );
-}
+    this.loadingSubject.next(true);
+    return this.http
+      .get<{ message: string; data: studio[] }>(`${environment.apiUrl}get-all-studios`)
+      .pipe(
+        map(res => res.data),
+        finalize(() => this.loadingSubject.next(false))
+      );
+  }
 
-getStudioById(id: number): Observable<studio> {
-  this.loadingSubject.next(true);
-  return this.http
-    .get<{ message: string; data: studio }>(`${environment.apiUrl}get-studio-by-id/${id}`)
-    .pipe(
-      map(res => res.data),
-      finalize(() => this.loadingSubject.next(false))
-    );
-}
+  getStudioById(id: number): Observable<studio> {
+    this.loadingSubject.next(true);
+    return this.http
+      .get<{ message: string; data: studio }>(`${environment.apiUrl}get-studio-by-id/${id}`)
+      .pipe(
+        map(res => res.data),
+        finalize(() => this.loadingSubject.next(false))
+      );
+  }
 
-reloadStudios(): void {
-  this.getAll().subscribe(studios => this.studiosSubject.next(studios));
-}
+  reloadStudios(): void {
+    this.getAll().subscribe(studios => this.studiosSubject.next(studios));
+  }
 
   create(payload: CreateStudioRequest): Observable<ApiResponse<StudioResponse>> {
-      return this.http.post<ApiResponse<StudioResponse>>(
-        environment.adminApiUrl + "create-studio", payload);
+    return this.http.post<ApiResponse<StudioResponse>>(
+      environment.adminApiUrl + 'create-studio',
+      payload
+    );
   }
 
   update(payload: UpdateStudioRequest): Observable<ApiResponse<StudioResponse>> {
     return this.http.put<ApiResponse<StudioResponse>>(
-      environment.adminApiUrl + "update-studio/" + payload.id, payload);
+      environment.adminApiUrl + 'update-studio/' + payload.id,
+      payload
+    );
   }
 
-  delete(id: number): Observable<ApiResponse<number>>{
+  delete(id: number): Observable<ApiResponse<number>> {
     return this.http.delete<ApiResponse<number>>(
-      environment.adminApiUrl + "delete-studio/" + id
-    )
+      environment.adminApiUrl + 'delete-studio/' + id
+    );
   }
 }

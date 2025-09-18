@@ -9,10 +9,7 @@ import { JwtResponse } from '../../models/responses/JwtResponse';
 import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
 
-@Injectable({
-  providedIn: 'root'
-})
-
+@Injectable({ providedIn: 'root' })
 export class AuthService {
   private readonly tokenKey = 'auth_token';
   private readonly userKey = 'auth_user';
@@ -20,13 +17,11 @@ export class AuthService {
   constructor(private http: HttpClient, private router: Router) {}
 
   login(payload: LoginRequest): Observable<ApiResponse<JwtResponse>> {
-    return this.http.post<ApiResponse<JwtResponse>>(
-      environment.authUrl + "login", payload);
+    return this.http.post<ApiResponse<JwtResponse>>(environment.authUrl + 'login', payload);
   }
 
   register(payload: RegisterRequest): Observable<ApiResponse<JwtResponse>> {
-    return this.http.post<ApiResponse<JwtResponse>>(
-      environment.authUrl + "register", payload);
+    return this.http.post<ApiResponse<JwtResponse>>(environment.authUrl + 'register', payload);
   }
 
   storeAuth(token: string, user: User): void {
@@ -35,7 +30,8 @@ export class AuthService {
   }
 
   logout(): void {
-    localStorage.clear();
+    localStorage.removeItem(this.tokenKey);
+    localStorage.removeItem(this.userKey);
     this.router.navigate(['/login']);
   }
 
@@ -54,5 +50,9 @@ export class AuthService {
 
   isLoggedIn(): boolean {
     return !!localStorage.getItem(this.tokenKey);
+  }
+
+  getToken(): string | null {
+    return localStorage.getItem(this.tokenKey);
   }
 }

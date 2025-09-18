@@ -28,7 +28,7 @@ export class BookingsViewComponent implements OnInit {
 
   ngOnInit(): void {
     this.isAdmin = this.authService.getRole() === "ADMIN";
-  
+
     if (this.isAdmin) {
       this.bookingService.getAll().subscribe(bookings => {
         this.bookingService.setBookings(bookings);
@@ -41,11 +41,11 @@ export class BookingsViewComponent implements OnInit {
         });
       }
     }
-  
+
     this.bookings$ = this.bookingService.bookings$;
   }
 
-  constructor(private bookingService: BookingService, private router: Router, private route: ActivatedRoute, private authService: AuthService) {}
+  constructor(private bookingService: BookingService, private router: Router, private route: ActivatedRoute, private authService: AuthService) { }
 
   navigateToDetails(booking: booking): void {
     const basePath = this.isAdmin ? '/admin-dashboard' : '/user-dashboard';
