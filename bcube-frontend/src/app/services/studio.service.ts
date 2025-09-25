@@ -48,12 +48,29 @@ export class StudioService {
     this.getAll().subscribe(studios => this.studiosSubject.next(studios));
   }
 
+  get currentStudios(): studio[] {
+  return this.studiosSubject.getValue();
+}
+
   create(payload: CreateStudioRequest): Observable<ApiResponse<StudioResponse>> {
     return this.http.post<ApiResponse<StudioResponse>>(
       environment.adminApiUrl + 'create-studio',
       payload
     );
   }
+
+  moveStudioToTop(studio: studio): void {
+  const studios = [...this.studiosSubject.getValue()]; // aktuelle Liste kopieren
+  const index = studios.findIndex(s => s.id === studio.id);
+  if (index > -1) {
+    // Entferne Studio von seiner Position
+    const [selected] = studios.splice(index, 1);
+    // Ganz oben wieder einfügen
+    studios.unshift(selected);
+    // Liste neu setzen
+    this.studiosSubject.next(studios);
+  }
+}
 
   update(payload: UpdateStudioRequest): Observable<ApiResponse<StudioResponse>> {
     return this.http.put<ApiResponse<StudioResponse>>(

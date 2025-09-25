@@ -21,6 +21,7 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import { CalendarOptions, EventInput } from '@fullcalendar/core';
 import interactionPlugin from '@fullcalendar/interaction';
 import { Location } from '@angular/common';
+import { CardModule } from 'primeng/card';
 
 @Component({
   selector: 'app-studio-details',
@@ -33,6 +34,7 @@ import { Location } from '@angular/common';
     ButtonModule,
     LoadingSpinnerComponent,
     FullCalendarModule,
+    CardModule
   ],
   templateUrl: './studio-details.component.html',
   styleUrl: './studio-details.component.css'

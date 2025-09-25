@@ -2,68 +2,108 @@
 
 <ng-container *ngIf="!(loading$ | async)">
   <ng-container *ngIf="studio">
+    <!-- Zurück-Button -->
     <div class="mb-4">
-      <button pButton type="button" icon="pi pi-arrow-left" label="Zurück" (click)="goBack()"></button>
+      <button 
+        pButton 
+        type="button" 
+        class="p-button-outlined"
+        icon="pi pi-arrow-left" 
+        label="Zurück" 
+        (click)="goBack()">
+      </button>
     </div>
 
+    <!-- Titel + kleines Bild -->
     <div class="flex mb-4">
       <h2 class="text-2xl font-semibold mb-2">{{ studio.name }}</h2>
-      <img [src]="studio.imageBase64" alt="Studiobild"
+      <img 
+        [src]="studio.imageBase64" 
+        alt="Studiobild"
         style="max-width: 75px; max-height: 75px; margin-top: 0.5rem; margin-left: 0.5rem;"
         (click)="showOverlay(studio.imageBase64)">
     </div>
 
+    <!-- Bild-Overlay -->
     <div *ngIf="overlayVisible" class="overlay" (click)="hideOverlay()">
-      <img [src]="overlayImage" alt="Großes Bild" class="overlay-img" (click)="$event.stopPropagation()">
+      <img 
+        [src]="overlayImage" 
+        alt="Großes Bild" 
+        class="overlay-img" 
+        (click)="$event.stopPropagation()">
       <button class="close-btn" (click)="hideOverlay()">✖</button>
     </div>
 
-    <p><strong>Beschreibung:</strong> {{ studio.description }}</p>
-    <p><strong>Adresse:</strong> {{ studio.street }}, {{ studio.plz }} {{ studio.city }}</p>
-    <p><strong>Land:</strong> {{ studio.country }}</p>
+    <!-- Flex-Container: Kalender links | Details rechts -->
+    <div style="display: flex; gap: 2rem; align-items: flex-start;">
 
-    <full-calendar [options]="calendarOptions"></full-calendar>
+      <!-- Linke Seite: Kalender + Buchung -->
+      <div style="max-width: 700px;">
+        <full-calendar [options]="calendarOptions"></full-calendar>
 
-    <div *ngIf="date" class="mt-2 text-sm text-gray-600">
-      Gewähltes Datum: {{ date | date: 'fullDate' }}
-    </div>
-
-    <div class="booking-elements" *ngIf="isUser">
-      <div class="flex gap-2 mt-4">
-        <label for="Start" class="my-auto">Startzeitpunkt:</label>
-        <div class="flex items-center">
-          <p-dropdown [options]="startHours" [(ngModel)]="selectedStartHour" placeholder="Stunde wählen"></p-dropdown>
-
-          <span class="mx-1 text-lg leading-none my-auto">:</span>
-
-          <p-dropdown [options]="startMinutes" [(ngModel)]="selectedStartMinute" placeholder="Minute wählen"
-            [disabled]="!selectedStartHour"></p-dropdown>
-        </div>
-        <label class="my-auto">Uhr</label>
-      </div>
-
-      <div class="flex gap-3 mt-4">
-        <label for="End" class="my-auto">Endzeitpunkt:</label>
-
-        <div class="flex items-center">
-          <p-dropdown [options]="startHours" [(ngModel)]="selectedEndHour" placeholder="Stunde wählen"></p-dropdown>
-
-          <span class="mx-1 text-lg leading-none my-auto">:</span>
-
-          <p-dropdown [options]="startMinutes" [(ngModel)]="selectedEndMinute" placeholder="Minute wählen"
-            [disabled]="!selectedEndHour"></p-dropdown>
+        <!-- Gewähltes Datum -->
+        <div *ngIf="date" class="mt-2 text-sm text-gray-600">
+          Gewähltes Datum: {{ date | date: 'fullDate' }}
         </div>
 
-        <label class="my-auto -ml-2">Uhr</label>
+        <!-- Buchungselemente -->
+        <div class="booking-elements" *ngIf="isUser">
+          <!-- Startzeit -->
+          <div class="flex gap-2 mt-4">
+            <label for="Start" class="my-auto">Startzeitpunkt:</label>
+            <div class="flex items-center">
+              <p-dropdown [options]="startHours" [(ngModel)]="selectedStartHour" placeholder="Stunde wählen"></p-dropdown>
+
+              <span class="mx-1 text-lg leading-none my-auto">:</span>
+
+              <p-dropdown [options]="startMinutes" [(ngModel)]="selectedStartMinute" placeholder="Minute wählen"
+                          [disabled]="!selectedStartHour"></p-dropdown>
+            </div>
+            <label class="my-auto">Uhr</label>
+          </div>
+
+          <!-- Endzeit -->
+          <div class="flex gap-3 mt-4">
+            <label for="End" class="my-auto">Endzeitpunkt:</label>
+            <div class="flex items-center">
+              <p-dropdown [options]="startHours" [(ngModel)]="selectedEndHour" placeholder="Stunde wählen"></p-dropdown>
+
+              <span class="mx-1 text-lg leading-none my-auto">:</span>
+
+              <p-dropdown [options]="startMinutes" [(ngModel)]="selectedEndMinute" placeholder="Minute wählen"
+                          [disabled]="!selectedEndHour"></p-dropdown>
+            </div>
+            <label class="my-auto -ml-2">Uhr</label>
+          </div>
+
+          <!-- Fehlermeldung -->
+          <p style="color: red" *ngIf="!isEndTimeValid()">
+            Endzeit muss nach der Startzeit liegen.
+          </p>
+
+          <!-- Buchungs-Button -->
+          <div class="mt-6 flex justify-center">
+            <button 
+              pButton 
+              type="button" 
+              label="Studio buchen" 
+              [disabled]="!canBook()" 
+              (click)="confirmBooking()">
+            </button>
+          </div>
+        </div>
       </div>
 
-      <p style="color: red" *ngIf="!isEndTimeValid()">
-  Endzeit muss nach der Startzeit liegen.
-</p>
+      <!-- Rechte Seite: Card mit Studioübersicht -->
+      <p-card 
+        [style]="{ width: '22rem', overflow: 'hidden' }" 
+        class="bg-gray-100 rounded-lg shadow-sm">
+        <ng-template pTemplate="title">Studioübersicht</ng-template>
+        <p><strong>Beschreibung:</strong> {{ studio.description }}</p>
+        <p><strong>Adresse:</strong> {{ studio.street }}, {{ studio.plz }} {{ studio.city }}</p>
+        <p><strong>Land:</strong> {{ studio.country }}</p>
+      </p-card>
 
-      <div class="mt-6 flex justify-center">
-        <button pButton type="button" label="Studio buchen" [disabled]="!canBook()" (click)="confirmBooking()"></button>
-      </div>
     </div>
   </ng-container>
 </ng-container>

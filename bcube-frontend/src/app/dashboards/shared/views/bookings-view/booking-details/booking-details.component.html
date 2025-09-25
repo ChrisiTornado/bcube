@@ -34,7 +34,7 @@
       </p-card>
 
       <p-card [style]="{ width: '25rem', overflow: 'hidden' }" *ngIf="!isUser"
-        class="bg-gray-100 p-4 rounded-lg shadow-sm">
+        class="bg-gray-100 rounded-lg shadow-sm">
         <ng-template pTemplate="title">Kundendaten</ng-template>
         <p><strong>Kunden ID:</strong> {{ booking.user.id }}</p>
         <p><strong>Name:</strong> {{ booking.user.firstName }} {{ booking.user.lastName }}</p>

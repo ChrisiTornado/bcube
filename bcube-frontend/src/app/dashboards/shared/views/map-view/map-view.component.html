@@ -1,32 +1,84 @@
 <h1 class="m-0">Karte</h1>
 
 <div style="display: flex; gap: 1rem;">
-  <!-- Karte links -->
-  <div id="map" class="map-container" style="flex: 1; max-width: 1100px; height: 700px;"></div>
+  <!-- Linke Seite: Karte -->
+  <div 
+    id="map" 
+    class="map-container" 
+    style="flex: 1; max-width: 1100px; height: 700px;">
+  </div>
 
-  <!-- Rechte Spalte für Spinner / Studio-Details -->
-  <div style="flex: 0 0 350px;">
+  <!-- Rechte Seite: Liste + Spinner -->
+  <div style="flex: 0 0 350px; display: flex; flex-direction: column;">
+
+    <!-- Spinner -->
     <app-loading-spinner *ngIf="loading$ | async"></app-loading-spinner>
-    <p>Liste verfügbarer Studios</p>
-    <div *ngIf="!(loading$ | async) && (studios$ | async) as studios">
-      <div *ngIf="selectedStudio; else noStudio" class="studio-details">
-        <p-card (click)="navigateToStudio(selectedStudio)">
-          <ng-template pTemplate="title">{{ selectedStudio.name }}</ng-template>
-          <ng-template pTemplate="subtitle">{{ selectedStudio.street }}, {{ selectedStudio.plz }} {{ selectedStudio.city
-            }}</ng-template>
 
-          <a *ngIf="selectedStudio.latitude && selectedStudio.longitude"
-            [href]="'https://www.google.com/maps/dir/?api=1&destination=' + selectedStudio.latitude + ',' + selectedStudio.longitude"
-            target="_blank" rel="noopener noreferrer" (click)="$event.stopPropagation()">
-            Route in Google Maps öffnen
-          </a>
-        </p-card>
+    <!-- Überschrift -->
+    <h2 *ngIf="!(loading$ | async)">Liste verfügbarer Studios</h2>
+
+    <!-- Reset-Button -->
+    <button 
+      *ngIf="!(loading$ | async)" 
+      pButton
+      class="reset-button" 
+      (click)="resetView()">
+      Ansicht zurücksetzen
+    </button>
+
+    <!-- Studios-Liste -->
+    <div *ngIf="!(loading$ | async) && (studios$ | async) as studios">
+
+      <!-- Wenn Studios existieren -->
+      <div *ngIf="studios.length > 0; else noStudios">
+
+        <!-- Alle Studios -->
+        <div 
+          *ngFor="let studio of studios; let i = index" 
+          class="studio-details" 
+          #studioCard>
+
+          <p-card (click)="zoomToStudio(studio)">
+            <ng-template pTemplate="title">
+              {{ studio.name }}
+            </ng-template>
+
+            <ng-template pTemplate="subtitle">
+              {{ studio.street }}, {{ studio.plz }} {{ studio.city }}
+            </ng-template>
+
+            <!-- Google Maps Link -->
+            <a *ngIf="studio.latitude && studio.longitude"
+               [href]="'https://www.google.com/maps/dir/?api=1&destination=' + studio.latitude + ',' + studio.longitude"
+               target="_blank" 
+               rel="noopener noreferrer" 
+               (click)="$event.stopPropagation()">
+              Route in Google Maps öffnen
+            </a>
+
+            <!-- Details-Button -->
+             <ng-template pTemplate="footer">
+            <button 
+              pButton
+              size="small"
+              severity="secondary"
+              class="details-button"
+              (click)="navigateToStudio(studio); $event.stopPropagation()">
+              Details ansehen
+            </button>
+            </ng-template>
+          </p-card>
+        
+
+          <!-- Trennlinie -->
+          <hr class="card-separator" *ngIf="i < studios.length - 1">
+        </div>
       </div>
 
-      <!-- Template für kein Studio -->
-      <ng-template #noStudio>
+      <!-- Wenn KEINE Studios -->
+      <ng-template #noStudios>
         <p-card>
-          <p>Kein Studio in näherer Umgebung gefunden</p>
+          <p>Aktuell sind keine Studios verfügbar.</p>
         </p-card>
       </ng-template>
     </div>
