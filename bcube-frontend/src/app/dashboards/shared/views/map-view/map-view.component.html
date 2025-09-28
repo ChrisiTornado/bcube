@@ -9,7 +9,7 @@
   </div>
 
   <!-- Rechte Seite: Liste + Spinner -->
-  <div style="flex: 0 0 350px; display: flex; flex-direction: column;">
+  <div style="flex: 0 0 350px; display: flex; flex-direction: column; height: 700px;">
 
     <!-- Spinner -->
     <app-loading-spinner *ngIf="loading$ | async"></app-loading-spinner>
@@ -22,12 +22,14 @@
       *ngIf="!(loading$ | async)" 
       pButton
       class="reset-button" 
+      style="margin-bottom: 1rem;"
       (click)="resetView()">
       Ansicht zurücksetzen
     </button>
 
     <!-- Studios-Liste -->
-    <div *ngIf="!(loading$ | async) && (studios$ | async) as studios">
+    <div *ngIf="!(loading$ | async) && (studios$ | async) as studios"
+     style="flex: 1; overflow-y: auto; padding-right: 0.5rem;">
 
       <!-- Wenn Studios existieren -->
       <div *ngIf="studios.length > 0; else noStudios">
