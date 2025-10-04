@@ -16,7 +16,6 @@
 
     <!-- Überschrift -->
     <h2 *ngIf="!(loading$ | async)">Liste verfügbarer Studios</h2>
-
     <!-- Reset-Button -->
     <button 
       *ngIf="!(loading$ | async)" 
@@ -26,6 +25,7 @@
       (click)="resetView()">
       Ansicht zurücksetzen
     </button>
+    <hr *ngIf="!(loading$ | async)" style="flex: 0; border-top: 1px solid #ccc; margin: 0.5rem 0;">
 
     <!-- Studios-Liste -->
     <div *ngIf="!(loading$ | async) && (studios$ | async) as studios"

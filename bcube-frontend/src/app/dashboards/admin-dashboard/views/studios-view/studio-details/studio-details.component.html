@@ -2,6 +2,7 @@
 
 <ng-container *ngIf="!(loading$ | async)">
   <ng-container *ngIf="studio">
+
     <!-- Zurück-Button -->
     <div class="mb-4">
       <button 
@@ -20,7 +21,7 @@
       <img 
         [src]="studio.imageBase64" 
         alt="Studiobild"
-        style="max-width: 75px; max-height: 75px; margin-top: 0.5rem; margin-left: 0.5rem;"
+        style="max-width: 75px; max-height: 75px; margin-top: 0.5rem; margin-left: 0.5rem; cursor: pointer;"
         (click)="showOverlay(studio.imageBase64)">
     </div>
 
@@ -35,10 +36,10 @@
     </div>
 
     <!-- Flex-Container: Kalender links | Details rechts -->
-    <div style="display: flex; gap: 2rem; align-items: flex-start;">
+    <div class="studio-layout">
 
       <!-- Linke Seite: Kalender + Buchung -->
-      <div style="max-width: 700px;">
+      <div class="calendar-section">
         <full-calendar [options]="calendarOptions"></full-calendar>
 
         <!-- Gewähltes Datum -->
@@ -53,9 +54,7 @@
             <label for="Start" class="my-auto">Startzeitpunkt:</label>
             <div class="flex items-center">
               <p-dropdown [options]="startHours" [(ngModel)]="selectedStartHour" placeholder="Stunde wählen"></p-dropdown>
-
               <span class="mx-1 text-lg leading-none my-auto">:</span>
-
               <p-dropdown [options]="startMinutes" [(ngModel)]="selectedStartMinute" placeholder="Minute wählen"
                           [disabled]="!selectedStartHour"></p-dropdown>
             </div>
@@ -67,9 +66,7 @@
             <label for="End" class="my-auto">Endzeitpunkt:</label>
             <div class="flex items-center">
               <p-dropdown [options]="startHours" [(ngModel)]="selectedEndHour" placeholder="Stunde wählen"></p-dropdown>
-
               <span class="mx-1 text-lg leading-none my-auto">:</span>
-
               <p-dropdown [options]="startMinutes" [(ngModel)]="selectedEndMinute" placeholder="Minute wählen"
                           [disabled]="!selectedEndHour"></p-dropdown>
             </div>
@@ -96,8 +93,8 @@
 
       <!-- Rechte Seite: Card mit Studioübersicht -->
       <p-card 
-        [style]="{ width: '22rem', overflow: 'hidden' }" 
-        class="bg-gray-100 rounded-lg shadow-sm">
+        class="info-card bg-gray-100 rounded-lg shadow-sm"
+        [style]="{ overflow: 'hidden' }">
         <ng-template pTemplate="title">Studioübersicht</ng-template>
         <p><strong>Beschreibung:</strong> {{ studio.description }}</p>
         <p><strong>Adresse:</strong> {{ studio.street }}, {{ studio.plz }} {{ studio.city }}</p>

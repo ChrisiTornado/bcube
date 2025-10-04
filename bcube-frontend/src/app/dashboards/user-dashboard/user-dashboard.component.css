@@ -1,0 +1,55 @@
+/* Titelzeile */
+.user-header {
+  height: 60px;
+  display: flex;
+  align-items: center;
+  padding: 0 1rem;
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem; /* Abstand zwischen Logo und Text */
+}
+
+.dashboard-logo {
+  height: 40px; /* Größe anpassen */
+  width: auto;
+  object-fit: contain;
+}
+
+.brand-text {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #333; /* ggf. an dein Farbschema anpassen */
+  letter-spacing: 0.5px;
+}
+
+
+.dashboard-title {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+/* Hauptlayout unterhalb des Headers */
+.user-layout {
+  display: flex;
+  min-height: calc(100vh - 60px);  /* volle Höhe minus Header */
+  overflow: hidden;
+}
+
+/* Menü links */
+.user-menu {
+  width: 250px;
+  background-color: #f7f7f7;
+  border-right: 1px solid #ddd;
+  flex-shrink: 0;
+}
+
+/* Hauptinhalt rechts */
+.page-content {
+  flex-grow: 1;
+  padding: 1.5rem;
+  overflow: hidden;
+}

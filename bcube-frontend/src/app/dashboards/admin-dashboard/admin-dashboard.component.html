@@ -1,16 +1,22 @@
 <p-toast key="main" position="top-right"></p-toast>
 <p-confirmDialog></p-confirmDialog>
-<h2>Admin Dashboard</h2>
 
-<div class="flex">
-  <p-megaMenu [model]="items" orientation="vertical" styleClass="admin-menu">
-    <ng-template pTemplate="start">
-      <div class="flex justify-content-center">
-      </div>
-    </ng-template>
+<!-- Titelzeile -->
+<header class="admin-header">
+  <h2 class="dashboard-title">Admin Dashboard</h2>
+</header>
+
+<!-- Hauptbereich -->
+<div class="admin-layout">
+  <!-- Linkes Menü -->
+  <p-megaMenu 
+    [model]="items" 
+    orientation="vertical" 
+    styleClass="admin-menu">
   </p-megaMenu>
 
-  <div class="page-content px-4 flex-grow-1">
+  <!-- Rechter Inhaltsbereich -->
+  <div class="page-content">
     <router-outlet></router-outlet>
   </div>
 </div>

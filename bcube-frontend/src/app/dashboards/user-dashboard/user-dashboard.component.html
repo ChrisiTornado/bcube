@@ -1,20 +1,29 @@
 <p-toast key="main" position="top-right"></p-toast>
-
 <p-confirmDialog></p-confirmDialog>
-<h2 class="px-2">User Dashboard</h2>
-<div class="flex">
-  <p-megaMenu [model]="items" orientation="vertical" styleClass="admin-menu">
-    <ng-template pTemplate="start">
-      <div class="flex justify-content-center">
-        <!-- <img src="assets/images/logo-transparent.png" height="65"  alt="FH Logo"/>
-        <img src="assets/images/logo-innovations-transparent.png" height="65"  alt="Innovations Logo"/> -->
-      </div>
-    </ng-template>
+
+<!-- Titelzeile -->
+<header class="user-header">
+  <div class="header-content">
+    <img 
+      src="assets/images/nice.jpg" 
+      alt="bcube logo" 
+      class="dashboard-logo"
+    />
+    <span class="brand-text">bcube</span>
+  </div>
+</header>
+
+<!-- Hauptbereich -->
+<div class="user-layout">
+  <!-- Linkes Menü -->
+  <p-megaMenu 
+    [model]="items" 
+    orientation="vertical" 
+    styleClass="admin-menu">
   </p-megaMenu>
 
-  <div class="page-content px-4 flex-grow-1">
-<!--    <p-card>-->
-      <router-outlet></router-outlet>
-<!--    </p-card>-->
+  <!-- Rechter Inhaltsbereich -->
+  <div class="page-content">
+    <router-outlet></router-outlet>
   </div>
 </div>

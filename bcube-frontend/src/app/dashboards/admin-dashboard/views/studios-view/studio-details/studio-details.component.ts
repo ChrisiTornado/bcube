@@ -260,9 +260,10 @@ export class StudioDetailsComponent implements OnInit {
           this.refreshCalendar();
 
           this.selectedStartHour = '';
-        this.selectedStartMinute = '';
-        this.selectedEndHour = '';
-        this.selectedEndMinute = '';
+          this.selectedStartMinute = '';
+          this.selectedEndHour = '';
+          this.selectedEndMinute = '';
+          this.date = null;
         },
         error: () => {
           this.messageService.add({
