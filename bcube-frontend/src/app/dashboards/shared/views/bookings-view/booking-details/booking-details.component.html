@@ -11,9 +11,10 @@
       <h2 class="text-2xl font-semibold mb-2">
         Auftrag {{ booking.id }} - {{ booking.studio.name }}
       </h2>
-      <img [src]="'data:image/jpeg;base64,' + booking.studio.image" alt="Studiobild"
-        style="max-width: 75px; max-height: 75px; margin-top: 0.5rem; margin-left: 0.5rem;"
-        (click)="showOverlay('data:image/jpeg;base64,' + booking.studio.image)">
+      <img [src]="booking.studio.imageBase64"
+     alt="Studiobild"
+     style="max-width: 75px; max-height: 75px; margin-top: 0.5rem; margin-left: 0.5rem;"
+     (click)="showOverlay(booking.studio.imageBase64)">
     </div>
 
     <div *ngIf="overlayVisible" class="overlay" (click)="hideOverlay()">

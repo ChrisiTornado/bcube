@@ -1,15 +1,13 @@
-package com.example.bcube.service.dto.response;
+package com.bcube.bookingservice.service.dto.Classes;
 
-import com.example.bcube.persistence.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.time.Instant;
-import java.util.List;
 
 @Data
 @AllArgsConstructor
-public class StudioResponse {
+public class StudioDto {
     private int id;
     private String name;
     private String description;

@@ -1,4 +1,4 @@
-package com.example.bcube.service.dto.response;
+package com.bcube.bookingservice.service.dto.Classes;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class UserResponse {
+public class UserDto {
     private Long id;
     @JsonProperty("isAdmin")
     private boolean isAdmin;

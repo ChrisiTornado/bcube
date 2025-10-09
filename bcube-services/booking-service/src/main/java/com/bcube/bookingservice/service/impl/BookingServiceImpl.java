@@ -6,6 +6,8 @@ import com.bcube.bookingservice.persistance.entity.Booking;
 import com.bcube.bookingservice.persistance.entity.BookingStatus;
 import com.bcube.bookingservice.persistance.repository.BookingRepository;
 import com.bcube.bookingservice.service.BookingService;
+import com.bcube.bookingservice.service.dto.Classes.StudioDto;
+import com.bcube.bookingservice.service.dto.Classes.UserDto;
 import com.bcube.bookingservice.service.dto.request.BookStudioRequest;
 import com.bcube.bookingservice.service.dto.response.BookingResponse;
 import lombok.RequiredArgsConstructor;
@@ -31,19 +33,7 @@ public class BookingServiceImpl implements BookingService {
     public BookingResponse[] getAllBookings() {
         List<Booking> bookings = bookingRepository.findAll();
 
-        List<BookingResponse> responses = bookings.stream()
-                .map(booking -> new BookingResponse(
-                        booking.getId(),
-                        booking.getUserId(),
-                        booking.getStudioId(),
-                        booking.getDate(),
-                        booking.getStartTime(),
-                        booking.getEndTime(),
-                        booking.getStatus()
-                ))
-                .toList();
-
-        return responses.toArray(new BookingResponse[0]);
+        return getBookingResponses(bookings);
     }
 
     @Transactional(readOnly = true)
@@ -55,16 +45,25 @@ public class BookingServiceImpl implements BookingService {
 
         List<Booking> bookings = bookingRepository.findAllByUserId(userId);
 
+        return getBookingResponses(bookings);
+    }
+
+    private BookingResponse[] getBookingResponses(List<Booking> bookings) {
         List<BookingResponse> responses = bookings.stream()
-                .map(booking -> new BookingResponse(
-                        booking.getId(),
-                        booking.getUserId(),
-                        booking.getStudioId(),
-                        booking.getDate(),
-                        booking.getStartTime(),
-                        booking.getEndTime(),
-                        booking.getStatus()
-                ))
+                .map(booking -> {
+                    UserDto user = userClient.getUserById(booking.getUserId());
+                    StudioDto studio = studioClient.getStudioById(booking.getStudioId());
+
+                    return new BookingResponse(
+                            booking.getId(),
+                            user,
+                            studio,
+                            booking.getDate(),
+                            booking.getStartTime(),
+                            booking.getEndTime(),
+                            booking.getStatus()
+                    );
+                })
                 .toList();
 
         return responses.toArray(new BookingResponse[0]);
@@ -78,19 +77,7 @@ public class BookingServiceImpl implements BookingService {
 
         List<Booking> bookings = bookingRepository.findAllByStudioId(studioId);
 
-        List<BookingResponse> result = bookings.stream()
-                .map(booking -> new BookingResponse(
-                        booking.getId(),
-                        booking.getUserId(),
-                        booking.getStudioId(),
-                        booking.getDate(),
-                        booking.getStartTime(),
-                        booking.getEndTime(),
-                        booking.getStatus()
-                ))
-                .toList();
-
-        return result.toArray(new BookingResponse[0]);
+        return getBookingResponses(bookings);
     }
 
     @Override
@@ -98,10 +85,13 @@ public class BookingServiceImpl implements BookingService {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new IllegalArgumentException("Buchung mit ID " + bookingId + "nicht gefunden"));
 
+        UserDto user = userClient.getUserById(booking.getUserId());
+        StudioDto studio = studioClient.getStudioById(booking.getStudioId());
+
         return new BookingResponse(
                 booking.getId(),
-                booking.getUserId(),
-                booking.getStudioId(),
+                user,
+                studio,
                 booking.getDate(),
                 booking.getStartTime(),
                 booking.getEndTime(),
@@ -116,10 +106,13 @@ public class BookingServiceImpl implements BookingService {
 
         booking.setStatus(BookingStatus.CANCELLED);
         bookingRepository.save(booking);
+        UserDto user = userClient.getUserById(booking.getUserId());
+        StudioDto studio = studioClient.getStudioById(booking.getStudioId());
+
         return new BookingResponse(
                 booking.getId(),
-                booking.getUserId(),
-                booking.getStudioId(),
+                user,
+                studio,
                 booking.getDate(),
                 booking.getStartTime(),
                 booking.getEndTime(),
@@ -162,10 +155,13 @@ public class BookingServiceImpl implements BookingService {
 
         Booking saved = bookingRepository.save(booking);
 
+        UserDto user = userClient.getUserById(booking.getUserId());
+        StudioDto studio = studioClient.getStudioById(booking.getStudioId());
+
         return new BookingResponse(
                 saved.getId(),
-                saved.getUserId(),
-                saved.getStudioId(),
+                user,
+                studio,
                 saved.getDate(),
                 saved.getEndTime(),
                 saved.getStartTime(),

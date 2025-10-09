@@ -1,6 +1,8 @@
 package com.bcube.bookingservice.service.dto.response;
 
 import com.bcube.bookingservice.persistance.entity.BookingStatus;
+import com.bcube.bookingservice.service.dto.Classes.StudioDto;
+import com.bcube.bookingservice.service.dto.Classes.UserDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -11,8 +13,8 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class BookingResponse {
     private Long id;
-    private Long userId;
-    private Long studioId;
+    private UserDto user;
+    private StudioDto studio;
     private LocalDate date;
     private Instant startTime;
     private Instant endTime;
