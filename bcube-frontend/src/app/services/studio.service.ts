@@ -27,7 +27,7 @@ export class StudioService {
   getAll(): Observable<studio[]> {
     this.loadingSubject.next(true);
     return this.http
-      .get<{ message: string; data: studio[] }>(`${environment.apiUrl}get-all-studios`)
+      .get<{ message: string; data: studio[] }>(`${environment.studioApiUrl}/studios`)
       .pipe(
         map(res => res.data),
         finalize(() => this.loadingSubject.next(false))
@@ -37,7 +37,7 @@ export class StudioService {
   getStudioById(id: number): Observable<studio> {
     this.loadingSubject.next(true);
     return this.http
-      .get<{ message: string; data: studio }>(`${environment.apiUrl}get-studio-by-id/${id}`)
+      .get<{ message: string; data: studio }>(`${environment.studioApiUrl}/studios/${id}`)
       .pipe(
         map(res => res.data),
         finalize(() => this.loadingSubject.next(false))
@@ -54,7 +54,7 @@ export class StudioService {
 
   create(payload: CreateStudioRequest): Observable<ApiResponse<StudioResponse>> {
     return this.http.post<ApiResponse<StudioResponse>>(
-      environment.adminApiUrl + 'create-studio',
+      environment.studioApiUrl + '/admin/studios',
       payload
     );
   }
@@ -74,14 +74,14 @@ export class StudioService {
 
   update(payload: UpdateStudioRequest): Observable<ApiResponse<StudioResponse>> {
     return this.http.put<ApiResponse<StudioResponse>>(
-      environment.adminApiUrl + 'update-studio/' + payload.id,
+      environment.studioApiUrl + '/admin/studios/' + payload.id,
       payload
     );
   }
 
   delete(id: number): Observable<ApiResponse<number>> {
     return this.http.delete<ApiResponse<number>>(
-      environment.adminApiUrl + 'delete-studio/' + id
+      environment.studioApiUrl + '/admin/studios/' + id
     );
   }
 }

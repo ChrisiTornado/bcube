@@ -25,7 +25,7 @@ export class UserService {
   getAll(): Observable<User[]> {
     this.loadingSubject.next(true);
     return this.http
-      .get<{ message: string; data: User[] }>(`${environment.adminApiUrl}get-all-users`)
+      .get<{ message: string; data: User[] }>(`${environment.adminApiUrl}/users`)
       .pipe(
         map(res => res.data),
         finalize(() => this.loadingSubject.next(false))
@@ -39,21 +39,21 @@ export class UserService {
   createUser(payload: CreateUserRequest): Observable<ApiResponse<UserResponse>> {
     console.log(payload)
     return this.http.post<ApiResponse<UserResponse>>(
-      environment.adminApiUrl + 'create-user',
+      environment.adminApiUrl + '/users',
       payload
     );
   }
 
   updateUser(payload: UpdateUserRequest): Observable<ApiResponse<UserResponse>> {
     return this.http.put<ApiResponse<UserResponse>>(
-      environment.adminApiUrl + 'update-user/' + payload.id,
+      environment.adminApiUrl + '/users/' + payload.id,
       payload
     );
   }
 
   deleteUser(id: number): Observable<ApiResponse<number>> {
     return this.http.delete<ApiResponse<number>>(
-      environment.adminApiUrl + 'delete-user/' + id
+      environment.adminApiUrl + '/users/' + id
     );
   }
 }

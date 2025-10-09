@@ -24,7 +24,7 @@ export class BookingService {
   getAll(): Observable<booking[]> {
     this.loadingSubject.next(true);
     return this.http
-      .get<{ message: string; data: booking[] }>(`${environment.apiUrl}bookings`)
+      .get<{ message: string; data: booking[] }>(`${environment.bookingApiUrl}/bookings`)
       .pipe(
         map(res => res.data),
         finalize(() => this.loadingSubject.next(false))
@@ -34,7 +34,7 @@ export class BookingService {
   getBookingsByUserId(userId: number): Observable<booking[]> {
     this.loadingSubject.next(true);
     return this.http
-      .get<{ message: string; data: booking[] }>(`${environment.apiUrl}bookings/user/${userId}`)
+      .get<{ message: string; data: booking[] }>(`${environment.bookingApiUrl}/bookings/user/${userId}`)
       .pipe(
         map(res => res.data),
         finalize(() => this.loadingSubject.next(false))
@@ -44,7 +44,7 @@ export class BookingService {
   getBookingsByStudioId(studioId: number): Observable<booking[]> {
     this.loadingSubject.next(true);
     return this.http
-      .get<{ message: string; data: booking[] }>(`${environment.apiUrl}bookings/studio/${studioId}`)
+      .get<{ message: string; data: booking[] }>(`${environment.bookingApiUrl}/bookings/studio/${studioId}`)
       .pipe(
         map(res => res.data),
         finalize(() => this.loadingSubject.next(false))
@@ -54,7 +54,7 @@ export class BookingService {
   getBookingById(bookingId: number): Observable<booking> {
     this.loadingSubject.next(true);
     return this.http
-      .get<{ message: string; data:booking }>(`${environment.apiUrl}bookings/${bookingId}`)
+      .get<{ message: string; data:booking }>(`${environment.bookingApiUrl}/bookings/${bookingId}`)
       .pipe(
         map(res => res.data),
         finalize(() => this.loadingSubject.next(false))
@@ -68,7 +68,7 @@ export class BookingService {
   getStudioById(id: number): Observable<booking> {
     this.loadingSubject.next(true);
     return this.http
-      .get<{ message: string; data: booking }>(`${environment.apiUrl}get-booking-by-id/${id}`)
+      .get<{ message: string; data: booking }>(`${environment.bookingApiUrl}/${id}`)
       .pipe(
         map(res => res.data),
         finalize(() => this.loadingSubject.next(false))
@@ -82,12 +82,12 @@ export class BookingService {
   create(payload: CreateBookingRequest): Observable<ApiResponse<BookingResponse>> {
     console.log(payload)
     return this.http.post<ApiResponse<BookingResponse>>(
-      environment.apiUrl + "bookings", payload);
+      environment.bookingApiUrl + "/bookings", payload);
   }
 
   storno(id: number): Observable<ApiResponse<number>>{
     return this.http.delete<ApiResponse<number>>(
-      environment.apiUrl + "bookings/storno/" + id
+      environment.bookingApiUrl + "/bookings" + id
     )
   }
 }

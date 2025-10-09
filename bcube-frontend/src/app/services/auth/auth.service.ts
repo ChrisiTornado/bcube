@@ -17,11 +17,11 @@ export class AuthService {
   constructor(private http: HttpClient, private router: Router) {}
 
   login(payload: LoginRequest): Observable<ApiResponse<JwtResponse>> {
-    return this.http.post<ApiResponse<JwtResponse>>(environment.authUrl + 'login', payload);
+    return this.http.post<ApiResponse<JwtResponse>>(environment.authUrl + '/login', payload);
   }
 
   register(payload: RegisterRequest): Observable<ApiResponse<JwtResponse>> {
-    return this.http.post<ApiResponse<JwtResponse>>(environment.authUrl + 'register', payload);
+    return this.http.post<ApiResponse<JwtResponse>>(environment.authUrl + '/register', payload);
   }
 
   storeAuth(token: string, user: User): void {
