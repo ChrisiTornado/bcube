@@ -35,6 +35,10 @@ export class AuthService {
     this.router.navigate(['/login']);
   }
 
+  resetPassword(email: string) {
+  return this.http.post<{ email: string }>(`${this}/auth/reset-password`, { email });
+}
+
   isAuthenticated(): boolean {
     return !!localStorage.getItem(this.tokenKey);
   }

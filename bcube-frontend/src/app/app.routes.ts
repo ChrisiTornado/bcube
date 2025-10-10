@@ -12,10 +12,22 @@ import { CalendarViewComponent } from './dashboards/shared/views/calendar-view/c
 import { BookingsViewComponent } from './dashboards/shared/views/bookings-view/bookings-view.component';
 import { StudioDetailsComponent } from './dashboards/shared/views/studios-view/studio-details/studio-details.component';
 import { BookingDetailsComponent } from './dashboards/shared/views/bookings-view/booking-details/booking-details.component';
+import { ChangePasswordComponent } from './auth/change-password/change-password.component';
+import { EmailResetComponent } from './auth/email-reset/email-reset.component';
+import { EnterCodeComponent } from './auth/enter-code/enter-code.component';
 
 export const routes: Routes = [
     { path: 'login', component: LoginComponent },
     { path: 'register', component: RegisterComponent },
+
+    {
+        path: 'auth',
+        children: [
+            { path: 'change-password', component: ChangePasswordComponent },
+            { path: 'email-reset', component: EmailResetComponent },
+            { path: 'enter-code', component: EnterCodeComponent },
+        ]
+    },
 
     {
         path: 'admin-dashboard',
