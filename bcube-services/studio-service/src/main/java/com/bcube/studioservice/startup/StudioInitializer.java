@@ -12,6 +12,8 @@ import java.nio.file.Files;
 import java.time.Instant;
 import java.util.List;
 
+import static org.aspectj.weaver.tools.cache.SimpleCacheFactory.path;
+
 @Component
 public class StudioInitializer implements CommandLineRunner {
     @Autowired
@@ -201,17 +203,22 @@ public class StudioInitializer implements CommandLineRunner {
             studioRepository.saveAll(studios);
 
             System.out.println("✅ " + studios.size() + " Hochschulen erfolgreich erstellt.");
+            System.out.println("🔍 Loading image: " + path);
+            System.out.println("✅ Exists? " + (getClass().getClassLoader().getResource(path) != null));
+
         } else {
             System.out.println("ℹ️ Studios bereits vorhanden – Initialisierung übersprungen.");
         }
     }
 
     private byte[] loadImage(String path) {
-        try {
-            return Files.readAllBytes(new ClassPathResource(path).getFile().toPath());
+        try (var inputStream = getClass().getClassLoader().getResourceAsStream(path)) {
+            if (inputStream == null) {
+                throw new IOException("Resource not found: " + path);
+            }
+            return inputStream.readAllBytes();
         } catch (IOException e) {
-            System.err.println("⚠️ Konnte Bild nicht laden: " + path + " → " + e.getMessage());
-            return null;
+            throw new RuntimeException("Bild konnte nicht geladen werden: " + path, e);
         }
     }
 }

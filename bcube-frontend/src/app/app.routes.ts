@@ -6,11 +6,11 @@ import { RegisterComponent } from './auth/register/register.component';
 import { AdminDashboardComponent } from './dashboards/admin-dashboard/admin-dashboard.component';
 import { UserDashboardComponent } from './dashboards/user-dashboard/user-dashboard.component';
 import { UsersViewComponent } from './dashboards/admin-dashboard/views/users-view/users-view.component';
-import { StudiosViewComponent } from './dashboards/admin-dashboard/views/studios-view/studios-view.component';
+import { StudiosViewComponent } from './dashboards/shared/views/studios-view/studios-view.component';
 import { MapViewComponent } from './dashboards/shared/views/map-view/map-view.component';
 import { CalendarViewComponent } from './dashboards/shared/views/calendar-view/calendar-view.component';
 import { BookingsViewComponent } from './dashboards/shared/views/bookings-view/bookings-view.component';
-import { StudioDetailsComponent } from './dashboards/admin-dashboard/views/studios-view/studio-details/studio-details.component';
+import { StudioDetailsComponent } from './dashboards/shared/views/studios-view/studio-details/studio-details.component';
 import { BookingDetailsComponent } from './dashboards/shared/views/bookings-view/booking-details/booking-details.component';
 
 export const routes: Routes = [

@@ -53,9 +53,11 @@ bcube-frontend/npm-debug.log*
 bcube-frontend/yarn-error.log*
 bcube-frontend/pnpm-debug.log*
 
-# optional: Tailwind cache (falls verwendet)
+# Tailwind cache (falls verwendet)
 bcube-frontend/.tailwind-cache/
 
-# optional: env files
-environment*
+# env files
+# environment*
+# .env
+
 node_modules

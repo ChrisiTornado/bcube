@@ -1,0 +1,109 @@
+services:
+  frontend:
+    build: ./bcube-frontend
+    container_name: frontend
+    ports:
+      - "4200:80"
+    depends_on:
+      - user-service
+      - studio-service
+      - booking-service
+    networks:
+      - bcube-network
+
+  user-service:
+    build: ./bcube-services/user-service
+    container_name: user-service
+    env_file:
+      - ./bcube-services/user-service/.env
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://user-db:5432/bcube_user_service
+      SPRING_DATASOURCE_USERNAME: ${DB_USER}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      SPRING_PROFILES_ACTIVE: docker
+    ports:
+      - "8080:8080"
+    depends_on:
+      - user-db
+    networks:
+      - bcube-network
+
+  user-db:
+    image: postgres:17
+    container_name: user-db
+    env_file:
+      - ./bcube-services/user-service/.env
+    ports:
+      - "5433:5432"
+    volumes:
+      - user-data:/var/lib/postgresql/data
+    networks:
+      - bcube-network
+
+  studio-service:
+    build: ./bcube-services/studio-service
+    container_name: studio-service
+    env_file:
+      - ./bcube-services/studio-service/.env
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://studio-db:5432/bcube_studio_service
+      SPRING_DATASOURCE_USERNAME: ${DB_USER}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      SPRING_PROFILES_ACTIVE: docker
+    ports:
+      - "8081:8081"
+    depends_on:
+      - studio-db
+    networks:
+      - bcube-network
+
+  studio-db:
+    image: postgres:17
+    container_name: studio-db
+    env_file:
+      - ./bcube-services/studio-service/.env
+    ports:
+      - "5434:5432"
+    volumes:
+      - studio-data:/var/lib/postgresql/data
+    networks:
+      - bcube-network
+
+  booking-service:
+    build: ./bcube-services/booking-service
+    container_name: booking-service
+    env_file:
+      - ./bcube-services/booking-service/.env
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://booking-db:5432/bcube_booking_service
+      SPRING_DATASOURCE_USERNAME: ${DB_USER}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      SPRING_PROFILES_ACTIVE: docker
+    ports:
+      - "8082:8082"
+    depends_on:
+      - booking-db
+      - user-service
+      - studio-service
+    networks:
+      - bcube-network
+
+  booking-db:
+    image: postgres:17
+    container_name: booking-db
+    env_file:
+      - ./bcube-services/booking-service/.env
+    ports:
+      - "5435:5432"
+    volumes:
+      - booking-data:/var/lib/postgresql/data
+    networks:
+      - bcube-network
+
+volumes:
+  user-data:
+  studio-data:
+  booking-data:
+
+networks:
+  bcube-network:

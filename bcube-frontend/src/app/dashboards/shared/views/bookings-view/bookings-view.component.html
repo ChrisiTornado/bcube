@@ -51,7 +51,7 @@
   <!-- Wenn keine Buchungen vorhanden sind -->
   <div *ngIf="filteredBookings.length === 0" class="text-center my-6">
     <h3 class="mb-3">Keine Buchungen gefunden</h3>
-    <p *ngIf="!isAdmin">Du kannst unten eine neue Buchung anlegen.</p>
+    <p-button (onClick)="navigateToBookingCreation()" *ngIf="!isAdmin">Hier buchen</p-button>
   </div>
 
   <!-- Buchungstabelle -->
