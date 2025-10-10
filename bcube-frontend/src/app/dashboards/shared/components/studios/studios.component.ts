@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MessageService } from "primeng/api";
 import { finalize } from "rxjs";
 import { StudioService } from '../../../../services/studio.service';
-import { studio } from '../../../../models/studio';
+import { Studio } from '../../../../models/Studio';
 import { CreateStudioRequest } from '../../../../models/requests/CreateStudioRequest';
 import { ApiResponse } from '../../../../models/responses/ApiResponse';
 import { StudioResponse } from '../../../../models/responses/StudioResponse';
@@ -29,7 +29,7 @@ export class StudiosComponent implements OnInit{
   visible: boolean = false;
   submitted: boolean = false;
   loading: boolean = false;
-  studios: studio[] = [];
+  studios: Studio[] = [];
   @ViewChild('fileUpload') fileUpload: any;
   isAdmin = false;
 

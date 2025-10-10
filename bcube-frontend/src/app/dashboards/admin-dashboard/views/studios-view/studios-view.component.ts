@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ActivatedRoute } from '@angular/router';
 import { StudioService } from '../../../../services/studio.service';
-import { studio } from '../../../../models/studio';
+import { Studio } from '../../../../models/Studio';
 import { Observable } from 'rxjs';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
@@ -21,7 +21,7 @@ import { AuthService } from '../../../../services/auth/auth.service';
   styleUrl: './studios-view.component.css'
 })
 export class StudiosViewComponent implements OnInit {
-  studios$!: Observable<studio[]>;
+  studios$!: Observable<Studio[]>;
   loading$ = this.studioService.loading$;
   isAdmin = false;
 
@@ -33,7 +33,7 @@ export class StudiosViewComponent implements OnInit {
 
   constructor(private studioService: StudioService, private router: Router, private route: ActivatedRoute, private authService: AuthService) {}
 
-  navigateToDetails(studio: studio): void {
+  navigateToDetails(studio: Studio): void {
     const basePath = this.isAdmin ? '/admin-dashboard' : '/user-dashboard';
     const navigationUrl = [basePath, 'studio-details', studio.id];
 

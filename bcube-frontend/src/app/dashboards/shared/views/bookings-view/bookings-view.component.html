@@ -1,35 +1,79 @@
-<div class="flex align-items-center flex-wrap gap-4 mb-4">
-  <h1 class="m-0">Buchungen</h1>
-  <app-bookings></app-bookings>
-</div>
-<app-loading-spinner *ngIf="loading$ | async"></app-loading-spinner>
-<ng-container *ngIf="!(loading$ | async) && (bookings$ | async) as bookings">
-  <p-table [value]="bookings">
+<h1 class="m-0">Buchungen</h1>
+
+<ng-container *ngIf="!(loading$ | async) && (filteredBookings$ | async) as filteredBookings">
+  
+  <!-- Filter sollen IMMER sichtbar sein -->
+  <div class="my-4 flex gap-4">
+
+    <!-- User-Filter nur für Admins -->
+    <p-floatLabel *ngIf="isAdmin">
+      <p-dropdown
+        [(ngModel)]="userFilter"
+        [options]="users"
+        optionLabel="fullName"
+        inputId="userFilter"
+        (onChange)="updateFilters()"
+        placeholder="Benutzer auswählen">
+        <ng-template let-user pTemplate="item">
+          <div class="flex align-items-center gap-2">
+            <div>{{ user.firstName }} {{ user.lastName }}</div>
+          </div>
+        </ng-template>
+      </p-dropdown>
+      <label for="userFilter">Benutzer</label>
+    </p-floatLabel>
+
+    <!-- Studio-Filter -->
+    <p-floatLabel>
+      <p-dropdown
+        [(ngModel)]="studioFilter"
+        [options]="studios"
+        optionLabel="name"
+        inputId="studioFilter"
+        (onChange)="updateFilters()"
+        placeholder="Studio auswählen">
+        <ng-template let-studio pTemplate="item">
+          <div class="flex align-items-center gap-2">
+            <div>{{ studio.name }}</div>
+          </div>
+        </ng-template>
+      </p-dropdown>
+      <label for="studioFilter">Studio</label>
+    </p-floatLabel>
+
+    <!-- Filter zurücksetzen -->
+    <p-button
+      [outlined]="true"
+      label="Filter zurücksetzen"
+      (click)="userFilter = null; studioFilter = null; updateFilters()" />
+  </div>
+
+  <!-- Wenn keine Buchungen vorhanden sind -->
+  <div *ngIf="filteredBookings.length === 0" class="text-center my-6">
+    <h3 class="mb-3">Keine Buchungen gefunden</h3>
+    <p *ngIf="!isAdmin">Du kannst unten eine neue Buchung anlegen.</p>
+  </div>
+
+  <!-- Buchungstabelle -->
+  <p-table *ngIf="filteredBookings.length > 0" [value]="filteredBookings">
     <ng-template pTemplate="header">
       <tr>
-        <th pSortableColumn="bookingNumber" style="width:20%">Buchungsnummer <p-sortIcon
-            field="bookingNumber"></p-sortIcon></th>
-        <th pSortableColumn="bookingStatus" style="width:20%">Buchungsstatus<p-sortIcon
-            field="bookingStatus"></p-sortIcon></th>
-        <th pSortableColumn="day" style="width:20%">Tag<p-sortIcon field="day"></p-sortIcon></th>
-        <th pSortableColumn="time" style="width:20%">Uhrzeit<p-sortIcon field="time"></p-sortIcon></th>
-        <th pSortableColumn="studioName" style="width:20%">Ort<p-sortIcon field="studioName"></p-sortIcon></th>
+        <th>Buchungsnummer</th>
+        <th>Buchungsstatus</th>
+        <th>Tag</th>
+        <th>Uhrzeit</th>
+        <th>Ort</th>
         <th>Stornieren</th>
       </tr>
     </ng-template>
+
     <ng-template pTemplate="body" let-booking>
       <tr (click)="navigateToDetails(booking)" style="cursor: pointer;">
-        <td>{{booking.id}}</td>
+        <td>{{ booking.id }}</td>
         <td>{{ getStatusLabel(booking.status) }}</td>
-        <td>
-          {{ booking.date | date: 'dd.MM.yyyy' }}
-        </td>
-        <td>
-          {{ booking.startTime | date: 'HH:mm' }}–{{ booking.endTime | date: 'HH:mm' }}
-        </td>
-        <td>
-          {{ booking.studio.name }}
-        </td>
+        <td>{{ booking.date | date: 'dd.MM.yyyy' }}</td>
+        <td>{{ booking.startTime | date: 'HH:mm' }}–{{ booking.endTime | date: 'HH:mm' }}</td>
+        <td>{{ booking.studio.name }}</td>
         <td *ngIf="booking.status === bookingStatus.CONFIRMED">
           <app-storno-booking [booking]="booking" (click)="$event.stopPropagation()"></app-storno-booking>
         </td>

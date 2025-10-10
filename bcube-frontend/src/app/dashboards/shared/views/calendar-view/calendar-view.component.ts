@@ -5,22 +5,16 @@ import { FormsModule } from '@angular/forms';
 import { CalendarModule } from 'primeng/calendar';
 import { DropdownModule } from 'primeng/dropdown';
 import { ButtonModule } from 'primeng/button';
-import { finalize } from "rxjs";
 import { AuthService } from '../../../../services/auth/auth.service';
 import { StudioService } from '../../../../services/studio.service';
-import { LoadingSpinnerComponent } from '../../../../shared/loading-spinner/loading-spinner.component';
-import { studio } from '../../../../models/studio';
 import { BookingService } from '../../../../services/booking.service';
-import { CreateBookingRequest } from '../../../../models/requests/CreateBookingRequest';
-import { ApiResponse } from '../../../../models/responses/ApiResponse';
-import { BookingResponse } from '../../../../models/responses/BookingResponse';
 import { MessageService, ConfirmationService } from 'primeng/api';
-import { booking } from '../../../../models/booking';
+import { Booking } from '../../../../models/Booking';
 import { FullCalendarModule } from '@fullcalendar/angular';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import { CalendarOptions, EventInput } from '@fullcalendar/core';
 import interactionPlugin from '@fullcalendar/interaction';
-import { User } from '../../../../models/user';
+import { User } from '../../../../models/User';
 
 @Component({
   selector: 'app-calendar-view',
@@ -50,7 +44,7 @@ export class CalendarViewComponent implements OnInit {
 
   calendarPlugins = [dayGridPlugin, interactionPlugin];
   calendarEvents: EventInput[] = [];
-  bookings: booking[] = [];
+  bookings: Booking[] = [];
   disabledDates: Date[] = [];
   highlightedDates: { date: Date; styleClass: string }[] = [];
 
@@ -95,7 +89,7 @@ export class CalendarViewComponent implements OnInit {
   }
 
   markCalendarDates(): void {
-    const bookingsByDate = new Map<string, booking[]>();
+    const bookingsByDate = new Map<string, Booking[]>();
 
     for (const booking of this.bookings) {
       const dateStr = booking.date;

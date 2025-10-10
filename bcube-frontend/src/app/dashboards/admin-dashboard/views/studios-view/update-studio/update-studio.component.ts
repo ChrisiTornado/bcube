@@ -1,6 +1,6 @@
 import {Component, Input, ViewChild, OnInit} from '@angular/core';
 import {finalize} from "rxjs";
-import { studio } from '../../../../../models/studio';
+import { Studio } from '../../../../../models/Studio';
 import { StudioService } from '../../../../../services/studio.service';
 import { MessageService } from 'primeng/api';
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
@@ -25,7 +25,7 @@ import { ToastModule } from 'primeng/toast';
   styleUrl: './update-studio.component.css'
 })
 export class UpdateStudioComponent implements OnInit {
-  @Input() studio!: studio;
+  @Input() studio!: Studio;
   loading!: boolean;
   selectedImageBase64: string | null = null;
 

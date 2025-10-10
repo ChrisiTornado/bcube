@@ -1,33 +1,61 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
+import { CommonModule } from '@angular/common';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
-import { LoadingSpinnerComponent } from '../../../../shared/loading-spinner/loading-spinner.component';
-import { CommonModule } from '@angular/common';
+import { DropdownModule } from 'primeng/dropdown';
+import { FloatLabelModule } from 'primeng/floatlabel';
+
 import { AuthService } from '../../../../services/auth/auth.service';
 import { BookingService } from '../../../../services/booking.service';
-import { booking } from '../../../../models/booking';
+import { Booking } from '../../../../models/Booking';
+import { BookingStatus } from '../../../../models/BookingStatus';
+import { Studio } from '../../../../models/Studio';
+import { User } from '../../../../models/User';
+import { LoadingSpinnerComponent } from '../../../../shared/loading-spinner/loading-spinner.component';
 import { BookingsComponent } from '../../components/bookings/bookings.component';
 import { StornoBookingComponent } from './storno-booking/storno-booking.component';
-import { BookingStatus } from '../../../../models/BookingStatus';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-bookings-view',
   standalone: true,
-  imports: [BookingsComponent, CommonModule, LoadingSpinnerComponent, TableModule, ButtonModule, StornoBookingComponent],
+  imports: [
+    CommonModule,
+    TableModule,
+    ButtonModule,
+    DropdownModule,
+    FloatLabelModule,
+    LoadingSpinnerComponent,
+    BookingsComponent,
+    StornoBookingComponent,
+    FormsModule
+  ],
   templateUrl: './bookings-view.component.html',
-  styleUrl: './bookings-view.component.css'
+  styleUrls: ['./bookings-view.component.css']
 })
 export class BookingsViewComponent implements OnInit {
-  bookings$!: Observable<booking[]>;
+  bookings$!: Observable<Booking[]>;
+  filteredBookings$!: Observable<Booking[]>;
+  users: User[] = [];
+  studios: Studio[] = [];
   loading$ = this.bookingService.loading$;
   isAdmin = false;
   bookingStatus = BookingStatus;
 
+  userFilter: User | null = null;
+  studioFilter: Studio | null = null;
+
+  constructor(
+    private bookingService: BookingService,
+    private router: Router,
+    private route: ActivatedRoute,
+    private authService: AuthService
+  ) { }
+
   ngOnInit(): void {
-    this.isAdmin = this.authService.getRole() === "ADMIN";
+    this.isAdmin = this.authService.getRole() === 'ADMIN';
 
     if (this.isAdmin) {
       this.bookingService.getAll().subscribe(bookings => {
@@ -43,15 +71,46 @@ export class BookingsViewComponent implements OnInit {
     }
 
     this.bookings$ = this.bookingService.bookings$;
+
+    this.bookings$.subscribe(bookings => {
+      this.users = this.uniqueUsers(
+        bookings.map(b => ({
+          ...b.user,
+          fullName: `${b.user.firstName} ${b.user.lastName}`
+        }))
+      );
+
+      this.studios = this.uniqueStudios(bookings.map(b => b.studio));
+    });
+    this.filteredBookings$ = this.bookingService.filteredBookings$(null, null);
   }
 
-  constructor(private bookingService: BookingService, private router: Router, private route: ActivatedRoute, private authService: AuthService) { }
+  uniqueUsers(users: User[]): User[] {
+    const map = new Map(users.map(u => [u.id, u]));
+    return Array.from(map.values());
+  }
 
-  navigateToDetails(booking: booking): void {
+  uniqueStudios(studios: Studio[]): Studio[] {
+    const map = new Map(studios.map(s => [s.id, s]));
+    return Array.from(map.values());
+  }
+
+  updateFilters(): void {
+    this.filteredBookings$ = this.bookingService.filteredBookings$(
+      this.userFilter,
+      this.studioFilter
+    );
+  }
+
+  navigateToDetails(booking: Booking): void {
     const basePath = this.isAdmin ? '/admin-dashboard' : '/user-dashboard';
     const navigationUrl = [basePath, 'booking-details', booking.id];
-
     this.router.navigate(navigationUrl);
+  }
+
+  navigateToBookingCreation(): void {
+    const basePath = this.isAdmin ? '/admin-dashboard' : '/user-dashboard';
+    this.router.navigate([basePath, 'studios']);
   }
 
   getStatusLabel(status: string): string {

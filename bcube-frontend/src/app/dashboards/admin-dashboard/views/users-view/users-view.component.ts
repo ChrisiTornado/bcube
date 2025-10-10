@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
 import { UserService } from '../../../../services/user.service';
-import { User } from '../../../../models/user';
+import { User } from '../../../../models/User';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { UpdateUserComponent } from './update-user/update-user.component';

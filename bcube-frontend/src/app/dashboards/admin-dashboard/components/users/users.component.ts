@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import { finalize } from 'rxjs';
 import { UserService } from '../../../../services/user.service';
-import { User } from '../../../../models/user';
+import { User } from '../../../../models/User';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { ReactiveFormsModule } from '@angular/forms';

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { studio } from '../models/studio';
+import { Studio } from '../models/Studio';
 import { environment } from '../../environments/environment';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { CreateStudioRequest } from '../models/requests/CreateStudioRequest';
@@ -16,7 +16,7 @@ export class StudioService {
   private loadingSubject = new BehaviorSubject<boolean>(false);
   public loading$ = this.loadingSubject.asObservable();
 
-  private studiosSubject = new BehaviorSubject<studio[]>([]);
+  private studiosSubject = new BehaviorSubject<Studio[]>([]);
   public studios$ = this.studiosSubject.asObservable();
 
   constructor(private http: HttpClient) {
@@ -24,20 +24,20 @@ export class StudioService {
     this.reloadStudios();
   }
 
-  getAll(): Observable<studio[]> {
+  getAll(): Observable<Studio[]> {
     this.loadingSubject.next(true);
     return this.http
-      .get<{ message: string; data: studio[] }>(`${environment.studioApiUrl}/studios`)
+      .get<{ message: string; data: Studio[] }>(`${environment.studioApiUrl}/studios`)
       .pipe(
         map(res => res.data),
         finalize(() => this.loadingSubject.next(false))
       );
   }
 
-  getStudioById(id: number): Observable<studio> {
+  getStudioById(id: number): Observable<Studio> {
     this.loadingSubject.next(true);
     return this.http
-      .get<{ message: string; data: studio }>(`${environment.studioApiUrl}/studios/${id}`)
+      .get<{ message: string; data: Studio }>(`${environment.studioApiUrl}/studios/${id}`)
       .pipe(
         map(res => res.data),
         finalize(() => this.loadingSubject.next(false))
@@ -48,7 +48,7 @@ export class StudioService {
     this.getAll().subscribe(studios => this.studiosSubject.next(studios));
   }
 
-  get currentStudios(): studio[] {
+  get currentStudios(): Studio[] {
   return this.studiosSubject.getValue();
 }
 
@@ -59,7 +59,7 @@ export class StudioService {
     );
   }
 
-  moveStudioToTop(studio: studio): void {
+  moveStudioToTop(studio: Studio): void {
   const studios = [...this.studiosSubject.getValue()]; // aktuelle Liste kopieren
   const index = studios.findIndex(s => s.id === studio.id);
   if (index > -1) {

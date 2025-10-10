@@ -9,13 +9,13 @@ import { finalize } from "rxjs";
 import { AuthService } from '../../../../../services/auth/auth.service';
 import { StudioService } from '../../../../../services/studio.service';
 import { LoadingSpinnerComponent } from '../../../../../shared/loading-spinner/loading-spinner.component';
-import { studio } from '../../../../../models/studio';
+import { Studio } from '../../../../../models/Studio';
 import { BookingService } from '../../../../../services/booking.service';
 import { CreateBookingRequest } from '../../../../../models/requests/CreateBookingRequest';
 import { ApiResponse } from '../../../../../models/responses/ApiResponse';
 import { BookingResponse } from '../../../../../models/responses/BookingResponse';
 import { MessageService, ConfirmationService } from 'primeng/api';
-import { booking } from '../../../../../models/booking';
+import { Booking } from '../../../../../models/Booking';
 import { FullCalendarModule } from '@fullcalendar/angular';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import { CalendarOptions, EventInput } from '@fullcalendar/core';
@@ -40,7 +40,7 @@ import { CardModule } from 'primeng/card';
   styleUrl: './studio-details.component.css'
 })
 export class StudioDetailsComponent implements OnInit {
-  studio: studio | null = null;
+  studio: Studio | null = null;
   isUser = false;
   date: Date | null = null;
   loading!: boolean;
@@ -60,7 +60,7 @@ export class StudioDetailsComponent implements OnInit {
   selectedEndHour = '';
   selectedEndMinute = '';
 
-  bookings: booking[] = [];
+  bookings: Booking[] = [];
   disabledDates: Date[] = [];
   highlightedDates: { date: Date; styleClass: string }[] = [];
 
@@ -335,7 +335,7 @@ isEndTimeValid(): boolean {
   return end > start;
 }
 
-  navigateToDetails(studio: studio): void {
+  navigateToDetails(studio: Studio): void {
     const basePath = this.isUser ? '/user-dashboard' : '/admin-dashboard';
     const navigationUrl = [basePath, 'studio-details', studio.id];
 
@@ -352,7 +352,7 @@ isEndTimeValid(): boolean {
   }
 
   markCalendarDates(): void {
-    const bookingsByDate = new Map<string, booking[]>();
+    const bookingsByDate = new Map<string, Booking[]>();
 
     for (const booking of this.bookings) {
       const dateStr = booking.date;

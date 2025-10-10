@@ -2,7 +2,7 @@ import { Component, ViewChildren, ElementRef, QueryList, AfterViewInit } from '@
 import * as mapboxgl from 'mapbox-gl';
 import { environment } from '../../../../../environments/environment';
 import { StudioService } from '../../../../services/studio.service';
-import { studio } from '../../../../models/studio';
+import { Studio } from '../../../../models/Studio';
 import { Observable } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { LoadingSpinnerComponent } from '../../../../shared/loading-spinner/loading-spinner.component';
@@ -19,9 +19,9 @@ import { ButtonModule } from 'primeng/button';
   styleUrls: ['./map-view.component.css']
 })
 export class MapViewComponent implements AfterViewInit {
-  studios$!: Observable<studio[]>;
+  studios$!: Observable<Studio[]>;
   loading$ = this.studioService.loading$;
-  selectedStudio: studio | null = null;
+  selectedStudio: Studio | null = null;
   isAdmin = false;
 
   private map!: mapboxgl.Map;
@@ -59,7 +59,7 @@ export class MapViewComponent implements AfterViewInit {
     );
   }
 
-  private addMarkers(studios: studio[]) {
+  private addMarkers(studios: Studio[]) {
     studios.forEach(studio => {
       if (studio.longitude != null && studio.latitude != null) {
         const marker = new mapboxgl.Marker()
@@ -75,7 +75,7 @@ export class MapViewComponent implements AfterViewInit {
     });
   }
 
-  zoomToStudio(studio: studio): void {
+  zoomToStudio(studio: Studio): void {
     this.selectedStudio = studio;
     if (studio.longitude && studio.latitude) {
       this.map.flyTo({ center: [studio.longitude, studio.latitude], zoom: 16 });
@@ -105,7 +105,7 @@ export class MapViewComponent implements AfterViewInit {
   });
 }
 
-  navigateToStudio(selectedStudio: studio): void {
+  navigateToStudio(selectedStudio: Studio): void {
     const basePath = this.isAdmin ? '/admin-dashboard' : '/user-dashboard';
     const navigationUrl = [basePath, 'studio-details', selectedStudio.id];
     this.router.navigate(navigationUrl);

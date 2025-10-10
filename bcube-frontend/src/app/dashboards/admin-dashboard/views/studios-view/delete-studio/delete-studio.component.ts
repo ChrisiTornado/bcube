@@ -1,7 +1,7 @@
 import { Component, Input} from '@angular/core';
 import { finalize } from "rxjs";
 import { StudioService } from '../../../../../services/studio.service';
-import { studio } from '../../../../../models/studio';
+import { Studio } from '../../../../../models/Studio';
 import { ButtonModule } from 'primeng/button';
 import { MessageService, ConfirmationService } from 'primeng/api';
 
@@ -14,7 +14,7 @@ import { MessageService, ConfirmationService } from 'primeng/api';
 `
 })
 export class DeleteStudioComponent {
-   @Input() studio!: studio;
+   @Input() studio!: Studio;
    loading!: boolean;
    
    constructor(private studioService: StudioService, private messageService: MessageService, private confirmationService: ConfirmationService) {}

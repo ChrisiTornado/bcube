@@ -4,7 +4,7 @@ import { AbstractControl, FormBuilder, FormGroup, Validators} from "@angular/for
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { User } from '../../models/user';
+import { User } from '../../models/User';
 import { AuthContainerComponent } from '../auth-container/auth-container.component';
 import { ButtonModule } from "primeng/button";
 import { ReactiveFormsModule } from '@angular/forms';

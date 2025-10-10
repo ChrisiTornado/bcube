@@ -1,6 +1,5 @@
 import { Component, Input} from '@angular/core';
-import { booking } from '../../../../../models/booking';
-import { finalize } from "rxjs";
+import { Booking } from '../../../../../models/Booking';
 import { BookingService } from '../../../../../services/booking.service';
 import { ButtonModule } from 'primeng/button';
 import { MessageService, ConfirmationService } from 'primeng/api';
@@ -13,7 +12,7 @@ import { BookingActionService } from '../../../../../services/booking-action.ser
   template: `<p-button severity="danger" icon="pi pi-trash" [loading]="loading" (click)="triggerStorno()"></p-button>`,
 })
 export class StornoBookingComponent {
-  @Input() booking!: booking;
+  @Input() booking!: Booking;
    loading!: boolean;
    
    constructor(private bookingActionService: BookingActionService, private bookingService: BookingService, private messageService: MessageService, private confirmationService: ConfirmationService) {}

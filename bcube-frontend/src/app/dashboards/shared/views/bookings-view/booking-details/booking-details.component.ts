@@ -7,7 +7,7 @@ import { DropdownModule } from 'primeng/dropdown';
 import { ButtonModule } from 'primeng/button';
 import { LoadingSpinnerComponent } from '../../../../../shared/loading-spinner/loading-spinner.component';
 import { AuthService } from '../../../../../services/auth/auth.service';
-import { booking } from '../../../../../models/booking';
+import { Booking } from '../../../../../models/Booking';
 import { BookingService } from '../../../../../services/booking.service';
 import { BookingActionService } from '../../../../../services/booking-action.service';
 import { CardModule } from 'primeng/card';
@@ -29,7 +29,7 @@ import { CardModule } from 'primeng/card';
 })
 export class BookingDetailsComponent implements OnInit {
   isUser = false;
-  booking: booking | null = null;
+  booking: Booking | null = null;
   loading!: boolean;
   loading$ = this.bookingService.loading$;
 

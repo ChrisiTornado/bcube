@@ -82,7 +82,7 @@ export class UserDashboardComponent implements OnInit {
         styleClass: this.isRouteActive(['bookings', 'booking-details', 'booking-confirmation']) ? 'p-menuitem-link-active' : ''
       },
       {
-        label: 'Kalendar',
+        label: 'Mein Kalendar',
         icon: 'pi pi-fw pi-calendar',
         routerLink: 'calendar',
         styleClass: this.isRouteActive(['calendar']) ? 'p-menuitem-link-active' : ''

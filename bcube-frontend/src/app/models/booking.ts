@@ -1,10 +1,10 @@
 import { BookingStatus } from "./BookingStatus"
-import { studio } from "./studio";
-import { User } from "./user";
+import { Studio } from "./Studio";
+import { User } from "./User";
 
-export interface booking {
+export interface Booking {
     id: number,
-    studio: studio;
+    studio: Studio;
     user: User;
     date: string,
     startTime: string,

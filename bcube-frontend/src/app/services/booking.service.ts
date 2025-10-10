@@ -1,14 +1,15 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { User } from '../models/user';
+import { User } from '../models/User';
 import { environment } from '../../environments/environment';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { ApiResponse } from '../models/responses/ApiResponse';
 import { finalize } from 'rxjs/operators';
 import { map } from 'rxjs/operators';
-import { booking } from '../models/booking';
+import { Booking } from '../models/Booking';
 import { CreateBookingRequest } from '../models/requests/CreateBookingRequest';
 import { BookingResponse } from '../models/responses/BookingResponse';
+import { Studio } from '../models/Studio';
 
 @Injectable({
   providedIn: 'root'
@@ -16,59 +17,59 @@ import { BookingResponse } from '../models/responses/BookingResponse';
 export class BookingService {
   private loadingSubject = new BehaviorSubject<boolean>(false);
   public loading$ = this.loadingSubject.asObservable();
-  private bookingSubject = new BehaviorSubject<booking[]>([]);
+  private bookingSubject = new BehaviorSubject<Booking[]>([]);
   public bookings$ = this.bookingSubject.asObservable();
 
   constructor(private http: HttpClient) { }
 
-  getAll(): Observable<booking[]> {
+  getAll(): Observable<Booking[]> {
     this.loadingSubject.next(true);
     return this.http
-      .get<{ message: string; data: booking[] }>(`${environment.bookingApiUrl}/bookings`)
+      .get<{ message: string; data: Booking[] }>(`${environment.bookingApiUrl}/bookings`)
       .pipe(
         map(res => res.data),
         finalize(() => this.loadingSubject.next(false))
       );
   }
 
-  getBookingsByUserId(userId: number): Observable<booking[]> {
+  getBookingsByUserId(userId: number): Observable<Booking[]> {
     this.loadingSubject.next(true);
     return this.http
-      .get<{ message: string; data: booking[] }>(`${environment.bookingApiUrl}/bookings/user/${userId}`)
+      .get<{ message: string; data: Booking[] }>(`${environment.bookingApiUrl}/bookings/user/${userId}`)
       .pipe(
         map(res => res.data),
         finalize(() => this.loadingSubject.next(false))
       );
   }
 
-  getBookingsByStudioId(studioId: number): Observable<booking[]> {
+  getBookingsByStudioId(studioId: number): Observable<Booking[]> {
     this.loadingSubject.next(true);
     return this.http
-      .get<{ message: string; data: booking[] }>(`${environment.bookingApiUrl}/bookings/studio/${studioId}`)
+      .get<{ message: string; data: Booking[] }>(`${environment.bookingApiUrl}/bookings/studio/${studioId}`)
       .pipe(
         map(res => res.data),
         finalize(() => this.loadingSubject.next(false))
       );
   }
 
-  getBookingById(bookingId: number): Observable<booking> {
+  getBookingById(bookingId: number): Observable<Booking> {
     this.loadingSubject.next(true);
     return this.http
-      .get<{ message: string; data:booking }>(`${environment.bookingApiUrl}/bookings/${bookingId}`)
+      .get<{ message: string; data:Booking }>(`${environment.bookingApiUrl}/bookings/${bookingId}`)
       .pipe(
         map(res => res.data),
         finalize(() => this.loadingSubject.next(false))
       )
   }
 
-  setBookings(bookings: booking[]): void {
+  setBookings(bookings: Booking[]): void {
     this.bookingSubject.next(bookings);
   }
 
-  getStudioById(id: number): Observable<booking> {
+  getStudioById(id: number): Observable<Booking> {
     this.loadingSubject.next(true);
     return this.http
-      .get<{ message: string; data: booking }>(`${environment.bookingApiUrl}/${id}`)
+      .get<{ message: string; data: Booking }>(`${environment.bookingApiUrl}/${id}`)
       .pipe(
         map(res => res.data),
         finalize(() => this.loadingSubject.next(false))
@@ -90,4 +91,16 @@ export class BookingService {
       environment.bookingApiUrl + "/bookings" + id
     )
   }
+
+  public filteredBookings$(user: User | null, studio: Studio | null): Observable<Booking[]> {
+  return this.bookingSubject.asObservable().pipe(
+    map(bookings =>
+      bookings.filter(booking => {
+        const matchesUser = !user || booking.user.id === user.id;
+        const matchesStudio = !studio || booking.studio.id === studio.id;
+        return matchesUser && matchesStudio;
+      })
+    )
+  );
+}
 }
