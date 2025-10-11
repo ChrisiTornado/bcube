@@ -33,3 +33,10 @@
   padding: 1.5rem;
   overflow: hidden;
 }
+
+:host ::ng-deep .admin-menu .p-menuitem.p-menuitem-link-active > .p-menuitem-content:hover,
+:host ::ng-deep .admin-menu .p-menuitem.p-menuitem-link-active > .p-menuitem-content > .p-menuitem-link:hover {
+  background: transparent !important;
+  box-shadow: none !important;
+  color: inherit !important;
+}

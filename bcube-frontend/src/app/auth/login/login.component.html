@@ -27,15 +27,18 @@
       </div>
 
       <div class="flex align-items-center justify-content-between mb-4">
-        <a (click)="resetPasswort()" class="font-medium no-underline ml-2 text-blue-500 text-right cursor-pointer">Passwort vergessen?</a>
+        <a (click)="resetPasswort()"
+          class="font-medium no-underline ml-2 text-blue-500 text-right cursor-pointer">Passwort vergessen?</a>
       </div>
 
       <div class="card flex justify-content-center mb-4">
         <div class="flex gap-3">
-          <p-button pRipple label="Einloggen" icon="pi pi-sign-in" iconPos="left" [loading]="loading" (click)="login()">
+          <p-button [style]="{'background-color': 'black', 'border-color': 'black', 'color': 'white'}" pRipple
+            label="Einloggen" icon="pi pi-sign-in" iconPos="left" [loading]="loading" (click)="login()">
           </p-button>
 
-          <p-button [routerLink]="['/register']">
+          <p-button severity="danger" [routerLink]="['/register']"
+            [style]="{'background-color': 'black', 'border-color': 'black', 'color': 'white'}">
             Registrieren
           </p-button>
         </div>

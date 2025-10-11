@@ -82,22 +82,18 @@ export class AdminDashboardComponent implements OnInit {
         routerLink: 'bookings',
         styleClass: this.isRouteActive(['bookings', 'booking-details', 'booking-confirmation']) ? 'p-menuitem-link-active' : ''
       },
-      // {
-      //   label: 'Kalendar',
-      //   icon: 'pi pi-fw pi-calendar',
-      //   routerLink: 'calendar',
-      //   styleClass: this.isRouteActive(['calendar']) ? 'p-menuitem-link-active' : ''
-      // },
+    
       {
         label: 'Logout',
         icon: 'pi pi-fw pi-sign-out',
+        styleClass: 'logout-item',
         command: () => {
           this.confirmationService.confirm({
             message: 'Sind Sie sicher, dass Sie sich abmelden möchten?',
             header: 'Abmeldung bestätigen',
             icon: 'pi pi-exclamation-triangle',
             acceptLabel: 'Ja',
-            rejectLabel: 'Nein',
+            rejectLabel: 'Abbrechen',
             accept: () => {
               this.authService.logout();
             }

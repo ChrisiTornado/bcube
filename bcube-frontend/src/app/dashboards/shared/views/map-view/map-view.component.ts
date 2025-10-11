@@ -62,7 +62,7 @@ export class MapViewComponent implements AfterViewInit {
   private addMarkers(studios: Studio[]) {
     studios.forEach(studio => {
       if (studio.longitude != null && studio.latitude != null) {
-        const marker = new mapboxgl.Marker()
+        const marker = new mapboxgl.Marker({ color: '#000000ff' })
           .setLngLat([studio.longitude, studio.latitude])
           .addTo(this.map);
 
@@ -99,6 +99,7 @@ export class MapViewComponent implements AfterViewInit {
   }
 
   resetView(): void {
+    this.selectedStudio = null;
   this.map.flyTo({
     center: [16.3738, 48.2082], // Startpunkt (Wien)
     zoom: 10

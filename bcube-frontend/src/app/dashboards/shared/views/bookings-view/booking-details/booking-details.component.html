@@ -2,7 +2,7 @@
 
 <ng-container *ngIf="!(loading$ | async)">
   <div class="mb-4">
-    <button pButton type="button" icon="pi pi-arrow-left" label="Zurück" (click)="goBack()"
+    <button pButton type="button" icon="pi pi-arrow-left" label="Zurück" (click)="goBack()" [style]="{'border-color': 'black', 'color': 'black'}"
       class="p-button-outlined"></button>
   </div>
 

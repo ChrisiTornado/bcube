@@ -5,102 +5,80 @@
 
     <!-- Zurück-Button -->
     <div class="mb-4">
-      <button 
-        pButton 
-        type="button" 
-        class="p-button-outlined"
-        icon="pi pi-arrow-left" 
-        label="Zurück" 
-        (click)="goBack()">
+      <button pButton type="button" class="p-button-outlined" icon="pi pi-arrow-left" label="Zurück"
+        [style]="{'border-color': 'black', 'color': 'black'}" (click)="goBack()">
       </button>
     </div>
 
-    <!-- Titel + kleines Bild -->
-    <div class="flex mb-4">
+    <!-- Titel + Bild -->
+    <div class="flex mb-4 items-center">
       <h2 class="text-2xl font-semibold mb-2">{{ studio.name }}</h2>
-      <img 
-        [src]="studio.imageBase64" 
-        alt="Studiobild"
-        style="max-width: 75px; max-height: 75px; margin-top: 0.5rem; margin-left: 0.5rem; cursor: pointer;"
+      <img [src]="studio.imageBase64" alt="Studiobild"
+        style="width: auto; height: 60px; margin-left: 0.75rem; cursor: pointer;"
         (click)="showOverlay(studio.imageBase64)">
     </div>
 
     <!-- Bild-Overlay -->
     <div *ngIf="overlayVisible" class="overlay" (click)="hideOverlay()">
-      <img 
-        [src]="overlayImage" 
-        alt="Großes Bild" 
-        class="overlay-img" 
-        (click)="$event.stopPropagation()">
+      <img [src]="overlayImage" alt="Großes Bild" class="overlay-img" (click)="$event.stopPropagation()">
       <button class="close-btn" (click)="hideOverlay()">✖</button>
     </div>
 
-    <!-- Flex-Container: Kalender links | Details rechts -->
+    <!-- Hauptlayout -->
     <div class="studio-layout">
 
-      <!-- Linke Seite: Kalender + Buchung -->
+      <!-- Linke Seite -->
       <div class="calendar-section">
         <full-calendar [options]="calendarOptions"></full-calendar>
 
-        <!-- Gewähltes Datum -->
-        <div *ngIf="date" class="mt-2 text-sm text-gray-600">
-          Gewähltes Datum: {{ date | date: 'fullDate' }}
+        <div class="relative">
+          <div *ngIf="date" class="absolute mt-2 text-sm text-gray-600">
+            Gewähltes Datum: {{ date | date: 'fullDate' }}
+          </div>
         </div>
 
-        <!-- Buchungselemente -->
-        <div class="booking-elements" *ngIf="isUser">
+        <div class="booking-elements mt-6" *ngIf="isUser">
+
           <!-- Startzeit -->
-          <div class="flex gap-2 mt-4">
-            <label for="Start" class="my-auto">Startzeitpunkt:</label>
-            <div class="flex items-center">
-              <p-dropdown [options]="startHours" [(ngModel)]="selectedStartHour" placeholder="Stunde wählen"></p-dropdown>
-              <span class="mx-1 text-lg leading-none my-auto">:</span>
-              <p-dropdown [options]="startMinutes" [(ngModel)]="selectedStartMinute" placeholder="Minute wählen"
-                          [disabled]="!selectedStartHour"></p-dropdown>
-            </div>
-            <label class="my-auto">Uhr</label>
+          <div class="items-center mb-3">
+            <label for="startTime" class="font-medium">Startzeitpunkt:</label>
+            <p-calendar class="ml-3" id="startTime" [(ngModel)]="startTime" [timeOnly]="true" hourFormat="24"
+              [stepMinute]="15" placeholder="Startzeit wählen" [showIcon]="true" (onFocus)="setDefaultTime('start')"
+              (onSelect)="startTime = normalizeToQuarterHour(startTime)">
+            </p-calendar>
           </div>
 
           <!-- Endzeit -->
-          <div class="flex gap-3 mt-4">
-            <label for="End" class="my-auto">Endzeitpunkt:</label>
-            <div class="flex items-center">
-              <p-dropdown [options]="startHours" [(ngModel)]="selectedEndHour" placeholder="Stunde wählen"></p-dropdown>
-              <span class="mx-1 text-lg leading-none my-auto">:</span>
-              <p-dropdown [options]="startMinutes" [(ngModel)]="selectedEndMinute" placeholder="Minute wählen"
-                          [disabled]="!selectedEndHour"></p-dropdown>
-            </div>
-            <label class="my-auto -ml-2">Uhr</label>
+          <div class="items-center mb-3">
+            <label for="endTime" class="font-medium">Endzeitpunkt:</label>
+            <p-calendar class="ml-4" id="endTime" [(ngModel)]="endTime" [timeOnly]="true" hourFormat="24"
+              [stepMinute]="15" placeholder="Endzeit wählen" [showIcon]="true" (onFocus)="setDefaultTime('end')"
+              (onSelect)="endTime = normalizeToQuarterHour(endTime)">
+            </p-calendar>
           </div>
 
           <!-- Fehlermeldung -->
-          <p style="color: red" *ngIf="!isEndTimeValid()">
+          <p class="text-red-600 text-sm mt-1" *ngIf="!isEndTimeValid()">
             Endzeit muss nach der Startzeit liegen.
           </p>
 
-          <!-- Buchungs-Button -->
-          <div class="mt-6 flex justify-center">
-            <button 
-              pButton 
-              type="button" 
-              label="Studio buchen" 
-              [disabled]="!canBook()" 
+          <!-- Button -->
+          <div class="mt-5 flex justify-center">
+            <button pButton type="button" label="Studio buchen" [disabled]="!canBook()"
+              [style]="{'background-color': 'black', 'border-color': 'black', 'color': 'white'}"
               (click)="confirmBooking()">
             </button>
           </div>
         </div>
       </div>
 
-      <!-- Rechte Seite: Card mit Studioübersicht -->
-      <p-card 
-        class="info-card bg-gray-100 rounded-lg shadow-sm"
-        [style]="{ overflow: 'hidden' }">
+      <!-- Rechte Seite -->
+      <p-card class="info-card bg-gray-100 rounded-lg shadow-sm" [style]="{ overflow: 'hidden' }">
         <ng-template pTemplate="title">Studioübersicht</ng-template>
         <p><strong>Beschreibung:</strong> {{ studio.description }}</p>
         <p><strong>Adresse:</strong> {{ studio.street }}, {{ studio.plz }} {{ studio.city }}</p>
         <p><strong>Land:</strong> {{ studio.country }}</p>
       </p-card>
-
     </div>
   </ng-container>
 </ng-container>

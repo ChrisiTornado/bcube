@@ -45,13 +45,14 @@
     <p-button
       [outlined]="true"
       label="Filter zurücksetzen"
+      [style]="{'background-color': 'black', 'border-color': 'black', 'color': 'white'}"
       (click)="userFilter = null; studioFilter = null; updateFilters()" />
   </div>
 
   <!-- Wenn keine Buchungen vorhanden sind -->
   <div *ngIf="filteredBookings.length === 0" class="text-center my-6">
     <h3 class="mb-3">Keine Buchungen gefunden</h3>
-    <p-button (onClick)="navigateToBookingCreation()" *ngIf="!isAdmin">Hier buchen</p-button>
+    <p-button (onClick)="navigateToBookingCreation()" [style]="{'background-color': 'black', 'border-color': 'black', 'color': 'white'}" *ngIf="!isAdmin">Hier buchen</p-button>
   </div>
 
   <!-- Buchungstabelle -->

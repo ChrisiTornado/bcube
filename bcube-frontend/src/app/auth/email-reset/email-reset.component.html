@@ -21,6 +21,7 @@
         icon="pi pi-arrow-left"
         class="p-button-text text-900"
         (click)="goBack()"
+        [style]="{'background-color': 'black', 'border-color': 'black', 'color': 'white'}"
       ></p-button>
 
       <p-button
@@ -29,6 +30,7 @@
         [loading]="loading"
         (click)="submit()"
         class="bg-red-600 text-white"
+        [style]="{'background-color': 'black', 'border-color': 'black', 'color': 'white'}"
       ></p-button>
     </div>
   </form>

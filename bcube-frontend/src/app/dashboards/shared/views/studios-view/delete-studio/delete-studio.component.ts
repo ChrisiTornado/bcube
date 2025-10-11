@@ -25,7 +25,7 @@ export class DeleteStudioComponent {
       header: 'Löschen bestätigen',
       icon: 'pi pi-exclamation-triangle',
       acceptLabel: 'Ja',
-      rejectLabel: 'Nein',
+      rejectLabel: 'Abbrechen',
       accept: () => this.delete()
     });
   }

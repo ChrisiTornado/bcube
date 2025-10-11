@@ -24,7 +24,7 @@ export class BookingActionService {
       header: 'Stornieren bestätigen',
       icon: 'pi pi-exclamation-triangle',
       acceptLabel: 'Ja',
-      rejectLabel: 'Nein',
+      rejectLabel: 'Abbrechen',
       accept: () => this.executeStorno(booking, onSuccess, onError, setLoading)
     });
   }

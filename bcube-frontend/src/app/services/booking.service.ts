@@ -88,7 +88,7 @@ export class BookingService {
 
   storno(id: number): Observable<ApiResponse<number>>{
     return this.http.delete<ApiResponse<number>>(
-      environment.bookingApiUrl + "/bookings" + id
+      environment.bookingApiUrl + "/bookings/" + id
     )
   }
 

@@ -13,6 +13,7 @@ import { User } from '../../../../../models/User';
     <p-button icon="pi pi-trash"
               styleClass="p-button-danger"
               [loading]="loading"
+              [style]="{'background-color': 'black', 'border-color': 'black', 'color': 'white'}"
               (click)="confirmDelete()">
     </p-button>
   `
@@ -29,7 +30,7 @@ export class DeleteUserComponent {
       header: 'Löschen bestätigen',
       icon: 'pi pi-exclamation-triangle',
       acceptLabel: 'Ja',
-      rejectLabel: 'Nein',
+      rejectLabel: 'Abbrechen',
       accept: () => this.delete()
     });
   }

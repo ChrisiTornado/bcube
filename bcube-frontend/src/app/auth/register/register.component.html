@@ -67,9 +67,9 @@
 
       <div class="card flex justify-content-center mb-4">
         <div class="flex gap-3">
-          <p-button pRipple label="Registrieren" icon="pi pi-sign-in" iconPos="left" [loading]="loading"
+          <p-button pRipple label="Registrieren" icon="pi pi-sign-in" iconPos="left" [loading]="loading" [style]="{'background-color': 'black', 'border-color': 'black', 'color': 'white'}"
             (click)="register()"></p-button>
-          <p-button [routerLink]="['/login']">Einloggen</p-button>
+          <p-button [routerLink]="['/login']" [style]="{'background-color': 'black', 'border-color': 'black', 'color': 'white'}">Einloggen</p-button>
         </div>
       </div>
     </form>

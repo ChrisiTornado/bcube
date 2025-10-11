@@ -96,7 +96,7 @@ export class UserDashboardComponent implements OnInit {
             header: 'Abmeldung bestätigen',
             icon: 'pi pi-exclamation-triangle',
             acceptLabel: 'Ja',
-            rejectLabel: 'Nein',
+            rejectLabel: 'Abbrechen',
             accept: () => {
               this.authService.logout();
             }

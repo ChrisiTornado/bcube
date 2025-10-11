@@ -4,8 +4,10 @@
 body {
   margin: 0;
   //min-height: 100vh;
-  
+
 }
+
+
 
 .p-megamenu.admin-menu {
   height: 100%;
@@ -14,11 +16,34 @@ body {
     height: 100%;
 
     .p-menuitem-link-active {
-      background: $fh-green;
+      background: #000 !important; // oder einfach black
 
       * {
-        color: #fff;
+        color: #fff !important;
       }
     }
   }
+}
+
+/* Schwarzer "Ja"-Button */
+.p-confirm-dialog-accept {
+  background: black !important;
+  border-color: black !important;
+  color: white !important;
+}
+
+.p-confirm-dialog-accept:hover {
+  background: #333 !important;
+  border-color: #333 !important;
+}
+
+/* Weißer (neutraler) "Abbrechen"-Button */
+.p-confirm-dialog-reject {
+  background: white !important;
+  color: black !important;
+  border: 1px solid black !important;
+}
+
+.p-confirm-dialog-reject:hover {
+  background: #f5f5f5 !important;
 }

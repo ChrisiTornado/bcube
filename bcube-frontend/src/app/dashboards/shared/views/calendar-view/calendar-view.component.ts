@@ -40,7 +40,7 @@ export class CalendarViewComponent implements OnInit {
     private bookingService: BookingService,
     private confirmationService: ConfirmationService,
     private messageService: MessageService
-  ) {}
+  ) { }
 
   calendarPlugins = [dayGridPlugin, interactionPlugin];
   calendarEvents: EventInput[] = [];
@@ -74,7 +74,10 @@ export class CalendarViewComponent implements OnInit {
 
         return {
           title: `${formatTime(start)} – ${formatTime(end)}`,
-          date: new Date(b.date).toISOString().split('T')[0]
+          date: new Date(b.date).toISOString().split('T')[0],
+          color: '#000000ff',
+          textColor: '#ffffff',
+          borderColor: '#000000ff'
         };
       });
 
