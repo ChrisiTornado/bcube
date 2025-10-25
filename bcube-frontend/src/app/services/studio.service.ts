@@ -3,10 +3,10 @@ import { HttpClient } from '@angular/common/http';
 import { Studio } from '../models/Studio';
 import { environment } from '../../environments/environment';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { CreateStudioRequest } from '../models/requests/CreateStudioRequest';
+import { CreateStudioRequest } from '../models/requests/studio/CreateStudioRequest';
 import { ApiResponse } from '../models/responses/ApiResponse';
-import { StudioResponse } from '../models/responses/StudioResponse';
-import { UpdateStudioRequest } from '../models/requests/UpdateStudioRequest';
+import { StudioResponse } from '../models/responses/studio/StudioResponse';
+import { UpdateStudioRequest } from '../models/requests/studio/UpdateStudioRequest';
 import { finalize, map } from 'rxjs/operators';
 
 @Injectable({

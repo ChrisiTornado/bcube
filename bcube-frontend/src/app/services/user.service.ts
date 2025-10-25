@@ -6,9 +6,9 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { ApiResponse } from '../models/responses/ApiResponse';
 import { finalize } from 'rxjs/operators';
 import { map } from 'rxjs/operators';
-import { UserResponse } from '../models/responses/UserResponse';
-import { CreateUserRequest } from '../models/requests/CreateUserRequest';
-import { UpdateUserRequest } from '../models/requests/UpdateUserRequest';
+import { UserResponse } from '../models/responses/user/UserResponse';
+import { CreateUserRequest } from '../models/requests/user/CreateUserRequest';
+import { UpdateUserRequest } from '../models/requests/user/UpdateUserRequest';
 
 @Injectable({
   providedIn: 'root'

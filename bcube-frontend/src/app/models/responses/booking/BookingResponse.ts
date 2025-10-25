@@ -1,6 +1,6 @@
-import { BookingStatus } from "../BookingStatus";
-import { Studio } from "../Studio";
-import { User } from "../User";
+import { BookingStatus } from "../../BookingStatus";
+import { Studio } from "../../Studio";
+import { User } from "../../User";
 
 export interface BookingResponse {
     id: number,

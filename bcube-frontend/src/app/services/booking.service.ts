@@ -7,8 +7,8 @@ import { ApiResponse } from '../models/responses/ApiResponse';
 import { finalize } from 'rxjs/operators';
 import { map } from 'rxjs/operators';
 import { Booking } from '../models/Booking';
-import { CreateBookingRequest } from '../models/requests/CreateBookingRequest';
-import { BookingResponse } from '../models/responses/BookingResponse';
+import { CreateBookingRequest } from '../models/requests/booking/CreateBookingRequest';
+import { BookingResponse } from '../models/responses/booking/BookingResponse';
 import { Studio } from '../models/Studio';
 
 @Injectable({

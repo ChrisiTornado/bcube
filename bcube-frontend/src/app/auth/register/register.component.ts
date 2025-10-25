@@ -11,9 +11,9 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { MessageService } from "primeng/api";
 import { finalize } from "rxjs";
 import { LoadingSpinnerComponent } from '../../shared/loading-spinner/loading-spinner.component';
-import { RegisterRequest } from '../../models/requests/RegisterRequest';
+import { RegisterRequest } from '../../models/requests/user/RegisterRequest';
 import { ApiResponse } from '../../models/responses/ApiResponse';
-import { JwtResponse } from '../../models/responses/JwtResponse';
+import { JwtResponse } from '../../models/responses/user/JwtResponse';
 import { InputTextModule } from 'primeng/inputtext';
 
 @Component({

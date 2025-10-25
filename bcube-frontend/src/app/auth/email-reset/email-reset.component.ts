@@ -10,6 +10,8 @@ import { ToastModule } from 'primeng/toast';
 import { RippleModule } from 'primeng/ripple';
 import { AuthContainerComponent } from '../auth-container/auth-container.component';
 import { InputTextModule } from 'primeng/inputtext';
+import { ApiResponse } from '../../models/responses/ApiResponse';
+import { ResetPasswordResponse } from '../../models/responses/user/ResetPasswordResponse';
 
 @Component({
   selector: 'app-email-reset',
@@ -49,21 +51,20 @@ export class EmailResetComponent {
 
     this.loading = true;
 
-    this.authService
-      .resetPassword(this.formGroup.value.email)
+    this.authService.resetPassword({email: this.formGroup.value.email })
       .pipe(finalize(() => (this.loading = false)))
       .subscribe({
-        next: (response: { email: string }) => {
+        next: (response: ApiResponse<ResetPasswordResponse>) => {
           this.router
             .navigate(['/auth/enter-code'], {
-              queryParams: { data: JSON.stringify(response.email) }
+              queryParams: { data: JSON.stringify(response.data.email) }
             })
             .then(() => {
               setTimeout(() => {
                 this.messageService.add({
                   severity: 'success',
                   summary: 'Erfolgreich',
-                  detail: 'E-Mail wurde gesendet.'
+                  detail: response.message
                 });
               });
             });

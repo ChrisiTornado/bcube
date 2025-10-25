@@ -9,9 +9,9 @@ import { DropdownModule } from 'primeng/dropdown';
 import { UserService } from '../../../../../services/user.service';
 import { MessageService } from 'primeng/api';
 import { User } from '../../../../../models/User';
-import { UpdateUserRequest } from '../../../../../models/requests/UpdateUserRequest';
+import { UpdateUserRequest } from '../../../../../models/requests/user/UpdateUserRequest';
 import { ApiResponse } from '../../../../../models/responses/ApiResponse';
-import { UserResponse } from '../../../../../models/responses/UserResponse';
+import { UserResponse } from '../../../../../models/responses/user/UserResponse';
 
 @Component({
   selector: 'app-update-user',

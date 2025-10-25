@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BookingService } from './booking.service';
-import { BookingResponse } from '../models/responses/BookingResponse';
+import { BookingResponse } from '../models/responses/booking/BookingResponse';
 import { finalize } from 'rxjs';
 import { ConfirmationService, MessageService } from 'primeng/api';
 

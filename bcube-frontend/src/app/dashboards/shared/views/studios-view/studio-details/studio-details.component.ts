@@ -18,9 +18,9 @@ import interactionPlugin from '@fullcalendar/interaction';
 import { CalendarOptions, EventInput } from '@fullcalendar/core';
 import { Studio } from '../../../../../models/Studio';
 import { Booking } from '../../../../../models/Booking';
-import { CreateBookingRequest } from '../../../../../models/requests/CreateBookingRequest';
+import { CreateBookingRequest } from '../../../../../models/requests/booking/CreateBookingRequest';
 import { ApiResponse } from '../../../../../models/responses/ApiResponse';
-import { BookingResponse } from '../../../../../models/responses/BookingResponse';
+import { BookingResponse } from '../../../../../models/responses/booking/BookingResponse';
 
 @Component({
   selector: 'app-studio-details',

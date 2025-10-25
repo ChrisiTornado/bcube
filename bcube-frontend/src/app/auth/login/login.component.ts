@@ -11,8 +11,8 @@ import { AuthContainerComponent } from '../auth-container/auth-container.compone
 import { ReactiveFormsModule } from '@angular/forms';
 import { LoadingSpinnerComponent } from '../../shared/loading-spinner/loading-spinner.component';
 import { ApiResponse } from '../../models/responses/ApiResponse';
-import { JwtResponse } from '../../models/responses/JwtResponse';
-import { LoginRequest } from '../../models/requests/LoginRequest';
+import { JwtResponse } from '../../models/responses/user/JwtResponse';
+import { LoginRequest } from '../../models/requests/user/LoginRequest';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { InputTextModule } from 'primeng/inputtext';

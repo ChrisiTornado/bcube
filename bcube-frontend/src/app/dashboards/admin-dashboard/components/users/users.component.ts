@@ -12,7 +12,7 @@ import { CommonModule } from '@angular/common';
 import { LoadingSpinnerComponent } from '../../../../shared/loading-spinner/loading-spinner.component';
 import { InputTextModule } from 'primeng/inputtext';
 import { DropdownModule } from 'primeng/dropdown';
-import { CreateUserRequest } from '../../../../models/requests/CreateUserRequest';
+import { CreateUserRequest } from '../../../../models/requests/user/CreateUserRequest';
 
 @Component({
   selector: 'app-users',

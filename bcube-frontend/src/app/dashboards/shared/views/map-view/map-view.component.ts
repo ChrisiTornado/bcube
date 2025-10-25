@@ -1,4 +1,4 @@
-import { Component, ViewChildren, ElementRef, QueryList, AfterViewInit } from '@angular/core';
+import { Component, ViewChildren, ElementRef, QueryList, AfterViewInit, OnInit } from '@angular/core';
 import * as mapboxgl from 'mapbox-gl';
 import { environment } from '../../../../../environments/environment';
 import { StudioService } from '../../../../services/studio.service';
@@ -18,7 +18,7 @@ import { ButtonModule } from 'primeng/button';
   templateUrl: './map-view.component.html',
   styleUrls: ['./map-view.component.css']
 })
-export class MapViewComponent implements AfterViewInit {
+export class MapViewComponent implements AfterViewInit, OnInit {
   studios$!: Observable<Studio[]>;
   loading$ = this.studioService.loading$;
   selectedStudio: Studio | null = null;
@@ -31,12 +31,13 @@ export class MapViewComponent implements AfterViewInit {
 
   constructor(private studioService: StudioService, private router: Router, private authService: AuthService) { }
 
-  ngAfterViewInit(): void {
+  ngOnInit(): void {
     this.isAdmin = this.authService.getRole() === "ADMIN";
-
-    this.initMap();
     this.studios$ = this.studioService.studios$;
+  }
 
+  ngAfterViewInit(): void {
+    this.initMap();
     this.studios$.subscribe(studios => {
       this.clearMarkers();
       this.addMarkers(studios);
