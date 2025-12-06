@@ -55,10 +55,10 @@ export class EmailResetComponent {
       .pipe(finalize(() => (this.loading = false)))
       .subscribe({
         next: (response: ApiResponse<ResetPasswordResponse>) => {
+          console.log(this.email.value)
+          localStorage.setItem('resetEmail', this.email.value);
           this.router
-            .navigate(['/auth/enter-code'], {
-              queryParams: { data: JSON.stringify(response.data.email) }
-            })
+            .navigate(['/auth/enter-code'])
             .then(() => {
               setTimeout(() => {
                 this.messageService.add({
@@ -73,7 +73,7 @@ export class EmailResetComponent {
           this.messageService.add({
             severity: 'error',
             summary: 'Fehler',
-            detail: 'Chill bro, bin schon dabei(❁´◡`❁)'
+            detail: err.message
           });
         }
       });

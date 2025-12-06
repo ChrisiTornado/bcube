@@ -12,8 +12,8 @@ import { User } from '../../../../../models/User';
   template: `
     <p-button icon="pi pi-trash"
               styleClass="p-button-danger"
+              severity="danger" 
               [loading]="loading"
-              [style]="{'background-color': 'black', 'border-color': 'black', 'color': 'white'}"
               (click)="confirmDelete()">
     </p-button>
   `

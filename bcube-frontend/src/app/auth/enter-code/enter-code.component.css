@@ -1,0 +1,19 @@
+.code-input {
+    width: 40px; /* Definiert eine quadratische Größe */
+    height: 40px; /* Definiert eine quadratische Größe */
+    text-align: center;
+    font-size: 20px;
+    margin: 0 5px; /* Abstand zwischen den Feldern */
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  .code-input:focus {
+    border-color: #007bff; /* Blaue Umrandung bei Fokus */
+    outline: none;
+  }
+  
+  .code-input:disabled {
+    background-color: #f0f0f0; /* Grau hinter den Feldern, wenn deaktiviert */
+  }
+  

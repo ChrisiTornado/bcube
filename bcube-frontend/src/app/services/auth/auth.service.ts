@@ -15,6 +15,7 @@ import { ResetPasswordResponse } from '../../models/responses/user/ResetPassword
 export class AuthService {
   private readonly tokenKey = 'auth_token';
   private readonly userKey = 'auth_user';
+  private email!: string;
 
   constructor(private http: HttpClient, private router: Router) {}
 
@@ -40,6 +41,10 @@ export class AuthService {
   resetPassword(payload: ResetPasswordRequest) {
   return this.http.post<ApiResponse<ResetPasswordResponse>>(environment.authUrl + "/reset-password", payload);
 }
+
+  verifyCode(email: string, code: string): Observable<User> {
+    return this.http.post<User>(environment.authUrl + '/verify-code', { email, code });
+  }
 
   isAuthenticated(): boolean {
     return !!localStorage.getItem(this.tokenKey);
