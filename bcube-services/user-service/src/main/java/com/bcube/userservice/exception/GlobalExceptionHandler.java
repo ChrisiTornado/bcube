@@ -39,4 +39,14 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Void>> handleUserNotFound(UserNotFoundException ex) {
         return new ResponseEntity<>(new ApiResponse<>(ex.getMessage(), null), HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler(PasswordResetTokenExpiredException.class)
+    public ResponseEntity<ApiResponse<Void>> handlePasswordResetTokenExpired(PasswordResetTokenExpiredException ex) {
+        return new ResponseEntity<>(new ApiResponse<>(ex.getMessage(), null), HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(InvalidResetTokenException.class)
+    public ResponseEntity<ApiResponse<Void>> handleInvalidResetToken(InvalidResetTokenException ex) {
+        return new ResponseEntity<>(new ApiResponse<>(ex.getMessage(), null), HttpStatus.UNAUTHORIZED);
+    }
 }

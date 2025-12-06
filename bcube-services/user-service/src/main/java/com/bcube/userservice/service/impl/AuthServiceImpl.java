@@ -1,8 +1,6 @@
 package com.bcube.userservice.service.impl;
 
-import com.bcube.userservice.exception.EmailAlreadyTakenException;
-import com.bcube.userservice.exception.InvalidCredentialsException;
-import com.bcube.userservice.exception.UserNotFoundException;
+import com.bcube.userservice.exception.*;
 import com.bcube.userservice.persistance.entity.Role;
 import com.bcube.userservice.persistance.entity.User;
 import com.bcube.userservice.persistance.repository.UserRepository;
@@ -10,7 +8,12 @@ import com.bcube.userservice.security.JwtTokenProvider;
 import com.bcube.userservice.service.AuthService;
 import com.bcube.userservice.service.dto.request.LoginRequest;
 import com.bcube.userservice.service.dto.request.RegisterRequest;
+import com.bcube.userservice.service.dto.request.ResetPasswordRequest;
+import com.bcube.userservice.service.dto.request.VerifyCodeRequest;
 import com.bcube.userservice.service.dto.response.JwtResponse;
+import com.bcube.userservice.service.dto.response.ResetPasswordResponse;
+import com.bcube.userservice.service.dto.response.VerifyCodeResponse;
+import com.bcube.userservice.utility.CodeGenerator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -23,22 +26,29 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
     @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
     @Autowired
-    private AuthenticationManager authenticationManager;
+    private final AuthenticationManager authenticationManager;
 
     @Autowired
-    private JwtTokenProvider jwtTokenProvider;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Autowired
     private final PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private final MailService mailSender;
 
     @Override
     public JwtResponse register(RegisterRequest registerRequest) {
@@ -65,12 +75,48 @@ public class AuthServiceImpl implements AuthService {
         return authenticateAndCreateJwt(loginRequest.getEmail(), loginRequest.getPassword());
     }
 
+    @Override
+    public ResetPasswordResponse resetPassword(ResetPasswordRequest resetPasswordRequest) {
+        User user = userRepository.findByEmail(resetPasswordRequest.getEmail());
+        if (user == null)
+            throw new UserNotFoundException("Kein Benutzer mit der E-Mail-Adresse gefunden: " + resetPasswordRequest.getEmail());
+
+        String code = CodeGenerator.generateCode();
+        user.setResetCode(code);
+        user.setResetCodeExpiresAt(Instant.now().plus(15, ChronoUnit.MINUTES));
+        userRepository.save(user);
+        mailSender.sendPasswordResetCode(resetPasswordRequest.getEmail(), code);
+        return new ResetPasswordResponse(true);
+    }
+
+    @Override
+    public VerifyCodeResponse verifyCode(VerifyCodeRequest verifyCodeRequest) {
+        User user = userRepository.findByEmail(verifyCodeRequest.getEmail());
+        if (user == null)
+            throw new UserNotFoundException("Ungültige E-Mail-Adresse: " + verifyCodeRequest.getEmail());
+
+        if (user.getResetCode() == null || user.getResetCodeExpiresAt() == null) {
+            throw new InvalidResetTokenException("Es ist kein gültiger Reset-Code vorhanden. Bitte fordern Sie einen neuen an.");
+        }
+
+        if (user.getResetCodeExpiresAt().isBefore(Instant.now()))
+            throw new PasswordResetTokenExpiredException("Der Passwort-Reset-Code ist abgelaufen. Bitte fordern Sie einen neuen an");
+
+        if (!MessageDigest.isEqual(
+                user.getResetCode().getBytes(StandardCharsets.UTF_8),
+                verifyCodeRequest.getCode().getBytes(StandardCharsets.UTF_8)
+        )) {
+            throw new InvalidResetTokenException("Der eingegebene Code ist ungültig.");
+        }
+
+        return new VerifyCodeResponse(true);
+    }
+
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         User user = userRepository.findByEmail(email);
         if (user == null) {
             throw new UserNotFoundException("Kein Benutzer mit der E-Mail-Adresse gefunden: " + email);
         }
-
         return UserDetailsImpl.build(user);
     }
 

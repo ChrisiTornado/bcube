@@ -41,6 +41,12 @@ public class User {
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 
+    @Column
+    private String resetCode;
+
+    @Column
+    private Instant resetCodeExpiresAt;
+
     @PrePersist
     public void prePersist() {
         this.createdAt = Instant.now();
