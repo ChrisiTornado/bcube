@@ -6,13 +6,12 @@ import { CommonModule } from '@angular/common';
 import { AuthService } from '../../services/auth/auth.service';
 import { MessageService } from 'primeng/api';
 import { finalize } from 'rxjs';
-import { User } from '../../models/User';
-
-// PrimeNG
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ToastModule } from 'primeng/toast';
 import { ButtonModule } from 'primeng/button';
 import { ApiResponse } from '../../models/responses/ApiResponse';
 import { ResetPasswordResponse } from '../../models/responses/user/ResetPasswordResponse';
+import { VerifyCodeResponse } from '../../models/responses/user/VerifyCodeResponse';
 
 @Component({
   selector: 'app-enter-code',
@@ -22,11 +21,11 @@ import { ResetPasswordResponse } from '../../models/responses/user/ResetPassword
     ReactiveFormsModule,
     AuthContainerComponent,
     ToastModule,
-    ButtonModule
+    ButtonModule,
+    ConfirmDialogModule
   ],
   templateUrl: './enter-code.component.html',
-  styleUrls: ['./enter-code.component.css'],
-  providers: [MessageService] // <--- wichtig!
+  styleUrls: ['./enter-code.component.css']
 })
 export class EnterCodeComponent implements OnInit {
   formGroup!: FormGroup;
@@ -44,16 +43,28 @@ export class EnterCodeComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    const message = localStorage.getItem('successMessage')
+
+    if (message) {
+      setTimeout(() => {
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Erfolgreich',
+          detail: message
+        })
+      }, 0)
+    }
+
     this.email = localStorage.getItem('resetEmail')
     console.log(this.email)
     this.formGroup = this.fb.group({
-  digit1: [{ value: '', disabled: this.loading }, [Validators.required, Validators.pattern('^[0-9]$')]],
-  digit2: [{ value: '', disabled: this.loading }, [Validators.required, Validators.pattern('^[0-9]$')]],
-  digit3: [{ value: '', disabled: this.loading }, [Validators.required, Validators.pattern('^[0-9]$')]],
-  digit4: [{ value: '', disabled: this.loading }, [Validators.required, Validators.pattern('^[0-9]$')]],
-  digit5: [{ value: '', disabled: this.loading }, [Validators.required, Validators.pattern('^[0-9]$')]],
-  digit6: [{ value: '', disabled: this.loading }, [Validators.required, Validators.pattern('^[0-9]$')]],
-});
+      digit1: [{ value: '', disabled: this.loading }, [Validators.required, Validators.pattern('^[0-9]$')]],
+      digit2: [{ value: '', disabled: this.loading }, [Validators.required, Validators.pattern('^[0-9]$')]],
+      digit3: [{ value: '', disabled: this.loading }, [Validators.required, Validators.pattern('^[0-9]$')]],
+      digit4: [{ value: '', disabled: this.loading }, [Validators.required, Validators.pattern('^[0-9]$')]],
+      digit5: [{ value: '', disabled: this.loading }, [Validators.required, Validators.pattern('^[0-9]$')]],
+      digit6: [{ value: '', disabled: this.loading }, [Validators.required, Validators.pattern('^[0-9]$')]],
+    });
   }
 
   get formControls() {
@@ -78,22 +89,15 @@ export class EnterCodeComponent implements OnInit {
     this.authService.verifyCode(this.email, token)
       .pipe(finalize(() => this.loading = false))
       .subscribe({
-        next: (user) => {
-          this.router.navigate(['/auth/change-password']).then(() => {
-            setTimeout(() => {
-              this.messageService.add({
-                severity: 'success',
-                summary: 'Verifizierung erfolgreich',
-                detail: 'Ein neues Passwort kann nun gesetzt werden.'
-              });
-            });
-          });
+        next: (res: ApiResponse<VerifyCodeResponse>) => {
+          localStorage.setItem('successMessage', res.message)
+          this.router.navigate(['/auth/change-password'])
         },
         error: (err) => {
           this.messageService.add({
             severity: 'error',
             summary: 'Fehler',
-            detail: err.error.error
+            detail: err.error.message
           });
         }
       });
@@ -101,11 +105,19 @@ export class EnterCodeComponent implements OnInit {
 
   resendCode(): void {
     this.resendCodeLoading = true;
+    this.loading = true;
+    this.submitted = false;
+    this.formGroup.disable();
 
-    this.authService.resetPassword({ email: this.formGroup.value.email })
-      .pipe(finalize(() => (this.loading = false)))
+    this.authService.resetPassword({ email: this.email })
+      .pipe(finalize(() => {
+        this.resendCodeLoading = false;
+        this.loading = false
+        this.formGroup.enable();
+      }))
       .subscribe({
         next: (response: ApiResponse<ResetPasswordResponse>) => {
+          this.resetForm();
           setTimeout(() => {
             this.messageService.add({
               severity: 'success',
@@ -125,6 +137,18 @@ export class EnterCodeComponent implements OnInit {
   }
 
   goBack(): void {
+    localStorage.removeItem('resetEmail');
     this.router.navigate(['/auth/email-reset']);
+  }
+
+  resetForm(): void {
+    this.formGroup.reset({
+      digit1: '',
+      digit2: '',
+      digit3: '',
+      digit4: '',
+      digit5: '',
+      digit6: '',
+    });
   }
 }

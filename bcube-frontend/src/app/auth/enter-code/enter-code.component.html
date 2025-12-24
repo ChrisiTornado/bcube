@@ -1,3 +1,5 @@
+<p-toast position="top-right"></p-toast>
+<p-confirmDialog></p-confirmDialog>
 <app-auth-container [title]="'Geben Sie den 6-stelligen Code ein'">
     <form [formGroup]="formGroup">
         <div class="flex justify-content-center mb-3">
@@ -27,11 +29,11 @@
             <p-button pRipple label="Zurück" icon="pi pi-arrow-left" class="p-button-text text-900" (click)="goBack()"
                 [style]="{'background-color': 'black', 'border-color': 'black', 'color': 'white'}"></p-button>
 
-            <p-button pRipple label="Code erneut senden" [loading]="resendCodeLoading" class="p-button-text text-900"
+            <p-button pRipple label="Code erneut senden" [disabled]="resendCodeLoading" [loading]="resendCodeLoading" class="p-button-text text-900"
                 (click)="resendCode()"
                 [style]="{'background-color': 'white', 'border-color': 'black', 'color': 'black'}"></p-button>
 
-            <p-button pRipple label="Code verifizieren" [loading]="loading" (click)="submit()"
+            <p-button pRipple type="button" [disabled]="loading" label="Code verifizieren" [loading]="loading" (click)="submit()"
                 class="bg-red-600 text-white"
                 [style]="{'background-color': 'black', 'border-color': 'black', 'color': 'white'}"></p-button>
         </div>

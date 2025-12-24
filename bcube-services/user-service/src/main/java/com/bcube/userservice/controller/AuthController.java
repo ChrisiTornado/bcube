@@ -1,13 +1,7 @@
 package com.bcube.userservice.controller;
 
-import com.bcube.userservice.service.dto.request.LoginRequest;
-import com.bcube.userservice.service.dto.request.RegisterRequest;
-import com.bcube.userservice.service.dto.request.ResetPasswordRequest;
-import com.bcube.userservice.service.dto.request.VerifyCodeRequest;
-import com.bcube.userservice.service.dto.response.ApiResponse;
-import com.bcube.userservice.service.dto.response.JwtResponse;
-import com.bcube.userservice.service.dto.response.ResetPasswordResponse;
-import com.bcube.userservice.service.dto.response.VerifyCodeResponse;
+import com.bcube.userservice.service.dto.request.*;
+import com.bcube.userservice.service.dto.response.*;
 import com.bcube.userservice.service.impl.AuthServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -44,5 +38,11 @@ public class AuthController {
     public ResponseEntity<ApiResponse<VerifyCodeResponse>> verifyCode(@Valid @RequestBody VerifyCodeRequest verifyCodeRequest) {
         VerifyCodeResponse response = authService.verifyCode(verifyCodeRequest);
         return ResponseEntity.ok(new ApiResponse<>("Code bestätigt", response));
+    }
+
+    @PostMapping("/change-password")
+    public ResponseEntity<ApiResponse<ChangePasswordResponse>> changePassword(@Valid @RequestBody ChangePasswordRequest changePasswordRequest) {
+        ChangePasswordResponse response = authService.changePassword(changePasswordRequest);
+        return ResponseEntity.ok(new ApiResponse<>("Neues Passwort gespeichert", response));
     }
 }

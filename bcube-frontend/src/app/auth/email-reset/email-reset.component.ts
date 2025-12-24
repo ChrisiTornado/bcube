@@ -12,17 +12,20 @@ import { AuthContainerComponent } from '../auth-container/auth-container.compone
 import { InputTextModule } from 'primeng/inputtext';
 import { ApiResponse } from '../../models/responses/ApiResponse';
 import { ResetPasswordResponse } from '../../models/responses/user/ResetPasswordResponse';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 
 @Component({
   selector: 'app-email-reset',
   standalone: true,
-  imports: [CommonModule,
+  imports: [
+    CommonModule,
     ReactiveFormsModule,
     ButtonModule,
     ToastModule,
     RippleModule,
     AuthContainerComponent,
-    InputTextModule
+    InputTextModule,
+    ConfirmDialogModule
   ],
   templateUrl: './email-reset.component.html',
   styleUrl: './email-reset.component.css'
@@ -34,9 +37,9 @@ export class EmailResetComponent {
   submitted = false;
 
   constructor(private formBuilder: FormBuilder,
-              private authService: AuthService,
-              private messageService: MessageService,
-              private router: Router,) {
+    private authService: AuthService,
+    private messageService: MessageService,
+    private router: Router,) {
   }
 
   ngOnInit(): void {
@@ -50,24 +53,19 @@ export class EmailResetComponent {
     if (this.formGroup.invalid) return;
 
     this.loading = true;
+    this.formGroup.disable();
 
-    this.authService.resetPassword({email: this.formGroup.value.email })
-      .pipe(finalize(() => (this.loading = false)))
+    this.authService.resetPassword({ email: this.formGroup.value.email })
+      .pipe(finalize(() => {
+        this.loading = false;
+        this.formGroup.enable();
+      }))
       .subscribe({
         next: (response: ApiResponse<ResetPasswordResponse>) => {
           console.log(this.email.value)
           localStorage.setItem('resetEmail', this.email.value);
-          this.router
-            .navigate(['/auth/enter-code'])
-            .then(() => {
-              setTimeout(() => {
-                this.messageService.add({
-                  severity: 'success',
-                  summary: 'Erfolgreich',
-                  detail: response.message
-                });
-              });
-            });
+          localStorage.setItem('successMessage', response.message)
+          this.router.navigate(['/auth/enter-code'])
         },
         error: (err: any) => {
           this.messageService.add({
@@ -80,8 +78,9 @@ export class EmailResetComponent {
   }
 
   goBack(): void {
-  this.router.navigate(['/auth/login']);
-}
+    localStorage.removeItem('resetEmail');
+    this.router.navigate(['/auth/login']);
+  }
 
   get email(): AbstractControl {
     return this.formGroup.get('email')!;

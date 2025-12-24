@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../../services/auth/auth.service';
-import {AbstractControl, FormBuilder, FormGroup, Validators} from "@angular/forms";
+import { AbstractControl, FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
@@ -29,7 +29,7 @@ export class LoginComponent implements OnInit {
   loading!: boolean;
   submitted: boolean = false;
 
-  constructor(private fb: FormBuilder, private messageService: MessageService, private auth: AuthService, private router: Router) {}
+  constructor(private fb: FormBuilder, private messageService: MessageService, private auth: AuthService, private router: Router) { }
 
   ngOnInit(): void {
     this.loginForm = this.fb.group({
@@ -45,6 +45,7 @@ export class LoginComponent implements OnInit {
     if (this.loginForm.invalid) return;
 
     this.loading = true;
+    this.loginForm.disable();
 
     const payload: LoginRequest = {
       email: this.email.value,
@@ -52,7 +53,10 @@ export class LoginComponent implements OnInit {
     };
 
     this.auth.login(payload)
-      .pipe(finalize(() => this.loading = false))
+      .pipe(finalize(() => {
+        this.loading = false
+        this.loginForm.enable();
+      }))
       .subscribe({
         next: (res: ApiResponse<JwtResponse>) => {
           const jwt = res.data;

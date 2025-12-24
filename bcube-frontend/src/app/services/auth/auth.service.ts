@@ -10,6 +10,9 @@ import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
 import { ResetPasswordRequest } from '../../models/requests/studio/ResetPasswordRequest';
 import { ResetPasswordResponse } from '../../models/responses/user/ResetPasswordResponse';
+import { VerifyCodeResponse } from '../../models/responses/user/VerifyCodeResponse';
+import { ChangePasswordResponse } from '../../models/responses/user/ChangePasswordResponse';
+import { ChangePasswordRequest } from '../../models/requests/user/ChangePasswordRequest';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -17,7 +20,7 @@ export class AuthService {
   private readonly userKey = 'auth_user';
   private email!: string;
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private http: HttpClient, private router: Router) { }
 
   login(payload: LoginRequest): Observable<ApiResponse<JwtResponse>> {
     return this.http.post<ApiResponse<JwtResponse>>(environment.authUrl + '/login', payload);
@@ -39,11 +42,15 @@ export class AuthService {
   }
 
   resetPassword(payload: ResetPasswordRequest) {
-  return this.http.post<ApiResponse<ResetPasswordResponse>>(environment.authUrl + "/reset-password", payload);
-}
+    return this.http.post<ApiResponse<ResetPasswordResponse>>(environment.authUrl + "/reset-password", payload);
+  }
 
-  verifyCode(email: string, code: string): Observable<User> {
-    return this.http.post<User>(environment.authUrl + '/verify-code', { email, code });
+  verifyCode(email: string, code: string): Observable<ApiResponse<VerifyCodeResponse>> {
+    return this.http.post<ApiResponse<VerifyCodeResponse>>(environment.authUrl + '/verify-code', { email, code });
+  }
+
+  changePassword(payload: ChangePasswordRequest): Observable<ApiResponse<ChangePasswordResponse>> {
+      return this.http.post<ApiResponse<ChangePasswordResponse>>(environment.authUrl + '/change-password', payload);
   }
 
   isAuthenticated(): boolean {

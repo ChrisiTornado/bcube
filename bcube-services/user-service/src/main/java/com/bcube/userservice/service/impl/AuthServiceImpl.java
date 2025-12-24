@@ -6,10 +6,8 @@ import com.bcube.userservice.persistance.entity.User;
 import com.bcube.userservice.persistance.repository.UserRepository;
 import com.bcube.userservice.security.JwtTokenProvider;
 import com.bcube.userservice.service.AuthService;
-import com.bcube.userservice.service.dto.request.LoginRequest;
-import com.bcube.userservice.service.dto.request.RegisterRequest;
-import com.bcube.userservice.service.dto.request.ResetPasswordRequest;
-import com.bcube.userservice.service.dto.request.VerifyCodeRequest;
+import com.bcube.userservice.service.dto.request.*;
+import com.bcube.userservice.service.dto.response.ChangePasswordResponse;
 import com.bcube.userservice.service.dto.response.JwtResponse;
 import com.bcube.userservice.service.dto.response.ResetPasswordResponse;
 import com.bcube.userservice.service.dto.response.VerifyCodeResponse;
@@ -30,6 +28,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -109,7 +108,21 @@ public class AuthServiceImpl implements AuthService {
             throw new InvalidResetTokenException("Der eingegebene Code ist ungültig.");
         }
 
+        user.setResetCode(null);
+        user.setResetCodeExpiresAt(null);
+        userRepository.save(user);
         return new VerifyCodeResponse(true);
+    }
+
+    @Override
+    public ChangePasswordResponse changePassword(ChangePasswordRequest changePasswordRequest) {
+        User user = userRepository.findByEmail(changePasswordRequest.getEmail());
+        if (user == null)
+            throw new UserNotFoundException("Kein Benutzer mit der E-Mail-Adresse gefunden: " + changePasswordRequest.getEmail());
+
+        user.setPassword(passwordEncoder.encode(changePasswordRequest.getPassword()));
+        userRepository.save(user);
+        return new ChangePasswordResponse(true);
     }
 
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {

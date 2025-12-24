@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../../services/auth/auth.service';
-import { AbstractControl, FormBuilder, FormGroup, Validators} from "@angular/forms";
+import { AbstractControl, FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
@@ -28,7 +28,7 @@ export class RegisterComponent implements OnInit {
   loading!: boolean;
   submitted: boolean = false;
 
-  constructor(private fb: FormBuilder, private messageService: MessageService, private auth: AuthService, private router: Router) {}
+  constructor(private fb: FormBuilder, private messageService: MessageService, private auth: AuthService, private router: Router) { }
 
   ngOnInit(): void {
     this.registerForm = this.fb.group({
@@ -45,6 +45,7 @@ export class RegisterComponent implements OnInit {
     if (this.registerForm.invalid) return;
 
     this.loading = true;
+    this.registerForm.disable();
 
     const payload: RegisterRequest = {
       email: this.email.value,
@@ -55,7 +56,11 @@ export class RegisterComponent implements OnInit {
     };
 
     this.auth.register(payload)
-      .pipe(finalize(() => this.loading = false))
+      .pipe(finalize(() => {
+        this.loading = false
+        this.registerForm.enable();
+      }
+      ))
       .subscribe({
         next: (res: ApiResponse<JwtResponse>) => {
           const jwt = res.data;

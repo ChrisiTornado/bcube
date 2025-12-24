@@ -13,7 +13,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(InvalidCredentialsException.class)
     public ResponseEntity<ApiResponse<Void>> handleInvalidCredentials(InvalidCredentialsException ex) {
-        return new ResponseEntity<>(new ApiResponse<>("Die Anmeldedaten sind nicht korrekt", null), HttpStatus.UNAUTHORIZED);
+        return new ResponseEntity<>(new ApiResponse<>("Die Anmeldedaten sind nicht korrekt", null), HttpStatus.UNPROCESSABLE_ENTITY);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -42,11 +42,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(PasswordResetTokenExpiredException.class)
     public ResponseEntity<ApiResponse<Void>> handlePasswordResetTokenExpired(PasswordResetTokenExpiredException ex) {
-        return new ResponseEntity<>(new ApiResponse<>(ex.getMessage(), null), HttpStatus.UNAUTHORIZED);
+        return new ResponseEntity<>(new ApiResponse<>(ex.getMessage(), null), HttpStatus.GONE);
     }
 
     @ExceptionHandler(InvalidResetTokenException.class)
     public ResponseEntity<ApiResponse<Void>> handleInvalidResetToken(InvalidResetTokenException ex) {
-        return new ResponseEntity<>(new ApiResponse<>(ex.getMessage(), null), HttpStatus.UNAUTHORIZED);
+        return new ResponseEntity<>(new ApiResponse<>(ex.getMessage(), null), HttpStatus.UNPROCESSABLE_ENTITY);
     }
 }
