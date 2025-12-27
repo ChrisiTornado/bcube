@@ -8,6 +8,9 @@ import com.bcube.userservice.service.dto.request.CreateUserRequest;
 import com.bcube.userservice.service.dto.request.UpdateUserRequest;
 import com.bcube.userservice.service.dto.response.UserResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -20,9 +23,10 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     @Override
-    public UserResponse[] getAllUsers() {
-        List<User> userList = userRepository.findAll();
-        return userList.stream()
+    public Page<UserResponse> getAllUsers(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<User> userList = userRepository.findAll(pageable);
+        return userList
                 .map(user -> new UserResponse(
                         user.getId(),
                         user.getRole() == Role.ADMIN,
@@ -30,8 +34,7 @@ public class UserServiceImpl implements UserService {
                         user.getPhone(),
                         user.getFirstName(),
                         user.getLastName()
-                ))
-                .toArray(UserResponse[]::new);
+                ));
     }
 
     @Override

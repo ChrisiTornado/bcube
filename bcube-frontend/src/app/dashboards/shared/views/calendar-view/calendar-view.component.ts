@@ -62,7 +62,7 @@ export class CalendarViewComponent implements OnInit {
     this.user = this.authService.getUser();
 
     this.bookingService.getBookingsByUserId(+this.user!.id).subscribe(bookings => {
-      this.bookings = bookings.filter(b => b.status === 'CONFIRMED');
+      this.bookings = bookings.content.filter(b => b.status === 'CONFIRMED');
       this.markCalendarDates();
 
       const events = this.bookings.map(b => {

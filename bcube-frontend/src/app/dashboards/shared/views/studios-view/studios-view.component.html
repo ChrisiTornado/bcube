@@ -1,34 +1,69 @@
 <div class="flex align-items-center flex-wrap gap-4 mb-4">
-  <h1 class="m-0">Studios</h1>
-  <app-studios></app-studios>
+    <h1 class="m-0">Studios</h1>
 </div>
+
 <app-loading-spinner *ngIf="loading$ | async"></app-loading-spinner>
+
 <ng-container *ngIf="!(loading$ | async) && (studios$ | async) as studios">
-  <p-table [value]="studios" scrollable="true" scrollHeight="calc(100vh - 200px)">
-    <ng-template pTemplate="header">
-      <tr>
-        <th style="width:20%">Studiobild</th>
-        <th pSortableColumn="name" style="width:20%">Name<p-sortIcon field="name"></p-sortIcon></th>
-        <th style="width:20%">Adresse</th>
-        <th pSortableColumn="country" style="width:20%">Land<p-sortIcon field="country"></p-sortIcon></th>
-        <th *ngIf="isAdmin">Bearbeiten</th>
-        <th *ngIf="isAdmin">Löschen</th>
-      </tr>
-    </ng-template>
-    <ng-template pTemplate="body" let-studio>
-      <tr (click)="navigateToDetails(studio)" style="cursor: pointer;">
-        <td><img src="{{studio.imageBase64}}" alt="Studiobild" style="max-height: 100px; max-width: 100%"></td>
-        <td>{{studio.name}}</td>
-        <td>{{studio.street}}, {{studio.plz}} {{studio.city}}</td>
-        <td>{{studio.country}}</td>
-        <td *ngIf="isAdmin">
-          <app-update-studio style="display: flex !important;" [studio]="studio"
-            (click)="$event.stopPropagation()"></app-update-studio>
-        </td>
-        <td *ngIf="isAdmin">
-          <app-delete-studio [studio]="studio" (click)="$event.stopPropagation()"></app-delete-studio>
-        </td>
-      </tr>
-    </ng-template>
-  </p-table>
+    <div style="max-height: calc(100vh - 240px); overflow-y: auto; padding-bottom: 1rem;">
+        <p-table class="small-rows" [value]="studios ?? []">
+            <ng-template pTemplate="header">
+                <tr>
+                    <th style="width:20%">Studiobild</th>
+                    <th pSortableColumn="name" style="width:20%">
+                        Name <p-sortIcon field="name"></p-sortIcon>
+                    </th>
+                    <th style="width:20%">Adresse</th>
+                    <th pSortableColumn="country" style="width:20%">
+                        Land <p-sortIcon field="country"></p-sortIcon>
+                    </th>
+                    <th *ngIf="isAdmin">Bearbeiten</th>
+                    <th *ngIf="isAdmin">Löschen</th>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-studio>
+                <tr (click)="navigateToDetails(studio)" style="cursor: pointer;">
+                    <td><img [src]="studio.imageBase64" alt="Studiobild" style="max-height: 75px; max-width: 100%"></td>
+                    <td>{{ studio.name }}</td>
+                    <td>{{ studio.street }}, {{ studio.plz }} {{ studio.city }}</td>
+                    <td>{{ studio.country }}</td>
+
+                    <td *ngIf="isAdmin">
+                        <app-update-studio style="display: flex !important;"
+                                           [studio]="studio"
+                                           (click)="$event.stopPropagation()">
+                        </app-update-studio>
+                    </td>
+
+                    <td *ngIf="isAdmin">
+                        <app-delete-studio [studio]="studio"
+                                           (click)="$event.stopPropagation()">
+                        </app-delete-studio>
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+    <!-- 🔥 Ende Scrollbereich -->
+
+    <!-- Pagination unten fix -->
+    <div class="flex justify-content-center gap-3 mt-3" *ngIf="totalPages > 1">
+        <button pButton label="<- Zurück"
+                [style]="{'background-color': 'white', 'border-color': 'black', 'color': 'black'}"
+                (click)="loadPage(page - 1)"
+                [disabled]="page === 0">
+        </button>
+
+        <span class="mt-2 mx-3 font-bold">
+            Seite {{ page + 1 }} von {{ totalPages }}
+        </span>
+
+        <button pButton label="Weiter ->"
+                [style]="{'background-color': 'white', 'border-color': 'black', 'color': 'black'}"
+                (click)="loadPage(page + 1)"
+                [disabled]="page >= totalPages - 1">
+        </button>
+    </div>
+
 </ng-container>

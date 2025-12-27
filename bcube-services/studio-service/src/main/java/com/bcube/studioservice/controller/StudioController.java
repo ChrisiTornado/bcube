@@ -8,6 +8,7 @@ import com.bcube.studioservice.service.impl.StudioServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,8 +20,8 @@ public class StudioController {
     private final StudioServiceImpl studioService;
 
     @GetMapping("/studios")
-    public ResponseEntity<ApiResponse<StudioResponse[]>> getAllStudios()   {
-        StudioResponse[] response = studioService.getAllStudios();
+    public ResponseEntity<ApiResponse<Page<StudioResponse>>> getAllStudios(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size)   {
+        Page<StudioResponse> response = studioService.getAllStudios(page, size);
         return ResponseEntity.ok(new ApiResponse<>("Studios erfolgreich gesendet", response));
     }
 

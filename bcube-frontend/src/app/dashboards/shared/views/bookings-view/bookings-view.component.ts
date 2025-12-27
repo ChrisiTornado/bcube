@@ -46,27 +46,26 @@ export class BookingsViewComponent implements OnInit {
 
   userFilter: User | null = null;
   studioFilter: Studio | null = null;
+  page = 0;
+  size = 10;
+  totalPages = 0;
 
   constructor(
     private bookingService: BookingService,
     private router: Router,
     private route: ActivatedRoute,
-    private authService: AuthService
+    public authService: AuthService
   ) { }
 
   ngOnInit(): void {
     this.isAdmin = this.authService.getRole() === 'ADMIN';
 
     if (this.isAdmin) {
-      this.bookingService.getAll().subscribe(bookings => {
-        this.bookingService.setBookings(bookings);
-      });
+      this.loadAdminPage(0);
     } else {
       const userId = this.authService.getUser()?.id;
       if (userId) {
-        this.bookingService.getBookingsByUserId(userId).subscribe(bookings => {
-          this.bookingService.setBookings(bookings);
-        });
+        this.loadUserPage(userId, 0);
       }
     }
 
@@ -121,4 +120,32 @@ export class BookingsViewComponent implements OnInit {
       default: return status;
     }
   }
+
+  loadUserPage(userId: number, page: number) {
+    this.page = page
+    this.bookingService.getBookingsByUserId(userId, page, this.size).subscribe(res => {
+      this.totalPages = res.totalPages;
+      this.bookingService.setBookings(res.content);
+    });
+  }
+
+  loadAdminPage(page: number) {
+    this.page = page
+    this.bookingService.getAll(page, this.size).subscribe(res => {
+      this.totalPages = res.totalPages;
+      this.bookingService.setBookings(res.content);
+    });
+  }
+
+  loadPage(page: number) {
+  if (page < 0 || page >= this.totalPages) return;
+  this.page = page;
+
+  if (this.isAdmin) {
+    this.loadAdminPage(page);
+  } else {
+    const userId = this.authService.getUser()?.id;
+    if (userId) this.loadUserPage(userId, page);
+  }
+}
 }

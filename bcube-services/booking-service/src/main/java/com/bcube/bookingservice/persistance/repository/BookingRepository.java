@@ -1,6 +1,8 @@
 package com.bcube.bookingservice.persistance.repository;
 
 import com.bcube.bookingservice.persistance.entity.Booking;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -11,7 +13,7 @@ import java.util.Optional;
 public interface BookingRepository extends JpaRepository<Booking, Long> {
     Optional<Booking> findById(Long id);
 
-    List<Booking> findAllByUserId(Long userId);
+    Page<Booking> findAllByUserId(Long userId, Pageable pageable);
 
     List<Booking> findAllByStudioId(Long studioId);
 

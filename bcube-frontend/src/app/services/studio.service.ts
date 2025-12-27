@@ -8,6 +8,7 @@ import { ApiResponse } from '../models/responses/ApiResponse';
 import { StudioResponse } from '../models/responses/studio/StudioResponse';
 import { UpdateStudioRequest } from '../models/requests/studio/UpdateStudioRequest';
 import { finalize, map } from 'rxjs/operators';
+import { PageResponse } from "../models/responses/PageResponse";
 
 @Injectable({
   providedIn: 'root'
@@ -20,14 +21,16 @@ export class StudioService {
   public studios$ = this.studiosSubject.asObservable();
 
   constructor(private http: HttpClient) {
-    // direkt beim Service-Init alle Studios laden
     this.reloadStudios();
   }
 
-  getAll(): Observable<Studio[]> {
+  getAll(page: number = 0, size: number = 10): Observable<PageResponse<Studio>> {
     this.loadingSubject.next(true);
+
     return this.http
-      .get<{ message: string; data: Studio[] }>(`${environment.studioApiUrl}/studios`)
+      .get<ApiResponse<PageResponse<Studio>>>(
+        `${environment.studioApiUrl}/studios?page=${page}&size=${size}`
+      )
       .pipe(
         map(res => res.data),
         finalize(() => this.loadingSubject.next(false))
@@ -44,13 +47,19 @@ export class StudioService {
       );
   }
 
-  reloadStudios(): void {
-    this.getAll().subscribe(studios => this.studiosSubject.next(studios));
+  reloadStudios(page: number = 0, size: number = 10): void {
+    this.getAll(page, size).subscribe(pageResponse => {
+      this.studiosSubject.next(pageResponse.content);
+    });
+  }
+
+  setStudios(studios: Studio[]): void {
+    this.studiosSubject.next(studios);
   }
 
   get currentStudios(): Studio[] {
-  return this.studiosSubject.getValue();
-}
+    return this.studiosSubject.getValue();
+  }
 
   create(payload: CreateStudioRequest): Observable<ApiResponse<StudioResponse>> {
     return this.http.post<ApiResponse<StudioResponse>>(
@@ -60,17 +69,14 @@ export class StudioService {
   }
 
   moveStudioToTop(studio: Studio): void {
-  const studios = [...this.studiosSubject.getValue()]; // aktuelle Liste kopieren
-  const index = studios.findIndex(s => s.id === studio.id);
-  if (index > -1) {
-    // Entferne Studio von seiner Position
-    const [selected] = studios.splice(index, 1);
-    // Ganz oben wieder einfügen
-    studios.unshift(selected);
-    // Liste neu setzen
-    this.studiosSubject.next(studios);
+    const studios = [...this.studiosSubject.getValue()];
+    const index = studios.findIndex(s => s.id === studio.id);
+    if (index > -1) {
+      const [selected] = studios.splice(index, 1);
+      studios.unshift(selected);
+      this.studiosSubject.next(studios);
+    }
   }
-}
 
   update(payload: UpdateStudioRequest): Observable<ApiResponse<StudioResponse>> {
     return this.http.put<ApiResponse<StudioResponse>>(

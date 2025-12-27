@@ -11,6 +11,9 @@ import com.bcube.bookingservice.service.dto.Classes.UserDto;
 import com.bcube.bookingservice.service.dto.request.BookStudioRequest;
 import com.bcube.bookingservice.service.dto.response.BookingResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,22 +33,50 @@ public class BookingServiceImpl implements BookingService {
     private final StudioClient studioClient;
 
     @Override
-    public BookingResponse[] getAllBookings() {
-        List<Booking> bookings = bookingRepository.findAll();
+    public Page<BookingResponse> getAllBookings(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Booking> bookings = bookingRepository.findAll(pageable);
 
-        return getBookingResponses(bookings);
+        return bookings.map(booking -> {
+            UserDto user = userClient.getUserById(booking.getUserId());
+            StudioDto studio = studioClient.getStudioById(booking.getStudioId());
+
+            return new BookingResponse(
+                    booking.getId(),
+                    user,
+                    studio,
+                    booking.getDate(),
+                    booking.getStartTime(),
+                    booking.getEndTime(),
+                    booking.getStatus()
+            );
+        });
     }
 
     @Transactional(readOnly = true)
     @Override
-    public BookingResponse[] getBookingsByUserId(Long userId) {
+    public Page<BookingResponse> getBookingsByUserId(Long userId, int page, int size) {
         if (!userClient.userExists(userId)) {
             throw new IllegalArgumentException("User mit ID " + userId + " nicht gefunden");
         }
 
-        List<Booking> bookings = bookingRepository.findAllByUserId(userId);
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Booking> bookings = bookingRepository.findAllByUserId(userId, pageable);
 
-        return getBookingResponses(bookings);
+        return bookings.map(booking -> {
+            UserDto user = userClient.getUserById(booking.getUserId());
+            StudioDto studio = studioClient.getStudioById(booking.getStudioId());
+
+            return new BookingResponse(
+                    booking.getId(),
+                    user,
+                    studio,
+                    booking.getDate(),
+                    booking.getStartTime(),
+                    booking.getEndTime(),
+                    booking.getStatus()
+            );
+        });
     }
 
     private BookingResponse[] getBookingResponses(List<Booking> bookings) {

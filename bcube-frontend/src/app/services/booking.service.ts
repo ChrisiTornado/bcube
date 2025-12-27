@@ -10,6 +10,7 @@ import { Booking } from '../models/Booking';
 import { CreateBookingRequest } from '../models/requests/booking/CreateBookingRequest';
 import { BookingResponse } from '../models/responses/booking/BookingResponse';
 import { Studio } from '../models/Studio';
+import { PageResponse } from '../models/responses/PageResponse';
 
 @Injectable({
   providedIn: 'root'
@@ -22,25 +23,33 @@ export class BookingService {
 
   constructor(private http: HttpClient) { }
 
-  getAll(): Observable<Booking[]> {
+  getAll(page: number = 0, size: number = 10): Observable<PageResponse<Booking>> {
     this.loadingSubject.next(true);
+
     return this.http
-      .get<{ message: string; data: Booking[] }>(`${environment.bookingApiUrl}/bookings`)
+      .get<ApiResponse<PageResponse<Booking>>>(`${environment.bookingApiUrl}/bookings?page=${page}&size=${size}`)
       .pipe(
         map(res => res.data),
         finalize(() => this.loadingSubject.next(false))
       );
   }
 
-  getBookingsByUserId(userId: number): Observable<Booking[]> {
-    this.loadingSubject.next(true);
-    return this.http
-      .get<{ message: string; data: Booking[] }>(`${environment.bookingApiUrl}/bookings/user/${userId}`)
-      .pipe(
-        map(res => res.data),
-        finalize(() => this.loadingSubject.next(false))
-      );
-  }
+  getBookingsByUserId(
+  userId: number,
+  page: number = 0,
+  size: number = 10
+): Observable<PageResponse<Booking>> {
+  this.loadingSubject.next(true);
+
+  return this.http
+    .get<ApiResponse<PageResponse<Booking>>>(
+      `${environment.bookingApiUrl}/bookings/user/${userId}?page=${page}&size=${size}`
+    )
+    .pipe(
+      map(res => res.data), // data = PageResponse<Booking>
+      finalize(() => this.loadingSubject.next(false))
+    );
+}
 
   getBookingsByStudioId(studioId: number): Observable<Booking[]> {
     this.loadingSubject.next(true);
@@ -76,8 +85,10 @@ export class BookingService {
       );
   }
 
-  reloadBookings(): void {
-    this.getAll().subscribe(bookings => this.bookingSubject.next(bookings));
+  reloadBookings(page: number = 0, size: number = 10): void {
+    this.getAll(page, size).subscribe(pageResponse => {
+      this.bookingSubject.next(pageResponse.content);
+    });
   }
 
   create(payload: CreateBookingRequest): Observable<ApiResponse<BookingResponse>> {

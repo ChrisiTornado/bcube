@@ -2,12 +2,13 @@ package com.bcube.bookingservice.service;
 
 import com.bcube.bookingservice.service.dto.request.BookStudioRequest;
 import com.bcube.bookingservice.service.dto.response.BookingResponse;
+import org.springframework.data.domain.Page;
 
 public interface BookingService {
-    BookingResponse[] getAllBookings();
+    Page<BookingResponse> getAllBookings(int page, int size);
     BookingResponse bookTimeSlot(BookStudioRequest bookStudioRequest);
 
-    BookingResponse[] getBookingsByUserId(Long userId);
+    Page<BookingResponse> getBookingsByUserId(Long userId, int page, int size);
 
     BookingResponse getBookingById(Long bookingId);
 

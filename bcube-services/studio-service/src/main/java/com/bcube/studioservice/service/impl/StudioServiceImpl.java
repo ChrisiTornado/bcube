@@ -10,6 +10,9 @@ import com.bcube.studioservice.service.dto.response.StudioResponse;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -29,10 +32,12 @@ public class StudioServiceImpl implements StudioService {
     private Map<String, double[]> geocodeCache = new HashMap<>();
 
     @Override
-    public StudioResponse[] getAllStudios() {
-        List<Studio> studioList = studioRepository.findAll();
-        return studioList.stream()
-                .map(studio -> new StudioResponse(
+    public Page<StudioResponse> getAllStudios(int page, int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Studio> studioList = studioRepository.findAll(pageable);
+
+        return studioList.map(studio -> new StudioResponse(
                         studio.getId(),
                         studio.getName(),
                         studio.getDescription(),
@@ -47,8 +52,7 @@ public class StudioServiceImpl implements StudioService {
                                 : null,
                         true,
                         studio.getCreatedAt()
-                ))
-                .toArray(StudioResponse[]::new);
+                ));
     }
 
     @Override

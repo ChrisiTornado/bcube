@@ -1,0 +1,7 @@
+.small-rows ::ng-deep tr {
+    @apply h-8;     /* Tailwind Utility anwenden */
+}
+
+.small-rows ::ng-deep td {
+    @apply py-1;    /* Weniger Padding */
+}

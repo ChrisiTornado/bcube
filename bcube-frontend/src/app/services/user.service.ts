@@ -9,6 +9,7 @@ import { map } from 'rxjs/operators';
 import { UserResponse } from '../models/responses/user/UserResponse';
 import { CreateUserRequest } from '../models/requests/user/CreateUserRequest';
 import { UpdateUserRequest } from '../models/requests/user/UpdateUserRequest';
+import { PageResponse } from '../models/responses/PageResponse';
 
 @Injectable({
   providedIn: 'root'
@@ -22,10 +23,10 @@ export class UserService {
 
   constructor(private http: HttpClient) { }
 
-  getAll(): Observable<User[]> {
+  getAll(page: number = 0, size: number = 10): Observable<PageResponse<User>> {
     this.loadingSubject.next(true);
     return this.http
-      .get<{ message: string; data: User[] }>(`${environment.adminApiUrl}/users`)
+      .get<ApiResponse<PageResponse<User>>>(`${environment.adminApiUrl}/users?page=${page}&size=${size}`)
       .pipe(
         map(res => res.data),
         finalize(() => this.loadingSubject.next(false))
@@ -33,8 +34,12 @@ export class UserService {
   }
 
   reloadUsers(): void {
-    this.getAll().subscribe(users => this.usersSubject.next(users));
+    this.getAll().subscribe(users => this.usersSubject.next(users.content));
   }
+
+  setUsers(users: User[]): void {
+      this.usersSubject.next(users);
+    }
 
   createUser(payload: CreateUserRequest): Observable<ApiResponse<UserResponse>> {
     console.log(payload)
