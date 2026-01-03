@@ -2,6 +2,7 @@ package com.bcube.bookingservice.service.impl;
 
 import com.bcube.bookingservice.client.StudioClient;
 import com.bcube.bookingservice.client.UserClient;
+import com.bcube.bookingservice.exception.BookingDoneException;
 import com.bcube.bookingservice.persistance.entity.Booking;
 import com.bcube.bookingservice.persistance.entity.BookingStatus;
 import com.bcube.bookingservice.persistance.repository.BookingRepository;
@@ -14,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,9 +34,11 @@ public class BookingServiceImpl implements BookingService {
     private final UserClient userClient;
     private final StudioClient studioClient;
 
+    @Transactional(readOnly = true)
     @Override
     public Page<BookingResponse> getAllBookings(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size, Sort.by("date").descending()
+                .and(Sort.by("startTime").descending()));
         Page<Booking> bookings = bookingRepository.findAll(pageable);
 
         return bookings.map(booking -> {
@@ -60,7 +64,8 @@ public class BookingServiceImpl implements BookingService {
             throw new IllegalArgumentException("User mit ID " + userId + " nicht gefunden");
         }
 
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable pageable = PageRequest.of(page, size, Sort.by("date").descending()
+                .and(Sort.by("startTime").descending()));
         Page<Booking> bookings = bookingRepository.findAllByUserId(userId, pageable);
 
         return bookings.map(booking -> {
@@ -133,7 +138,21 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public BookingResponse stornoBooking(Long bookingId) {
         Booking booking = bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new IllegalArgumentException("Buchung mit ID " + bookingId + "nicht gefunden"));
+                .orElseThrow(() -> new IllegalArgumentException("Buchung mit ID " + bookingId + " nicht gefunden"));
+
+        if (isFinished(booking, Instant.now())) {
+            booking.setStatus(BookingStatus.DONE);
+            bookingRepository.save(booking);
+            throw new BookingDoneException(
+                    "Buchung mit ID " + bookingId + " wurde bereits durchgeführt"
+            );
+        }
+
+        if (hasStarted(booking, Instant.now())) {
+            throw new BookingDoneException(
+                    "Buchung mit ID " + bookingId + " hat bereits gestartet"
+            );
+        }
 
         booking.setStatus(BookingStatus.CANCELLED);
         bookingRepository.save(booking);
@@ -194,9 +213,17 @@ public class BookingServiceImpl implements BookingService {
                 user,
                 studio,
                 saved.getDate(),
-                saved.getEndTime(),
                 saved.getStartTime(),
+                saved.getEndTime(),
                 saved.getStatus()
         );
+    }
+
+    boolean isFinished(Booking booking, Instant now) {
+        return now.isAfter(booking.getEndTime());
+    }
+
+    boolean hasStarted(Booking booking, Instant now) {
+        return !now.isBefore(booking.getStartTime());
     }
 }

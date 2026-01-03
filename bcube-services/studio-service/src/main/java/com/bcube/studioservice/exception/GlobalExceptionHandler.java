@@ -10,9 +10,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class GlobalExceptionHandler {
     @ExceptionHandler(GeocodingException.class)
     public ResponseEntity<ApiResponse<Void>> handleStudioNotFound(GeocodingException ex) {
-        return new ResponseEntity<>(
-                new ApiResponse<>(ex.getMessage(), null),
-                HttpStatus.NOT_FOUND
-        );
+        return new ResponseEntity<>(new ApiResponse<>(ex.getMessage(), null), HttpStatus.NOT_FOUND);
     }
 }
