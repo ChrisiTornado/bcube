@@ -38,7 +38,7 @@ export class BookingDetailsComponent implements OnInit {
   statusLabels: { [key: string]: string } = {
     CONFIRMED: 'Bestätigt',
     CANCELLED: 'Storniert',
-    PENDING: 'Ausstehend'
+    DONE: 'Abgeschlossen'
   };
 
   constructor(
@@ -70,8 +70,6 @@ export class BookingDetailsComponent implements OnInit {
       isLoading => (this.loading = isLoading)
     );
   }
-
-
 
   showOverlay(image: string) {
     this.overlayImage = image;

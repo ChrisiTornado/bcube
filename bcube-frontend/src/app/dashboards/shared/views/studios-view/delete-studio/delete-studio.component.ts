@@ -1,4 +1,4 @@
-import { Component, Input} from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { finalize } from "rxjs";
 import { StudioService } from '../../../../../services/studio.service';
 import { Studio } from '../../../../../models/Studio';
@@ -14,12 +14,12 @@ import { MessageService, ConfirmationService } from 'primeng/api';
 `
 })
 export class DeleteStudioComponent {
-   @Input() studio!: Studio;
-   loading!: boolean;
-   
-   constructor(private studioService: StudioService, private messageService: MessageService, private confirmationService: ConfirmationService) {}
+  @Input() studio!: Studio;
+  loading!: boolean;
 
-   confirmDelete(): void {
+  constructor(private studioService: StudioService, private messageService: MessageService, private confirmationService: ConfirmationService) { }
+
+  confirmDelete(): void {
     this.confirmationService.confirm({
       message: `Möchten Sie das Studio "${this.studio.name}" wirklich löschen?`,
       header: 'Löschen bestätigen',
@@ -31,28 +31,27 @@ export class DeleteStudioComponent {
   }
 
   delete() {
-  this.loading = true;
-  this.studioService.delete(this.studio.id)
-    .pipe(finalize(() => this.loading = false))
-    .subscribe({
-      next: (res) => {
-        this.messageService.add({
-          key: 'main',
-          severity: 'success',
-          summary: 'Erfolg',
-          detail: res.message
-        });
-
-        this.studioService.reloadStudios();
-      },
-      error: (err) => {
-        this.messageService.add({
-          key: 'main',
-          severity: 'error',
-          summary: 'Fehler',
-          detail: err?.error?.message ?? 'Löschen fehlgeschlagen.'
-        });
-      }
-    });
-}
+    this.loading = true;
+    this.studioService.delete(this.studio.id)
+      .pipe(finalize(() => this.loading = false))
+      .subscribe({
+        next: (res) => {
+          this.messageService.add({
+            key: 'main',
+            severity: 'success',
+            summary: 'Erfolg',
+            detail: res.message
+          });
+          this.studioService.reloadStudios();
+        },
+        error: (err) => {
+          this.messageService.add({
+            key: 'main',
+            severity: 'error',
+            summary: 'Fehler',
+            detail: err?.error?.message ?? 'Löschen fehlgeschlagen.'
+          });
+        }
+      });
+  }
 }

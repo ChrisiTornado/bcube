@@ -1,4 +1,4 @@
-import { Component, Input} from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { Booking } from '../../../../../models/Booking';
 import { BookingService } from '../../../../../services/booking.service';
 import { ButtonModule } from 'primeng/button';
@@ -13,9 +13,9 @@ import { BookingActionService } from '../../../../../services/booking-action.ser
 })
 export class StornoBookingComponent {
   @Input() booking!: Booking;
-   loading!: boolean;
-   
-   constructor(private bookingActionService: BookingActionService, private bookingService: BookingService, private messageService: MessageService, private confirmationService: ConfirmationService) {}
+  loading!: boolean;
+
+  constructor(private bookingActionService: BookingActionService, private bookingService: BookingService, private messageService: MessageService, private confirmationService: ConfirmationService) { }
 
   //  confirmStorno(): void {
   //   this.confirmationService.confirm({
@@ -40,7 +40,7 @@ export class StornoBookingComponent {
   //           summary: 'Erfolg',
   //           detail: res.message
   //         });
-  
+
   //         this.bookingService.reloadBookings();
   //       },
   //       error: (err) => {
@@ -54,16 +54,16 @@ export class StornoBookingComponent {
   //     });
   //  }
 
-triggerStorno(): void {
-  this.bookingActionService.confirmStorno(
-    this.booking,
-    () => {
-      // optional: onSuccess callback
-    },
-    () => {
-      // optional: onError callback
-    },
-    (isLoading) => this.loading = isLoading
-  );
-}
+  triggerStorno(): void {
+    this.bookingActionService.confirmStorno(
+      this.booking,
+      () => {
+        this.bookingService.reloadBookings();
+      },
+      () => {
+        this.bookingService.reloadBookings();
+      },
+      (isLoading) => this.loading = isLoading
+    );
+  }
 }

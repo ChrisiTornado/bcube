@@ -116,21 +116,31 @@ export class BookingsViewComponent implements OnInit {
     switch (status) {
       case 'CONFIRMED': return 'Bestätigt';
       case 'CANCELLED': return 'Storniert';
-      case 'PENDING': return 'Ausstehend';
+      case 'DONE': return 'Abgeschlossen';
       default: return status;
     }
   }
 
   loadUserPage(userId: number, page: number) {
-    this.page = page
+    this.page = page;
+
+    this.bookingService.viewMode = 'USER';
+    this.bookingService.userId = userId;
+    this.bookingService.page = page;
+
     this.bookingService.getBookingsByUserId(userId, page, this.size).subscribe(res => {
       this.totalPages = res.totalPages;
       this.bookingService.setBookings(res.content);
     });
   }
 
+
   loadAdminPage(page: number) {
-    this.page = page
+    this.page = page;
+
+    this.bookingService.viewMode = 'ADMIN';
+    this.bookingService.page = page;
+
     this.bookingService.getAll(page, this.size).subscribe(res => {
       this.totalPages = res.totalPages;
       this.bookingService.setBookings(res.content);
@@ -138,14 +148,14 @@ export class BookingsViewComponent implements OnInit {
   }
 
   loadPage(page: number) {
-  if (page < 0 || page >= this.totalPages) return;
-  this.page = page;
+    if (page < 0 || page >= this.totalPages) return;
+    this.page = page;
 
-  if (this.isAdmin) {
-    this.loadAdminPage(page);
-  } else {
-    const userId = this.authService.getUser()?.id;
-    if (userId) this.loadUserPage(userId, page);
+    if (this.isAdmin) {
+      this.loadAdminPage(page);
+    } else {
+      const userId = this.authService.getUser()?.id;
+      if (userId) this.loadUserPage(userId, page);
+    }
   }
-}
 }

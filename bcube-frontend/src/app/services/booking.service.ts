@@ -20,6 +20,10 @@ export class BookingService {
   public loading$ = this.loadingSubject.asObservable();
   private bookingSubject = new BehaviorSubject<Booking[]>([]);
   public bookings$ = this.bookingSubject.asObservable();
+  viewMode: 'ADMIN' | 'USER' = 'ADMIN';
+  page = 0;
+  size = 10;
+  userId?: number;
 
   constructor(private http: HttpClient) { }
 
@@ -35,21 +39,21 @@ export class BookingService {
   }
 
   getBookingsByUserId(
-  userId: number,
-  page: number = 0,
-  size: number = 10
-): Observable<PageResponse<Booking>> {
-  this.loadingSubject.next(true);
+    userId: number,
+    page: number = 0,
+    size: number = 10
+  ): Observable<PageResponse<Booking>> {
+    this.loadingSubject.next(true);
 
-  return this.http
-    .get<ApiResponse<PageResponse<Booking>>>(
-      `${environment.bookingApiUrl}/bookings/user/${userId}?page=${page}&size=${size}`
-    )
-    .pipe(
-      map(res => res.data), // data = PageResponse<Booking>
-      finalize(() => this.loadingSubject.next(false))
-    );
-}
+    return this.http
+      .get<ApiResponse<PageResponse<Booking>>>(
+        `${environment.bookingApiUrl}/bookings/user/${userId}?page=${page}&size=${size}`
+      )
+      .pipe(
+        map(res => res.data), // data = PageResponse<Booking>
+        finalize(() => this.loadingSubject.next(false))
+      );
+  }
 
   getBookingsByStudioId(studioId: number): Observable<Booking[]> {
     this.loadingSubject.next(true);
@@ -64,7 +68,7 @@ export class BookingService {
   getBookingById(bookingId: number): Observable<Booking> {
     this.loadingSubject.next(true);
     return this.http
-      .get<{ message: string; data:Booking }>(`${environment.bookingApiUrl}/bookings/${bookingId}`)
+      .get<{ message: string; data: Booking }>(`${environment.bookingApiUrl}/bookings/${bookingId}`)
       .pipe(
         map(res => res.data),
         finalize(() => this.loadingSubject.next(false))
@@ -85,11 +89,18 @@ export class BookingService {
       );
   }
 
-  reloadBookings(page: number = 0, size: number = 10): void {
-    this.getAll(page, size).subscribe(pageResponse => {
-      this.bookingSubject.next(pageResponse.content);
-    });
+  reloadBookings(): void {
+  if (this.viewMode === 'ADMIN') {
+    this.getAll(this.page, this.size)
+      .subscribe(res => this.bookingSubject.next(res.content));
+    return;
   }
+
+  if (this.viewMode === 'USER' && this.userId != null) {
+    this.getBookingsByUserId(this.userId, this.page, this.size)
+      .subscribe(res => this.bookingSubject.next(res.content));
+  }
+}
 
   create(payload: CreateBookingRequest): Observable<ApiResponse<BookingResponse>> {
     console.log(payload)
@@ -97,21 +108,21 @@ export class BookingService {
       environment.bookingApiUrl + "/bookings", payload);
   }
 
-  storno(id: number): Observable<ApiResponse<number>>{
+  storno(id: number): Observable<ApiResponse<number>> {
     return this.http.delete<ApiResponse<number>>(
       environment.bookingApiUrl + "/bookings/" + id
     )
   }
 
   public filteredBookings$(user: User | null, studio: Studio | null): Observable<Booking[]> {
-  return this.bookingSubject.asObservable().pipe(
-    map(bookings =>
-      bookings.filter(booking => {
-        const matchesUser = !user || booking.user.id === user.id;
-        const matchesStudio = !studio || booking.studio.id === studio.id;
-        return matchesUser && matchesStudio;
-      })
-    )
-  );
-}
+    return this.bookingSubject.asObservable().pipe(
+      map(bookings =>
+        bookings.filter(booking => {
+          const matchesUser = !user || booking.user.id === user.id;
+          const matchesStudio = !studio || booking.studio.id === studio.id;
+          return matchesUser && matchesStudio;
+        })
+      )
+    );
+  }
 }

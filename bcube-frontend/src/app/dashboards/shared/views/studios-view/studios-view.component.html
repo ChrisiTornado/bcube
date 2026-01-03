@@ -48,7 +48,7 @@
     <!-- 🔥 Ende Scrollbereich -->
 
     <!-- Pagination unten fix -->
-    <div class="flex justify-content-center gap-3 mt-3" *ngIf="totalPages > 1">
+    <div class="flex justify-content-center gap-4 mt-4" *ngIf="totalPages > 1">
         <button pButton label="<- Zurück"
                 [style]="{'background-color': 'white', 'border-color': 'black', 'color': 'black'}"
                 (click)="loadPage(page - 1)"
