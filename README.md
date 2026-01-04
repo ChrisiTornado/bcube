@@ -10,5 +10,5 @@ docker compose up
 
 ## 👤 Autor
 
-Christophe-Mokili Andunda
+Christophe-Mokili Andunda<br>
 Copyright © 2026
