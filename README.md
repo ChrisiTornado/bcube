@@ -6,6 +6,7 @@ Klonen und starten des Projekts in drei einfachen Schritten:
 git clone https://github.com/ChrisiTornado/bcube.git
 cd bcube
 docker compose up
+```
 
 ## 👤 Autor
 
