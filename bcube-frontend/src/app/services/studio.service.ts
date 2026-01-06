@@ -9,6 +9,7 @@ import { StudioResponse } from '../models/responses/studio/StudioResponse';
 import { UpdateStudioRequest } from '../models/requests/studio/UpdateStudioRequest';
 import { finalize, map } from 'rxjs/operators';
 import { PageResponse } from "../models/responses/PageResponse";
+import { StudioNameResponse } from '../models/responses/studio/StudioNameResponse';
 
 @Injectable({
   providedIn: 'root'
@@ -19,6 +20,9 @@ export class StudioService {
 
   private studiosSubject = new BehaviorSubject<Studio[]>([]);
   public studios$ = this.studiosSubject.asObservable();
+
+  public page = 0;
+  public size = 10;
 
   constructor(private http: HttpClient) {
     this.reloadStudios();
@@ -51,6 +55,13 @@ export class StudioService {
     this.getAll(page, size).subscribe(pageResponse => {
       this.studiosSubject.next(pageResponse.content);
     });
+  }
+
+  getStudioFilter(page: number, size: number): Observable<PageResponse<StudioNameResponse>> {
+    return this.http
+      .get<ApiResponse<PageResponse<StudioNameResponse>>>(
+        `${environment.studioApiUrl}/bookings/filters/studios?page=${page}&size=${size}`)
+      .pipe(map(res => res.data));
   }
 
   setStudios(studios: Studio[]): void {

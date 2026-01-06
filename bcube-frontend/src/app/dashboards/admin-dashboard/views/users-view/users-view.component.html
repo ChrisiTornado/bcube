@@ -39,18 +39,18 @@
   <div class="flex justify-content-center gap-3 mt-3">
       <button pButton label="<- Zurück"
               [style]="{'background-color': 'white', 'border-color': 'black', 'color': 'black'}"
-              (click)="loadPage(page - 1)"
-              [disabled]="page === 0">
+              (click)="loadPage(this.userService.page - 1)"
+              [disabled]="this.userService.page === 0">
       </button>
 
       <span class="mt-2 mx-3 font-bold">
-          Seite {{ page + 1 }} von {{ totalPages }}
+          Seite {{ this.userService.page + 1 }} von {{ totalPages }}
       </span>
 
       <button pButton label="Weiter ->"
               [style]="{'background-color': 'white', 'border-color': 'black', 'color': 'black'}"
-              (click)="loadPage(page + 1)"
-              [disabled]="page >= totalPages - 1">
+              (click)="loadPage(this.userService.page + 1)"
+              [disabled]="this.userService.page >= totalPages - 1">
       </button>
   </div>
 

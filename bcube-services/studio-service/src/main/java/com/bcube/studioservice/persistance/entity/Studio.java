@@ -17,7 +17,7 @@ import java.time.Instant;
 public class Studio {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     @Column(nullable = false, length = 50)
     private String name;

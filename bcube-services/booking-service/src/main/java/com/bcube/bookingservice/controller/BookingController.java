@@ -1,6 +1,8 @@
 package com.bcube.bookingservice.controller;
 
 import com.bcube.bookingservice.service.dto.request.BookStudioRequest;
+import com.bcube.bookingservice.service.dto.request.AdminBookingQueryRequest;
+import com.bcube.bookingservice.service.dto.request.UserBookingQueryRequest;
 import com.bcube.bookingservice.service.dto.response.ApiResponse;
 import com.bcube.bookingservice.service.dto.response.BookingResponse;
 import com.bcube.bookingservice.service.impl.BookingServiceImpl;
@@ -16,8 +18,8 @@ public class BookingController {
 
     private final BookingServiceImpl bookingService;
     @GetMapping("/bookings")
-    public ResponseEntity<ApiResponse<Page<BookingResponse>>> getFreeTimeSlots(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
-        Page<BookingResponse> bookings = bookingService.getAllBookings(page, size);
+    public ResponseEntity<ApiResponse<Page<BookingResponse>>> getBookings(AdminBookingQueryRequest request) {
+        Page<BookingResponse> bookings = bookingService.getBookings(request.getPage(), request.getSize(), request.getUserId(), request.getStudioId());
         return  ResponseEntity.ok(new ApiResponse<>("Freie Zeiten erfolgreich geladen", bookings));
     }
 
@@ -28,8 +30,8 @@ public class BookingController {
     }
 
     @GetMapping("/bookings/user/{userId}")
-    public ResponseEntity<ApiResponse<Page<BookingResponse>>> getBookingsByUserId(@PathVariable Long userId, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
-        Page<BookingResponse> bookings = bookingService.getBookingsByUserId(userId, page, size);
+    public ResponseEntity<ApiResponse<Page<BookingResponse>>> getBookingsByUserId(UserBookingQueryRequest request) {
+        Page<BookingResponse> bookings = bookingService.getBookingsByUserId(request.getUserId(), request.getPage(), request.getSize(), request.getStudioId());
         return  ResponseEntity.ok(new ApiResponse<>("Buchungen erfolgreich geladen", bookings));
     }
 

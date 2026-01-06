@@ -29,15 +29,13 @@ import { UsersComponent } from '../../components/users/users.component';
 export class UsersViewComponent implements OnInit {
   users$!: Observable<User[]>;
   loading$ = this.userService.loading$;
-  page = 0;
-  size = 10;
   totalPages = 0;
 
-  constructor(private userService: UserService, private router: Router, private route: ActivatedRoute) { }
+  constructor(public userService: UserService, private router: Router, private route: ActivatedRoute) { }
 
   ngOnInit(): void {
     this.users$ = this.userService.users$;
-    this.loadPage(0);
+    this.loadPage(this.userService.page);
   }
 
   navigateToDetails(user: User) {
@@ -48,8 +46,8 @@ export class UsersViewComponent implements OnInit {
   }
 
   loadPage(page: number) {
-    this.page = page;
-    this.userService.getAll(page, this.size)
+    this.userService.page = page;
+    this.userService.getAll(page, this.userService.size)
     .subscribe(res => {
         this.totalPages = res.totalPages;
         this.userService.setUsers(res.content);

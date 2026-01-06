@@ -6,6 +6,7 @@ import com.bcube.studioservice.persistance.repository.StudioRepository;
 import com.bcube.studioservice.service.StudioService;
 import com.bcube.studioservice.service.dto.request.CreateStudioRequest;
 import com.bcube.studioservice.service.dto.request.UpdateStudioRequest;
+import com.bcube.studioservice.service.dto.response.StudioNameResponse;
 import com.bcube.studioservice.service.dto.response.StudioResponse;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONArray;
@@ -13,6 +14,7 @@ import org.json.JSONObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -29,7 +31,6 @@ import java.util.*;
 @RequiredArgsConstructor
 public class StudioServiceImpl implements StudioService {
     private final StudioRepository studioRepository;
-    private Map<String, double[]> geocodeCache = new HashMap<>();
 
     @Override
     public Page<StudioResponse> getAllStudios(int page, int size) {
@@ -187,6 +188,15 @@ public class StudioServiceImpl implements StudioService {
                 updated.isActive(),
                 updated.getCreatedAt()
         );
+    }
+
+    @Override
+    public Page<StudioNameResponse> getAllStudioNames(int page, int size) {
+        Sort sort = Sort.by(Sort.Direction.ASC, "name");
+        Pageable pageable = PageRequest.of(page, size, sort);
+        Page<StudioNameResponse> result = studioRepository.getAllStudioNames(pageable);
+
+        return result;
     }
 
     private double[] geocodeCoordinates(String address) {

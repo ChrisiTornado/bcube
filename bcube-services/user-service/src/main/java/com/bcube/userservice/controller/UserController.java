@@ -3,6 +3,7 @@ package com.bcube.userservice.controller;
 import com.bcube.userservice.service.dto.request.CreateUserRequest;
 import com.bcube.userservice.service.dto.request.UpdateUserRequest;
 import com.bcube.userservice.service.dto.response.ApiResponse;
+import com.bcube.userservice.service.dto.response.UserNameResponse;
 import com.bcube.userservice.service.dto.response.UserResponse;
 import com.bcube.userservice.service.impl.UserServiceImpl;
 import jakarta.validation.Valid;
@@ -47,5 +48,11 @@ public class UserController {
     public ResponseEntity<ApiResponse<UserResponse>> getUserById(@PathVariable long id) {
         UserResponse user = userService.getUserById(id);
         return ResponseEntity.ok(new ApiResponse<>("User erfolgreich aktuallisiert", user));
+    }
+
+    @GetMapping("/admin/bookings/filters/users")
+    public ResponseEntity<ApiResponse<Page<UserNameResponse>>> getBookingsNames(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+        Page<UserNameResponse> names = userService.getUserNamesOfBookings(page, size);
+        return ResponseEntity.ok(new ApiResponse<>("Usernamen erfolgreich geladen", names));
     }
 }

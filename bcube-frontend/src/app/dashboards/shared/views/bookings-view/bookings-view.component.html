@@ -2,65 +2,74 @@
 
 <app-loading-spinner *ngIf="loading$ | async"></app-loading-spinner>
 
-<ng-container *ngIf="!(loading$ | async) && (filteredBookings$ | async) as filteredBookings">
+
+<ng-container *ngIf="!(loading$ | async) && (bookings$ | async) as bookings">
 
   <!-- Filter -->
   <div class="my-4 flex gap-4">
     <p-floatLabel *ngIf="isAdmin">
-      <p-dropdown
-        [(ngModel)]="userFilter"
-        [options]="users"
-        optionLabel="fullName"
-        inputId="userFilter"
-        (onChange)="updateFilters()"
-        placeholder="Benutzer auswählen">
+      <p-dropdown [(ngModel)]="userFilter" [options]="userFilters" optionLabel="label" dataKey="id"
+        placeholder="User auswählen" (onChange)="updateFilters()">
+
+        <!-- User Item -->
         <ng-template let-user pTemplate="item">
-          <div class="flex align-items-center gap-2">
-            <div>{{ user.firstName }} {{ user.lastName }}</div>
+          <div>{{ user.lastName }}, {{ user.firstName }}</div>
+        </ng-template>
+
+        <!-- FOOTER MIT PLUS -->
+        <ng-template pTemplate="footer">
+          <div class="p-2 text-center">
+            <button pButton type="button" icon="pi pi-plus" label="Weitere laden" class="p-button-text"
+              (mousedown)="$event.preventDefault()" (click)="$event.stopPropagation(); loadMoreUsers()"
+              [disabled]="userFilterLoading || userFilterLastPage">
+            </button>
           </div>
         </ng-template>
+
       </p-dropdown>
       <label for="userFilter">Benutzer</label>
     </p-floatLabel>
 
     <p-floatLabel>
-      <p-dropdown
-        [(ngModel)]="studioFilter"
-        [options]="studios"
-        optionLabel="name"
-        inputId="studioFilter"
-        (onChange)="updateFilters()"
-        placeholder="Studio auswählen">
+      <p-dropdown [(ngModel)]="studioFilter" [options]="studioFilters" optionLabel="name" dataKey="id"
+        placeholder="Studio auswählen" (onChange)="updateFilters()">
+
+        <!-- Studio Item -->
         <ng-template let-studio pTemplate="item">
-          <div class="flex align-items-center gap-2">
-            <div>{{ studio.name }}</div>
+          <div>{{ studio.name }}</div>
+        </ng-template>
+
+        <!-- FOOTER MIT PLUS -->
+        <ng-template pTemplate="footer">
+          <div class="p-2 text-center">
+            <button pButton type="button" icon="pi pi-plus" label="Weitere laden" class="p-button-text"
+              (mousedown)="$event.preventDefault()" (click)="$event.stopPropagation(); loadMoreStudios()"
+              [disabled]="studioFilterLoading || studioFilterLastPage">
+            </button>
           </div>
         </ng-template>
+
       </p-dropdown>
       <label for="studioFilter">Studio</label>
     </p-floatLabel>
 
-    <p-button
-      [outlined]="true"
-      label="Filter zurücksetzen"
+    <p-button [outlined]="true" label="Filter zurücksetzen"
       [style]="{'background-color': 'black', 'border-color': 'black', 'color': 'white'}"
       (click)="userFilter = null; studioFilter = null; updateFilters()">
     </p-button>
   </div>
 
-  <div *ngIf="filteredBookings.length === 0" class="text-center my-6">
+  <div *ngIf="bookings.length === 0" class="text-center my-6">
     <h3 class="mb-3">Keine Buchungen gefunden</h3>
     <p-button (onClick)="navigateToBookingCreation()"
-              [style]="{'background-color': 'black', 'border-color': 'black', 'color': 'white'}"
-              *ngIf="!isAdmin">
-              Hier buchen
+      [style]="{'background-color': 'black', 'border-color': 'black', 'color': 'white'}" *ngIf="!isAdmin">
+      Hier buchen
     </p-button>
   </div>
 
-  <div *ngIf="filteredBookings.length > 0"
-       style="max-height: calc(100vh - 300px); overflow-y: auto; padding-bottom: 1rem;">
+  <div *ngIf="bookings.length > 0" style="max-height: calc(100vh - 300px); overflow-y: auto; padding-bottom: 1rem;">
 
-    <p-table [value]="filteredBookings">
+    <p-table [value]="bookings">
       <ng-template pTemplate="header">
         <tr>
           <th>Buchungsnummer</th>
@@ -89,18 +98,16 @@
 
   <!-- Pagination unten -->
   <div class="flex justify-content-center gap-4 mt-4" *ngIf="totalPages > 1">
-    <button pButton label="<- Zurück"
-            [style]="{'background-color': 'white', 'border-color': 'black', 'color': 'black'}"
-            (click)="isAdmin ? loadAdminPage(page - 1) : loadUserPage(authService.getUser()?.id!, page - 1)"
-            [disabled]="page === 0">
+    <button pButton label="<- Zurück" [style]="{'background-color': 'white', 'border-color': 'black', 'color': 'black'}"
+      (click)="isAdmin ? loadAdminPage(this.bookingService.page - 1) : loadUserPage(authService.getUser()?.id!, this.bookingService.page - 1)"
+      [disabled]="this.bookingService.page === 0">
     </button>
 
-    <span class="mt-2 mx-3 font-bold">Seite {{ page + 1 }} von {{ totalPages }}</span>
+    <span class="mt-2 mx-3 font-bold">Seite {{ this.bookingService.page + 1 }} von {{ totalPages }}</span>
 
-    <button pButton label="Weiter ->"
-            [style]="{'background-color': 'white', 'border-color': 'black', 'color': 'black'}"
-            (click)="isAdmin ? loadAdminPage(page + 1) : loadUserPage(authService.getUser()?.id!, page + 1)"
-            [disabled]="page >= totalPages - 1">
+    <button pButton label="Weiter ->" [style]="{'background-color': 'white', 'border-color': 'black', 'color': 'black'}"
+      (click)="isAdmin ? loadAdminPage(this.bookingService.page + 1) : loadUserPage(authService.getUser()?.id!, this.bookingService.page + 1)"
+      [disabled]="this.bookingService.page >= totalPages - 1">
     </button>
   </div>
 

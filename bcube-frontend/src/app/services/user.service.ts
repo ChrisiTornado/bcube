@@ -10,6 +10,7 @@ import { UserResponse } from '../models/responses/user/UserResponse';
 import { CreateUserRequest } from '../models/requests/user/CreateUserRequest';
 import { UpdateUserRequest } from '../models/requests/user/UpdateUserRequest';
 import { PageResponse } from '../models/responses/PageResponse';
+import { UserNameResponse } from '../models/responses/user/UserNameResponse';
 
 @Injectable({
   providedIn: 'root'
@@ -20,6 +21,9 @@ export class UserService {
 
   private usersSubject = new BehaviorSubject<User[]>([]);
   public users$ = this.usersSubject.asObservable();
+
+  public page = 0;
+  public size = 10;
 
   constructor(private http: HttpClient) { }
 
@@ -38,8 +42,8 @@ export class UserService {
   }
 
   setUsers(users: User[]): void {
-      this.usersSubject.next(users);
-    }
+    this.usersSubject.next(users);
+  }
 
   createUser(payload: CreateUserRequest): Observable<ApiResponse<UserResponse>> {
     console.log(payload)
@@ -47,6 +51,13 @@ export class UserService {
       environment.adminApiUrl + '/users',
       payload
     );
+  }
+
+  getUserFilter(page: number, size: number): Observable<PageResponse<UserNameResponse>> {
+    return this.http
+      .get<ApiResponse<PageResponse<UserNameResponse>>>(
+        `${environment.adminApiUrl}/bookings/filters/users?page=${page}&size=${size}`)
+      .pipe(map(res => res.data));
   }
 
   updateUser(payload: UpdateUserRequest): Observable<ApiResponse<UserResponse>> {

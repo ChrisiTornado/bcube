@@ -6,11 +6,13 @@ import com.bcube.userservice.persistance.repository.UserRepository;
 import com.bcube.userservice.service.UserService;
 import com.bcube.userservice.service.dto.request.CreateUserRequest;
 import com.bcube.userservice.service.dto.request.UpdateUserRequest;
+import com.bcube.userservice.service.dto.response.UserNameResponse;
 import com.bcube.userservice.service.dto.response.UserResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -107,5 +109,15 @@ public class UserServiceImpl implements UserService {
                 user.getFirstName(),
                 user.getLastName()
         );
+    }
+
+    @Override
+    public Page<UserNameResponse> getUserNamesOfBookings(int page, int size) {
+        Sort sort = Sort.by(
+                Sort.Order.asc("lastName"),
+                Sort.Order.asc("firstName")
+        );
+        Pageable pageable = PageRequest.of(page, size, sort);
+        return userRepository.findUserNames(pageable);
     }
 }

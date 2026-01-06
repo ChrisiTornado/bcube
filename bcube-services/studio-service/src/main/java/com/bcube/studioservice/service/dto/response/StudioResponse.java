@@ -8,7 +8,7 @@ import java.time.Instant;
 @Data
 @AllArgsConstructor
 public class StudioResponse {
-    private int id;
+    private Long id;
     private String name;
     private String description;
     private String street;

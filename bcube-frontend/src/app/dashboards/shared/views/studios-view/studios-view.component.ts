@@ -3,16 +3,13 @@ import {Router} from '@angular/router';
 import {ActivatedRoute} from '@angular/router';
 import {StudioService} from '../../../../services/studio.service';
 import {Studio} from '../../../../models/Studio';
-import {Observable} from 'rxjs';
 import {TableModule} from 'primeng/table';
 import {ButtonModule} from 'primeng/button';
 import {UpdateStudioComponent} from './update-studio/update-studio.component';
 import {DeleteStudioComponent} from './delete-studio/delete-studio.component';
 import {LoadingSpinnerComponent} from '../../../../shared/loading-spinner/loading-spinner.component';
 import {CommonModule} from '@angular/common';
-import {StudiosComponent} from '../../../shared/components/studios/studios.component';
 import {AuthService} from '../../../../services/auth/auth.service';
-import {tap, map} from 'rxjs/operators';
 
 @Component({
     selector: 'app-studios-view',
@@ -26,16 +23,14 @@ export class StudiosViewComponent implements OnInit {
     loading$ = this.studioService.loading$;
     isAdmin = false;
 
-    page = 0;
-    size = 10;
     totalPages = 0;
 
     ngOnInit(): void {
         this.isAdmin = this.authService.getRole() === "ADMIN"
-        this.loadPage(0);
+        this.loadPage(this.studioService.page);
     }
 
-    constructor(private studioService: StudioService, private router: Router, private route: ActivatedRoute, private authService: AuthService) {
+    constructor(public studioService: StudioService, private router: Router, private authService: AuthService) {
     }
 
     navigateToDetails(studio: Studio): void {
@@ -46,8 +41,8 @@ export class StudiosViewComponent implements OnInit {
     }
 
     loadPage(page: number): void {
-        this.page = page;
-        this.studioService.getAll(page, this.size).subscribe(res => {
+        this.studioService.page = page;
+        this.studioService.getAll(page, this.studioService.size).subscribe(res => {
             this.totalPages = res.totalPages;
             this.studioService.setStudios(res.content);
         });

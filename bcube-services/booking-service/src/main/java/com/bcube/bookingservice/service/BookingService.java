@@ -5,10 +5,10 @@ import com.bcube.bookingservice.service.dto.response.BookingResponse;
 import org.springframework.data.domain.Page;
 
 public interface BookingService {
-    Page<BookingResponse> getAllBookings(int page, int size);
+    Page<BookingResponse> getBookings(int page, int size, Long userId, Long studioId);
     BookingResponse bookTimeSlot(BookStudioRequest bookStudioRequest);
 
-    Page<BookingResponse> getBookingsByUserId(Long userId, int page, int size);
+    Page<BookingResponse> getBookingsByUserId(Long userId, int page, int size, Long studioId);
 
     BookingResponse getBookingById(Long bookingId);
 

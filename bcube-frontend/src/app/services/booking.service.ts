@@ -27,11 +27,33 @@ export class BookingService {
 
   constructor(private http: HttpClient) { }
 
-  getAll(page: number = 0, size: number = 10): Observable<PageResponse<Booking>> {
+  getBookings(
+    page: number = 0,
+    size: number = 10,
+    userId?: number,
+    studioId?: number
+  ): Observable<PageResponse<Booking>> {
+
     this.loadingSubject.next(true);
 
+    const params: any = {
+      page,
+      size
+    };
+
+    if (userId != null) {
+      params.userId = userId;
+    }
+
+    if (studioId != null) {
+      params.studioId = studioId;
+    }
+
     return this.http
-      .get<ApiResponse<PageResponse<Booking>>>(`${environment.bookingApiUrl}/bookings?page=${page}&size=${size}`)
+      .get<ApiResponse<PageResponse<Booking>>>(
+        `${environment.bookingApiUrl}/bookings`,
+        { params }
+      )
       .pipe(
         map(res => res.data),
         finalize(() => this.loadingSubject.next(false))
@@ -41,16 +63,28 @@ export class BookingService {
   getBookingsByUserId(
     userId: number,
     page: number = 0,
-    size: number = 10
+    size: number = 10,
+    stuioId?: number
   ): Observable<PageResponse<Booking>> {
     this.loadingSubject.next(true);
 
+    const params: any = {
+      userId,
+      page,
+      size
+    };
+
+    if (stuioId != null) {
+      params.studioId = stuioId;
+    }
+
     return this.http
       .get<ApiResponse<PageResponse<Booking>>>(
-        `${environment.bookingApiUrl}/bookings/user/${userId}?page=${page}&size=${size}`
+        `${environment.bookingApiUrl}/bookings/user/${userId}`,
+        { params }
       )
       .pipe(
-        map(res => res.data), // data = PageResponse<Booking>
+        map(res => res.data),
         finalize(() => this.loadingSubject.next(false))
       );
   }
@@ -89,18 +123,19 @@ export class BookingService {
       );
   }
 
-  reloadBookings(): void {
-  if (this.viewMode === 'ADMIN') {
-    this.getAll(this.page, this.size)
-      .subscribe(res => this.bookingSubject.next(res.content));
-    return;
-  }
+  reloadBookings(userId?: number,
+    studioId?: number): void {
+    if (this.viewMode === 'ADMIN') {
+      this.getBookings(this.page, this.size, userId, studioId)
+        .subscribe(res => this.bookingSubject.next(res.content));
+      return;
+    }
 
-  if (this.viewMode === 'USER' && this.userId != null) {
-    this.getBookingsByUserId(this.userId, this.page, this.size)
-      .subscribe(res => this.bookingSubject.next(res.content));
+    if (this.viewMode === 'USER' && this.userId != null) {
+      this.getBookingsByUserId(this.userId, this.page, this.size)
+        .subscribe(res => this.bookingSubject.next(res.content));
+    }
   }
-}
 
   create(payload: CreateBookingRequest): Observable<ApiResponse<BookingResponse>> {
     console.log(payload)
@@ -112,17 +147,5 @@ export class BookingService {
     return this.http.delete<ApiResponse<number>>(
       environment.bookingApiUrl + "/bookings/" + id
     )
-  }
-
-  public filteredBookings$(user: User | null, studio: Studio | null): Observable<Booking[]> {
-    return this.bookingSubject.asObservable().pipe(
-      map(bookings =>
-        bookings.filter(booking => {
-          const matchesUser = !user || booking.user.id === user.id;
-          const matchesStudio = !studio || booking.studio.id === studio.id;
-          return matchesUser && matchesStudio;
-        })
-      )
-    );
   }
 }

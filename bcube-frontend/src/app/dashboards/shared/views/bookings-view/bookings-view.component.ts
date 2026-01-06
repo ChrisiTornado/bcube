@@ -17,6 +17,10 @@ import { LoadingSpinnerComponent } from '../../../../shared/loading-spinner/load
 import { BookingsComponent } from '../../components/bookings/bookings.component';
 import { StornoBookingComponent } from './storno-booking/storno-booking.component';
 import { FormsModule } from '@angular/forms';
+import { StudioNameResponse } from '../../../../models/responses/studio/StudioNameResponse';
+import { StudioService } from '../../../../services/studio.service';
+import { UserNameResponse } from '../../../../models/responses/user/UserNameResponse';
+import { UserService } from '../../../../services/user.service';
 
 @Component({
   selector: 'app-bookings-view',
@@ -37,28 +41,56 @@ import { FormsModule } from '@angular/forms';
 })
 export class BookingsViewComponent implements OnInit {
   bookings$!: Observable<Booking[]>;
-  filteredBookings$!: Observable<Booking[]>;
   users: User[] = [];
   studios: Studio[] = [];
   loading$ = this.bookingService.loading$;
   isAdmin = false;
   bookingStatus = BookingStatus;
 
-  userFilter: User | null = null;
-  studioFilter: Studio | null = null;
-  page = 0;
-  size = 10;
+  studioFilters: StudioNameResponse[] = [];
+  studioFilter: StudioNameResponse | null = null;
+  userFilters: UserNameResponse[] = [];
+  userFilter: UserNameResponse | null = null;
+
+  studioFilterPage = 0;
+  studioFilterSize = 10;
+  studioFilterLoading = false;
+  studioFilterLastPage = false;
+
+  userFilterPage = 0;
+  userFilterSize = 10;
+  userFilterLoading = false;
+  userFilterLastPage = false;
   totalPages = 0;
 
   constructor(
-    private bookingService: BookingService,
+    public bookingService: BookingService,
+    private studioService: StudioService,
+    private userService: UserService,
     private router: Router,
-    private route: ActivatedRoute,
     public authService: AuthService
   ) { }
 
   ngOnInit(): void {
     this.isAdmin = this.authService.getRole() === 'ADMIN';
+    this.bookings$ = this.bookingService.bookings$;
+    this.loadMoreStudios();
+
+    if (this.isAdmin) {
+      this.loadAdminPage(this.bookingService.page);
+      this.loadMoreUsers();
+    } else {
+      const userId = this.authService.getUser()?.id;
+      if (userId) {
+        this.loadUserPage(userId, this.bookingService.page);
+      }
+    }
+
+    this.bookings$ = this.bookingService.bookings$;
+  }
+
+  updateFilters(): void {
+    this.bookingService.page = 0;
 
     if (this.isAdmin) {
       this.loadAdminPage(0);
@@ -68,37 +100,50 @@ export class BookingsViewComponent implements OnInit {
         this.loadUserPage(userId, 0);
       }
     }
-
-    this.bookings$ = this.bookingService.bookings$;
-
-    this.bookings$.subscribe(bookings => {
-      this.users = this.uniqueUsers(
-        bookings.map(b => ({
-          ...b.user,
-          fullName: `${b.user.firstName} ${b.user.lastName}`
-        }))
-      );
-
-      this.studios = this.uniqueStudios(bookings.map(b => b.studio));
-    });
-    this.filteredBookings$ = this.bookingService.filteredBookings$(null, null);
   }
 
-  uniqueUsers(users: User[]): User[] {
-    const map = new Map(users.map(u => [u.id, u]));
-    return Array.from(map.values());
+  loadMoreStudios(): void {
+    if (this.studioFilterLoading || this.studioFilterLastPage) {
+      return;
+    }
+
+    this.studioFilterLoading = true;
+
+    this.studioService
+      .getStudioFilter(this.studioFilterPage, this.studioFilterSize)
+      .subscribe(page => {
+        this.studioFilters = [...this.studioFilters, ...page.content];
+        this.studioFilterLastPage = page.last;
+        this.studioFilterPage++;
+        this.studioFilterLoading = false;
+      });
   }
 
-  uniqueStudios(studios: Studio[]): Studio[] {
-    const map = new Map(studios.map(s => [s.id, s]));
-    return Array.from(map.values());
-  }
+  loadMoreUsers(): void {
+    if (this.userFilterLoading || this.userFilterLastPage) {
+      return;
+    }
 
-  updateFilters(): void {
-    this.filteredBookings$ = this.bookingService.filteredBookings$(
-      this.userFilter,
-      this.studioFilter
-    );
+    this.userFilterLoading = true;
+
+    this.userService
+      .getUserFilter(this.userFilterPage, this.userFilterSize)
+      .subscribe(page => {
+
+        const mappedUsers = page.content.map(u => ({
+          ...u,
+          label: `${u.lastName}, ${u.firstName}`
+        }));
+
+        this.userFilters = [
+          ...this.userFilters,
+          ...mappedUsers
+        ];
+
+        this.userFilterLastPage = page.last;
+        this.userFilterPage++;
+        this.userFilterLoading = false;
+      });
   }
 
   navigateToDetails(booking: Booking): void {
@@ -122,40 +167,32 @@ export class BookingsViewComponent implements OnInit {
   }
 
   loadUserPage(userId: number, page: number) {
-    this.page = page;
-
     this.bookingService.viewMode = 'USER';
     this.bookingService.userId = userId;
     this.bookingService.page = page;
 
-    this.bookingService.getBookingsByUserId(userId, page, this.size).subscribe(res => {
-      this.totalPages = res.totalPages;
-      this.bookingService.setBookings(res.content);
-    });
+    this.bookingService
+      .getBookingsByUserId(
+        userId,
+        page,
+        this.bookingService.size,
+        this.studioFilter?.id
+      )
+      .subscribe(res => {
+        this.totalPages = res.totalPages;
+        this.bookingService.setBookings(res.content);
+      });
   }
 
 
   loadAdminPage(page: number) {
-    this.page = page;
-
     this.bookingService.viewMode = 'ADMIN';
     this.bookingService.page = page;
 
-    this.bookingService.getAll(page, this.size).subscribe(res => {
-      this.totalPages = res.totalPages;
-      this.bookingService.setBookings(res.content);
-    });
-  }
-
-  loadPage(page: number) {
-    if (page < 0 || page >= this.totalPages) return;
-    this.page = page;
-
-    if (this.isAdmin) {
-      this.loadAdminPage(page);
-    } else {
-      const userId = this.authService.getUser()?.id;
-      if (userId) this.loadUserPage(userId, page);
-    }
+    this.bookingService.getBookings(page, this.bookingService.size, this.userFilter?.id,
+      this.studioFilter?.id).subscribe(res => {
+        this.totalPages = res.totalPages;
+        this.bookingService.setBookings(res.content);
+      });
   }
 }

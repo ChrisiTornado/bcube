@@ -3,6 +3,7 @@ package com.bcube.studioservice.controller;
 import com.bcube.studioservice.service.dto.request.CreateStudioRequest;
 import com.bcube.studioservice.service.dto.request.UpdateStudioRequest;
 import com.bcube.studioservice.service.dto.response.ApiResponse;
+import com.bcube.studioservice.service.dto.response.StudioNameResponse;
 import com.bcube.studioservice.service.dto.response.StudioResponse;
 import com.bcube.studioservice.service.impl.StudioServiceImpl;
 import jakarta.validation.Valid;
@@ -47,5 +48,12 @@ public class StudioController {
     public ResponseEntity<ApiResponse<StudioResponse>> updateStudio(@PathVariable long id, @Valid @RequestBody UpdateStudioRequest updateStudioRequest) {
         StudioResponse response = studioService.updateStudio(id, updateStudioRequest);
         return ResponseEntity.ok(new ApiResponse<>("Studio erfolgreich aktuallisiert", response));
+    }
+
+    @GetMapping("/bookings/filters/studios")
+    public ResponseEntity<ApiResponse<Page<StudioNameResponse>>> getBookingsStudios(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+        System.out.println("hi");
+        Page<StudioNameResponse> studios = studioService.getAllStudioNames(page, size);
+        return ResponseEntity.ok(new ApiResponse<>("Studiennamen erfolgreich geladen", studios));
     }
 }

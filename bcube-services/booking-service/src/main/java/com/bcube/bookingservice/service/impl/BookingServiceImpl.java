@@ -36,10 +36,36 @@ public class BookingServiceImpl implements BookingService {
 
     @Transactional(readOnly = true)
     @Override
-    public Page<BookingResponse> getAllBookings(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("date").descending()
-                .and(Sort.by("startTime").descending()));
-        Page<Booking> bookings = bookingRepository.findAll(pageable);
+    public Page<BookingResponse> getBookings(
+            int page,
+            int size,
+            Long userId,
+            Long studioId
+    ) {
+        Pageable pageable = PageRequest.of(
+                page,
+                size,
+                Sort.by("date").descending()
+                        .and(Sort.by("startTime").descending())
+        );
+
+        Page<Booking> bookings;
+
+        if (userId != null && studioId != null) {
+            bookings = bookingRepository
+                    .findAllByUserIdAndStudioId(userId, studioId, pageable);
+
+        } else if (userId != null) {
+            bookings = bookingRepository
+                    .findAllByUserId(userId, pageable);
+
+        } else if (studioId != null) {
+            bookings = bookingRepository
+                    .findAllByStudioId(studioId, pageable);
+
+        } else {
+            bookings = bookingRepository.findAll(pageable);
+        }
 
         return bookings.map(booking -> {
             UserDto user = userClient.getUserById(booking.getUserId());
@@ -59,14 +85,20 @@ public class BookingServiceImpl implements BookingService {
 
     @Transactional(readOnly = true)
     @Override
-    public Page<BookingResponse> getBookingsByUserId(Long userId, int page, int size) {
+    public Page<BookingResponse> getBookingsByUserId(Long userId, int page, int size, Long studioId) {
         if (!userClient.userExists(userId)) {
             throw new IllegalArgumentException("User mit ID " + userId + " nicht gefunden");
         }
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("date").descending()
                 .and(Sort.by("startTime").descending()));
-        Page<Booking> bookings = bookingRepository.findAllByUserId(userId, pageable);
+        Page<Booking> bookings;
+
+        if (studioId != null) {
+            bookings = bookingRepository.findAllByUserIdAndStudioId(userId, studioId, pageable);
+        } else {
+            bookings = bookingRepository.findAllByUserId(userId, pageable);
+        }
 
         return bookings.map(booking -> {
             UserDto user = userClient.getUserById(booking.getUserId());
