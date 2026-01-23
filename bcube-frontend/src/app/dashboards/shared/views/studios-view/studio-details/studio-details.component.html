@@ -58,8 +58,12 @@
           </div>
 
           <!-- Fehlermeldung -->
-          <p class="text-red-600 text-sm mt-1" *ngIf="!isEndTimeValid()">
+          <p class="p-error text-sm mt-1" *ngIf="!isEndTimeValid()">
             Endzeit muss nach der Startzeit liegen.
+          </p>
+
+          <p class="p-error text-sm mt-1" *ngIf="date && startTime && endTime && isBookingInPast()">
+            Diese Uhrzeit ist bereits abgelaufen.
           </p>
 
           <!-- Button -->

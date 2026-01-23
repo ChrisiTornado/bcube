@@ -19,8 +19,6 @@ import { CalendarOptions, EventInput } from '@fullcalendar/core';
 import { Studio } from '../../../../../models/Studio';
 import { Booking } from '../../../../../models/Booking';
 import { CreateBookingRequest } from '../../../../../models/requests/booking/CreateBookingRequest';
-import { ApiResponse } from '../../../../../models/responses/ApiResponse';
-import { BookingResponse } from '../../../../../models/responses/booking/BookingResponse';
 
 @Component({
   selector: 'app-studio-details',
@@ -275,8 +273,24 @@ export class StudioDetailsComponent implements OnInit {
       !this.isDisabledDate(this.date) &&
       this.startTime !== null &&
       this.endTime !== null &&
-      this.startTime < this.endTime
+      this.startTime < this.endTime &&
+      !this.isBookingInPast()
     );
+  }
+
+  isBookingInPast(): boolean {
+    if (!this.date || !this.startTime) return true;
+
+    const bookingDateTime = new Date(this.date);
+
+    bookingDateTime.setHours(
+      this.startTime.getHours(),
+      this.startTime.getMinutes(),
+      0,
+      0
+    );
+
+    return bookingDateTime.getTime() <= Date.now();
   }
 
   /** Prüft, ob Endzeit nach Startzeit liegt */

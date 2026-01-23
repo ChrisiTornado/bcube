@@ -1,5 +1,6 @@
 <div class="flex align-items-center flex-wrap gap-4 mb-4">
     <h1 class="m-0">Studios</h1>
+    <app-studios *ngIf="isAdmin"></app-studios>
 </div>
 
 <app-loading-spinner *ngIf="loading$ | async"></app-loading-spinner>

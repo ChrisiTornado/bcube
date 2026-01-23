@@ -3,8 +3,6 @@
 
 body {
   margin: 0;
-  //min-height: 100vh;
-
 }
 
 .p-megamenu.admin-menu {
@@ -44,4 +42,10 @@ body {
 
 .p-confirm-dialog-reject:hover {
   background: #f5f5f5 !important;
+}
+
+.black-upload .p-fileupload-choose {
+    background-color: black;
+    border-color: black;
+    color: white;
 }

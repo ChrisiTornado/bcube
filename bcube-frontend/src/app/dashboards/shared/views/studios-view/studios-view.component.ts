@@ -1,6 +1,5 @@
 import {Component, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
-import {ActivatedRoute} from '@angular/router';
 import {StudioService} from '../../../../services/studio.service';
 import {Studio} from '../../../../models/Studio';
 import {TableModule} from 'primeng/table';
@@ -10,11 +9,12 @@ import {DeleteStudioComponent} from './delete-studio/delete-studio.component';
 import {LoadingSpinnerComponent} from '../../../../shared/loading-spinner/loading-spinner.component';
 import {CommonModule} from '@angular/common';
 import {AuthService} from '../../../../services/auth/auth.service';
+import { StudiosComponent } from '../../components/studios/studios.component';
 
 @Component({
     selector: 'app-studios-view',
     standalone: true,
-    imports: [CommonModule, LoadingSpinnerComponent, TableModule, ButtonModule, UpdateStudioComponent, DeleteStudioComponent],
+    imports: [StudiosComponent, CommonModule, LoadingSpinnerComponent, TableModule, ButtonModule, UpdateStudioComponent, DeleteStudioComponent],
     templateUrl: './studios-view.component.html',
     styleUrl: './studios-view.component.css'
 })
