@@ -44,7 +44,7 @@
             <label for="startTime" class="font-medium">Startzeitpunkt:</label>
             <p-calendar class="ml-3" id="startTime" [(ngModel)]="startTime" [timeOnly]="true" hourFormat="24"
               [stepMinute]="15" placeholder="Startzeit wählen" [showIcon]="true" (onFocus)="setDefaultTime('start')"
-              (onSelect)="startTime = normalizeToQuarterHour(startTime)">
+              (ngModelChange)="startTime = normalizeToQuarterHour($event); checkTimeConflict();">
             </p-calendar>
           </div>
 
@@ -53,17 +53,21 @@
             <label for="endTime" class="font-medium">Endzeitpunkt:</label>
             <p-calendar class="ml-4" id="endTime" [(ngModel)]="endTime" [timeOnly]="true" hourFormat="24"
               [stepMinute]="15" placeholder="Endzeit wählen" [showIcon]="true" (onFocus)="setDefaultTime('end')"
-              (onSelect)="endTime = normalizeToQuarterHour(endTime)">
+              (ngModelChange)="endTime = normalizeToQuarterHour($event); checkTimeConflict();">
             </p-calendar>
           </div>
 
-          <!-- Fehlermeldung -->
+          <!-- Fehlermeldungen -->
           <p class="p-error text-sm mt-1" *ngIf="!isEndTimeValid()">
             Endzeit muss nach der Startzeit liegen.
           </p>
 
           <p class="p-error text-sm mt-1" *ngIf="date && startTime && endTime && isBookingInPast()">
             Diese Uhrzeit ist bereits abgelaufen.
+          </p>
+
+          <p class="p-error text-sm mt-1" *ngIf="hasTimeConflict">
+            Der gewählte Zeitraum ist bereits belegt.
           </p>
 
           <!-- Button -->

@@ -46,6 +46,7 @@ export class StudioDetailsComponent implements OnInit {
   startTime: Date | null = null;
   endTime: Date | null = null;
   defaultTime: Date = new Date();
+  hasTimeConflict = false;
 
   bookings: Booking[] = [];
   disabledDates: Date[] = [];
@@ -102,6 +103,7 @@ export class StudioDetailsComponent implements OnInit {
     this.bookingService.getBookingsByStudioId(studioId).subscribe(bookings => {
       this.bookings = bookings.filter(b => b.status === 'CONFIRMED');
       this.markCalendarDates();
+      this.checkTimeConflict()
 
       const events = this.bookings.map(b => ({
         title: `${this.formatTime(new Date(b.startTime))} – ${this.formatTime(new Date(b.endTime))}`,
@@ -132,6 +134,7 @@ export class StudioDetailsComponent implements OnInit {
   handleDateClick(arg: any): void {
     const clickedDate = new Date(arg.dateStr);
     this.date = clickedDate;
+    this.checkTimeConflict()
 
     const isoDate = clickedDate.toISOString().split('T')[0];
     const currentEvents = Array.isArray(this.calendarOptions.events)
@@ -274,23 +277,95 @@ export class StudioDetailsComponent implements OnInit {
       this.startTime !== null &&
       this.endTime !== null &&
       this.startTime < this.endTime &&
-      !this.isBookingInPast()
+      !this.isBookingInPast() &&
+      !this.hasTimeConflict
     );
   }
+
+  public checkTimeConflict(): void {
+  console.log('--- checkTimeConflict ---');
+  console.log('raw date:', this.date);
+  console.log('raw startTime:', this.startTime);
+  console.log('raw endTime:', this.endTime);
+
+  if (!this.date || !this.startTime || !this.endTime) {
+    console.log('❌ Abbruch: date/startTime/endTime fehlt');
+    this.hasTimeConflict = false;
+    return;
+  }
+
+  const selectedStart = this.combineDateAndTime(
+    this.date,
+    this.startTime
+  );
+
+  const selectedEnd = this.combineDateAndTime(
+    this.date,
+    this.endTime
+  );
+
+  console.log('selectedStart:', selectedStart);
+  console.log('selectedEnd:', selectedEnd);
+
+  if (selectedEnd <= selectedStart) {
+    console.log('❌ Abbruch: Endzeit liegt vor/gleich Startzeit');
+    this.hasTimeConflict = false;
+    return;
+  }
+
+  const selectedDateIso = this.toIsoDate(this.date);
+  console.log('selectedDateIso:', selectedDateIso);
+  console.log('all bookings:', this.bookings);
+
+  this.hasTimeConflict = this.bookings
+    .filter(b => {
+      const bookingIso = this.toIsoDate(new Date(b.date));
+      const sameDate = bookingIso === selectedDateIso;
+
+      console.log('check booking date:', bookingIso, 'same day?', sameDate);
+      return sameDate;
+    })
+    .some(b => {
+      const existingStart = new Date(b.startTime);
+      const existingEnd = new Date(b.endTime);
+
+      console.log('compare with booking:', {
+        existingStart,
+        existingEnd
+      });
+
+      const overlap =
+        selectedStart < existingEnd &&
+        selectedEnd > existingStart;
+
+      console.log('OVERLAP?', overlap);
+      return overlap;
+    });
+
+  console.log('hasTimeConflict:', this.hasTimeConflict);
+}
+
 
   isBookingInPast(): boolean {
     if (!this.date || !this.startTime) return true;
 
-    const bookingDateTime = new Date(this.date);
+    const bookingStart = this.combineDateAndTime(
+      this.date,
+      this.startTime
+    );
 
-    bookingDateTime.setHours(
-      this.startTime.getHours(),
-      this.startTime.getMinutes(),
+    return bookingStart.getTime() <= Date.now();
+  }
+
+  private combineDateAndTime(date: Date, time: Date): Date {
+    const result = new Date(date);
+    result.setHours(
+      time.getHours(),
+      time.getMinutes(),
       0,
       0
     );
-
-    return bookingDateTime.getTime() <= Date.now();
+    return result;
   }
 
   /** Prüft, ob Endzeit nach Startzeit liegt */
@@ -346,15 +421,28 @@ export class StudioDetailsComponent implements OnInit {
   }
 
   setDefaultTime(type: 'start' | 'end'): void {
-    const defaultDate = new Date();
-    defaultDate.setHours(12, 0, 0, 0);
+  const defaultDateStart = new Date();
+  const defaultDateEnd = new Date();
+  defaultDateStart.setHours(12, 0, 0, 0);
+  defaultDateEnd.setHours(15, 0, 0, 0);
 
-    if (type === 'start' && !this.startTime) {
-      this.startTime = new Date(defaultDate);
-    } else if (type === 'end' && !this.endTime) {
-      this.endTime = new Date(defaultDate);
-    }
+  let changed = false;
+
+  if (type === 'start' && !this.startTime) {
+    this.startTime = new Date(defaultDateStart);
+    changed = true;
   }
+
+  if (type === 'end' && !this.endTime) {
+    this.endTime = new Date(defaultDateEnd);
+    changed = true;
+  }
+
+  if (changed) {
+    console.log('Default time gesetzt → checkTimeConflict()');
+    this.checkTimeConflict();
+  }
+}
 
   /** Formatiert Uhrzeit zu HH:mm */
   private formatTime(date: Date): string {
@@ -369,5 +457,9 @@ export class StudioDetailsComponent implements OnInit {
   /** Vergleicht zwei Datumsobjekte auf Gleichheit (Tag, Monat, Jahr) */
   private sameDate(a: Date, b: Date): boolean {
     return a.getDate() === b.getDate() && a.getMonth() === b.getMonth() && a.getFullYear() === b.getFullYear();
+  }
+
+  private toIsoDate(date: Date): string {
+    return date.toISOString().split('T')[0];
   }
 }
