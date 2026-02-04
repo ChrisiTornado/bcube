@@ -1,5 +1,6 @@
 package com.bcube.bookingservice.controller;
 
+import com.bcube.bookingservice.service.BookingService;
 import com.bcube.bookingservice.service.dto.request.BookStudioRequest;
 import com.bcube.bookingservice.service.dto.request.AdminBookingQueryRequest;
 import com.bcube.bookingservice.service.dto.request.UserBookingQueryRequest;
@@ -16,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api")
 public class BookingController {
 
-    private final BookingServiceImpl bookingService;
+    private final BookingService bookingService;
     @GetMapping("/bookings")
     public ResponseEntity<ApiResponse<Page<BookingResponse>>> getBookings(AdminBookingQueryRequest request) {
         Page<BookingResponse> bookings = bookingService.getBookings(request.getPage(), request.getSize(), request.getUserId(), request.getStudioId());

@@ -1,5 +1,6 @@
 package com.bcube.userservice.controller;
 
+import com.bcube.userservice.service.AuthService;
 import com.bcube.userservice.service.dto.request.*;
 import com.bcube.userservice.service.dto.response.*;
 import com.bcube.userservice.service.impl.AuthServiceImpl;
@@ -14,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/auth")
 public class AuthController {
     @Autowired
-    private AuthServiceImpl authService;
+    private AuthService authService;
 
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<JwtResponse>> login(@Valid @RequestBody LoginRequest loginRequest) {

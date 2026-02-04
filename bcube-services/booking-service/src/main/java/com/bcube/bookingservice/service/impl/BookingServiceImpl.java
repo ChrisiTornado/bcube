@@ -202,6 +202,7 @@ public class BookingServiceImpl implements BookingService {
         );
     }
 
+    @Transactional
     @Override
     public BookingResponse bookTimeSlot(BookStudioRequest bookStudioRequest) {
         if (!userClient.userExists(bookStudioRequest.getUserID())) {
@@ -222,9 +223,17 @@ public class BookingServiceImpl implements BookingService {
         LocalDateTime start = LocalDateTime.parse(startDateTimeString, formatter);
         LocalDateTime end = LocalDateTime.parse(endDateTimeString, formatter);
 
-        // Konvertiere in UTC Instant
         Instant startTime = start.atZone(ZoneId.of("Europe/Vienna")).toInstant();
         Instant endTime = end.atZone(ZoneId.of("Europe/Vienna")).toInstant();
+        Instant now = Instant.now();
+
+        if (startTime.isAfter(endTime)) {
+            throw new IllegalArgumentException("Start time is after end time");
+        }
+
+        if (endTime.isAfter(now)) {
+            throw new IllegalArgumentException("End time is after the current time");
+        }
 
         Booking booking = Booking.builder()
                 .userId(bookStudioRequest.getUserID())
@@ -239,6 +248,8 @@ public class BookingServiceImpl implements BookingService {
 
         UserDto user = userClient.getUserById(booking.getUserId());
         StudioDto studio = studioClient.getStudioById(booking.getStudioId());
+
+        //get temp code
 
         return new BookingResponse(
                 saved.getId(),

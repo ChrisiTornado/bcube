@@ -1,5 +1,6 @@
 package com.bcube.studioservice.controller;
 
+import com.bcube.studioservice.service.StudioService;
 import com.bcube.studioservice.service.dto.request.CreateStudioRequest;
 import com.bcube.studioservice.service.dto.request.UpdateStudioRequest;
 import com.bcube.studioservice.service.dto.response.ApiResponse;
@@ -17,8 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping("/api")
 public class StudioController {
-    @Autowired
-    private final StudioServiceImpl studioService;
+    private final StudioService studioService;
 
     @GetMapping("/studios")
     public ResponseEntity<ApiResponse<Page<StudioResponse>>> getAllStudios(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size)   {
@@ -52,7 +52,6 @@ public class StudioController {
 
     @GetMapping("/bookings/filters/studios")
     public ResponseEntity<ApiResponse<Page<StudioNameResponse>>> getBookingsStudios(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
-        System.out.println("hi");
         Page<StudioNameResponse> studios = studioService.getAllStudioNames(page, size);
         return ResponseEntity.ok(new ApiResponse<>("Studiennamen erfolgreich geladen", studios));
     }

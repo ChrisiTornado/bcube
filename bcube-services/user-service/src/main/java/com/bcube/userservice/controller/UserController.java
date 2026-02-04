@@ -1,5 +1,6 @@
 package com.bcube.userservice.controller;
 
+import com.bcube.userservice.service.UserService;
 import com.bcube.userservice.service.dto.request.CreateUserRequest;
 import com.bcube.userservice.service.dto.request.UpdateUserRequest;
 import com.bcube.userservice.service.dto.response.ApiResponse;
@@ -18,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api")
 public class UserController {
     @Autowired
-    private final UserServiceImpl userService;
+    private final UserService userService;
 
     @GetMapping("/admin/users")
     public ResponseEntity<ApiResponse<Page<UserResponse>>> getAllUsers(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {

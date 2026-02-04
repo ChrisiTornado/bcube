@@ -242,13 +242,14 @@ export class StudioDetailsComponent implements OnInit {
           this.startTime = null;
           this.endTime = null;
           this.date = null;
-
+        
           this.messageService.add({
             key: 'main',
             severity: 'success',
             summary: 'Erfolg',
             detail: res.message
           });
+          this.router.navigate([`/user-dashboard/booking-details/${res.data.id}`]);
         },
         error: (err) => {
           this.messageService.add({
