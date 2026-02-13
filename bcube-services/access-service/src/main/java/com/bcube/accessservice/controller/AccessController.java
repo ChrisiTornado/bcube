@@ -1,4 +1,5 @@
 package com.bcube.accessservice.controller;
+import com.bcube.accessservice.persistance.entity.AccessPermission;
 import com.bcube.accessservice.service.AccessService;
 import com.bcube.accessservice.service.dto.request.AccessRequest;
 import com.bcube.accessservice.service.dto.response.AccessResponse;
@@ -21,8 +22,14 @@ public class AccessController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<StornoResponse>> revokePermission(@PathVariable Long id) {
-        StornoResponse response = accessService.revokePermission(id);
+    public ResponseEntity<ApiResponse<StornoResponse>> deletePermission(@PathVariable Long id) {
+        StornoResponse response = accessService.deletePermission(id);
+        return ResponseEntity.ok(new ApiResponse<>("Code erfolgreich gelöscht", response));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<AccessResponse>> readPermission(@PathVariable Long id) {
+        AccessResponse response = accessService.getPinCode(id);
         return ResponseEntity.ok(new ApiResponse<>("Code erfolgreich gesendet", response));
     }
 

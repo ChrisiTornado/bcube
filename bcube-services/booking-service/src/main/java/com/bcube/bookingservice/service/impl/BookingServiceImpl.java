@@ -150,6 +150,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingResponse getBookingById(Long bookingId) {
+        // Todo: also return access code
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new IllegalArgumentException("Buchung mit ID " + bookingId + "nicht gefunden"));
 
@@ -231,7 +232,7 @@ public class BookingServiceImpl implements BookingService {
             throw new IllegalArgumentException("Start time is after end time");
         }
 
-        if (endTime.isAfter(now)) {
+        if (now.isAfter(endTime)) {
             throw new IllegalArgumentException("End time is after the current time");
         }
 

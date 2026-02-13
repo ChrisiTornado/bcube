@@ -28,25 +28,15 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.Arrays;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
-    @Autowired
     private final UserRepository userRepository;
-
-    @Autowired
     private final AuthenticationManager authenticationManager;
-
-    @Autowired
     private final JwtTokenProvider jwtTokenProvider;
-
-    @Autowired
     private final PasswordEncoder passwordEncoder;
-
-    @Autowired
     private final MailService mailSender;
 
     @Override
@@ -81,7 +71,7 @@ public class AuthServiceImpl implements AuthService {
             throw new UserNotFoundException("Kein Benutzer mit der E-Mail-Adresse gefunden: " + resetPasswordRequest.getEmail());
 
         String code = CodeGenerator.generateCode();
-        user.setResetCode(code);
+        user.setResetCode(passwordEncoder.encode(code));
         user.setResetCodeExpiresAt(Instant.now().plus(15, ChronoUnit.MINUTES));
         userRepository.save(user);
         mailSender.sendPasswordResetCode(resetPasswordRequest.getEmail(), code);
@@ -98,12 +88,16 @@ public class AuthServiceImpl implements AuthService {
             throw new InvalidResetTokenException("Es ist kein gültiger Reset-Code vorhanden. Bitte fordern Sie einen neuen an.");
         }
 
-        if (user.getResetCodeExpiresAt().isBefore(Instant.now()))
+        if (user.getResetCodeExpiresAt().isBefore(Instant.now())) {
+            user.setResetCode(null);
+            user.setResetCodeExpiresAt(null);
+            userRepository.save(user);
             throw new PasswordResetTokenExpiredException("Der Passwort-Reset-Code ist abgelaufen. Bitte fordern Sie einen neuen an");
+        }
 
-        if (!MessageDigest.isEqual(
-                user.getResetCode().getBytes(StandardCharsets.UTF_8),
-                verifyCodeRequest.getCode().getBytes(StandardCharsets.UTF_8)
+        if (!passwordEncoder.matches(
+                verifyCodeRequest.getCode(),
+                user.getResetCode()
         )) {
             throw new InvalidResetTokenException("Der eingegebene Code ist ungültig.");
         }

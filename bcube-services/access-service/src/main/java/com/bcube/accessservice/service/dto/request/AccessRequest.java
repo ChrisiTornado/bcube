@@ -8,7 +8,7 @@ import java.time.Instant;
 @Data
 @AllArgsConstructor
 public class AccessRequest {
-    public Long studioId;
-    public Instant fromTime;
-    public Instant untilTime;
+    public Long bookingId;
+    public String validFrom;
+    public String validUntil;
 }

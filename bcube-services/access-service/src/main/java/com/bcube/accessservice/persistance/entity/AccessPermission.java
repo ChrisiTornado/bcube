@@ -1,10 +1,8 @@
 package com.bcube.accessservice.persistance.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -17,17 +15,19 @@ import java.time.Instant;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
+@Builder
 public class AccessPermission {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "nuki_auth_id", nullable = false)
-    private Long nukiAuthId;
+    // @Column(name = "nuki_auth_id", nullable = false)
+    // private Long nukiAuthId;
 
-    @Column(name = "studio_io", nullable = false)
-    private Long studioId;
+    @Column(name = "booking_id", nullable = false)
+    private Long bookingId;
 
-    @Column(name = "pin_code", nullable = false, length = 10)
+    @Column(name = "pin_code", nullable = false)
     private String pinCode;
 
     @Column(name = "valid_from", nullable = false)

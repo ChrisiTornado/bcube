@@ -6,5 +6,6 @@ import com.bcube.accessservice.service.dto.response.StornoResponse;
 
 public interface AccessService {
     AccessResponse createPermission(AccessRequest accessRequest);
-    StornoResponse revokePermission(Long id);
+    StornoResponse deletePermission(Long id);
+    AccessResponse getPinCode(Long id);
 }

@@ -6,6 +6,7 @@ import com.bcube.studioservice.persistance.repository.StudioRepository;
 import com.bcube.studioservice.service.StudioService;
 import com.bcube.studioservice.service.dto.request.CreateStudioRequest;
 import com.bcube.studioservice.service.dto.request.UpdateStudioRequest;
+import com.bcube.studioservice.service.dto.response.DeleteResponse;
 import com.bcube.studioservice.service.dto.response.StudioNameResponse;
 import com.bcube.studioservice.service.dto.response.StudioResponse;
 import lombok.RequiredArgsConstructor;
@@ -129,12 +130,13 @@ public class StudioServiceImpl implements StudioService {
     }
 
     @Override
-    public void deleteStudio(long id) {
+    public DeleteResponse deleteStudio(long id) {
         Optional<Studio> deletingStudio = studioRepository.findById(id);
         if (deletingStudio.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Studio nicht gefunden");
         }
         studioRepository.delete(deletingStudio.get());
+        return new DeleteResponse(true);
     }
 
     @Override
