@@ -5,6 +5,6 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class AccessResponse {
-    public String pinCode;
+public class AccessCodeResponse {
+    public String accessCode;
 }

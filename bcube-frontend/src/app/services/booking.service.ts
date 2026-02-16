@@ -11,6 +11,7 @@ import { CreateBookingRequest } from '../models/requests/booking/CreateBookingRe
 import { BookingResponse } from '../models/responses/booking/BookingResponse';
 import { Studio } from '../models/Studio';
 import { PageResponse } from '../models/responses/PageResponse';
+import { BookingDetailsResponse } from '../models/responses/booking/BookingDetailsResponse';
 
 @Injectable({
   providedIn: 'root'
@@ -99,10 +100,10 @@ export class BookingService {
       );
   }
 
-  getBookingById(bookingId: number): Observable<Booking> {
+  getBookingById(bookingId: number): Observable<BookingDetailsResponse> {
     this.loadingSubject.next(true);
     return this.http
-      .get<{ message: string; data: Booking }>(`${environment.bookingApiUrl}/bookings/${bookingId}`)
+      .get<{ message: string; data: BookingDetailsResponse }>(`${environment.bookingApiUrl}/bookings/${bookingId}`)
       .pipe(
         map(res => res.data),
         finalize(() => this.loadingSubject.next(false))
@@ -137,9 +138,8 @@ export class BookingService {
     }
   }
 
-  create(payload: CreateBookingRequest): Observable<ApiResponse<BookingResponse>> {
-    console.log(payload)
-    return this.http.post<ApiResponse<BookingResponse>>(
+  create(payload: CreateBookingRequest): Observable<ApiResponse<BookingDetailsResponse>> {
+    return this.http.post<ApiResponse<BookingDetailsResponse>>(
       environment.bookingApiUrl + "/bookings", payload);
   }
 

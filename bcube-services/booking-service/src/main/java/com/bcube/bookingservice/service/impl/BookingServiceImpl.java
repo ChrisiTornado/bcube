@@ -1,7 +1,9 @@
 package com.bcube.bookingservice.service.impl;
 
+import com.bcube.bookingservice.client.AccessCodeClient;
 import com.bcube.bookingservice.client.StudioClient;
 import com.bcube.bookingservice.client.UserClient;
+import com.bcube.bookingservice.exception.AccessCodeNotReceivedException;
 import com.bcube.bookingservice.exception.BookingDoneException;
 import com.bcube.bookingservice.persistance.entity.Booking;
 import com.bcube.bookingservice.persistance.entity.BookingStatus;
@@ -9,7 +11,10 @@ import com.bcube.bookingservice.persistance.repository.BookingRepository;
 import com.bcube.bookingservice.service.BookingService;
 import com.bcube.bookingservice.service.dto.Classes.StudioDto;
 import com.bcube.bookingservice.service.dto.Classes.UserDto;
+import com.bcube.bookingservice.service.dto.request.AccessRequest;
 import com.bcube.bookingservice.service.dto.request.BookStudioRequest;
+import com.bcube.bookingservice.service.dto.response.BookingDetailsResponse;
+import com.bcube.bookingservice.service.dto.response.AccessCodeResponse;
 import com.bcube.bookingservice.service.dto.response.BookingResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -33,6 +38,7 @@ public class BookingServiceImpl implements BookingService {
     private final BookingRepository bookingRepository;
     private final UserClient userClient;
     private final StudioClient studioClient;
+    private final AccessCodeClient accessCodeClient;
 
     @Transactional(readOnly = true)
     @Override
@@ -45,8 +51,7 @@ public class BookingServiceImpl implements BookingService {
         Pageable pageable = PageRequest.of(
                 page,
                 size,
-                Sort.by("date").descending()
-                        .and(Sort.by("startTime").descending())
+                Sort.by("id").descending()
         );
 
         Page<Booking> bookings;
@@ -66,6 +71,8 @@ public class BookingServiceImpl implements BookingService {
         } else {
             bookings = bookingRepository.findAll(pageable);
         }
+
+        // ToDo: Bulk import
 
         return bookings.map(booking -> {
             UserDto user = userClient.getUserById(booking.getUserId());
@@ -90,8 +97,7 @@ public class BookingServiceImpl implements BookingService {
             throw new IllegalArgumentException("User mit ID " + userId + " nicht gefunden");
         }
 
-        Pageable pageable = PageRequest.of(page, size, Sort.by("date").descending()
-                .and(Sort.by("startTime").descending()));
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
         Page<Booking> bookings;
 
         if (studioId != null) {
@@ -149,22 +155,28 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public BookingResponse getBookingById(Long bookingId) {
-        // Todo: also return access code
+    public BookingDetailsResponse getBookingById(Long bookingId) {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new IllegalArgumentException("Buchung mit ID " + bookingId + "nicht gefunden"));
 
         UserDto user = userClient.getUserById(booking.getUserId());
         StudioDto studio = studioClient.getStudioById(booking.getStudioId());
 
-        return new BookingResponse(
+        AccessCodeResponse accessCodeResponse = accessCodeClient.getAccessCode(bookingId);
+
+        if (accessCodeResponse == null) {
+            throw new AccessCodeNotReceivedException("Zutrittscode konnte nicht erstellt werden");
+        }
+
+        return new BookingDetailsResponse(
                 booking.getId(),
                 user,
                 studio,
                 booking.getDate(),
                 booking.getStartTime(),
                 booking.getEndTime(),
-                booking.getStatus()
+                booking.getStatus(),
+                accessCodeResponse.getAccessCode()
         );
     }
 
@@ -205,15 +217,37 @@ public class BookingServiceImpl implements BookingService {
 
     @Transactional
     @Override
-    public BookingResponse bookTimeSlot(BookStudioRequest bookStudioRequest) {
-        if (!userClient.userExists(bookStudioRequest.getUserID())) {
-            throw new IllegalArgumentException("User mit ID " + bookStudioRequest.getUserID() + " nicht gefunden");
-        }
+    public BookingDetailsResponse bookTimeSlot(BookStudioRequest bookStudioRequest) {
+        Booking booking = createBookingEntity(bookStudioRequest);
+        AccessRequest request = new AccessRequest(
+                booking.getId(),
+                bookStudioRequest.getDate() + "T" + bookStudioRequest.getStartTime() + ":00",
+                bookStudioRequest.getDate() + "T" + bookStudioRequest.getEndTime() + ":00"
+        );
+            AccessCodeResponse accessCodeResponse = accessCodeClient.generateAccessCode(request);
+            if (accessCodeResponse == null) {
+                throw new AccessCodeNotReceivedException("Zutrittscode konnte nicht erstellt werden");
+            }
 
-        if (!studioClient.studioExists(bookStudioRequest.getStudioID())) {
-            throw new IllegalArgumentException("User mit ID " + bookStudioRequest.getStudioID() + " nicht gefunden");
-        }
+            booking.setStatus(BookingStatus.CONFIRMED);
 
+            UserDto user = userClient.getUserById(booking.getUserId());
+            StudioDto studio = studioClient.getStudioById(booking.getStudioId());
+
+            //get temp code
+            return new BookingDetailsResponse(
+                    booking.getId(),
+                    user,
+                    studio,
+                    booking.getDate(),
+                    booking.getStartTime(),
+                    booking.getEndTime(),
+                    booking.getStatus(),
+                    accessCodeResponse.getAccessCode()
+            );
+    }
+
+    public Booking createBookingEntity(BookStudioRequest bookStudioRequest) {
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
         LocalDate date = LocalDate.parse(bookStudioRequest.getDate(), dateFormatter);
 
@@ -242,25 +276,10 @@ public class BookingServiceImpl implements BookingService {
                 .date(date)
                 .startTime(startTime)
                 .endTime(endTime)
-                .status(BookingStatus.CONFIRMED)
+                .status(BookingStatus.PENDING)
                 .build();
 
-        Booking saved = bookingRepository.save(booking);
-
-        UserDto user = userClient.getUserById(booking.getUserId());
-        StudioDto studio = studioClient.getStudioById(booking.getStudioId());
-
-        //get temp code
-
-        return new BookingResponse(
-                saved.getId(),
-                user,
-                studio,
-                saved.getDate(),
-                saved.getStartTime(),
-                saved.getEndTime(),
-                saved.getStatus()
-        );
+        return bookingRepository.save(booking);
     }
 
     boolean isFinished(Booking booking, Instant now) {

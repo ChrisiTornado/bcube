@@ -11,6 +11,7 @@ import { Booking } from '../../../../../models/Booking';
 import { BookingService } from '../../../../../services/booking.service';
 import { BookingActionService } from '../../../../../services/booking-action.service';
 import { CardModule } from 'primeng/card';
+import { BookingDetailsResponse } from '../../../../../models/responses/booking/BookingDetailsResponse';
 
 @Component({
   selector: 'app-booking-details',
@@ -29,9 +30,10 @@ import { CardModule } from 'primeng/card';
 })
 export class BookingDetailsComponent implements OnInit {
   isUser = false;
-  booking: Booking | null = null;
+  booking: BookingDetailsResponse | null = null;
   loading!: boolean;
   loading$ = this.bookingService.loading$;
+  private returnUrl?: string;
 
   overlayVisible = false;
   overlayImage: string | null = null;
@@ -50,6 +52,7 @@ export class BookingDetailsComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    this.returnUrl = history.state?.returnUrl;
     this.isUser = this.authService.getRole() === 'USER';
     const bookingId = this.route.snapshot.paramMap.get('id');
     if (bookingId) {
@@ -62,7 +65,7 @@ export class BookingDetailsComponent implements OnInit {
       this.booking!,
       () => {
         const basePath = this.isUser ? '/user-dashboard' : '/admin-dashboard';
-        this.router.navigate([basePath + '/bookings']);
+        this.router.navigate([basePath + '/bookings'])
       },
       () => {
         // optional: onError
@@ -82,7 +85,11 @@ export class BookingDetailsComponent implements OnInit {
   }
 
   goBack(): void {
-    const basePath = this.isUser ? '/user-dashboard' : '/admin-dashboard';
-    this.router.navigate([basePath + '/bookings']);
+    if (this.returnUrl) {
+      this.router.navigateByUrl(this.returnUrl);
+    } else {
+      const basePath = this.isUser ? '/user-dashboard' : '/admin-dashboard';
+      this.router.navigate([basePath + '/bookings']);
+    }
   }
 }

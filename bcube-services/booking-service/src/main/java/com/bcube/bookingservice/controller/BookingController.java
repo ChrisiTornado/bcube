@@ -5,6 +5,7 @@ import com.bcube.bookingservice.service.dto.request.BookStudioRequest;
 import com.bcube.bookingservice.service.dto.request.AdminBookingQueryRequest;
 import com.bcube.bookingservice.service.dto.request.UserBookingQueryRequest;
 import com.bcube.bookingservice.service.dto.response.ApiResponse;
+import com.bcube.bookingservice.service.dto.response.BookingDetailsResponse;
 import com.bcube.bookingservice.service.dto.response.BookingResponse;
 import com.bcube.bookingservice.service.impl.BookingServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -25,8 +26,8 @@ public class BookingController {
     }
 
     @PostMapping("/bookings")
-    public ResponseEntity<ApiResponse<BookingResponse>> bookStudio(@RequestBody BookStudioRequest bookStudioRequest) {
-        BookingResponse booking = bookingService.bookTimeSlot(bookStudioRequest);
+    public ResponseEntity<ApiResponse<BookingDetailsResponse>> bookStudio(@RequestBody BookStudioRequest bookStudioRequest) {
+        BookingDetailsResponse booking = bookingService.bookTimeSlot(bookStudioRequest);
         return ResponseEntity.ok(new ApiResponse<>(booking.getStudio().getName()+" erfolgreich gebucht", booking));
     }
 
@@ -37,8 +38,8 @@ public class BookingController {
     }
 
     @GetMapping("/bookings/{bookingId}")
-    public ResponseEntity<ApiResponse<BookingResponse>> getBookingById(@PathVariable Long bookingId) {
-        BookingResponse booking = bookingService.getBookingById(bookingId);
+    public ResponseEntity<ApiResponse<BookingDetailsResponse>> getBookingById(@PathVariable Long bookingId) {
+        BookingDetailsResponse booking = bookingService.getBookingById(bookingId);
         return ResponseEntity.ok(new ApiResponse<>("Buchung erfolgreich gesendet", booking));
     }
 

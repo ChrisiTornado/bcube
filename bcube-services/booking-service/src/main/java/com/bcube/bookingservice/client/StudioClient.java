@@ -1,5 +1,6 @@
 package com.bcube.bookingservice.client;
 
+import com.bcube.bookingservice.exception.StudioNotFoundException;
 import com.bcube.bookingservice.service.dto.Classes.StudioDto;
 import com.bcube.bookingservice.service.dto.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
@@ -40,7 +41,11 @@ public class StudioClient {
                     .bodyToMono(new ParameterizedTypeReference<ApiResponse<StudioDto>>() {})
                     .block();
 
-            return response != null ? response.getData() : null;
+            if (response == null || response.getData() == null) {
+                throw new StudioNotFoundException("Studio nicht gefunden");
+            }
+
+            return response.getData();
         } catch (WebClientResponseException.NotFound e) {
             return null;
         } catch (WebClientResponseException e) {

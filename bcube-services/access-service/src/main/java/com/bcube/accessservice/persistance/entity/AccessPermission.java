@@ -27,8 +27,8 @@ public class AccessPermission {
     @Column(name = "booking_id", nullable = false)
     private Long bookingId;
 
-    @Column(name = "pin_code", nullable = false)
-    private String pinCode;
+    @Column(name = "access_code", nullable = false)
+    private String accessCode;
 
     @Column(name = "valid_from", nullable = false)
     private Instant validFrom;

@@ -91,7 +91,7 @@ export class StudioDetailsComponent implements OnInit {
 
     const studioId = this.route.snapshot.paramMap.get('id');
     if (studioId) {
-      this.studioService.getStudioById(+studioId).subscribe(data => (this.studio = data));
+      this.studioService.getStudioById(+studioId).subscribe(data => (this.studio = data))
       this.loadBookings(+studioId);
     }
   }
@@ -229,9 +229,9 @@ export class StudioDetailsComponent implements OnInit {
     const payload: CreateBookingRequest = {
       userID: this.authService.getUser()!.id,
       studioID: this.studio!.id,
-      date: this.formatDate(this.date),
-      startTime: this.formatTime(this.startTime),
-      endTime: this.formatTime(this.endTime)
+      date: this.formatDateVienna(this.date),
+      startTime: this.formatTimeVienna(this.startTime),
+      endTime: this.formatTimeVienna(this.endTime)
     };
 
     this.bookingService.create(payload)
@@ -249,7 +249,10 @@ export class StudioDetailsComponent implements OnInit {
             summary: 'Erfolg',
             detail: res.message
           });
-          this.router.navigate([`/user-dashboard/booking-details/${res.data.id}`]);
+          this.router.navigate(
+            [`/user-dashboard/booking-details/${res.data.id}`],
+            { state: { returnUrl: this.router.url } }
+          );
         },
         error: (err) => {
           this.messageService.add({
@@ -284,13 +287,7 @@ export class StudioDetailsComponent implements OnInit {
   }
 
   public checkTimeConflict(): void {
-  console.log('--- checkTimeConflict ---');
-  console.log('raw date:', this.date);
-  console.log('raw startTime:', this.startTime);
-  console.log('raw endTime:', this.endTime);
-
   if (!this.date || !this.startTime || !this.endTime) {
-    console.log('❌ Abbruch: date/startTime/endTime fehlt');
     this.hasTimeConflict = false;
     return;
   }
@@ -305,45 +302,27 @@ export class StudioDetailsComponent implements OnInit {
     this.endTime
   );
 
-  console.log('selectedStart:', selectedStart);
-  console.log('selectedEnd:', selectedEnd);
-
   if (selectedEnd <= selectedStart) {
-    console.log('❌ Abbruch: Endzeit liegt vor/gleich Startzeit');
     this.hasTimeConflict = false;
     return;
   }
 
   const selectedDateIso = this.toIsoDate(this.date);
-  console.log('selectedDateIso:', selectedDateIso);
-  console.log('all bookings:', this.bookings);
 
   this.hasTimeConflict = this.bookings
     .filter(b => {
       const bookingIso = this.toIsoDate(new Date(b.date));
       const sameDate = bookingIso === selectedDateIso;
-
-      console.log('check booking date:', bookingIso, 'same day?', sameDate);
       return sameDate;
     })
     .some(b => {
       const existingStart = new Date(b.startTime);
       const existingEnd = new Date(b.endTime);
-
-      console.log('compare with booking:', {
-        existingStart,
-        existingEnd
-      });
-
       const overlap =
         selectedStart < existingEnd &&
         selectedEnd > existingStart;
-
-      console.log('OVERLAP?', overlap);
       return overlap;
     });
-
-  console.log('hasTimeConflict:', this.hasTimeConflict);
 }
 
 
@@ -379,12 +358,8 @@ export class StudioDetailsComponent implements OnInit {
 
   /** Navigiert zurück zur vorherigen Seite */
   goBack(): void {
-    if (window.history.length > 1) {
-      this.location.back();
-    } else {
       const basePath = this.isUser ? '/user-dashboard' : '/admin-dashboard';
       this.router.navigate([`${basePath}/studios`]);
-    }
   }
 
   /** Öffnet das Overlay mit dem Studiobild */
@@ -440,7 +415,6 @@ export class StudioDetailsComponent implements OnInit {
   }
 
   if (changed) {
-    console.log('Default time gesetzt → checkTimeConflict()');
     this.checkTimeConflict();
   }
 }
@@ -463,4 +437,22 @@ export class StudioDetailsComponent implements OnInit {
   private toIsoDate(date: Date): string {
     return date.toISOString().split('T')[0];
   }
+
+  private formatTimeVienna(date: Date): string {
+  return new Intl.DateTimeFormat('de-AT', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+    timeZone: 'Europe/Vienna'
+  }).format(date);
+}
+
+private formatDateVienna(date: Date): string {
+  return new Intl.DateTimeFormat('de-AT', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    timeZone: 'Europe/Vienna'
+  }).format(date);
+}
 }

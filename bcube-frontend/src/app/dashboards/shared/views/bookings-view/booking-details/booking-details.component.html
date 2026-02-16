@@ -32,6 +32,7 @@
         <p><strong>Stadt:</strong> {{ booking.studio.city }}</p>
         <p><strong>PLZ:</strong> {{ booking.studio.plz }}</p>
         <p><strong>Land:</strong> {{ booking.studio.country }}</p>
+        <p><strong>Zutrittscode:</strong> {{ booking.accessCode }}</p>
       </p-card>
 
       <p-card [style]="{ width: '25rem', overflow: 'hidden' }" *ngIf="!isUser"
