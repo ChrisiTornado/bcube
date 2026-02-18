@@ -33,7 +33,7 @@ export class StudioService {
 
     return this.http
       .get<ApiResponse<PageResponse<Studio>>>(
-        `${environment.studioApiUrl}/studios?page=${page}&size=${size}`
+        `${environment.studioApiUrl}?page=${page}&size=${size}`
       )
       .pipe(
         map(res => res.data),
@@ -44,7 +44,7 @@ export class StudioService {
   getStudioById(id: number): Observable<Studio> {
     this.loadingSubject.next(true);
     return this.http
-      .get<{ message: string; data: Studio }>(`${environment.studioApiUrl}/studios/${id}`)
+      .get<{ message: string; data: Studio }>(`${environment.studioApiUrl}/${id}`)
       .pipe(
         map(res => res.data),
         finalize(() => this.loadingSubject.next(false))
@@ -60,7 +60,7 @@ export class StudioService {
   getStudioFilter(page: number, size: number): Observable<PageResponse<StudioNameResponse>> {
     return this.http
       .get<ApiResponse<PageResponse<StudioNameResponse>>>(
-        `${environment.studioApiUrl}/bookings/filters/studios?page=${page}&size=${size}`)
+        `${environment.studioApiUrl}/filters?page=${page}&size=${size}`)
       .pipe(map(res => res.data));
   }
 
@@ -74,7 +74,7 @@ export class StudioService {
 
   create(payload: CreateStudioRequest): Observable<ApiResponse<StudioResponse>> {
     return this.http.post<ApiResponse<StudioResponse>>(
-      environment.studioApiUrl + '/admin/studios',
+      environment.adminStudioApiUrl + '/',
       payload
     );
   }
@@ -91,14 +91,14 @@ export class StudioService {
 
   update(payload: UpdateStudioRequest): Observable<ApiResponse<StudioResponse>> {
     return this.http.put<ApiResponse<StudioResponse>>(
-      environment.studioApiUrl + '/admin/studios/' + payload.id,
+      environment.adminStudioApiUrl + '/' + payload.id,
       payload
     );
   }
 
   delete(id: number): Observable<ApiResponse<number>> {
     return this.http.delete<ApiResponse<number>>(
-      environment.studioApiUrl + '/admin/studios/' + id
+      environment.adminStudioApiUrl + '/' + id
     );
   }
 }

@@ -14,8 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping("/api/auth")
 public class AuthController {
-    @Autowired
-    private AuthService authService;
+    private final AuthService authService;
 
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<JwtResponse>> login(@Valid @RequestBody LoginRequest loginRequest) {

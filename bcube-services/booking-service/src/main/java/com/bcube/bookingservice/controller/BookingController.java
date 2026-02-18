@@ -15,41 +15,41 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api")
+@RequestMapping("/api/bookings")
 public class BookingController {
 
     private final BookingService bookingService;
-    @GetMapping("/bookings")
+    @GetMapping
     public ResponseEntity<ApiResponse<Page<BookingResponse>>> getBookings(AdminBookingQueryRequest request) {
         Page<BookingResponse> bookings = bookingService.getBookings(request.getPage(), request.getSize(), request.getUserId(), request.getStudioId());
         return  ResponseEntity.ok(new ApiResponse<>("Freie Zeiten erfolgreich geladen", bookings));
     }
 
-    @PostMapping("/bookings")
+    @PostMapping
     public ResponseEntity<ApiResponse<BookingDetailsResponse>> bookStudio(@RequestBody BookStudioRequest bookStudioRequest) {
         BookingDetailsResponse booking = bookingService.bookTimeSlot(bookStudioRequest);
         return ResponseEntity.ok(new ApiResponse<>(booking.getStudio().getName()+" erfolgreich gebucht", booking));
     }
 
-    @GetMapping("/bookings/user/{userId}")
+    @GetMapping("/user/{userId}")
     public ResponseEntity<ApiResponse<Page<BookingResponse>>> getBookingsByUserId(UserBookingQueryRequest request) {
         Page<BookingResponse> bookings = bookingService.getBookingsByUserId(request.getUserId(), request.getPage(), request.getSize(), request.getStudioId());
         return  ResponseEntity.ok(new ApiResponse<>("Buchungen erfolgreich geladen", bookings));
     }
 
-    @GetMapping("/bookings/{bookingId}")
+    @GetMapping("/{bookingId}")
     public ResponseEntity<ApiResponse<BookingDetailsResponse>> getBookingById(@PathVariable Long bookingId) {
         BookingDetailsResponse booking = bookingService.getBookingById(bookingId);
         return ResponseEntity.ok(new ApiResponse<>("Buchung erfolgreich gesendet", booking));
     }
 
-    @DeleteMapping("/bookings/{bookingId}")
+    @DeleteMapping("/{bookingId}")
     public ResponseEntity<ApiResponse<BookingResponse>> stornoBookingById(@PathVariable Long bookingId) {
         BookingResponse booking = bookingService.stornoBooking(bookingId);
         return ResponseEntity.ok(new ApiResponse<>("Buchung: " + bookingId + " erfolgreich storniert", booking));
     }
 
-    @GetMapping("/bookings/studio/{studioId}")
+    @GetMapping("/studio/{studioId}")
     public ResponseEntity<ApiResponse<BookingResponse[]>> getBookingsByStudio(@PathVariable Long studioId) {
         BookingResponse[] bookings = bookingService.getBookingsByStudioId(studioId);
         return ResponseEntity.ok(new ApiResponse<>("Buchungen erfolgreich geladen", bookings));

@@ -30,7 +30,7 @@ export class UserService {
   getAll(page: number = 0, size: number = 10): Observable<PageResponse<User>> {
     this.loadingSubject.next(true);
     return this.http
-      .get<ApiResponse<PageResponse<User>>>(`${environment.adminApiUrl}/users?page=${page}&size=${size}`)
+      .get<ApiResponse<PageResponse<User>>>(`${environment.adminApiUrl}?page=${page}&size=${size}`)
       .pipe(
         map(res => res.data),
         finalize(() => this.loadingSubject.next(false))
@@ -48,7 +48,7 @@ export class UserService {
   createUser(payload: CreateUserRequest): Observable<ApiResponse<UserResponse>> {
     console.log(payload)
     return this.http.post<ApiResponse<UserResponse>>(
-      environment.adminApiUrl + '/users',
+      environment.adminApiUrl + '/',
       payload
     );
   }
@@ -56,20 +56,20 @@ export class UserService {
   getUserFilter(page: number, size: number): Observable<PageResponse<UserNameResponse>> {
     return this.http
       .get<ApiResponse<PageResponse<UserNameResponse>>>(
-        `${environment.adminApiUrl}/bookings/filters/users?page=${page}&size=${size}`)
+        `${environment.adminApiUrl}/filters?page=${page}&size=${size}`)
       .pipe(map(res => res.data));
   }
 
   updateUser(payload: UpdateUserRequest): Observable<ApiResponse<UserResponse>> {
     return this.http.put<ApiResponse<UserResponse>>(
-      environment.adminApiUrl + '/users/' + payload.id,
+      environment.adminApiUrl + '/' + payload.id,
       payload
     );
   }
 
   deleteUser(id: number): Observable<ApiResponse<number>> {
     return this.http.delete<ApiResponse<number>>(
-      environment.adminApiUrl + '/users/' + id
+      environment.adminApiUrl + '/' + id
     );
   }
 }

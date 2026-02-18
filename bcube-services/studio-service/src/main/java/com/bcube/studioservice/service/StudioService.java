@@ -10,8 +10,5 @@ import org.springframework.data.domain.Page;
 public interface StudioService {
     Page<StudioResponse> getAllStudios(int page, int size);
     StudioResponse getStudioById(long id);
-    StudioResponse createStudio(CreateStudioRequest createStudioRequest);
-    DeleteResponse deleteStudio(long id);
-    StudioResponse updateStudio(long id, UpdateStudioRequest updateStudioRequest);
     Page<StudioNameResponse> getAllStudioNames(int page, int size);
 }

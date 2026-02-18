@@ -1,59 +1,23 @@
 package com.bcube.userservice.controller;
-
 import com.bcube.userservice.service.UserService;
-import com.bcube.userservice.service.dto.request.CreateUserRequest;
-import com.bcube.userservice.service.dto.request.UpdateUserRequest;
 import com.bcube.userservice.service.dto.response.ApiResponse;
-import com.bcube.userservice.service.dto.response.UserNameResponse;
 import com.bcube.userservice.service.dto.response.UserResponse;
-import com.bcube.userservice.service.impl.UserServiceImpl;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api")
+@RequestMapping("/api/users")
 public class UserController {
-    @Autowired
     private final UserService userService;
 
-    @GetMapping("/admin/users")
-    public ResponseEntity<ApiResponse<Page<UserResponse>>> getAllUsers(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
-        Page<UserResponse> response = userService.getAllUsers(page, size);
-        return ResponseEntity.ok(new ApiResponse<>("Users erfolgreich gesendet", response));
-    }
-
-    @PostMapping("/admin/users")
-    public ResponseEntity<ApiResponse<UserResponse>> createUser(@Valid @RequestBody CreateUserRequest createUserRequest) {
-        UserResponse response = userService.createUser(createUserRequest);
-        return ResponseEntity.ok(new ApiResponse<>("User erfolgreich erstellt", response));
-    }
-
-    @DeleteMapping("/admin/users/{id}")
-    public ResponseEntity<ApiResponse<Void>> deleteUser(@PathVariable long id) {
-        userService.deleteUser(id);
-        return ResponseEntity.ok(new ApiResponse<>("User erfolgreich gelöscht", null));
-    }
-
-    @PutMapping("/admin/users/{id}")
-    public ResponseEntity<ApiResponse<UserResponse>> updateUser(@PathVariable long id, @Valid @RequestBody UpdateUserRequest updateUserRequest) {
-        UserResponse response = userService.updateUser(id, updateUserRequest);
-        return ResponseEntity.ok(new ApiResponse<>("User erfolgreich aktuallisiert", response));
-    }
-
-    @GetMapping("/users/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<UserResponse>> getUserById(@PathVariable long id) {
-        UserResponse user = userService.getUserById(id);
-        return ResponseEntity.ok(new ApiResponse<>("User erfolgreich aktuallisiert", user));
-    }
-
-    @GetMapping("/admin/bookings/filters/users")
-    public ResponseEntity<ApiResponse<Page<UserNameResponse>>> getBookingsNames(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
-        Page<UserNameResponse> names = userService.getUserNamesOfBookings(page, size);
-        return ResponseEntity.ok(new ApiResponse<>("Usernamen erfolgreich geladen", names));
+        var user = userService.getUserById(id);
+        return ResponseEntity.ok(new ApiResponse<>("User erfolgreich geladen", user));
     }
 }

@@ -52,7 +52,7 @@ export class BookingService {
 
     return this.http
       .get<ApiResponse<PageResponse<Booking>>>(
-        `${environment.bookingApiUrl}/bookings`,
+        `${environment.bookingApiUrl}`,
         { params }
       )
       .pipe(
@@ -81,7 +81,7 @@ export class BookingService {
 
     return this.http
       .get<ApiResponse<PageResponse<Booking>>>(
-        `${environment.bookingApiUrl}/bookings/user/${userId}`,
+        `${environment.bookingApiUrl}/user/${userId}`,
         { params }
       )
       .pipe(
@@ -93,7 +93,7 @@ export class BookingService {
   getBookingsByStudioId(studioId: number): Observable<Booking[]> {
     this.loadingSubject.next(true);
     return this.http
-      .get<{ message: string; data: Booking[] }>(`${environment.bookingApiUrl}/bookings/studio/${studioId}`)
+      .get<{ message: string; data: Booking[] }>(`${environment.bookingApiUrl}/studio/${studioId}`)
       .pipe(
         map(res => res.data),
         finalize(() => this.loadingSubject.next(false))
@@ -103,7 +103,7 @@ export class BookingService {
   getBookingById(bookingId: number): Observable<BookingDetailsResponse> {
     this.loadingSubject.next(true);
     return this.http
-      .get<{ message: string; data: BookingDetailsResponse }>(`${environment.bookingApiUrl}/bookings/${bookingId}`)
+      .get<{ message: string; data: BookingDetailsResponse }>(`${environment.bookingApiUrl}/${bookingId}`)
       .pipe(
         map(res => res.data),
         finalize(() => this.loadingSubject.next(false))
@@ -140,12 +140,12 @@ export class BookingService {
 
   create(payload: CreateBookingRequest): Observable<ApiResponse<BookingDetailsResponse>> {
     return this.http.post<ApiResponse<BookingDetailsResponse>>(
-      environment.bookingApiUrl + "/bookings", payload);
+      environment.bookingApiUrl + "/", payload);
   }
 
   storno(id: number): Observable<ApiResponse<number>> {
     return this.http.delete<ApiResponse<number>>(
-      environment.bookingApiUrl + "/bookings/" + id
+      environment.bookingApiUrl + "/" + id
     )
   }
 }
