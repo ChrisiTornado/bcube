@@ -43,6 +43,7 @@ export class StudioDetailsComponent implements OnInit {
   studio: Studio | null = null;
   isUser = false;
   isAdmin = false;
+  private returnUrl?: string;
   loading!: boolean;
   date: Date | null = null;
 
@@ -66,8 +67,10 @@ export class StudioDetailsComponent implements OnInit {
     initialView: 'dayGridMonth',
     events: this.calendarEvents,
     locale: 'de',
-    buttonText: {
-      today: 'Heute'
+    headerToolbar: {
+      left: 'title',
+      center: '',
+      right: 'prev,next'
     },
     weekends: true,
     dateClick: this.handleDateClick.bind(this)
@@ -92,6 +95,7 @@ export class StudioDetailsComponent implements OnInit {
   ngOnInit(): void {
     this.isUser = this.authService.getRole() === 'USER';
     this.isAdmin = this.authService.getRole() === 'ADMIN';
+    this.returnUrl = history.state?.returnUrl;
 
     // Standardzeit auf 12:00 setzen
     this.defaultTime.setHours(12, 0, 0, 0);
@@ -126,8 +130,10 @@ export class StudioDetailsComponent implements OnInit {
         initialView: 'dayGridMonth',
         events,
         locale: 'de',
-        buttonText: {
-          today: 'Heute'
+        headerToolbar: {
+          left: 'title',
+          center: '',
+          right: 'prev,next'
         },
         weekends: true,
         dateClick: this.handleDateClick.bind(this),
@@ -225,7 +231,7 @@ export class StudioDetailsComponent implements OnInit {
   /** Öffnet Bestätigungsdialog vor dem Buchen */
   confirmBooking(): void {
     this.confirmationService.confirm({
-      message: `Möchten Sie das Studio "${this.studio!.name}" wirklich buchen?`,
+      message: `Möchten Sie den Cube "${this.studio!.name}" wirklich buchen?`,
       header: 'Buchung bestätigen',
       icon: 'pi pi-exclamation-triangle',
       acceptLabel: 'Ja',
@@ -371,6 +377,11 @@ export class StudioDetailsComponent implements OnInit {
 
   /** Navigiert zurück zur vorherigen Seite */
   goBack(): void {
+      if (this.returnUrl) {
+        this.router.navigateByUrl(this.returnUrl);
+        return;
+      }
+
       const basePath = this.isUser ? '/user-dashboard' : '/admin-dashboard';
       this.router.navigate([`${basePath}/studios`]);
   }

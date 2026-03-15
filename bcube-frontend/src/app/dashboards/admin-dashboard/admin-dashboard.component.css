@@ -6,7 +6,7 @@
 
 .dashboard-title {
   margin: 0;
-  font-size: clamp(1.5rem, 3vw, 2.2rem);
+  font-size: clamp(0.9rem, 1.6vw, 1.2rem);
   line-height: 1;
   letter-spacing: 0.08em;
   text-transform: uppercase;

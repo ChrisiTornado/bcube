@@ -64,7 +64,7 @@ export class UserDashboardComponent implements OnInit {
   private buildMenu(): void {
     this.items = [
       {
-        label: 'Studios',
+        label: 'Cubes',
         icon: 'pi pi-fw pi-building',
         routerLink: 'studios',
         styleClass: this.isRouteActive(['studios', 'studio-details']) ? 'p-menuitem-link-active' : ''
@@ -82,7 +82,7 @@ export class UserDashboardComponent implements OnInit {
         styleClass: this.isRouteActive(['bookings', 'booking-details', 'booking-confirmation']) ? 'p-menuitem-link-active' : ''
       },
       {
-        label: 'Mein Kalendar',
+        label: 'Kalendar',
         icon: 'pi pi-fw pi-calendar',
         routerLink: 'calendar',
         styleClass: this.isRouteActive(['calendar']) ? 'p-menuitem-link-active' : ''

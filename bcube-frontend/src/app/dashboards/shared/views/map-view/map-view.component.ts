@@ -23,6 +23,13 @@ export class MapViewComponent implements AfterViewInit, OnInit {
   loading$ = this.studioService.loading$;
   selectedStudio: Studio | null = null;
   isAdmin = false;
+  readonly previewImages = [
+    'assets/images/inside 1.png',
+    'assets/images/interior_2.jpg',
+    'assets/images/new_render_3.jpg',
+    'assets/images/new_render_6.jpg',
+    'assets/images/new_render_7.jpg'
+  ];
 
   private map!: mapboxgl.Map;
   private markers: mapboxgl.Marker[] = [];
@@ -116,9 +123,34 @@ export class MapViewComponent implements AfterViewInit, OnInit {
   });
 }
 
+  getSelectedPreviewImage(): string {
+    if (!this.selectedStudio) {
+      return this.previewImages[0];
+    }
+
+    const index = this.selectedStudio.id % this.previewImages.length;
+    return this.previewImages[index];
+  }
+
+  getSelectedStudioTeaser(maxLength: number = 150): string {
+    const description = this.selectedStudio?.description?.trim();
+
+    if (!description) {
+      return 'Keine Kurzbeschreibung verfügbar.';
+    }
+
+    if (description.length <= maxLength) {
+      return description;
+    }
+
+    return `${description.slice(0, maxLength).trim()}...`;
+  }
+
   navigateToStudio(selectedStudio: Studio): void {
     const basePath = this.isAdmin ? '/admin-dashboard' : '/user-dashboard';
     const navigationUrl = [basePath, 'studio-details', selectedStudio.id];
-    this.router.navigate(navigationUrl);
+    this.router.navigate(navigationUrl, {
+      state: { returnUrl: this.router.url }
+    });
   }
 }

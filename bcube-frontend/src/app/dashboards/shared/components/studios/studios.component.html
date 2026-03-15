@@ -1,7 +1,7 @@
 <div *ngIf="isAdmin" class="card flex justify-content-center">
-    <p-button  (click)="openDialog()" pRipple label="Studio anlegen" icon="pi pi-plus" [style]="{'background-color': 'black', 'border-color': 'black', 'color': 'white'}"></p-button>
+    <p-button  (click)="openDialog()" pRipple label="Cube anlegen" icon="pi pi-plus" [style]="{'background-color': 'black', 'border-color': 'black', 'color': 'white'}"></p-button>
 
-    <p-dialog header="Studio anlegen" [(visible)]="visible" [modal]="true" [style]="{ width: '50vw' }"
+    <p-dialog header="Cube anlegen" [(visible)]="visible" [modal]="true" [style]="{ width: '50vw' }"
               [draggable]="false" [resizable]="false" (onHide)="closeDialog()">
       <form [formGroup]="createForm" class="studio-create-form">
         <div class="mb-4">
@@ -64,7 +64,7 @@
           </div>
 
         <div class="mb-4">
-            <label for="image" class="block text-900 font-medium mb-2">Studiobild</label>
+            <label for="image" class="block text-900 font-medium mb-2">Cubebild</label>
             <p-fileUpload
                 #fileUpload
                 name="image"
@@ -76,7 +76,7 @@
             </p-fileUpload>
 
             <div style="position: relative">
-              <small style="position: absolute; color: red" *ngIf="image.hasError('required') && submitted">Studiobild ist erforderlich</small>
+              <small style="position: absolute; color: red" *ngIf="image.hasError('required') && submitted">Cubebild ist erforderlich</small>
             </div>
           </div>
 

@@ -1,5 +1,5 @@
 <div class="view-header flex align-items-center flex-wrap gap-4 mb-4">
-    <h1 class="m-0">Studios</h1>
+    <h1 class="m-0">Cubes</h1>
     <app-studios *ngIf="isAdmin"></app-studios>
 </div>
 
@@ -10,7 +10,7 @@
         <p-table class="small-rows" [value]="studios ?? []">
             <ng-template pTemplate="header">
                 <tr>
-                    <th style="width:20%">Studiobild</th>
+                    <th style="width:20%">Cubebild</th>
                     <th pSortableColumn="name" style="width:20%">
                         Name <p-sortIcon field="name"></p-sortIcon>
                     </th>
@@ -27,7 +27,7 @@
                 <tr (click)="navigateToDetails(studio)" style="cursor: pointer;">
                     <td>
                         <div class="studio-image-cell">
-                            <img [src]="studio.imageBase64" alt="Studiobild">
+                            <img [src]="studio.imageBase64" alt="Cubebild">
                         </div>
                     </td>
                     <td>{{ studio.name }}</td>

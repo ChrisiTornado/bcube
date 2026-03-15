@@ -8,6 +8,24 @@
     id="map" 
     class="map-container" 
     style="flex: 1; max-width: 1100px; height: 750px;">
+    <div class="selected-studio-overlay" *ngIf="selectedStudio">
+      <article class="selected-studio-card">
+        <img
+          [src]="getSelectedPreviewImage()"
+          [alt]="selectedStudio.name"
+          class="selected-studio-image">
+
+        <div class="selected-studio-copy">
+          <h3 class="m-0">{{ selectedStudio.name }}</h3>
+          <p class="selected-studio-address m-0">
+            {{ selectedStudio.street }}, {{ selectedStudio.plz }} {{ selectedStudio.city }}
+          </p>
+          <p class="selected-studio-description m-0">
+            {{ getSelectedStudioTeaser() }}
+          </p>
+        </div>
+      </article>
+    </div>
   </div>
 
   <!-- Rechte Seite: Liste + Spinner -->
@@ -17,7 +35,7 @@
     <app-loading-spinner *ngIf="loading$ | async"></app-loading-spinner>
 
     <!-- Überschrift -->
-    <h2 *ngIf="!(loading$ | async)">Liste verfügbarer Studios</h2>
+    <h2 *ngIf="!(loading$ | async)">Liste verfügbarer Cubes</h2>
     <!-- Reset-Button -->
     <button 
       *ngIf="!(loading$ | async)" 
@@ -80,7 +98,7 @@
       <!-- Wenn KEINE Studios -->
       <ng-template #noStudios>
         <p-card>
-          <p>Aktuell sind keine Studios verfügbar.</p>
+          <p>Aktuell sind keine Cubes verfügbar.</p>
         </p-card>
       </ng-template>
     </div>

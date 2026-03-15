@@ -34,7 +34,7 @@
 
     <p-floatLabel>
       <p-dropdown [(ngModel)]="studioFilter" [options]="studioFilters" optionLabel="name" dataKey="id"
-        placeholder="Studio auswählen" (onChange)="updateFilters()">
+        placeholder="Cube auswählen" (onChange)="updateFilters()">
 
         <!-- Studio Item -->
         <ng-template let-studio pTemplate="item">
@@ -52,7 +52,7 @@
         </ng-template>
 
       </p-dropdown>
-      <label for="studioFilter">Studio</label>
+      <label for="studioFilter">Cube</label>
     </p-floatLabel>
 
     <p-button [outlined]="true" label="Filter zurücksetzen"

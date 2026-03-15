@@ -1,8 +1,12 @@
-<app-auth-container [title]="'Anmelden'">
-  <div class="login-hero w-full text-center">
-    <div class="login-image-frame">
-      <img src="assets/images/nice.jpg" alt="FH Logo" class="login-hero-image mb-3 w-6 sm:w-4 inline-block">
+<app-auth-container [title]="''">
+  <div class="login-hero">
+    <div class="login-brand-badge">
+      <img src="assets/images/nice.jpg" alt="bcube logo" class="login-brand-logo">
+      <span class="login-brand-text">cube</span>
     </div>
+  </div>
+  <div class="login-local-title-wrap">
+    <h1 class="login-screen-title m-0">Anmelden</h1>
   </div>
   <ng-container *ngIf="!loading; else loadingTemplate">
     <form [formGroup]="loginForm" class="login-form">

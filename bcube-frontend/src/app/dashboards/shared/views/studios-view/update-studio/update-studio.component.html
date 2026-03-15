@@ -11,7 +11,7 @@
               label="Aktualisieren"
               severity="danger"></p-button>
 
-    <p-dialog header="Studio aktualisieren" [(visible)]="visible" [modal]="true" [style]="{ width: '50vw' }"
+    <p-dialog header="Cube aktualisieren" [(visible)]="visible" [modal]="true" [style]="{ width: '50vw' }"
               [draggable]="false" [resizable]="false" (onHide)="closeDialog()">
       <form [formGroup]="createForm" class="studio-update-form">
         <div class="mb-4">
@@ -74,14 +74,14 @@
           </div>
 
           <div *ngIf="studio.imageBase64" class="mb-4">
-            <label class="block text-900 font-medium mb-2">Aktuelles Studiobild</label>
+            <label class="block text-900 font-medium mb-2">Aktuelles Cubebild</label>
             <img [src]="getImageSrc()" 
-                alt="Studiobild" 
+                alt="Cubebild" 
                 class="max-w-full h-auto border-round shadow-2" 
                 style="max-height: 200px;">
           </div>
         <div class="mb-4">
-            <label for="image" class="block text-900 font-medium mb-2">Studiobild</label>
+            <label for="image" class="block text-900 font-medium mb-2">Cubebild</label>
             <p-fileUpload 
                 #fileUpload
                 name="image" 

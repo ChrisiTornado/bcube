@@ -149,7 +149,9 @@ export class BookingsViewComponent implements OnInit {
   navigateToDetails(booking: Booking): void {
     const basePath = this.isAdmin ? '/admin-dashboard' : '/user-dashboard';
     const navigationUrl = [basePath, 'booking-details', booking.id];
-    this.router.navigate(navigationUrl);
+    this.router.navigate(navigationUrl, {
+      state: { returnUrl: this.router.url }
+    });
   }
 
   navigateToBookingCreation(): void {

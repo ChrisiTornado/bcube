@@ -37,7 +37,9 @@ export class StudiosViewComponent implements OnInit {
         const basePath = this.isAdmin ? '/admin-dashboard' : '/user-dashboard';
         const navigationUrl = [basePath, 'studio-details', studio.id];
 
-        this.router.navigate(navigationUrl);
+        this.router.navigate(navigationUrl, {
+            state: { returnUrl: this.router.url }
+        });
     }
 
     loadPage(page: number): void {

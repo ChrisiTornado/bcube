@@ -14,7 +14,7 @@
     <!-- Titel + Bild -->
     <div class="flex mb-4 items-center">
       <h2 class="text-2xl font-semibold mb-2">{{ studio.name }}</h2>
-      <img [src]="studio.imageBase64" alt="Studiobild"
+      <img [src]="studio.imageBase64" alt="Cubebild"
         style="width: auto; height: 60px; margin-left: 0.75rem; cursor: pointer;"
         (click)="showOverlay(studio.imageBase64)">
     </div>
@@ -71,26 +71,28 @@
             Der gewählte Zeitraum ist bereits belegt.
           </p>
 
-          <!-- Button -->
-          <div class="mt-5 flex justify-center">
-            <button pButton type="button" label="Studio buchen" [disabled]="!canBook()"
-              [style]="{'background-color': 'black', 'border-color': 'black', 'color': 'white'}"
-              (click)="confirmBooking()">
-            </button>
-          </div>
         </div>
       </div>
 
       <!-- Rechte Seite -->
-      <p-card class="info-card bg-gray-100 rounded-lg shadow-sm" [style]="{ overflow: 'hidden' }">
-        <ng-template pTemplate="title">Studioübersicht</ng-template>
-        <div class="studio-description">
-          <strong>Beschreibung:</strong>
-          <div class="studio-description-content" [innerHTML]="renderMarkdown(studio.description)"></div>
+      <div class="info-section">
+        <p-card class="info-card bg-gray-100 rounded-lg shadow-sm" [style]="{ overflow: 'hidden' }">
+          <ng-template pTemplate="title">Cubeübersicht</ng-template>
+          <div class="studio-description">
+            <strong>Beschreibung:</strong>
+            <div class="studio-description-content" [innerHTML]="renderMarkdown(studio.description)"></div>
+          </div>
+          <p><strong>Adresse:</strong> {{ studio.street }}, {{ studio.plz }} {{ studio.city }}</p>
+          <p><strong>Land:</strong> {{ studio.country }}</p>
+        </p-card>
+
+        <div class="info-booking-action" *ngIf="isUser">
+          <button pButton type="button" label="Cube buchen" [disabled]="!canBook()"
+            [style]="{'background-color': 'black', 'border-color': 'black', 'color': 'white'}"
+            (click)="confirmBooking()">
+          </button>
         </div>
-        <p><strong>Adresse:</strong> {{ studio.street }}, {{ studio.plz }} {{ studio.city }}</p>
-        <p><strong>Land:</strong> {{ studio.country }}</p>
-      </p-card>
+      </div>
     </div>
   </ng-container>
 </ng-container>

@@ -1,6 +1,53 @@
-<div class="view-header">
-  <h1 class="m-0">Mein Kalendar</h1>
-</div>
-<div class="calendar-shell">
-  <full-calendar class="mt-5" [options]="calendarOptions"></full-calendar>
-</div>
+<app-loading-spinner *ngIf="isLoading"></app-loading-spinner>
+
+<ng-container *ngIf="!isLoading">
+  <div class="view-header">
+    <h1 class="m-0">Mein Kalendar</h1>
+  </div>
+  <div class="calendar-layout">
+    <div class="calendar-shell">
+      <full-calendar class="calendar-frame" [options]="calendarOptions"></full-calendar>
+    </div>
+
+    <aside class="day-bookings-panel">
+      <div class="day-bookings-header">
+        <h2 class="m-0">Deine geplanten Sessions</h2>
+        <span>{{ getSelectedDateLabel() }}</span>
+      </div>
+
+      <div class="day-bookings-list" *ngIf="selectedDayBookings.length > 0; else noBookingsTemplate">
+        <article class="day-booking-card" *ngFor="let booking of selectedDayBookings">
+          <div class="booking-card-top">
+            <div class="booking-image-wrap">
+              <img [src]="booking.studio.imageBase64" [alt]="booking.studio.name" class="booking-studio-thumb">
+            </div>
+
+            <div class="booking-card-copy">
+              <h3 class="m-0">{{ booking.studio.name }}</h3>
+              <p class="booking-location m-0">
+                {{ booking.studio.street }}, {{ booking.studio.plz }} {{ booking.studio.city }}
+              </p>
+              <p class="booking-time m-0">
+                {{ booking.date | date: 'dd.MM.yyyy' }} · {{ formatBookingTimeRange(booking) }}
+              </p>
+            </div>
+          </div>
+
+          <button
+            pButton
+            type="button"
+            label="Details anzeigen"
+            class="booking-details-button"
+            (click)="showBookingDetails(booking)">
+          </button>
+        </article>
+      </div>
+
+      <ng-template #noBookingsTemplate>
+        <div class="empty-day-bookings">
+          Für diesen Tag gibt es keine Cube-Sessions.
+        </div>
+      </ng-template>
+    </aside>
+  </div>
+</ng-container>

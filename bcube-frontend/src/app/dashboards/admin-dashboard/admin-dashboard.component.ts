@@ -59,7 +59,7 @@ export class AdminDashboardComponent implements OnInit {
   private buildMenu(): void {
     this.items = [
       {
-        label: 'Studios',
+        label: 'Cubes',
         icon: 'pi pi-fw pi-building',
         routerLink: 'studios',
         styleClass: this.isRouteActive(['studios', 'studio-details']) ? 'p-menuitem-link-active' : ''

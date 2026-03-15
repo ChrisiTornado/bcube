@@ -21,7 +21,7 @@ export class DeleteStudioComponent {
 
   confirmDelete(): void {
     this.confirmationService.confirm({
-      message: `Möchten Sie das Studio "${this.studio.name}" wirklich löschen?`,
+      message: `Möchten Sie den Cube "${this.studio.name}" wirklich löschen?`,
       header: 'Löschen bestätigen',
       icon: 'pi pi-exclamation-triangle',
       acceptLabel: 'Ja',
