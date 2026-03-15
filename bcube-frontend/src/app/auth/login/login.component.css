@@ -1,0 +1,262 @@
+:host {
+  --bcube-orange: #ffa722;
+  --bcube-black: #050505;
+  --bcube-white: #ffffff;
+  --bcube-border: rgba(255, 255, 255, 0.12);
+  --bcube-shadow: 0 28px 70px rgba(0, 0, 0, 0.32);
+  --bcube-soft-shadow: 0 18px 40px rgba(0, 0, 0, 0.2);
+  display: block;
+  font-family: "Avenir Next", "Montserrat", "Segoe UI", sans-serif;
+}
+
+:host ::ng-deep .surface-ground {
+  min-height: 100vh;
+  padding: 28px;
+  background:
+    radial-gradient(circle at 12% 16%, rgba(255, 167, 34, 0.18), transparent 22%),
+    radial-gradient(circle at 88% 84%, rgba(255, 167, 34, 0.12), transparent 24%),
+    linear-gradient(135deg, #111111 0%, #191919 45%, #0b0b0b 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+:host ::ng-deep .surface-ground::before,
+:host ::ng-deep .surface-ground::after {
+  content: "";
+  position: absolute;
+  border-radius: 999px;
+  pointer-events: none;
+}
+
+:host ::ng-deep .surface-ground::before {
+  width: 280px;
+  height: 280px;
+  top: -100px;
+  right: -40px;
+  background: rgba(255, 167, 34, 0.08);
+}
+
+:host ::ng-deep .surface-ground::after {
+  width: 200px;
+  height: 200px;
+  bottom: 32px;
+  left: -60px;
+  background: rgba(255, 167, 34, 0.08);
+}
+
+:host ::ng-deep .surface-card {
+  width: min(560px, 100%);
+  padding: 34px 34px 30px;
+  border-radius: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02)),
+    rgba(9, 9, 9, 0.88);
+  box-shadow: var(--bcube-shadow);
+  backdrop-filter: blur(14px);
+}
+
+:host ::ng-deep .text-center {
+  margin-bottom: 28px !important;
+}
+
+:host ::ng-deep .text-3xl {
+  font-size: clamp(2rem, 4vw, 2.8rem) !important;
+  line-height: 0.96;
+  letter-spacing: -0.05em;
+  text-transform: uppercase;
+}
+
+:host ::ng-deep .text-900 {
+  color: var(--bcube-white) !important;
+}
+
+.login-hero {
+  margin-bottom: 24px;
+}
+
+.login-image-frame {
+  position: relative;
+  padding: 10px;
+  border-radius: 26px;
+  background:
+    linear-gradient(145deg, rgba(255, 167, 34, 0.96), rgba(255, 188, 88, 0.88));
+  box-shadow: var(--bcube-soft-shadow);
+}
+
+.login-image-frame::after {
+  content: "";
+  position: absolute;
+  inset: 10px;
+  border-radius: 18px;
+  border: 1px solid rgba(5, 5, 5, 0.14);
+  pointer-events: none;
+}
+
+.login-hero-image {
+  display: block;
+  width: 100%;
+  max-width: none !important;
+  margin: 0 !important;
+  border-radius: 18px;
+  height: 168px;
+  object-fit: cover;
+  filter: grayscale(1) contrast(1.06);
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.login-field {
+  margin-bottom: 12px !important;
+}
+
+.login-label {
+  margin-bottom: 10px !important;
+  font-size: 0.84rem;
+  font-weight: 700 !important;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.92) !important;
+}
+
+.login-input {
+  height: 56px;
+  padding: 0 18px;
+  border-radius: 18px;
+  border: 1px solid var(--bcube-border);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--bcube-white);
+  font-size: 1rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease, transform 0.2s ease;
+}
+
+.login-input::placeholder {
+  color: rgba(255, 255, 255, 0.42);
+}
+
+.login-input:hover {
+  border-color: rgba(255, 167, 34, 0.45);
+  background: rgba(255, 255, 255, 0.075);
+}
+
+.login-input:focus {
+  outline: none;
+  border-color: var(--bcube-orange);
+  background: rgba(255, 255, 255, 0.09);
+  box-shadow: 0 0 0 4px rgba(255, 167, 34, 0.16);
+  transform: translateY(-1px);
+}
+
+.login-error-wrap {
+  min-height: 18px;
+  position: relative;
+}
+
+.login-error {
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: #ffd18c;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.login-link-row {
+  margin: 2px 0 12px !important;
+}
+
+.login-link {
+  color: var(--bcube-orange) !important;
+  font-weight: 700;
+  transition: color 0.2s ease, opacity 0.2s ease;
+}
+
+.login-link:hover {
+  color: #ffc86a !important;
+}
+
+.login-actions-wrap {
+  margin-bottom: 0 !important;
+}
+
+.login-actions {
+  width: 100%;
+  gap: 14px !important;
+  flex-wrap: wrap;
+}
+
+:host ::ng-deep .login-primary-button .p-button,
+:host ::ng-deep .login-secondary-button .p-button {
+  min-height: 54px;
+  border-radius: 18px;
+  padding: 0 22px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+}
+
+:host ::ng-deep .login-primary-button .p-button {
+  background: var(--bcube-orange);
+  border-color: var(--bcube-orange);
+  color: var(--bcube-black);
+  box-shadow: 0 16px 30px rgba(255, 167, 34, 0.22);
+}
+
+:host ::ng-deep .login-primary-button .p-button:hover {
+  background: #ffb53f;
+  border-color: #ffb53f;
+  transform: translateY(-1px);
+  box-shadow: 0 20px 34px rgba(255, 167, 34, 0.28);
+}
+
+:host ::ng-deep .login-secondary-button .p-button {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: var(--bcube-white);
+}
+
+:host ::ng-deep .login-secondary-button .p-button:hover {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(255, 167, 34, 0.34);
+  transform: translateY(-1px);
+}
+
+:host ::ng-deep .p-inputtext.ng-invalid.ng-dirty,
+:host ::ng-deep .p-inputtext.ng-invalid.ng-touched {
+  border-color: rgba(255, 209, 140, 0.92);
+  box-shadow: 0 0 0 3px rgba(255, 167, 34, 0.14);
+}
+
+@media (max-width: 640px) {
+  :host ::ng-deep .surface-ground {
+    padding: 14px;
+  }
+
+  :host ::ng-deep .surface-card {
+    padding: 22px 20px;
+    border-radius: 24px;
+  }
+
+  .login-image-frame {
+    border-radius: 20px;
+  }
+
+  .login-hero-image {
+    height: 140px;
+    border-radius: 14px;
+  }
+
+  .login-actions {
+    flex-direction: column;
+  }
+
+  :host ::ng-deep .login-primary-button .p-button,
+  :host ::ng-deep .login-secondary-button .p-button {
+    width: 100%;
+    justify-content: center;
+  }
+}

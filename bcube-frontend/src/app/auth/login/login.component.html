@@ -1,44 +1,45 @@
 <app-auth-container [title]="'Willkommen zurück!'">
-  <div class="w-full text-center">
-    <img src="assets/images/nice.jpg" alt="FH Logo" class="mb-3 w-6 sm:w-4 inline-block">
+  <div class="login-hero w-full text-center">
+    <div class="login-image-frame">
+      <img src="assets/images/nice.jpg" alt="FH Logo" class="login-hero-image mb-3 w-6 sm:w-4 inline-block">
+    </div>
   </div>
   <ng-container *ngIf="!loading; else loadingTemplate">
-    <form [formGroup]="loginForm">
-      <div class="mb-4">
-        <label for="email" class="block text-900 font-medium mb-2">Benutzer</label>
+    <form [formGroup]="loginForm" class="login-form">
+      <div class="mb-4 login-field">
+        <label for="email" class="block text-900 font-medium mb-2 login-label">Benutzer</label>
         <input id="email" formControlName="email" type="text" placeholder="E-Mail-Adresse" pInputText pAutoFocus
-          class="w-full mb-3" />
+          class="w-full mb-3 login-input" />
 
-        <div style="position: relative">
-          <small style="position: absolute; color: red" *ngIf="email.hasError('required') && submitted">E-Mail-Adresse
+        <div class="login-error-wrap">
+          <small class="login-error" *ngIf="email.hasError('required') && submitted">E-Mail-Adresse
             ist erforderlich</small>
         </div>
       </div>
 
-      <div class="mb-4">
-        <label for="password" class="block text-900 font-medium mb-2">Passwort</label>
+      <div class="mb-4 login-field">
+        <label for="password" class="block text-900 font-medium mb-2 login-label">Passwort</label>
         <input id="password" formControlName="password" type="password" placeholder="Passwort" pInputText
-          class="w-full mb-3" />
+          class="w-full mb-3 login-input" />
 
-        <div style="position: relative">
-          <small style="position: absolute; color: red" *ngIf="password.hasError('required') && submitted">Passwort
+        <div class="login-error-wrap">
+          <small class="login-error" *ngIf="password.hasError('required') && submitted">Passwort
             ist erforderlich</small>
         </div>
       </div>
 
-      <div class="flex align-items-center justify-content-between mb-4">
+      <div class="flex align-items-center justify-content-between mb-4 login-link-row">
         <a (click)="resetPasswort()"
-          class="font-medium no-underline ml-2 text-blue-500 text-right cursor-pointer">Passwort vergessen?</a>
+          class="font-medium no-underline ml-2 text-right cursor-pointer login-link">Passwort vergessen?</a>
       </div>
 
-      <div class="card flex justify-content-center mb-4">
-        <div class="flex gap-3">
-          <p-button [style]="{'background-color': 'black', 'border-color': 'black', 'color': 'white'}" pRipple
+      <div class="card flex justify-content-center mb-4 login-actions-wrap">
+        <div class="flex gap-3 login-actions">
+          <p-button styleClass="login-primary-button" pRipple
             label="Einloggen" icon="pi pi-sign-in" iconPos="left" [loading]="loading" (click)="login()">
           </p-button>
 
-          <p-button severity="danger" [routerLink]="['/register']"
-            [style]="{'background-color': 'black', 'border-color': 'black', 'color': 'white'}">
+          <p-button severity="danger" styleClass="login-secondary-button" [routerLink]="['/register']">
             Registrieren
           </p-button>
         </div>
