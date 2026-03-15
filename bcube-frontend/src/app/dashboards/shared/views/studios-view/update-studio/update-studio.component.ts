@@ -15,17 +15,19 @@ import { DialogModule } from 'primeng/dialog';
 import { CommonModule } from '@angular/common';
 import { LoadingSpinnerComponent } from '../../../../../shared/loading-spinner/loading-spinner.component';
 import { InputTextModule } from 'primeng/inputtext';
+import { InputTextareaModule } from 'primeng/inputtextarea';
 import { ToastModule } from 'primeng/toast';
 
 @Component({
   selector: 'app-update-studio',
   standalone: true,
-  imports: [ToastModule, InputTextModule, LoadingSpinnerComponent, CommonModule, DialogModule, TableModule, ButtonModule, FileUploadModule, ReactiveFormsModule],
+  imports: [ToastModule, InputTextModule, InputTextareaModule, LoadingSpinnerComponent, CommonModule, DialogModule, TableModule, ButtonModule, FileUploadModule, ReactiveFormsModule],
   templateUrl: './update-studio.component.html',
   styleUrl: './update-studio.component.css'
 })
 export class UpdateStudioComponent implements OnInit {
   @Input() studio!: Studio;
+  @Input() detailMode = false;
   loading!: boolean;
   selectedImageBase64: string | null = null;
 

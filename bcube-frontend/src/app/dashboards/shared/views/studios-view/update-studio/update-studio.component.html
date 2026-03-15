@@ -1,10 +1,19 @@
 <div class="card flex justify-content-center">
-    <p-button  (click)="openDialog()" icon="pi pi-pencil" [style]="{'background-color': 'black', 'border-color': 'black', 'color': 'white'}"
-               styleClass="p-button-secondary"></p-button>
+    <p-button *ngIf="!detailMode"
+              (click)="openDialog()"
+              icon="pi pi-pencil"
+              [style]="{'background-color': 'black', 'border-color': 'black', 'color': 'white'}"
+              styleClass="p-button-secondary"></p-button>
+
+    <p-button *ngIf="detailMode"
+              (click)="openDialog()"
+              icon="pi pi-pencil"
+              label="Aktualisieren"
+              severity="danger"></p-button>
 
     <p-dialog header="Studio aktualisieren" [(visible)]="visible" [modal]="true" [style]="{ width: '50vw' }"
               [draggable]="false" [resizable]="false" (onHide)="closeDialog()">
-      <form [formGroup]="createForm">
+      <form [formGroup]="createForm" class="studio-update-form">
         <div class="mb-4">
             <label for="name" class="block text-900 font-medium mb-2">Name</label>
             <input id="name" formControlName="name" type="text" placeholder="Name" pInputText pAutoFocus [autofocus]="true" class="w-full">
@@ -16,7 +25,12 @@
 
           <div class="mb-4">
             <label for="description" class="block text-900 font-medium mb-2">Beschreibung</label>
-            <input id="description" formControlName="description" type="text" placeholder="Beschreibung" pInputText pAutoFocus [autofocus]="true" class="w-full">
+            <textarea id="description"
+                      formControlName="description"
+                      placeholder="Beschreibung"
+                      pInputTextarea
+                      rows="6"
+                      class="w-full studio-description-field"></textarea>
   
             <div style="position: relative">
               <small style="position: absolute; color: red" *ngIf="description.hasError('required') && submitted">Beschreibung ist erforderlich</small>
@@ -80,8 +94,12 @@
           </div>
 
         <div class="flex justify-content-end">
-          <p-button  [style]="{'background-color': 'black', 'border-color': 'black', 'color': 'white'}" (click)="submit()" pRipple label="Aktualisieren" [loading]="loading" icon="pi pi-save"
-                     styleClass="p-button-primary"></p-button>
+          <p-button (click)="submit()"
+                    pRipple
+                    label="Speichern"
+                    [loading]="loading"
+                    icon="pi pi-save"
+                    styleClass="studio-update-save-button"></p-button>
         </div>
 
       </form>

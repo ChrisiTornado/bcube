@@ -3,7 +3,7 @@
 
   <p-dialog header="Benutzer aktualisieren" [(visible)]="visible" [modal]="true" [style]="{ width: '50vw' }"
             [draggable]="false" [resizable]="false" (onHide)="closeDialog()">
-    <form [formGroup]="updateForm">
+    <form [formGroup]="updateForm" class="user-update-form">
       <div class="mb-4">
         <label for="firstName" class="block text-900 font-medium mb-2">Vorname</label>
         <input id="firstName" formControlName="firstName" type="text" placeholder="Vorname"

@@ -1,4 +1,4 @@
-<div class="flex align-items-center flex-wrap gap-4 mb-4">
+<div class="view-header flex align-items-center flex-wrap gap-4 mb-4">
   <h1 class="m-0">Benutzer</h1>
   <app-users></app-users>
 </div>
@@ -6,7 +6,7 @@
 <app-loading-spinner *ngIf="loading$ | async"></app-loading-spinner>
 
 <ng-container *ngIf="!(loading$ | async) && (users$ | async) as users">
-  <div style="max-height: calc(100vh - 230px); overflow-y: auto; padding-bottom: 1rem;">
+  <div class="table-shell" style="padding-bottom: 0.5rem;">
     <p-table [value]="users">
       <ng-template pTemplate="header">
         <tr>
@@ -36,7 +36,7 @@
       </ng-template>
     </p-table>
   </div>
-  <div class="flex justify-content-center gap-3 mt-3">
+  <div class="pager-shell flex justify-content-center gap-3 mt-3">
       <button pButton label="<- Zurück"
               [style]="{'background-color': 'white', 'border-color': 'black', 'color': 'black'}"
               (click)="loadPage(this.userService.page - 1)"

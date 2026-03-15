@@ -1,4 +1,6 @@
-<h1 class="m-0">Buchungen</h1>
+<div class="view-header">
+  <h1 class="m-0">Buchungen</h1>
+</div>
 
 <app-loading-spinner *ngIf="loading$ | async"></app-loading-spinner>
 
@@ -6,7 +8,7 @@
 <ng-container *ngIf="!(loading$ | async) && (bookings$ | async) as bookings">
 
   <!-- Filter -->
-  <div class="my-4 flex gap-4">
+  <div class="filters-shell my-4 flex gap-4">
     <p-floatLabel *ngIf="isAdmin">
       <p-dropdown [(ngModel)]="userFilter" [options]="userFilters" optionLabel="label" dataKey="id"
         placeholder="User auswählen" (onChange)="updateFilters()">
@@ -59,7 +61,7 @@
     </p-button>
   </div>
 
-  <div *ngIf="bookings.length === 0" class="text-center my-6">
+  <div *ngIf="bookings.length === 0" class="empty-shell text-center my-6">
     <h3 class="mb-3">Keine Buchungen gefunden</h3>
     <p-button (onClick)="navigateToBookingCreation()"
       [style]="{'background-color': 'black', 'border-color': 'black', 'color': 'white'}" *ngIf="!isAdmin">
@@ -67,9 +69,9 @@
     </p-button>
   </div>
 
-  <div *ngIf="bookings.length > 0" style="max-height: calc(100vh - 300px); overflow-y: auto; padding-bottom: 1rem;">
+  <div *ngIf="bookings.length > 0" class="table-shell" style="padding-bottom: 0.5rem;">
 
-    <p-table [value]="bookings">
+    <p-table class="small-rows" [value]="bookings">
       <ng-template pTemplate="header">
         <tr>
           <th>Buchungsnummer</th>
@@ -88,8 +90,12 @@
           <td>{{ booking.date | date: 'dd.MM.yyyy' }}</td>
           <td>{{ booking.startTime | date:'HH:mm' }}–{{ booking.endTime | date:'HH:mm' }}</td>
           <td>{{ booking.studio.name }}</td>
-          <td *ngIf="booking.status === bookingStatus.CONFIRMED">
-            <app-storno-booking [booking]="booking" (click)="$event.stopPropagation()"></app-storno-booking>
+          <td>
+            <app-storno-booking
+              *ngIf="booking.status === bookingStatus.CONFIRMED"
+              [booking]="booking"
+              (click)="$event.stopPropagation()">
+            </app-storno-booking>
           </td>
         </tr>
       </ng-template>
@@ -97,7 +103,7 @@
   </div>
 
   <!-- Pagination unten -->
-  <div class="flex justify-content-center gap-4 mt-4" *ngIf="totalPages > 1">
+  <div class="pager-shell flex justify-content-center gap-4 mt-4" *ngIf="totalPages > 1">
     <button pButton label="<- Zurück" [style]="{'background-color': 'white', 'border-color': 'black', 'color': 'black'}"
       (click)="isAdmin ? loadAdminPage(this.bookingService.page - 1) : loadUserPage(authService.getUser()?.id!, this.bookingService.page - 1)"
       [disabled]="this.bookingService.page === 0">

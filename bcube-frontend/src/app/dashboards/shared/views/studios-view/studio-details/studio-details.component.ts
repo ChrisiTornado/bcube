@@ -19,6 +19,7 @@ import { CalendarOptions, EventInput } from '@fullcalendar/core';
 import { Studio } from '../../../../../models/Studio';
 import { Booking } from '../../../../../models/Booking';
 import { CreateBookingRequest } from '../../../../../models/requests/booking/CreateBookingRequest';
+import { UpdateStudioComponent } from '../update-studio/update-studio.component';
 
 @Component({
   selector: 'app-studio-details',
@@ -30,7 +31,8 @@ import { CreateBookingRequest } from '../../../../../models/requests/booking/Cre
     ButtonModule,
     LoadingSpinnerComponent,
     FullCalendarModule,
-    CardModule
+    CardModule,
+    UpdateStudioComponent
   ],
   templateUrl: './studio-details.component.html',
   styleUrl: './studio-details.component.css'
@@ -40,6 +42,7 @@ export class StudioDetailsComponent implements OnInit {
   // === Properties ===
   studio: Studio | null = null;
   isUser = false;
+  isAdmin = false;
   loading!: boolean;
   date: Date | null = null;
 
@@ -63,6 +66,9 @@ export class StudioDetailsComponent implements OnInit {
     initialView: 'dayGridMonth',
     events: this.calendarEvents,
     locale: 'de',
+    buttonText: {
+      today: 'Heute'
+    },
     weekends: true,
     dateClick: this.handleDateClick.bind(this)
   };
@@ -85,6 +91,7 @@ export class StudioDetailsComponent implements OnInit {
   /** Initialisiert Studio-Details, Kalender und Buchungen */
   ngOnInit(): void {
     this.isUser = this.authService.getRole() === 'USER';
+    this.isAdmin = this.authService.getRole() === 'ADMIN';
 
     // Standardzeit auf 12:00 setzen
     this.defaultTime.setHours(12, 0, 0, 0);
@@ -108,9 +115,9 @@ export class StudioDetailsComponent implements OnInit {
       const events = this.bookings.map(b => ({
         title: `${this.formatTime(new Date(b.startTime))} – ${this.formatTime(new Date(b.endTime))}`,
         date: new Date(b.date).toISOString().split('T')[0],
-        color: '#000000ff',
-        textColor: '#ffffff',
-        borderColor: '#000000ff'
+        color: '#ffa722',
+        textColor: '#111111',
+        borderColor: '#ffa722'
       }));
 
       const today = new Date();
@@ -119,6 +126,9 @@ export class StudioDetailsComponent implements OnInit {
         initialView: 'dayGridMonth',
         events,
         locale: 'de',
+        buttonText: {
+          today: 'Heute'
+        },
         weekends: true,
         dateClick: this.handleDateClick.bind(this),
         ...(this.isUser && {
@@ -192,7 +202,10 @@ export class StudioDetailsComponent implements OnInit {
       for (const b of bookingsOnDate) {
         this.calendarEvents.push({
           title: `${b.startTime} – ${b.endTime}`,
-          date: isoDate
+          date: isoDate,
+          color: '#ffa722',
+          textColor: '#111111',
+          borderColor: '#ffa722'
         });
       }
 
@@ -454,5 +467,65 @@ private formatDateVienna(date: Date): string {
     year: 'numeric',
     timeZone: 'Europe/Vienna'
   }).format(date);
+}
+
+renderMarkdown(markdown: string | null | undefined): string {
+  if (!markdown) {
+    return '';
+  }
+
+  const escaped = markdown
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+
+  const lines = escaped.split(/\r?\n/);
+  const blocks: string[] = [];
+  let paragraph: string[] = [];
+  let listItems: string[] = [];
+
+  const flushParagraph = () => {
+    if (!paragraph.length) return;
+    blocks.push(`<p>${this.inlineMarkdown(paragraph.join('<br>'))}</p>`);
+    paragraph = [];
+  };
+
+  const flushList = () => {
+    if (!listItems.length) return;
+    blocks.push(`<ul>${listItems.map(item => `<li>${this.inlineMarkdown(item)}</li>`).join('')}</ul>`);
+    listItems = [];
+  };
+
+  for (const rawLine of lines) {
+    const line = rawLine.trim();
+
+    if (!line) {
+      flushParagraph();
+      flushList();
+      continue;
+    }
+
+    if (/^[-*]\s+/.test(line)) {
+      flushParagraph();
+      listItems.push(line.replace(/^[-*]\s+/, ''));
+      continue;
+    }
+
+    flushList();
+    paragraph.push(line);
+  }
+
+  flushParagraph();
+  flushList();
+
+  return blocks.join('');
+}
+
+private inlineMarkdown(text: string): string {
+  return text
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/__(.+?)__/g, '<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g, '<em>$1</em>')
+    .replace(/_(.+?)_/g, '<em>$1</em>');
 }
 }

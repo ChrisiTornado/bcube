@@ -47,7 +47,7 @@ export class MapViewComponent implements AfterViewInit, OnInit {
   private initMap() {
     this.map = new mapboxgl.Map({
       container: 'map',
-      style: 'mapbox://styles/chrisitornado/cmd60zbgu00u901qoevjtel7q',
+      style: 'mapbox://styles/mapbox/dark-v11',
       center: [16.3738, 48.2082],
       zoom: 10,
       accessToken: environment.token,
@@ -58,12 +58,21 @@ export class MapViewComponent implements AfterViewInit, OnInit {
       new mapboxgl.AttributionControl({ compact: true }),
       'bottom-right'
     );
+
+    this.map.on('load', () => {
+      this.map.setFog({
+        color: 'rgba(11, 11, 11, 0.75)',
+        'high-color': 'rgba(255, 167, 34, 0.08)',
+        'space-color': 'rgba(7, 7, 7, 1)',
+        'horizon-blend': 0.08
+      });
+    });
   }
 
   private addMarkers(studios: Studio[]) {
     studios.forEach(studio => {
       if (studio.longitude != null && studio.latitude != null) {
-        const marker = new mapboxgl.Marker({ color: '#000000ff' })
+        const marker = new mapboxgl.Marker({ color: '#ffa722' })
           .setLngLat([studio.longitude, studio.latitude])
           .addTo(this.map);
 

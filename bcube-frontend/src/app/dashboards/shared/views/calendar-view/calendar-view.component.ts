@@ -55,6 +55,9 @@ export class CalendarViewComponent implements OnInit {
     initialView: 'dayGridMonth',
     events: this.calendarEvents,
     locale: 'de',
+    buttonText: {
+      today: 'Heute'
+    },
     weekends: true
   };
 
@@ -75,9 +78,9 @@ export class CalendarViewComponent implements OnInit {
         return {
           title: `${formatTime(start)} – ${formatTime(end)}`,
           date: new Date(b.date).toISOString().split('T')[0],
-          color: '#000000ff',
-          textColor: '#ffffff',
-          borderColor: '#000000ff'
+          color: '#ffa722',
+          textColor: '#111111',
+          borderColor: '#ffa722'
         };
       });
 
@@ -86,6 +89,9 @@ export class CalendarViewComponent implements OnInit {
         initialView: 'dayGridMonth',
         events: events,
         locale: 'de',
+        buttonText: {
+          today: 'Heute'
+        },
         weekends: true,
       };
     });
@@ -128,6 +134,9 @@ export class CalendarViewComponent implements OnInit {
         this.calendarEvents.push({
           title: `${b.startTime} – ${b.endTime}`,
           date: isoDate,
+          color: '#ffa722',
+          textColor: '#111111',
+          borderColor: '#ffa722'
         });
       }
 

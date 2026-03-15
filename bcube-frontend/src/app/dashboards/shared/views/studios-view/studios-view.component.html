@@ -1,4 +1,4 @@
-<div class="flex align-items-center flex-wrap gap-4 mb-4">
+<div class="view-header flex align-items-center flex-wrap gap-4 mb-4">
     <h1 class="m-0">Studios</h1>
     <app-studios *ngIf="isAdmin"></app-studios>
 </div>
@@ -6,7 +6,7 @@
 <app-loading-spinner *ngIf="loading$ | async"></app-loading-spinner>
 
 <ng-container *ngIf="!(loading$ | async) && (studios$ | async) as studios">
-    <div style="max-height: calc(100vh - 240px); overflow-y: auto; padding-bottom: 1rem;">
+    <div class="table-shell" style="padding-bottom: 0.5rem;">
         <p-table class="small-rows" [value]="studios ?? []">
             <ng-template pTemplate="header">
                 <tr>
@@ -25,7 +25,7 @@
 
             <ng-template pTemplate="body" let-studio>
                 <tr (click)="navigateToDetails(studio)" style="cursor: pointer;">
-                    <td><img [src]="studio.imageBase64" alt="Studiobild" style="max-height: 75px; max-width: 100%"></td>
+                    <td><img [src]="studio.imageBase64" alt="Studiobild" style="max-height: 54px; max-width: 100%"></td>
                     <td>{{ studio.name }}</td>
                     <td>{{ studio.street }}, {{ studio.plz }} {{ studio.city }}</td>
                     <td>{{ studio.country }}</td>
@@ -49,7 +49,7 @@
     <!-- 🔥 Ende Scrollbereich -->
 
     <!-- Pagination unten fix -->
-    <div class="flex justify-content-center gap-4 mt-4" *ngIf="totalPages > 1">
+    <div class="pager-shell flex justify-content-center gap-4 mt-4" *ngIf="totalPages > 1">
         <button pButton label="<- Zurück"
                 [style]="{'background-color': 'white', 'border-color': 'black', 'color': 'black'}"
                 (click)="loadPage(this.studioService.page - 1)"

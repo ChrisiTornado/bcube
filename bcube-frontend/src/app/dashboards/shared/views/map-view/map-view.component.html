@@ -1,15 +1,17 @@
-<h1 class="m-0">Karte</h1>
+<div class="view-header">
+  <h1 class="m-0">Karte</h1>
+</div>
 
-<div style="display: flex; gap: 1rem;">
+<div class="map-layout" style="display: flex; gap: 1rem;">
   <!-- Linke Seite: Karte -->
-  <div 
+  <div
     id="map" 
     class="map-container" 
     style="flex: 1; max-width: 1100px; height: 750px;">
   </div>
 
   <!-- Rechte Seite: Liste + Spinner -->
-  <div style="flex: 0 0 350px; display: flex; flex-direction: column; height: 760px;">
+  <div class="map-sidebar" style="flex: 0 0 350px; display: flex; flex-direction: column; height: 760px;">
 
     <!-- Spinner -->
     <app-loading-spinner *ngIf="loading$ | async"></app-loading-spinner>
@@ -28,6 +30,7 @@
 
     <!-- Studios-Liste -->
     <div *ngIf="!(loading$ | async) && (studios$ | async) as studios"
+     class="sidebar-scroll"
      style="flex: 1; overflow-y: auto; padding-right: 0.5rem;">
 
       <!-- Wenn Studios existieren -->

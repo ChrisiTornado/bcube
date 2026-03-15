@@ -1,136 +1,159 @@
-/* --- MAP --- */
-.map-container {
-  width: 100%;
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
   height: 100%;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  margin-top: 1rem;
 }
 
-/* --- STUDIO CARDS --- */
+.view-header {
+  margin-bottom: 1.25rem;
+  flex-shrink: 0;
+}
+
+.map-layout {
+  align-items: stretch;
+  flex-wrap: wrap;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.map-container {
+  border-radius: 26px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 167, 34, 0.16);
+  box-shadow: 0 22px 60px rgba(0, 0, 0, 0.24);
+}
+
+.map-sidebar {
+  padding: 1rem;
+  border-radius: 26px;
+  border: 1px solid rgba(255, 167, 34, 0.16);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.015)),
+    rgba(15, 15, 15, 0.86);
+  box-shadow: 0 22px 60px rgba(0, 0, 0, 0.24);
+  gap: 1rem;
+}
+
+.sidebar-scroll {
+  display: flex;
+  flex-direction: column;
+  gap: 1.15rem;
+  padding: 0.35rem 0.45rem 0.35rem 0.1rem;
+}
+
 .studio-details {
   display: flex;
   flex-direction: column;
-
-   margin-bottom: 1rem;
+  margin-bottom: 0;
+  padding-bottom: 0.15rem;
 }
 
-/* P-CARD: Clean, gleich groß, Hover-Effekt */
 .studio-details p-card {
-  background: #fff;
-  border: 1px solid #eee;
-  border-radius: 12px;
-  box-shadow: none;
+  display: block;
   transition: all 0.25s ease-in-out;
   cursor: pointer;
-  min-height: 155px; /* sorgt für gleichmäßige Höhe */
-  display: flex;
+  min-height: 155px;
   flex-direction: column;
   justify-content: space-between;
+  border-radius: 18px;
+  overflow: hidden;
+  outline: none !important;
+  box-shadow: none !important;
 }
 
 .studio-details p-card:hover {
-  border-color: #000;
-  background: #f9f9f9;
-  /* transform: translateY(-2px); */ /* ❌ entfernen */
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); /* ✅ dezenter Hover-Schatten */
+  transform: translateY(-1px);
 }
 
-/* --- Card-Inhalt kompakter --- */
-::ng-deep .p-card {
-  padding: 0.75rem 1rem !important;
+.studio-details p-card:focus,
+.studio-details p-card:focus-visible,
+.studio-details p-card:active {
+  outline: none !important;
+  box-shadow: none !important;
 }
 
-::ng-deep .p-card-body,
-::ng-deep .p-card-content {
+:host ::ng-deep .studio-details .p-card-body {
+  padding: 1rem 1rem 0.9rem !important;
+}
+
+:host ::ng-deep .studio-details .p-card {
+  border-radius: 18px !important;
+  overflow: hidden !important;
+}
+
+:host ::ng-deep .studio-details .p-card:focus,
+:host ::ng-deep .studio-details .p-card:focus-visible,
+:host ::ng-deep .studio-details .p-card *:focus,
+:host ::ng-deep .studio-details .p-card *:focus-visible {
+  outline: none !important;
+}
+
+:host ::ng-deep .studio-details .p-card-content {
   padding: 0 !important;
   margin: 0 !important;
 }
 
-::ng-deep .p-card-footer {
+:host ::ng-deep .studio-details .p-card-footer {
   margin-top: 0.75rem !important;
   padding-top: 0 !important;
 }
 
-/* --- Titel & Untertitel --- */
-::ng-deep .p-card-title {
+:host ::ng-deep .studio-details .p-card-title {
   font-size: 1rem !important;
-  font-weight: 600 !important;
-  color: #000 !important;
-  margin-bottom: 0.25rem !important;
+  font-weight: 700 !important;
+  color: #fff !important;
+  margin-bottom: 0.3rem !important;
+  line-height: 1.15;
 }
 
-::ng-deep .p-card-subtitle {
+:host ::ng-deep .studio-details .p-card-subtitle {
   font-size: 0.85rem !important;
-  color: #666 !important;
+  color: rgba(255, 255, 255, 0.64) !important;
   margin-bottom: 0.75rem !important;
 }
 
-/* --- Aktive Card --- */
 .active-card {
-  border-color: #000 !important;
-  background: #f9f9f9 !important;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1) !important;
-  transition: all 0.25s ease-in-out;
+  border-color: rgba(255, 167, 34, 0.44) !important;
+  box-shadow: 0 0 0 1px rgba(255, 167, 34, 0.24) !important;
 }
 
-/* Optional: etwas stärkerer Schatten bei aktivem Zustand */
-.active-card:hover {
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15) !important;
-}
-
-/* --- Link (Google Maps) --- */
 .studio-details a {
-  color: #000;
-  font-weight: 500;
+  color: #ffa722;
+  font-weight: 600;
   text-decoration: none;
-  border-bottom: 1px solid transparent;
-  transition: all 0.15s ease;
+  display: inline-block;
+  margin: 0.15rem 0 0.7rem;
 }
 
 .studio-details a:hover {
-  border-bottom: 1px solid #000;
+  color: #ffc86a;
 }
 
-/* --- Button Schwarz-Weiß --- */
 .details-button {
-  background-color: #000 !important;
-  color: #fff !important;
+  background-color: #ffa722 !important;
+  color: #111111 !important;
   border: none !important;
   font-size: 0.8rem !important;
-  border-radius: 8px !important;
-  padding: 0.4rem 0.8rem !important;
+  border-radius: 12px !important;
+  padding: 0.45rem 0.9rem !important;
   align-self: flex-start;
-  transition: all 0.2s ease-in-out;
 }
 
-.details-button:hover {
-  background-color: #333 !important;
-}
-
-/* --- Header --- */
 h2 {
-  font-weight: 600;
-  color: #000;
+  font-weight: 700;
+  color: #ffffff;
   margin-bottom: 0.75rem;
 }
 
 .reset-button {
-  background-color: #fff !important;
-  color: #000 !important;
-  border: 1px solid #000 !important;
-  transition: all 0.2s ease-in-out;
-  border-radius: 8px;
-  margin-bottom: 1rem;
+  background-color: rgba(255, 167, 34, 0.08) !important;
+  color: #fff !important;
+  border: 1px solid rgba(255, 167, 34, 0.3) !important;
+  border-radius: 12px;
+  width: 100%;
 }
 
 .reset-button:hover {
-  background-color: #000 !important;
-  color: #fff !important;
-}
-
-::ng-deep .studio-details p-card,
-::ng-deep .studio-details .p-card {
-  border-radius: 0 !important;
+  background-color: rgba(255, 167, 34, 0.16) !important;
 }

@@ -10,6 +10,12 @@
   margin-top: 1rem;
 }
 
+.top-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
 /* Kalender-Bereich fixieren */
 .calendar-section {
   flex: 0 0 550px; /* stabile Breite */
@@ -19,9 +25,113 @@
 
 /* Card-Bereich */
 .info-card {
-  flex: 0 0 22rem;
-  max-width: 22rem;
+  flex: 0 0 30rem;
+  max-width: 30rem;
   flex-shrink: 0;
+}
+
+.studio-description {
+  margin-bottom: 1rem;
+}
+
+.studio-description-content {
+  margin-top: 0.55rem;
+  line-height: 1.6;
+}
+
+.studio-description-content :is(p, ul) {
+  margin: 0 0 0.75rem;
+}
+
+.studio-description-content ul {
+  padding-left: 1.2rem;
+}
+
+.studio-description-content li + li {
+  margin-top: 0.3rem;
+}
+
+.time-field-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.time-field-label,
+.booking-elements label {
+  font-weight: 500;
+}
+
+.time-field-label {
+  width: 110px;
+  min-width: 110px;
+  flex: 0 0 110px;
+}
+
+.booking-elements .time-field-input {
+  width: 200px;
+  max-width: 200px;
+  flex: 0 0 200px;
+}
+
+:host ::ng-deep .booking-elements .time-field-input .p-calendar {
+  width: 100%;
+}
+
+:host ::ng-deep .booking-elements .time-field-input .p-inputtext {
+  text-align: center;
+}
+
+:host ::ng-deep .booking-elements .time-field-input .p-inputtext::placeholder {
+  text-align: center;
+}
+
+:host ::ng-deep .booking-elements .time-field-input .p-datepicker {
+  min-width: 25rem !important;
+  padding: 1rem 1.1rem !important;
+  border-radius: 20px !important;
+  border: 1px solid rgba(255, 167, 34, 0.22) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.02)),
+    rgba(18, 18, 18, 0.98) !important;
+  color: #ffffff !important;
+  box-shadow: 0 24px 44px rgba(0, 0, 0, 0.35) !important;
+}
+
+:host ::ng-deep .booking-elements .time-field-input .p-timepicker {
+  gap: 0.9rem;
+}
+
+:host ::ng-deep .booking-elements .time-field-input .p-timepicker span {
+  color: #f5f5f5 !important;
+}
+
+:host ::ng-deep .booking-elements .time-field-input .p-timepicker .p-hour-picker,
+:host ::ng-deep .booking-elements .time-field-input .p-timepicker .p-minute-picker {
+  min-width: 5.5rem;
+}
+
+:host ::ng-deep .booking-elements .time-field-input .p-timepicker .p-link {
+  width: 3rem !important;
+  height: 3rem !important;
+  border-radius: 14px !important;
+  color: #ffa722 !important;
+  background: rgba(255, 167, 34, 0.08) !important;
+}
+
+:host ::ng-deep .booking-elements .time-field-input .p-timepicker .p-link:hover {
+  background: rgba(255, 167, 34, 0.18) !important;
+}
+
+:host ::ng-deep .booking-elements .time-field-input .p-timepicker .p-link .pi {
+  font-size: 1.1rem !important;
+}
+
+:host ::ng-deep .booking-elements .time-field-input .p-timepicker .p-separator,
+:host ::ng-deep .booking-elements .time-field-input .p-timepicker > div,
+:host ::ng-deep .booking-elements .time-field-input .p-timepicker > a {
+  color: #ffffff !important;
+  font-size: 2rem !important;
 }
 
 /* ============================= */
@@ -88,14 +198,20 @@
   .studio-layout {
     gap: 1rem;
   }
-}
 
-.booking-elements .p-calendar {
-  width: 150px;
-}
+  .time-field-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
 
-.booking-elements label {
-  font-weight: 500;
+  .time-field-label,
+  .booking-elements .time-field-input {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    flex: 1 1 auto;
+  }
 }
 
 :host ::ng-deep .p-calendar .p-datepicker-trigger {

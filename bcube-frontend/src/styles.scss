@@ -1,51 +1,371 @@
 // After Tailwind, your own styles
 @use "styles/variables" as *;
 
+:root {
+  --bcube-orange: #ffa722;
+  --bcube-orange-strong: #ffb53f;
+  --bcube-black: #0b0b0b;
+  --bcube-panel: rgba(18, 18, 18, 0.88);
+  --bcube-panel-soft: rgba(255, 255, 255, 0.04);
+  --bcube-line: rgba(255, 167, 34, 0.22);
+  --bcube-line-soft: rgba(255, 255, 255, 0.08);
+  --bcube-text: #ffffff;
+  --bcube-text-soft: rgba(255, 255, 255, 0.72);
+  --bcube-shadow: 0 22px 60px rgba(0, 0, 0, 0.28);
+}
+
 body {
   margin: 0;
+  min-height: 100vh;
+  overflow: hidden;
+  color: var(--bcube-text);
+  font-family: "Avenir Next", "Montserrat", "Segoe UI", sans-serif;
+  background:
+    radial-gradient(circle at 12% 16%, rgba(255, 167, 34, 0.2), transparent 24%),
+    radial-gradient(circle at 88% 84%, rgba(255, 167, 34, 0.16), transparent 26%),
+    linear-gradient(135deg, #111111 0%, #1a1a1a 48%, #0b0b0b 100%);
+}
+
+body * {
+  box-sizing: border-box;
+}
+
+html,
+body,
+app-root {
+  height: 100%;
+}
+
+.page-content h1 {
+  margin: 0 0 1.25rem;
+  font-size: clamp(1.7rem, 3vw, 2.4rem);
+  line-height: 1;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-weight: 800;
+  color: var(--bcube-text);
+}
+
+.page-content h2,
+.page-content h3 {
+  color: var(--bcube-text);
+}
+
+.page-content > * {
+  position: relative;
+  z-index: 1;
+}
+
+.page-content .p-datatable {
+  border: 1px solid var(--bcube-line);
+  border-radius: 24px;
+  overflow: hidden;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.015)),
+    rgba(15, 15, 15, 0.86);
+  box-shadow: var(--bcube-shadow);
+}
+
+.page-content .p-datatable-table {
+  background: transparent;
+}
+
+.page-content .p-datatable-thead > tr > th {
+  background: rgba(255, 167, 34, 0.12) !important;
+  color: var(--bcube-text) !important;
+  border-color: rgba(255, 167, 34, 0.18) !important;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.78rem;
+  font-weight: 800;
+  padding: 0.8rem 1rem !important;
+}
+
+.page-content .p-datatable-tbody > tr {
+  background: transparent !important;
+  color: var(--bcube-text);
+  transition: background-color 0.2s ease;
+}
+
+.page-content .p-datatable-tbody > tr > td {
+  border-color: rgba(255, 255, 255, 0.06) !important;
+  background: transparent !important;
+  color: var(--bcube-text-soft);
+  padding: 0.4rem 1rem !important;
+  font-size: 0.95rem;
+  line-height: 1.2;
+}
+
+.page-content .p-datatable-tbody > tr:hover {
+  background: rgba(255, 167, 34, 0.08) !important;
+}
+
+.page-content .p-sortable-column-icon,
+.page-content .p-sorticon {
+  color: var(--bcube-orange) !important;
+}
+
+.p-button {
+  border-radius: 16px !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.02em;
+}
+
+.p-button:not(.p-button-text) {
+  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.16);
+}
+
+.p-button.p-component {
+  background: var(--bcube-orange);
+  border-color: var(--bcube-orange);
+  color: #111111;
+}
+
+.p-button.p-component:hover {
+  background: var(--bcube-orange-strong) !important;
+  border-color: var(--bcube-orange-strong) !important;
+}
+
+.p-button.p-button-text,
+.p-button.p-button-outlined {
+  background: rgba(255, 167, 34, 0.08) !important;
+  color: var(--bcube-text) !important;
+  border-color: rgba(255, 167, 34, 0.28) !important;
+}
+
+.p-button.p-button-text:hover,
+.p-button.p-button-outlined:hover {
+  background: rgba(255, 167, 34, 0.16) !important;
+  border-color: rgba(255, 167, 34, 0.4) !important;
+  color: var(--bcube-text) !important;
+}
+
+.p-inputtext,
+.p-dropdown,
+.p-dropdown .p-dropdown-label,
+.p-multiselect,
+.p-password-input {
+  border-radius: 16px !important;
+}
+
+.p-inputtext,
+.p-dropdown,
+.p-multiselect,
+.p-password-input {
+  border: 1px solid rgba(255, 167, 34, 0.18) !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+  color: var(--bcube-text) !important;
+  box-shadow: none !important;
+}
+
+.p-inputtext::placeholder {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--bcube-text) !important;
+  caret-color: var(--bcube-text) !important;
+  background-color: rgba(255, 255, 255, 0.06) !important;
+  box-shadow: 0 0 0 1000px rgba(255, 255, 255, 0.06) inset !important;
+  -webkit-box-shadow: 0 0 0 1000px rgba(255, 255, 255, 0.06) inset !important;
+  border: 1px solid rgba(255, 167, 34, 0.18) !important;
+  transition: background-color 9999s ease-out 0s;
+}
+
+.p-inputtext:enabled:hover,
+.p-dropdown:not(.p-disabled):hover,
+.p-multiselect:not(.p-disabled):hover {
+  border-color: rgba(255, 167, 34, 0.42) !important;
+}
+
+.p-inputtext:enabled:focus,
+.p-dropdown:not(.p-disabled).p-focus,
+.p-multiselect:not(.p-disabled).p-focus {
+  border-color: var(--bcube-orange) !important;
+  box-shadow: 0 0 0 4px rgba(255, 167, 34, 0.16) !important;
+}
+
+.p-dropdown-panel,
+.p-dialog,
+.p-confirm-dialog,
+.p-toast-message,
+.p-card {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.02)),
+    rgba(12, 12, 12, 0.96) !important;
+  color: var(--bcube-text) !important;
+  border: 1px solid rgba(255, 167, 34, 0.18) !important;
+  box-shadow: var(--bcube-shadow) !important;
+}
+
+.p-dropdown-item,
+.p-dropdown-label,
+.p-dialog .p-dialog-title,
+.p-dialog .p-dialog-content,
+.p-card .p-card-title,
+.p-card .p-card-content,
+.p-card .p-card-subtitle {
+  color: var(--bcube-text) !important;
+}
+
+.p-dialog .p-dialog-header,
+.p-dialog .p-dialog-content,
+.p-dialog .p-dialog-footer {
+  background: transparent !important;
+  color: var(--bcube-text) !important;
+}
+
+.p-dialog .p-dialog-header {
+  border-bottom: 1px solid rgba(255, 167, 34, 0.14) !important;
+}
+
+.p-dialog .p-dialog-footer {
+  border-top: 1px solid rgba(255, 167, 34, 0.14) !important;
+}
+
+.p-dropdown-item:hover {
+  background: rgba(255, 167, 34, 0.12) !important;
+}
+
+.p-dropdown-item.p-highlight,
+.p-dropdown-item.p-focus,
+.p-dropdown-panel .p-dropdown-items .p-dropdown-item.p-highlight {
+  background: rgba(255, 167, 34, 0.08) !important;
+  color: var(--bcube-text) !important;
+}
+
+.p-dropdown-panel .p-dropdown-items .p-dropdown-item.p-highlight:hover {
+  background: rgba(255, 167, 34, 0.14) !important;
+}
+
+.p-dialog-mask,
+.p-component-overlay {
+  background: rgba(5, 5, 5, 0.6) !important;
+  backdrop-filter: blur(4px);
+}
+
+.p-confirm-dialog .p-dialog-header,
+.p-confirm-dialog .p-dialog-content,
+.p-confirm-dialog .p-dialog-footer {
+  background: transparent !important;
+  color: var(--bcube-text) !important;
+}
+
+.p-confirm-dialog .p-dialog-header {
+  border-bottom: 1px solid rgba(255, 167, 34, 0.14) !important;
+  padding: 1.5rem 1.75rem !important;
+}
+
+.p-confirm-dialog .p-dialog-footer {
+  border-top: 1px solid rgba(255, 167, 34, 0.14) !important;
+  padding: 1.25rem 1.75rem 1.5rem !important;
+  display: flex !important;
+  justify-content: flex-end !important;
+  align-items: center !important;
+  gap: 1.1rem !important;
+  flex-wrap: wrap !important;
+}
+
+.p-confirm-dialog .p-confirm-dialog-icon {
+  color: var(--bcube-orange) !important;
+}
+
+.p-confirm-dialog .p-dialog-content {
+  padding: 1.5rem 1.75rem !important;
+}
+
+.p-confirm-dialog .p-dialog-footer .p-button {
+  margin: 0 !important;
+}
+
+.p-confirm-dialog .p-dialog-footer > * + * {
+  margin-left: 1.1rem !important;
+}
+
+.p-float-label label {
+  color: var(--bcube-text-soft) !important;
+}
+
+.fc {
+  padding: 1rem;
+  border: 1px solid var(--bcube-line);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.015)),
+    rgba(15, 15, 15, 0.88);
+  box-shadow: var(--bcube-shadow);
+}
+
+.fc .fc-toolbar-title,
+.fc .fc-col-header-cell-cushion,
+.fc .fc-daygrid-day-number {
+  color: var(--bcube-text);
+}
+
+.fc .fc-button-primary {
+  background: var(--bcube-orange) !important;
+  border-color: var(--bcube-orange) !important;
+  color: #111111 !important;
+}
+
+.fc .fc-event {
+  background: var(--bcube-orange) !important;
+  border-color: var(--bcube-orange) !important;
+  color: #111111 !important;
 }
 
 .p-megamenu.admin-menu {
   height: 100%;
+  border: none !important;
+  background: transparent !important;
 
   p-megamenusub {
     height: 100%;
 
+    .p-menuitem-link {
+      border-radius: 16px;
+    }
+
     .p-menuitem-link-active {
-      background: #000 !important; // oder einfach black
+      background: var(--bcube-orange) !important;
 
       * {
-        color: #fff !important;
+        color: #111111 !important;
       }
     }
   }
 }
 
-/* Schwarzer "Ja"-Button */
 .p-confirm-dialog-accept {
-  background: black !important;
-  border-color: black !important;
-  color: white !important;
+  background: var(--bcube-orange) !important;
+  border-color: var(--bcube-orange) !important;
+  color: #111111 !important;
 }
 
 .p-confirm-dialog-accept:hover {
-  background: #333 !important;
-  border-color: #333 !important;
+  background: var(--bcube-orange-strong) !important;
+  border-color: var(--bcube-orange-strong) !important;
 }
 
-/* Weißer (neutraler) "Abbrechen"-Button */
 .p-confirm-dialog-reject {
-  background: white !important;
-  color: black !important;
-  border: 1px solid black !important;
+  background: rgba(255, 167, 34, 0.08) !important;
+  color: white !important;
+  border: 1px solid rgba(255, 167, 34, 0.26) !important;
 }
 
 .p-confirm-dialog-reject:hover {
-  background: #f5f5f5 !important;
+  background: rgba(255, 167, 34, 0.16) !important;
 }
 
 .black-upload .p-fileupload-choose {
-    background-color: black;
-    border-color: black;
-    color: white;
+  background-color: var(--bcube-orange);
+  border-color: var(--bcube-orange);
+  color: #111111;
 }

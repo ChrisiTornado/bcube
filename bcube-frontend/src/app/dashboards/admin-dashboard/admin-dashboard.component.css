@@ -1,42 +1,129 @@
-/* Titelzeile */
 .admin-header {
-  height: 50px;                 /* feste Höhe für Header */
   display: flex;
   align-items: center;
-  padding: 0 0.3rem;
+  padding: 1.5rem 1.75rem 0.75rem;
 }
 
 .dashboard-title {
   margin: 0;
-  font-size: 1.4rem;
-  font-weight: 600;
+  font-size: clamp(1.5rem, 3vw, 2.2rem);
+  line-height: 1;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 800;
+  color: #ffffff;
 }
 
-/* Hauptlayout unterhalb des Headers */
 .admin-layout {
-  display: flex;
-  min-height: calc(100vh - 60px);  /* volle Höhe minus Header */
+  display: grid;
+  grid-template-columns: 260px minmax(0, 1fr);
+  gap: 1.5rem;
+  height: calc(100vh - 84px);
+  padding: 0 1.75rem 1.75rem;
   overflow: hidden;
 }
 
-/* Menü links */
 .admin-menu {
-  width: 250px;
-  background-color: #f7f7f7;
-  border-right: 1px solid #ddd;
-  flex-shrink: 0;
+  align-self: start;
+  padding: 1rem;
+  border-radius: 0;
+  border: 1px solid rgba(255, 167, 34, 0.18);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.015)),
+    rgba(14, 14, 14, 0.9);
+  box-shadow: 0 22px 60px rgba(0, 0, 0, 0.26);
+  backdrop-filter: blur(10px);
 }
 
-/* Hauptinhalt rechts */
 .page-content {
-  flex-grow: 1;
+  min-width: 0;
+  height: 100%;
   padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  border-radius: 30px;
+  border: 1px solid rgba(255, 167, 34, 0.14);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.018)),
+    rgba(12, 12, 12, 0.84);
+  box-shadow: 0 28px 70px rgba(0, 0, 0, 0.28);
   overflow: hidden;
+  backdrop-filter: blur(12px);
 }
 
-:host ::ng-deep .admin-menu .p-menuitem.p-menuitem-link-active > .p-menuitem-content:hover,
-:host ::ng-deep .admin-menu .p-menuitem.p-menuitem-link-active > .p-menuitem-content > .p-menuitem-link:hover {
+:host ::ng-deep .admin-menu .p-megamenu-root-list {
+  gap: 0.45rem;
+}
+
+:host ::ng-deep .admin-menu .p-menuitem-content {
+  border-radius: 0 !important;
+  background: transparent !important;
+}
+
+:host ::ng-deep .admin-menu .p-menuitem-link {
+  color: #ffffff !important;
+  padding: 0.9rem 1rem !important;
+  border-radius: 0 !important;
   background: transparent !important;
   box-shadow: none !important;
-  color: inherit !important;
+  transition: background 0.2s ease;
+}
+
+:host ::ng-deep .admin-menu .p-menuitem-link:hover {
+  background: rgba(255, 167, 34, 0.16) !important;
+  color: #ffffff !important;
+  box-shadow: none !important;
+}
+
+:host ::ng-deep .admin-menu .p-menuitem-content:hover {
+  background: transparent !important;
+}
+
+:host ::ng-deep .admin-menu .p-menuitem-content:hover .p-menuitem-link,
+:host ::ng-deep .admin-menu .p-menuitem-content:hover .p-menuitem-text,
+:host ::ng-deep .admin-menu .p-menuitem-content:hover .p-menuitem-icon {
+  color: #ffffff !important;
+}
+
+:host ::ng-deep .admin-menu .p-menuitem-icon,
+:host ::ng-deep .admin-menu .p-menuitem-text {
+  color: #ffffff !important;
+  background: transparent !important;
+}
+
+:host ::ng-deep .admin-menu .p-menuitem-link-active,
+:host ::ng-deep .admin-menu .p-menuitem-link-active:hover {
+  background: rgba(255, 167, 34, 0.16) !important;
+  color: #ffffff !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+:host ::ng-deep .admin-menu .p-menuitem.p-menuitem-link-active > .p-menuitem-content > .p-menuitem-link,
+:host ::ng-deep .admin-menu .p-menuitem.p-menuitem-link-active > .p-menuitem-content > .p-menuitem-link:hover,
+:host ::ng-deep .admin-menu .p-menuitem.p-menuitem-link-active > .p-menuitem-content > .p-menuitem-link:focus,
+:host ::ng-deep .admin-menu .p-menuitem.p-menuitem-link-active > .p-menuitem-content > .p-menuitem-link.p-focus {
+  background: #ffa722 !important;
+  color: #ffffff !important;
+}
+
+:host ::ng-deep .admin-menu .p-menuitem.p-menuitem-link-active > .p-menuitem-content > .p-menuitem-link .p-menuitem-text,
+:host ::ng-deep .admin-menu .p-menuitem.p-menuitem-link-active > .p-menuitem-content > .p-menuitem-link .p-menuitem-icon,
+:host ::ng-deep .admin-menu .p-menuitem.p-menuitem-link-active > .p-menuitem-content > .p-menuitem-link:hover .p-menuitem-text,
+:host ::ng-deep .admin-menu .p-menuitem.p-menuitem-link-active > .p-menuitem-content > .p-menuitem-link:hover .p-menuitem-icon,
+:host ::ng-deep .admin-menu .p-menuitem.p-menuitem-link-active > .p-menuitem-content > .p-menuitem-link:focus .p-menuitem-text,
+:host ::ng-deep .admin-menu .p-menuitem.p-menuitem-link-active > .p-menuitem-content > .p-menuitem-link:focus .p-menuitem-icon,
+:host ::ng-deep .admin-menu .p-menuitem.p-menuitem-link-active > .p-menuitem-content > .p-menuitem-link.p-focus .p-menuitem-text,
+:host ::ng-deep .admin-menu .p-menuitem.p-menuitem-link-active > .p-menuitem-content > .p-menuitem-link.p-focus .p-menuitem-icon {
+  color: #ffffff !important;
+}
+
+@media (max-width: 960px) {
+  .admin-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-menu {
+    width: 100%;
+  }
 }

@@ -4,10 +4,11 @@
   <ng-container *ngIf="studio">
 
     <!-- Zurück-Button -->
-    <div class="mb-4">
+    <div class="top-actions mb-4">
       <button pButton type="button" class="p-button-outlined" icon="pi pi-arrow-left" label="Zurück"
         [style]="{'border-color': 'black', 'color': 'black'}" (click)="goBack()">
       </button>
+      <app-update-studio *ngIf="isAdmin && studio" [studio]="studio" [detailMode]="true"></app-update-studio>
     </div>
 
     <!-- Titel + Bild -->
@@ -40,18 +41,18 @@
         <div class="booking-elements mt-6" *ngIf="isUser">
 
           <!-- Startzeit -->
-          <div class="items-center mb-3">
-            <label for="startTime" class="font-medium">Startzeitpunkt:</label>
-            <p-calendar class="ml-3" id="startTime" [(ngModel)]="startTime" [timeOnly]="true" hourFormat="24"
+          <div class="time-field-row mb-3">
+            <label for="startTime" class="font-medium time-field-label">Startzeitpunkt:</label>
+            <p-calendar class="time-field-input" id="startTime" [(ngModel)]="startTime" [timeOnly]="true" hourFormat="24"
               [stepMinute]="15" placeholder="Startzeit wählen" [showIcon]="true" (onFocus)="setDefaultTime('start')"
               (ngModelChange)="startTime = normalizeToQuarterHour($event); checkTimeConflict();">
             </p-calendar>
           </div>
 
           <!-- Endzeit -->
-          <div class="items-center mb-3">
-            <label for="endTime" class="font-medium">Endzeitpunkt:</label>
-            <p-calendar class="ml-4" id="endTime" [(ngModel)]="endTime" [timeOnly]="true" hourFormat="24"
+          <div class="time-field-row mb-3">
+            <label for="endTime" class="font-medium time-field-label">Endzeitpunkt:</label>
+            <p-calendar class="time-field-input" id="endTime" [(ngModel)]="endTime" [timeOnly]="true" hourFormat="24"
               [stepMinute]="15" placeholder="Endzeit wählen" [showIcon]="true" (onFocus)="setDefaultTime('end')"
               (ngModelChange)="endTime = normalizeToQuarterHour($event); checkTimeConflict();">
             </p-calendar>
@@ -83,7 +84,10 @@
       <!-- Rechte Seite -->
       <p-card class="info-card bg-gray-100 rounded-lg shadow-sm" [style]="{ overflow: 'hidden' }">
         <ng-template pTemplate="title">Studioübersicht</ng-template>
-        <p><strong>Beschreibung:</strong> {{ studio.description }}</p>
+        <div class="studio-description">
+          <strong>Beschreibung:</strong>
+          <div class="studio-description-content" [innerHTML]="renderMarkdown(studio.description)"></div>
+        </div>
         <p><strong>Adresse:</strong> {{ studio.street }}, {{ studio.plz }} {{ studio.city }}</p>
         <p><strong>Land:</strong> {{ studio.country }}</p>
       </p-card>

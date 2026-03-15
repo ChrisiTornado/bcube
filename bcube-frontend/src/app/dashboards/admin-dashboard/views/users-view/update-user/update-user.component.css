@@ -1,0 +1,7 @@
+:host ::ng-deep .user-update-form {
+  padding-top: 1rem;
+}
+
+:host ::ng-deep .user-update-form .mb-4:first-child {
+  margin-top: 0.85rem;
+}

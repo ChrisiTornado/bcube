@@ -162,6 +162,7 @@ export class BookingsViewComponent implements OnInit {
       case 'CONFIRMED': return 'Bestätigt';
       case 'CANCELLED': return 'Storniert';
       case 'DONE': return 'Abgeschlossen';
+      case 'PENDING': return 'Ausstehend';
       default: return status;
     }
   }
