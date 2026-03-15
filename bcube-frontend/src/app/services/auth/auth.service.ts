@@ -13,9 +13,6 @@ import { ResetPasswordResponse } from '../../models/responses/user/ResetPassword
 import { VerifyCodeResponse } from '../../models/responses/user/VerifyCodeResponse';
 import { ChangePasswordResponse } from '../../models/responses/user/ChangePasswordResponse';
 import { ChangePasswordRequest } from '../../models/requests/user/ChangePasswordRequest';
-import { BookingService } from '../booking.service';
-import { UserService } from '../user.service';
-import { StudioService } from '../studio.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -23,7 +20,7 @@ export class AuthService {
   private readonly userKey = 'auth_user';
   private email!: string;
 
-  constructor(private http: HttpClient, private router: Router, private bookingService: BookingService, private userService: UserService, private studioService: StudioService) { }
+  constructor(private http: HttpClient, private router: Router) { }
 
   login(payload: LoginRequest): Observable<ApiResponse<JwtResponse>> {
     return this.http.post<ApiResponse<JwtResponse>>(environment.authUrl + '/login', payload);
@@ -41,9 +38,6 @@ export class AuthService {
   logout(): void {
     localStorage.removeItem(this.tokenKey);
     localStorage.removeItem(this.userKey);
-    this.userService.page = 0;
-    this.studioService.page = 0;
-    this.bookingService.page = 0;
     this.router.navigate(['/login']);
   }
 

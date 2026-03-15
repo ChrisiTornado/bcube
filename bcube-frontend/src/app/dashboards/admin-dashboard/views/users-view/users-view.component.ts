@@ -35,7 +35,7 @@ export class UsersViewComponent implements OnInit {
 
   ngOnInit(): void {
     this.users$ = this.userService.users$;
-    this.loadPage(this.userService.page);
+    this.loadPage(0);
   }
 
   navigateToDetails(user: User) {

@@ -27,7 +27,7 @@ export class StudiosViewComponent implements OnInit {
 
     ngOnInit(): void {
         this.isAdmin = this.authService.getRole() === "ADMIN"
-        this.loadPage(this.studioService.page);
+        this.loadPage(0);
     }
 
     constructor(public studioService: StudioService, private router: Router, private authService: AuthService) {

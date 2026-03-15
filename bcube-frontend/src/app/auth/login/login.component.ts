@@ -35,9 +35,7 @@ export class LoginComponent implements OnInit {
     this.loginForm = this.fb.group({
       email: [null, [Validators.required, Validators.email]],
       password: [null, Validators.required]
-    })
-    // if(this.auth.user?.passwordReset)
-    //   this.email.setValue(this.auth.user.email)
+    });
   }
 
   login(): void {

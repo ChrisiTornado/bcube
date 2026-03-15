@@ -28,7 +28,6 @@ export class InterceptorService implements HttpInterceptor {
     return next.handle(modifiedReq).pipe(
       catchError((err: HttpErrorResponse) => {
         if (err.status === 401) {
-          // Token ungültig → Logout und Redirect
           localStorage.removeItem('auth_token');
           localStorage.removeItem('auth_user');
           this.router.navigate(['/login']);

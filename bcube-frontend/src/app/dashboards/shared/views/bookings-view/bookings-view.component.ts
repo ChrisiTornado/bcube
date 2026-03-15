@@ -77,12 +77,12 @@ export class BookingsViewComponent implements OnInit {
     this.loadMoreStudios();
 
     if (this.isAdmin) {
-      this.loadAdminPage(this.bookingService.page);
+      this.loadAdminPage(0);
       this.loadMoreUsers();
     } else {
       const userId = this.authService.getUser()?.id;
       if (userId) {
-        this.loadUserPage(userId, this.bookingService.page);
+        this.loadUserPage(userId, 0);
       }
     }
 
