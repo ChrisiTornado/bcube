@@ -74,7 +74,7 @@ export class RegisterComponent implements OnInit {
           this.auth.storeAuth(jwt.token, user);
           sessionStorage.setItem('loginSuccessMessage', res.message);
           const role = jwt.role;
-          this.router.navigate([role === 'ADMIN' ? '/dashboard/admin' : '/dashboard/user']);
+          this.router.navigate([role === 'ADMIN' ? '/admin-dashboard/studios' : '/user-dashboard/studios']);
         },
         error: (e) => {
           const message = e?.error?.message ?? 'Ein unbekannter Fehler ist aufgetreten.';

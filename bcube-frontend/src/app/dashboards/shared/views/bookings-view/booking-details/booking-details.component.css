@@ -1,3 +1,18 @@
+.booking-header {
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.booking-studio-image {
+  width: 92px;
+  height: 92px;
+  object-fit: contain;
+  object-position: center;
+  display: block;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
 .overlay {
   position: fixed;
   top: 0;

@@ -28,27 +28,27 @@
         </div>
       </div>
 
+      <div class="name-row">
+        <div class="mb-4 name-field">
+          <label for="firstName" class="block text-900 font-medium mb-2">Vorname</label>
+          <input id="firstName" formControlName="firstName" type="firstName" placeholder="Vorname" pInputText
+            class="w-full mb-3">
 
-      <div class="mb-4">
-        <label for="firstName" class="block text-900 font-medium mb-2">Vorname</label>
-        <input id="firstName" formControlName="firstName" type="firstName" placeholder="Vorname" pInputText
-          class="w-full mb-3">
-
-        <div style="position: relative">
-          <small style="position: absolute; color: red" *ngIf="firstName.hasError('required') && submitted">Vorname
-            ist erforderlich</small>
+          <div style="position: relative">
+            <small style="position: absolute; color: red" *ngIf="firstName.hasError('required') && submitted">Vorname
+              ist erforderlich</small>
+          </div>
         </div>
-      </div>
 
+        <div class="mb-4 name-field">
+          <label for="lastName" class="block text-900 font-medium mb-2">Nachname</label>
+          <input id="lastName" formControlName="lastName" type="lastName" placeholder="Nachname" pInputText
+            class="w-full mb-3">
 
-      <div class="mb-4">
-        <label for="lastName" class="block text-900 font-medium mb-2">Nachname</label>
-        <input id="lastName" formControlName="lastName" type="lastName" placeholder="Nachname" pInputText
-          class="w-full mb-3">
-
-        <div style="position: relative">
-          <small style="position: absolute; color: red" *ngIf="lastName.hasError('required') && submitted">Nachname
-            ist erforderlich</small>
+          <div style="position: relative">
+            <small style="position: absolute; color: red" *ngIf="lastName.hasError('required') && submitted">Nachname
+              ist erforderlich</small>
+          </div>
         </div>
       </div>
 

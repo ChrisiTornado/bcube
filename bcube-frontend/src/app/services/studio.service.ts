@@ -74,7 +74,7 @@ export class StudioService {
 
   create(payload: CreateStudioRequest): Observable<ApiResponse<StudioResponse>> {
     return this.http.post<ApiResponse<StudioResponse>>(
-      environment.adminStudioApiUrl + '/',
+      environment.adminStudioApiUrl,
       payload
     );
   }

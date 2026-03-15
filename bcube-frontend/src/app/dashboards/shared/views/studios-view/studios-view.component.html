@@ -25,22 +25,29 @@
 
             <ng-template pTemplate="body" let-studio>
                 <tr (click)="navigateToDetails(studio)" style="cursor: pointer;">
-                    <td><img [src]="studio.imageBase64" alt="Studiobild" style="max-height: 54px; max-width: 100%"></td>
+                    <td>
+                        <div class="studio-image-cell">
+                            <img [src]="studio.imageBase64" alt="Studiobild">
+                        </div>
+                    </td>
                     <td>{{ studio.name }}</td>
                     <td>{{ studio.street }}, {{ studio.plz }} {{ studio.city }}</td>
                     <td>{{ studio.country }}</td>
 
                     <td *ngIf="isAdmin">
-                        <app-update-studio style="display: flex !important;"
-                                           [studio]="studio"
-                                           (click)="$event.stopPropagation()">
-                        </app-update-studio>
+                        <div class="studio-action-cell">
+                            <app-update-studio [studio]="studio"
+                                               (click)="$event.stopPropagation()">
+                            </app-update-studio>
+                        </div>
                     </td>
 
                     <td *ngIf="isAdmin">
-                        <app-delete-studio [studio]="studio"
-                                           (click)="$event.stopPropagation()">
-                        </app-delete-studio>
+                        <div class="studio-action-cell">
+                            <app-delete-studio [studio]="studio"
+                                               (click)="$event.stopPropagation()">
+                            </app-delete-studio>
+                        </div>
                     </td>
                 </tr>
             </ng-template>

@@ -26,3 +26,9 @@
 .pager-shell span {
   color: rgba(255, 255, 255, 0.82);
 }
+
+.user-action-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

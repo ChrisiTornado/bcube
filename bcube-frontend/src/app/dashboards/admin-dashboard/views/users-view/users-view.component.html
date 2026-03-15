@@ -27,10 +27,14 @@
           <td>{{ user.phone }}</td>
           <td>{{ user.isAdmin ? 'Administrator' : 'Benutzer' }}</td>
           <td>
-            <app-update-user style="display: flex !important;" [user]="user" (click)="$event.stopPropagation()"></app-update-user>
+            <div class="user-action-cell">
+              <app-update-user [user]="user" (click)="$event.stopPropagation()"></app-update-user>
+            </div>
           </td>
           <td>
-            <app-delete-user [user]="user" (click)="$event.stopPropagation()"></app-delete-user>
+            <div class="user-action-cell">
+              <app-delete-user [user]="user" (click)="$event.stopPropagation()"></app-delete-user>
+            </div>
           </td>
         </tr>
       </ng-template>

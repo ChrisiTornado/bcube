@@ -1,5 +1,5 @@
 <app-auth-container [title]="'Geben Sie Ihre E-Mail-Adresse ein'">
-  <form [formGroup]="formGroup">
+  <form [formGroup]="formGroup" class="email-reset-form">
     <label for="email" class="block text-900 font-medium mb-2">Benutzer</label>
     <input
       id="email"
@@ -14,7 +14,7 @@
     </small>
 
     <!-- Button-Gruppe nebeneinander -->
-    <div class="card flex justify-content-between align-items-center mt-4">
+    <div class="card flex justify-content-between align-items-center mt-4 email-reset-actions">
       <p-button
         pRipple
         label="Zurück"

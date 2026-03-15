@@ -48,7 +48,7 @@ export class UserService {
   createUser(payload: CreateUserRequest): Observable<ApiResponse<UserResponse>> {
     console.log(payload)
     return this.http.post<ApiResponse<UserResponse>>(
-      environment.adminApiUrl + '/',
+      environment.adminApiUrl,
       payload
     );
   }

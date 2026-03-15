@@ -140,7 +140,7 @@ export class BookingService {
 
   create(payload: CreateBookingRequest): Observable<ApiResponse<BookingDetailsResponse>> {
     return this.http.post<ApiResponse<BookingDetailsResponse>>(
-      environment.bookingApiUrl + "/", payload);
+      environment.bookingApiUrl, payload);
   }
 
   storno(id: number): Observable<ApiResponse<number>> {

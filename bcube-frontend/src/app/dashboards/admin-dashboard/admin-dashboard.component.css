@@ -23,7 +23,7 @@
   overflow: hidden;
 }
 
-.admin-menu {
+:host ::ng-deep .admin-menu {
   align-self: start;
   padding: 1rem;
   border-radius: 0;
@@ -33,6 +33,11 @@
     rgba(14, 14, 14, 0.9);
   box-shadow: 0 22px 60px rgba(0, 0, 0, 0.26);
   backdrop-filter: blur(10px);
+}
+
+:host ::ng-deep .admin-menu .p-megamenu {
+  background: transparent !important;
+  border: 0 !important;
 }
 
 .page-content {
@@ -123,7 +128,7 @@
     grid-template-columns: 1fr;
   }
 
-  .admin-menu {
+  :host ::ng-deep .admin-menu {
     width: 100%;
   }
 }

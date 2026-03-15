@@ -1,0 +1,12 @@
+:host ::ng-deep .surface-card {
+  width: min(760px, 100%);
+}
+
+.email-reset-form {
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+.email-reset-actions {
+  gap: 1rem;
+}

@@ -7,14 +7,16 @@
   </div>
 
   <ng-container *ngIf="booking">
-    <div class="flex mb-4">
+    <div class="booking-header flex mb-4">
       <h2 class="text-2xl font-semibold mb-2">
         Auftrag {{ booking.id }} - {{ booking.studio.name }}
       </h2>
-      <img [src]="booking.studio.imageBase64"
-     alt="Studiobild"
-     style="max-width: 75px; max-height: 75px; margin-top: 0.5rem; margin-left: 0.5rem;"
-     (click)="showOverlay(booking.studio.imageBase64)">
+      <img
+        [src]="booking.studio.imageBase64"
+        alt="Studiobild"
+        class="booking-studio-image"
+        (click)="showOverlay(booking.studio.imageBase64)"
+      >
     </div>
 
     <div *ngIf="overlayVisible" class="overlay" (click)="hideOverlay()">

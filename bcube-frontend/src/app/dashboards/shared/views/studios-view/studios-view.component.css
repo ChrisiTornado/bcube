@@ -27,6 +27,22 @@
   color: rgba(255, 255, 255, 0.82);
 }
 
+.studio-image-cell,
+.studio-action-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.studio-image-cell img {
+  max-height: 42px;
+  max-width: 100%;
+  width: auto;
+  object-fit: contain;
+  object-position: center;
+  display: block;
+}
+
 :host ::ng-deep .small-rows .p-datatable-thead > tr > th {
   padding: 0.7rem 0.9rem !important;
   font-size: 0.95rem;
@@ -41,13 +57,6 @@
 
 :host ::ng-deep .small-rows .p-datatable-tbody > tr {
   height: 64px;
-}
-
-:host ::ng-deep .small-rows .p-datatable-tbody img {
-  max-height: 42px !important;
-  width: auto;
-  object-fit: contain;
-  display: block;
 }
 
 :host ::ng-deep .small-rows .p-button {
