@@ -15,7 +15,7 @@ import java.util.List;
 
 @Configuration
 public class JwtConfig {
-    @Value("${jwt.secret}")
+    @Value("${JWT.SECRET}")
     private String jwtSecret;
 
     @Bean
@@ -30,7 +30,6 @@ public class JwtConfig {
                 new ReactiveJwtAuthenticationConverter();
 
         converter.setJwtGrantedAuthoritiesConverter(jwt -> {
-
             List<String> roles = jwt.getClaimAsStringList("roles");
 
             if (roles == null) {

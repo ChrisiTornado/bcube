@@ -218,6 +218,7 @@ public class BookingServiceImpl implements BookingService {
     @Transactional
     @Override
     public BookingDetailsResponse bookTimeSlot(BookStudioRequest bookStudioRequest) {
+        // ToDo : Facade Pattern?
         Booking booking = createBookingEntity(bookStudioRequest);
         AccessRequest request = new AccessRequest(
                 booking.getId(),
