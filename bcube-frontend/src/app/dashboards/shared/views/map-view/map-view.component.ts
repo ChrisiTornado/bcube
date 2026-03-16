@@ -1,15 +1,24 @@
-import { Component, ViewChildren, ElementRef, QueryList, AfterViewInit, OnInit } from '@angular/core';
+import {
+  Component,
+  ViewChildren,
+  ElementRef,
+  QueryList,
+  AfterViewInit,
+  OnInit,
+  OnDestroy
+} from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import * as mapboxgl from 'mapbox-gl';
+import { Subject, takeUntil } from 'rxjs';
+
 import { environment } from '../../../../../environments/environment';
 import { StudioService } from '../../../../services/studio.service';
 import { Studio } from '../../../../models/Studio';
-import { Observable } from 'rxjs';
-import { CommonModule } from '@angular/common';
 import { LoadingSpinnerComponent } from '../../../../shared/loading-spinner/loading-spinner.component';
 import { CardModule } from 'primeng/card';
-import { Router } from '@angular/router';
-import { AuthService } from '../../../../services/auth/auth.service';
 import { ButtonModule } from 'primeng/button';
+import { AuthService } from '../../../../services/auth/auth.service';
 
 @Component({
   selector: 'app-map-view',
@@ -18,11 +27,12 @@ import { ButtonModule } from 'primeng/button';
   templateUrl: './map-view.component.html',
   styleUrls: ['./map-view.component.css']
 })
-export class MapViewComponent implements AfterViewInit, OnInit {
-  studios$!: Observable<Studio[]>;
+export class MapViewComponent implements AfterViewInit, OnInit, OnDestroy {
+  studios: Studio[] = [];
   loading$ = this.studioService.loading$;
   selectedStudio: Studio | null = null;
   isAdmin = false;
+
   readonly previewImages = [
     'assets/images/inside 1.png',
     'assets/images/interior_2.jpg',
@@ -33,25 +43,54 @@ export class MapViewComponent implements AfterViewInit, OnInit {
 
   private map!: mapboxgl.Map;
   private markers: mapboxgl.Marker[] = [];
+  private destroy$ = new Subject<void>();
 
   @ViewChildren('studioCard', { read: ElementRef }) studioCards!: QueryList<ElementRef>;
 
-  constructor(private studioService: StudioService, private router: Router, private authService: AuthService) { }
+  constructor(
+    private studioService: StudioService,
+    private router: Router,
+    private authService: AuthService
+  ) {}
 
   ngOnInit(): void {
-    this.isAdmin = this.authService.getRole() === "ADMIN";
-    this.studios$ = this.studioService.studios$;
+    this.isAdmin = this.authService.getRole() === 'ADMIN';
+
+    this.studioService
+      .getAllStudios()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: studios => {
+          this.studios = [...studios];
+
+          if (this.map) {
+            this.clearMarkers();
+            this.addMarkers(this.studios);
+          }
+        },
+        error: err => {
+          console.error('Fehler beim Laden aller Studios', err);
+          this.studios = [];
+        }
+      });
   }
 
   ngAfterViewInit(): void {
     this.initMap();
-    this.studios$.subscribe(studios => {
-      this.clearMarkers();
-      this.addMarkers(studios);
-    });
   }
 
-  private initMap() {
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+
+    this.clearMarkers();
+
+    if (this.map) {
+      this.map.remove();
+    }
+  }
+
+  private initMap(): void {
     this.map = new mapboxgl.Map({
       container: 'map',
       style: 'mapbox://styles/mapbox/dark-v11',
@@ -73,10 +112,12 @@ export class MapViewComponent implements AfterViewInit, OnInit {
         'space-color': 'rgba(7, 7, 7, 1)',
         'horizon-blend': 0.08
       });
+
+      this.addMarkers(this.studios);
     });
   }
 
-  private addMarkers(studios: Studio[]) {
+  private addMarkers(studios: Studio[]): void {
     studios.forEach(studio => {
       if (studio.longitude != null && studio.latitude != null) {
         const marker = new mapboxgl.Marker({ color: '#ffa722' })
@@ -92,36 +133,51 @@ export class MapViewComponent implements AfterViewInit, OnInit {
     });
   }
 
+  private clearMarkers(): void {
+    this.markers.forEach(marker => marker.remove());
+    this.markers = [];
+  }
+
   zoomToStudio(studio: Studio): void {
     this.selectedStudio = studio;
-    if (studio.longitude && studio.latitude) {
-      this.map.flyTo({ center: [studio.longitude, studio.latitude], zoom: 16 });
+
+    if (studio.longitude != null && studio.latitude != null) {
+      this.map.flyTo({
+        center: [studio.longitude, studio.latitude],
+        zoom: 16
+      });
     }
 
-    this.studioService.moveStudioToTop(studio);
+    const index = this.studios.findIndex(s => s.id === studio.id);
+    if (index > -1) {
+      const [selected] = this.studios.splice(index, 1);
+      this.studios.unshift(selected);
+      this.studios = [...this.studios];
+    }
 
-    // Card nach oben scrollen
     setTimeout(() => {
-      const index = this.studioService.currentStudios.findIndex(s => s.id === studio.id);
-      const card = this.studioCards.get(index);
+      const newIndex = this.studios.findIndex(s => s.id === studio.id);
+      const card = this.studioCards.get(newIndex);
+
       if (card) {
-        card.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        card.nativeElement.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
+        });
       }
     });
   }
 
-  private clearMarkers() {
-    this.markers.forEach(m => m.remove());
-    this.markers = [];
-  }
-
   resetView(): void {
     this.selectedStudio = null;
-  this.map.flyTo({
-    center: [16.3738, 48.2082], // Startpunkt (Wien)
-    zoom: 10
-  });
-}
+
+    if (this.map) {
+      this.map.flyTo({
+        center: [16.3738, 48.2082],
+        zoom: 10
+      });
+    }
+  }
 
   getSelectedPreviewImage(): string {
     if (!this.selectedStudio) {
@@ -149,6 +205,7 @@ export class MapViewComponent implements AfterViewInit, OnInit {
   navigateToStudio(selectedStudio: Studio): void {
     const basePath = this.isAdmin ? '/admin-dashboard' : '/user-dashboard';
     const navigationUrl = [basePath, 'studio-details', selectedStudio.id];
+
     this.router.navigate(navigationUrl, {
       state: { returnUrl: this.router.url }
     });

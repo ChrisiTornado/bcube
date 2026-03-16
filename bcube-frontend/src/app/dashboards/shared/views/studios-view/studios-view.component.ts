@@ -44,7 +44,7 @@ export class StudiosViewComponent implements OnInit {
 
     loadPage(page: number): void {
         this.studioService.page = page;
-        this.studioService.getAll(page, this.studioService.size).subscribe(res => {
+        this.studioService.getStudiosPagination(page, this.studioService.size).subscribe(res => {
             this.totalPages = res.totalPages;
             this.studioService.setStudios(res.content);
         });

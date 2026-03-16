@@ -196,10 +196,6 @@
   background:
     linear-gradient(180deg, rgba(255, 167, 34, 0.1), rgba(255, 167, 34, 0.03)),
     rgba(19, 19, 19, 0.98) !important;
-  box-shadow:
-    0 0 0 2px rgba(255, 167, 34, 0.16) !important,
-    0 18px 36px rgba(255, 167, 34, 0.12) !important;
-  transform: translateY(-1px);
 }
 
 .studio-details a {

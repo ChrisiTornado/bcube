@@ -3,17 +3,18 @@
 </div>
 
 <div class="map-layout" style="display: flex; gap: 1rem;">
-  <!-- Linke Seite: Karte -->
   <div
-    id="map" 
-    class="map-container" 
-    style="flex: 1; max-width: 1100px; height: 750px;">
+    id="map"
+    class="map-container"
+    style="flex: 1; max-width: 1100px; height: 750px;"
+  >
     <div class="selected-studio-overlay" *ngIf="selectedStudio">
       <article class="selected-studio-card">
         <img
           [src]="getSelectedPreviewImage()"
           [alt]="selectedStudio.name"
-          class="selected-studio-image">
+          class="selected-studio-image"
+        />
 
         <div class="selected-studio-copy">
           <h3 class="m-0">{{ selectedStudio.name }}</h3>
@@ -28,40 +29,39 @@
     </div>
   </div>
 
-  <!-- Rechte Seite: Liste + Spinner -->
-  <div class="map-sidebar" style="flex: 0 0 350px; display: flex; flex-direction: column; height: 760px;">
-
-    <!-- Spinner -->
+  <div
+    class="map-sidebar"
+    style="flex: 0 0 350px; display: flex; flex-direction: column; height: 760px;"
+  >
     <app-loading-spinner *ngIf="loading$ | async"></app-loading-spinner>
 
-    <!-- Überschrift -->
     <h2 *ngIf="!(loading$ | async)">Liste verfügbarer Cubes</h2>
-    <!-- Reset-Button -->
-    <button 
-      *ngIf="!(loading$ | async)" 
+
+    <button
+      *ngIf="!(loading$ | async)"
       pButton
-      class="reset-button" 
+      class="reset-button"
       style="margin-bottom: 1rem;"
-      (click)="resetView()">
+      (click)="resetView()"
+    >
       Ansicht zurücksetzen
     </button>
 
-    <!-- Studios-Liste -->
-    <div *ngIf="!(loading$ | async) && (studios$ | async) as studios"
-     class="sidebar-scroll"
-     style="flex: 1; overflow-y: auto; padding-right: 0.5rem;">
-
-      <!-- Wenn Studios existieren -->
+    <div
+      *ngIf="!(loading$ | async)"
+      class="sidebar-scroll"
+      style="flex: 1; overflow-y: auto; padding-right: 0.5rem;"
+    >
       <div *ngIf="studios.length > 0; else noStudios">
-
-        <!-- Alle Studios -->
-        <div 
-          *ngFor="let studio of studios; let i = index" 
-          class="studio-details" 
-          #studioCard>
-
-          <p-card (click)="zoomToStudio(studio)"
-          [ngClass]="{'active-card': selectedStudio?.id === studio.id}">
+        <div
+          *ngFor="let studio of studios; let i = index"
+          class="studio-details"
+          #studioCard
+        >
+          <p-card
+            (click)="zoomToStudio(studio)"
+            [ngClass]="{ 'active-card': selectedStudio?.id === studio.id }"
+          >
             <ng-template pTemplate="title">
               {{ studio.name }}
             </ng-template>
@@ -70,32 +70,31 @@
               {{ studio.street }}, {{ studio.plz }} {{ studio.city }}
             </ng-template>
 
-            <!-- Google Maps Link -->
-            <a *ngIf="studio.latitude && studio.longitude"
-               [href]="'https://www.google.com/maps/dir/?api=1&destination=' + studio.latitude + ',' + studio.longitude"
-               target="_blank" 
-               rel="noopener noreferrer" 
-               (click)="$event.stopPropagation()">
+            <a
+              *ngIf="studio.latitude != null && studio.longitude != null"
+              [href]="'https://www.google.com/maps/dir/?api=1&destination=' + studio.latitude + ',' + studio.longitude"
+              target="_blank"
+              rel="noopener noreferrer"
+              (click)="$event.stopPropagation()"
+            >
               Route in Google Maps öffnen
             </a>
 
-            <!-- Details-Button -->
-             <ng-template pTemplate="footer">
-            <button 
-              pButton
-              size="small"
-              severity="secondary"
-              class="details-button"
-              (click)="navigateToStudio(studio); $event.stopPropagation()">
-              Details ansehen
-            </button>
+            <ng-template pTemplate="footer">
+              <button
+                pButton
+                size="small"
+                severity="secondary"
+                class="details-button"
+                (click)="navigateToStudio(studio); $event.stopPropagation()"
+              >
+                Details ansehen
+              </button>
             </ng-template>
           </p-card>
-      
         </div>
       </div>
 
-      <!-- Wenn KEINE Studios -->
       <ng-template #noStudios>
         <p-card>
           <p>Aktuell sind keine Cubes verfügbar.</p>

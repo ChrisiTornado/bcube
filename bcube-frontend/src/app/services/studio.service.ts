@@ -1,14 +1,15 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Studio } from '../models/Studio';
-import { environment } from '../../environments/environment';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { finalize, map } from 'rxjs/operators';
+
+import { environment } from '../../environments/environment';
+import { Studio } from '../models/Studio';
 import { CreateStudioRequest } from '../models/requests/studio/CreateStudioRequest';
+import { UpdateStudioRequest } from '../models/requests/studio/UpdateStudioRequest';
 import { ApiResponse } from '../models/responses/ApiResponse';
 import { StudioResponse } from '../models/responses/studio/StudioResponse';
-import { UpdateStudioRequest } from '../models/requests/studio/UpdateStudioRequest';
-import { finalize, map } from 'rxjs/operators';
-import { PageResponse } from "../models/responses/PageResponse";
+import { PageResponse } from '../models/responses/PageResponse';
 import { StudioNameResponse } from '../models/responses/studio/StudioNameResponse';
 
 @Injectable({
@@ -28,12 +29,22 @@ export class StudioService {
     this.reloadStudios();
   }
 
-  getAll(page: number = 0, size: number = 10): Observable<PageResponse<Studio>> {
+  getAllStudios(): Observable<Studio[]> {
+    this.loadingSubject.next(true);
+    return this.http
+      .get<ApiResponse<Studio[]>>(environment.studioApiUrl)
+      .pipe(
+        map(res => res.data),
+        finalize(() => this.loadingSubject.next(false))
+      );
+  }
+
+  getStudiosPagination(page: number = 0, size: number = 10): Observable<PageResponse<Studio>> {
     this.loadingSubject.next(true);
 
     return this.http
       .get<ApiResponse<PageResponse<Studio>>>(
-        `${environment.studioApiUrl}?page=${page}&size=${size}`
+        `${environment.studioApiUrl}/page?page=${page}&size=${size}`
       )
       .pipe(
         map(res => res.data),
@@ -44,7 +55,7 @@ export class StudioService {
   getStudioById(id: number): Observable<Studio> {
     this.loadingSubject.next(true);
     return this.http
-      .get<{ message: string; data: Studio }>(`${environment.studioApiUrl}/${id}`)
+      .get<ApiResponse<Studio>>(`${environment.studioApiUrl}/${id}`)
       .pipe(
         map(res => res.data),
         finalize(() => this.loadingSubject.next(false))
@@ -52,7 +63,7 @@ export class StudioService {
   }
 
   reloadStudios(page: number = 0, size: number = 10): void {
-    this.getAll(page, size).subscribe(pageResponse => {
+    this.getStudiosPagination(page, size).subscribe(pageResponse => {
       this.studiosSubject.next(pageResponse.content);
     });
   }
@@ -60,7 +71,8 @@ export class StudioService {
   getStudioFilter(page: number, size: number): Observable<PageResponse<StudioNameResponse>> {
     return this.http
       .get<ApiResponse<PageResponse<StudioNameResponse>>>(
-        `${environment.studioApiUrl}/filters?page=${page}&size=${size}`)
+        `${environment.studioApiUrl}/filters?page=${page}&size=${size}`
+      )
       .pipe(map(res => res.data));
   }
 
@@ -82,6 +94,7 @@ export class StudioService {
   moveStudioToTop(studio: Studio): void {
     const studios = [...this.studiosSubject.getValue()];
     const index = studios.findIndex(s => s.id === studio.id);
+
     if (index > -1) {
       const [selected] = studios.splice(index, 1);
       studios.unshift(selected);
@@ -91,14 +104,14 @@ export class StudioService {
 
   update(payload: UpdateStudioRequest): Observable<ApiResponse<StudioResponse>> {
     return this.http.put<ApiResponse<StudioResponse>>(
-      environment.adminStudioApiUrl + '/' + payload.id,
+      `${environment.adminStudioApiUrl}/${payload.id}`,
       payload
     );
   }
 
   delete(id: number): Observable<ApiResponse<number>> {
     return this.http.delete<ApiResponse<number>>(
-      environment.adminStudioApiUrl + '/' + id
+      `${environment.adminStudioApiUrl}/${id}`
     );
   }
 }

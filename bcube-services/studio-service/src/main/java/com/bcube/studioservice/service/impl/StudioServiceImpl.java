@@ -34,7 +34,7 @@ public class StudioServiceImpl implements StudioService {
     private final StudioRepository studioRepository;
 
     @Override
-    public Page<StudioResponse> getAllStudios(int page, int size) {
+    public Page<StudioResponse> getStudiosPagination(int page, int size) {
 
         Pageable pageable = PageRequest.of(page, size);
         Page<Studio> studioList = studioRepository.findAll(pageable);
@@ -89,5 +89,28 @@ public class StudioServiceImpl implements StudioService {
         Page<StudioNameResponse> result = studioRepository.getAllStudioNames(pageable);
 
         return result;
+    }
+
+    @Override
+    public StudioResponse[] getAllStudios() {
+        List<Studio> studios = studioRepository.findAll();
+
+        List<StudioResponse> response = studios.stream()
+                .map(studio -> new StudioResponse(
+                        studio.getId(),
+                        studio.getName(),
+                        studio.getDescription(),
+                        studio.getStreet(),
+                        studio.getPlz(),
+                        studio.getCity(),
+                        studio.getCountry(),
+                        studio.getLatitude(),
+                        studio.getLongitude(),
+                        Arrays.toString(studio.getImage()),
+                        studio.isActive(),
+                        studio.getCreatedAt()
+                )).toList();
+
+        return response.toArray(new StudioResponse[0]);
     }
 }
