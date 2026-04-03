@@ -96,6 +96,12 @@
   background: transparent !important;
 }
 
+:host ::ng-deep .admin-menu .p-menuitem-text {
+  font-size: 1rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0 !important;
+}
+
 :host ::ng-deep .admin-menu .p-menuitem-link-active,
 :host ::ng-deep .admin-menu .p-menuitem-link-active:hover {
   background: rgba(255, 167, 34, 0.16) !important;
@@ -109,7 +115,7 @@
 :host ::ng-deep .admin-menu .p-menuitem.p-menuitem-link-active > .p-menuitem-content > .p-menuitem-link:focus,
 :host ::ng-deep .admin-menu .p-menuitem.p-menuitem-link-active > .p-menuitem-content > .p-menuitem-link.p-focus {
   background: #ffa722 !important;
-  color: #ffffff !important;
+  color: #111111 !important;
 }
 
 :host ::ng-deep .admin-menu .p-menuitem.p-menuitem-link-active > .p-menuitem-content > .p-menuitem-link .p-menuitem-text,
@@ -120,7 +126,7 @@
 :host ::ng-deep .admin-menu .p-menuitem.p-menuitem-link-active > .p-menuitem-content > .p-menuitem-link:focus .p-menuitem-icon,
 :host ::ng-deep .admin-menu .p-menuitem.p-menuitem-link-active > .p-menuitem-content > .p-menuitem-link.p-focus .p-menuitem-text,
 :host ::ng-deep .admin-menu .p-menuitem.p-menuitem-link-active > .p-menuitem-content > .p-menuitem-link.p-focus .p-menuitem-icon {
-  color: #ffffff !important;
+  color: #111111 !important;
 }
 
 @media (max-width: 960px) {

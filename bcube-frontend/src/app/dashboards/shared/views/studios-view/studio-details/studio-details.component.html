@@ -3,92 +3,124 @@
 <ng-container *ngIf="!(loading$ | async)">
   <ng-container *ngIf="studio">
 
-    <!-- Zurück-Button -->
-    <div class="top-actions mb-4">
-      <button pButton type="button" class="p-button-outlined" icon="pi pi-arrow-left" label="Zurück"
-        [style]="{'border-color': 'black', 'color': 'black'}" (click)="goBack()">
+    <div class="top-actions">
+      <button
+        pButton
+        type="button"
+        class="p-button-outlined"
+        icon="pi pi-arrow-left"
+        label="Zurück"
+        [style]="{ 'border-color': 'black', 'color': 'black' }"
+        (click)="goBack()">
       </button>
-      <app-update-studio *ngIf="isAdmin && studio" [studio]="studio" [detailMode]="true"></app-update-studio>
+
+      <app-update-studio
+        *ngIf="isAdmin && studio"
+        [studio]="studio"
+        [detailMode]="true">
+      </app-update-studio>
     </div>
 
-    <!-- Titel + Bild -->
-    <div class="flex mb-4 items-center">
-      <h2 class="text-2xl font-semibold mb-2">{{ studio.name }}</h2>
-      <img [src]="studio.imageBase64" alt="Cubebild"
-        style="width: auto; height: 60px; margin-left: 0.75rem; cursor: pointer;"
+    <div class="studio-header">
+      <h2 class="studio-title">{{ studio.name }}</h2>
+      <img
+        [src]="studio.imageBase64"
+        alt="Cubebild"
+        class="studio-logo"
         (click)="showOverlay(studio.imageBase64)">
     </div>
 
-    <!-- Bild-Overlay -->
     <div *ngIf="overlayVisible" class="overlay" (click)="hideOverlay()">
-      <img [src]="overlayImage" alt="Großes Bild" class="overlay-img" (click)="$event.stopPropagation()">
+      <img
+        [src]="overlayImage"
+        alt="Großes Bild"
+        class="overlay-img"
+        (click)="$event.stopPropagation()">
       <button class="close-btn" (click)="hideOverlay()">✖</button>
     </div>
 
-    <!-- Hauptlayout -->
     <div class="studio-layout">
-
-      <!-- Linke Seite -->
-      <div class="calendar-section">
-        <full-calendar [options]="calendarOptions"></full-calendar>
-
-        <div class="relative">
-          <div *ngIf="date" class="absolute mt-2 text-sm text-gray-600">
-            Gewähltes Datum: {{ date | date: 'fullDate' }}
-          </div>
+      <div class="calendar-column">
+        <div class="calendar-shell">
+          <full-calendar class="calendar-frame" [options]="calendarOptions"></full-calendar>
         </div>
 
-        <div class="booking-elements mt-6" *ngIf="isUser">
-
-          <!-- Startzeit -->
-          <div class="time-field-row mb-3">
-            <label for="startTime" class="font-medium time-field-label">Startzeitpunkt:</label>
-            <p-calendar class="time-field-input" id="startTime" [(ngModel)]="startTime" [timeOnly]="true" hourFormat="24"
-              [stepMinute]="15" placeholder="Startzeit wählen" [showIcon]="true" (onFocus)="setDefaultTime('start')"
-              (ngModelChange)="startTime = normalizeToQuarterHour($event); checkTimeConflict();">
-            </p-calendar>
-          </div>
-
-          <!-- Endzeit -->
-          <div class="time-field-row mb-3">
-            <label for="endTime" class="font-medium time-field-label">Endzeitpunkt:</label>
-            <p-calendar class="time-field-input" id="endTime" [(ngModel)]="endTime" [timeOnly]="true" hourFormat="24"
-              [stepMinute]="15" placeholder="Endzeit wählen" [showIcon]="true" (onFocus)="setDefaultTime('end')"
-              (ngModelChange)="endTime = normalizeToQuarterHour($event); checkTimeConflict();">
-            </p-calendar>
-          </div>
-
-          <!-- Fehlermeldungen -->
-          <p class="p-error text-sm mt-1" *ngIf="!isEndTimeValid()">
-            Endzeit muss nach der Startzeit liegen.
-          </p>
-
-          <p class="p-error text-sm mt-1" *ngIf="date && startTime && endTime && isBookingInPast()">
-            Diese Uhrzeit ist bereits abgelaufen.
-          </p>
-
-          <p class="p-error text-sm mt-1" *ngIf="hasTimeConflict">
-            Der gewählte Zeitraum ist bereits belegt.
-          </p>
-
+        <div class="selected-date-note" *ngIf="date">
+          Gewähltes Datum: {{ date | date: 'fullDate' }}
         </div>
       </div>
 
-      <!-- Rechte Seite -->
-      <div class="info-section">
-        <p-card class="info-card bg-gray-100 rounded-lg shadow-sm" [style]="{ overflow: 'hidden' }">
+      <div class="info-column">
+        <p-card class="info-card" [style]="{ overflow: 'hidden' }">
           <ng-template pTemplate="title">Cubeübersicht</ng-template>
+
           <div class="studio-description">
             <strong>Beschreibung:</strong>
-            <div class="studio-description-content" [innerHTML]="renderMarkdown(studio.description)"></div>
+            <div
+              class="studio-description-content"
+              [innerHTML]="renderMarkdown(studio.description)">
+            </div>
           </div>
+
           <p><strong>Adresse:</strong> {{ studio.street }}, {{ studio.plz }} {{ studio.city }}</p>
           <p><strong>Land:</strong> {{ studio.country }}</p>
         </p-card>
 
+        <div class="booking-elements" *ngIf="isUser">
+          <div class="time-field-row">
+            <label for="startTime" class="time-field-label">Startzeitpunkt:</label>
+            <p-calendar
+              class="time-field-input"
+              id="startTime"
+              [(ngModel)]="startTime"
+              [timeOnly]="true"
+              hourFormat="24"
+              [stepMinute]="15"
+              placeholder="Startzeit wählen"
+              [showIcon]="true"
+              (onFocus)="setDefaultTime('start')"
+              (ngModelChange)="startTime = normalizeToQuarterHour($event); checkTimeConflict();">
+            </p-calendar>
+          </div>
+
+          <div class="time-field-row">
+            <label for="endTime" class="time-field-label">Endzeitpunkt:</label>
+            <p-calendar
+              class="time-field-input"
+              id="endTime"
+              [(ngModel)]="endTime"
+              [timeOnly]="true"
+              hourFormat="24"
+              [stepMinute]="15"
+              placeholder="Endzeit wählen"
+              [showIcon]="true"
+              (onFocus)="setDefaultTime('end')"
+              (ngModelChange)="endTime = normalizeToQuarterHour($event); checkTimeConflict();">
+            </p-calendar>
+          </div>
+
+          <div class="booking-error-wrap">
+            <p class="booking-error" *ngIf="!isEndTimeValid()">
+              Endzeit muss nach der Startzeit liegen.
+            </p>
+
+            <p class="booking-error" *ngIf="date && startTime && endTime && isBookingInPast()">
+              Diese Uhrzeit ist bereits abgelaufen.
+            </p>
+
+            <p class="booking-error" *ngIf="hasTimeConflict">
+              Der gewählte Zeitraum ist bereits belegt.
+            </p>
+          </div>
+        </div>
+
         <div class="info-booking-action" *ngIf="isUser">
-          <button pButton type="button" label="Cube buchen" [disabled]="!canBook()"
-            [style]="{'background-color': 'black', 'border-color': 'black', 'color': 'white'}"
+          <button
+            pButton
+            type="button"
+            label="Cube buchen"
+            [disabled]="!canBook()"
+            class="booking-button"
             (click)="confirmBooking()">
           </button>
         </div>

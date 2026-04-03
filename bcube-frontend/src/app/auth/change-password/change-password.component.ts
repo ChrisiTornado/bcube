@@ -41,6 +41,7 @@ import { ChangePasswordRequest } from '../../models/requests/user/ChangePassword
   providers: [MessageService]
 })
 export class ChangePasswordComponent implements OnInit {
+  private readonly returnUrlKey = 'passwordResetReturnUrl';
 
   formGroup!: FormGroup;
   loading = false;
@@ -95,6 +96,7 @@ export class ChangePasswordComponent implements OnInit {
         next: (res) => {
           localStorage.setItem('successMessage', res.message);
           localStorage.removeItem('resetEmail');
+          localStorage.removeItem(this.returnUrlKey);
           this.router.navigate(['/auth/login']);
         },
         error: (err) => {
@@ -108,7 +110,9 @@ export class ChangePasswordComponent implements OnInit {
   }
 
   goBack(): void {
-    this.router.navigate(['/auth/enter-code']);
+    this.router.navigate(['/auth/enter-code'], {
+      state: { returnUrl: this.getReturnUrl() }
+    });
   }
 
   // ===== Getter =====
@@ -128,5 +132,9 @@ export class ChangePasswordComponent implements OnInit {
       !!this.confirmPassword.value &&
       this.password.value !== this.confirmPassword.value
     );
+  }
+
+  private getReturnUrl(): string {
+    return localStorage.getItem(this.returnUrlKey) || '/login';
   }
 }

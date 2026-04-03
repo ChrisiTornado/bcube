@@ -60,10 +60,27 @@ export class UserService {
       .pipe(map(res => res.data));
   }
 
-  updateUser(payload: UpdateUserRequest): Observable<ApiResponse<UserResponse>> {
+  getById(id: number): Observable<User> {
+    return this.http
+      .get<ApiResponse<User>>(`${environment.userApiUrl}/${id}`)
+      .pipe(map(res => res.data));
+  }
+
+  updateUserAsAdmin(payload: UpdateUserRequest): Observable<ApiResponse<UserResponse>> {
     return this.http.put<ApiResponse<UserResponse>>(
       environment.adminApiUrl + '/' + payload.id,
       payload
+    );
+  }
+
+  updateUser(token: string, payload: UpdateUserRequest): Observable<ApiResponse<UserResponse>> {
+    const header = {
+      Authorization: 'Bearer ' + token
+    }
+    return this.http.put<ApiResponse<UserResponse>>(
+      environment.userApiUrl + '/me',
+      payload,
+      { headers: header }
     );
   }
 

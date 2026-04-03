@@ -1,0 +1,104 @@
+<section class="profile-view">
+  <p-toast position="top-right"></p-toast>
+  <p-confirmDialog></p-confirmDialog>
+
+  <div class="profile-loading" *ngIf="loading">
+    <div class="profile-loader"></div>
+  </div>
+
+  <div class="profile-shell" *ngIf="!loading">
+    <div class="profile-hero">
+      <div class="profile-avatar">
+        <span>{{ initials }}</span>
+      </div>
+
+      <div class="profile-intro">
+        <h1>{{ displayName }}</h1>
+
+        <div class="profile-badges">
+          <span class="profile-badge profile-badge-subtle">Erstellt am: {{ createdAtLabel }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="profile-grid">
+      <article class="profile-card">
+        <div class="profile-card-header">
+          <h2>Kontodaten</h2>
+          <span>Profil</span>
+        </div>
+
+        <form [formGroup]="profileForm" class="profile-fields">
+          <div class="profile-field">
+            <label>Vorname</label>
+            <input pInputText formControlName="firstName" class="profile-input" />
+          </div>
+
+          <div class="profile-field">
+            <label>Nachname</label>
+            <input pInputText formControlName="lastName" class="profile-input" />
+          </div>
+
+          <div class="profile-field profile-field-wide">
+            <label>E-Mail</label>
+            <input pInputText formControlName="email" class="profile-input" />
+          </div>
+
+          <div class="profile-field profile-field-wide">
+            <label>Telefonnummer</label>
+            <input pInputText formControlName="phone" class="profile-input" />
+          </div>
+
+          <div class="profile-actions-row profile-field-wide">
+            <p-button
+              label="Zahlungsinformationen updaten"
+              icon="pi pi-credit-card"
+              styleClass="profile-outline-button"
+              (onClick)="openPaymentInfo()">
+            </p-button>
+
+            <p-button
+              label="Speichern"
+              icon="pi pi-save"
+              [loading]="saving"
+              styleClass="profile-save-button"
+              (onClick)="saveProfile()">
+            </p-button>
+          </div>
+        </form>
+      </article>
+
+      <aside class="profile-card profile-side-card">
+        <div class="profile-card-header">
+          <h2>Sicherheit</h2>
+        </div>
+
+        <div class="profile-side-block">
+          <p-button
+            label="Passwort aendern"
+            icon="pi pi-lock"
+            styleClass="profile-action-button"
+            (onClick)="goToPasswordFlow()">
+          </p-button>
+        </div>
+
+        <div class="profile-side-block">
+          <div class="profile-side-title">Rechtliches</div>
+          <p>Impressum, Datenschutzerklaerung und AGB kannst du gesammelt an einer Stelle aufrufen.</p>
+          <a routerLink="/legal" [state]="{ returnUrl: '/user-dashboard/profile' }" class="profile-legal-link">Rechtliches ansehen</a>
+        </div>
+
+        <div class="profile-side-block">
+          <div class="profile-side-title">Account loeschen</div>
+          <p-button
+            label="Account loeschen"
+            icon="pi pi-trash"
+            [loading]="deleting"
+            styleClass="profile-danger-button"
+            (onClick)="openDeleteAccountDialog()">
+          </p-button>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>

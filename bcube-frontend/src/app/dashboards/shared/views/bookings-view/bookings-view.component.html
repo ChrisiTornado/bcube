@@ -89,7 +89,13 @@
           <td>{{ getStatusLabel(booking.status) }}</td>
           <td>{{ booking.date | date: 'dd.MM.yyyy' }}</td>
           <td>{{ booking.startTime | date:'HH:mm' }}–{{ booking.endTime | date:'HH:mm' }}</td>
-          <td>{{ booking.studio.name }}</td>
+          <td>
+  {{
+    booking.studio.name.length > 20
+      ? (booking.studio.name | slice:0:20) + '...'
+      : booking.studio.name
+  }}
+</td>
           <td>
             <app-storno-booking
               *ngIf="booking.status === bookingStatus.CONFIRMED"

@@ -81,7 +81,7 @@ export class UpdateUserComponent implements OnInit {
       isAdmin: this.isAdmin.value
     };
 
-    this.userService.updateUser(payload)
+    this.userService.updateUserAsAdmin(payload)
       .pipe(finalize(() => this.loading = false))
       .subscribe({
         next: (res: ApiResponse<UserResponse>) => {

@@ -67,12 +67,14 @@ export class StudioDetailsComponent implements OnInit {
     initialView: 'dayGridMonth',
     events: this.calendarEvents,
     locale: 'de',
+    dayMaxEvents: 2,
     headerToolbar: {
       left: 'title',
       center: '',
       right: 'prev,next'
     },
     weekends: true,
+    moreLinkClick: 'popover',
     dateClick: this.handleDateClick.bind(this)
   };
 
@@ -130,12 +132,14 @@ export class StudioDetailsComponent implements OnInit {
         initialView: 'dayGridMonth',
         events,
         locale: 'de',
+        dayMaxEvents: 2,
         headerToolbar: {
           left: 'title',
           center: '',
           right: 'prev,next'
         },
         weekends: true,
+        moreLinkClick: 'popover',
         dateClick: this.handleDateClick.bind(this),
         ...(this.isUser && {
           validRange: { start: today.toISOString().split('T')[0] }
@@ -172,6 +176,8 @@ export class StudioDetailsComponent implements OnInit {
 
     this.calendarOptions = {
       ...this.calendarOptions,
+      dayMaxEvents: 2,
+      moreLinkClick: 'popover',
       events: [...otherEvents, highlightEvent]
     };
   }

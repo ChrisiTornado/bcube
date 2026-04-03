@@ -66,9 +66,8 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public ResetPasswordResponse resetPassword(ResetPasswordRequest resetPasswordRequest) {
-        User user = userRepository.findByEmail(resetPasswordRequest.getEmail());
-        if (user == null)
-            throw new UserNotFoundException("Kein Benutzer mit der E-Mail-Adresse gefunden: " + resetPasswordRequest.getEmail());
+        User user = userRepository.findByEmail(resetPasswordRequest.getEmail())
+                .orElseThrow(() -> new UserNotFoundException("Kein Benutzer mit der E-Mail-Adresse gefunden: " + resetPasswordRequest.getEmail()));
 
         String code = CodeGenerator.generateCode();
         user.setResetCode(passwordEncoder.encode(code));
@@ -80,9 +79,8 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public VerifyCodeResponse verifyCode(VerifyCodeRequest verifyCodeRequest) {
-        User user = userRepository.findByEmail(verifyCodeRequest.getEmail());
-        if (user == null)
-            throw new UserNotFoundException("Ungültige E-Mail-Adresse: " + verifyCodeRequest.getEmail());
+        User user = userRepository.findByEmail(verifyCodeRequest.getEmail())
+                .orElseThrow(() -> new UserNotFoundException("Kein Benutzer mit der E-Mail-Adresse gefunden: " + verifyCodeRequest.getEmail()));
 
         if (user.getResetCode() == null || user.getResetCodeExpiresAt() == null) {
             throw new InvalidResetTokenException("Es ist kein gültiger Reset-Code vorhanden. Bitte fordern Sie einen neuen an.");
@@ -110,9 +108,8 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public ChangePasswordResponse changePassword(ChangePasswordRequest changePasswordRequest) {
-        User user = userRepository.findByEmail(changePasswordRequest.getEmail());
-        if (user == null)
-            throw new UserNotFoundException("Kein Benutzer mit der E-Mail-Adresse gefunden: " + changePasswordRequest.getEmail());
+        User user = userRepository.findByEmail(changePasswordRequest.getEmail())
+                .orElseThrow(() -> new UserNotFoundException("Kein Benutzer mit der E-Mail-Adresse gefunden: " + changePasswordRequest.getEmail()));
 
         user.setPassword(passwordEncoder.encode(changePasswordRequest.getPassword()));
         userRepository.save(user);
@@ -120,10 +117,8 @@ public class AuthServiceImpl implements AuthService {
     }
 
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = userRepository.findByEmail(email);
-        if (user == null) {
-            throw new UserNotFoundException("Kein Benutzer mit der E-Mail-Adresse gefunden: " + email);
-        }
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException("Kein Benutzer mit der E-Mail-Adresse gefunden: " + email));
         return UserDetailsImpl.build(user);
     }
 
@@ -145,10 +140,8 @@ public class AuthServiceImpl implements AuthService {
             userDetails = (UserDetailsImpl) principal;
         } else {
             // Backup-Fall: userDetails manuell aus DB holen
-            User user = userRepository.findByEmail(email);
-            if (user == null) {
-                throw new UserNotFoundException("Benutzer nicht gefunden: " + email);
-            }
+            User user = userRepository.findByEmail(email)
+                    .orElseThrow(() -> new UserNotFoundException("Kein Benutzer mit der E-Mail-Adresse gefunden: " + email));
             userDetails = UserDetailsImpl.build(user);
         }
 

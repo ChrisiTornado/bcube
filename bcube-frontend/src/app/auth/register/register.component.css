@@ -8,7 +8,7 @@
 }
 
 .register-hero {
-  margin-bottom: 18px;
+  margin-bottom: 34px;
   display: flex;
   justify-content: center;
 }
@@ -161,6 +161,65 @@
 
 .name-field {
   min-width: 0;
+}
+
+.register-field {
+  margin-bottom: 12px !important;
+}
+
+.register-phone-field {
+  margin-bottom: 18px !important;
+}
+
+.register-error-wrap {
+  min-height: 18px;
+  position: relative;
+}
+
+.register-error {
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: var(--bcube-orange);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.register-terms-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.register-terms-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: rgba(255, 255, 255, 0.82);
+  line-height: 1.5;
+  cursor: pointer;
+}
+
+.register-terms-check input {
+  width: 18px;
+  height: 18px;
+  accent-color: #ffa722;
+  cursor: pointer;
+  flex: 0 0 auto;
+}
+
+.register-terms-check a {
+  color: #ffa722;
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.register-terms-check a:hover {
+  color: #ffc56d;
+}
+
+.register-terms-error {
+  color: var(--bcube-orange);
 }
 
 @media (max-width: 640px) {

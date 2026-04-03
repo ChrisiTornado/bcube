@@ -51,7 +51,7 @@
 }
 
 :host ::ng-deep .surface-card {
-  width: min(560px, 100%);
+  width: 100%;
   padding: 34px 34px 30px;
   border-radius: 30px;
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -95,7 +95,7 @@
 }
 
 .login-hero {
-  margin-bottom: 18px;
+  margin-bottom: 34px;
   display: flex;
   justify-content: center;
 }
@@ -213,7 +213,7 @@
   position: absolute;
   left: 0;
   top: 0;
-  color: #ffd18c;
+  color: var(--bcube-orange);
   font-size: 0.8rem;
   font-weight: 600;
 }

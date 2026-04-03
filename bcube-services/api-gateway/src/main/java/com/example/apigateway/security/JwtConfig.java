@@ -15,7 +15,7 @@ import java.util.List;
 
 @Configuration
 public class JwtConfig {
-    @Value("${JWT.SECRET}")
+    @Value("${jwt.secret}")
     private String jwtSecret;
 
     @Bean

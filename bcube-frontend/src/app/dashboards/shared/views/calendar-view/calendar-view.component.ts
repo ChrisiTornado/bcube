@@ -63,12 +63,17 @@ export class CalendarViewComponent implements OnInit {
     initialView: 'dayGridMonth',
     events: this.calendarEvents,
     locale: 'de',
+    dayMaxEvents: 2,
     headerToolbar: {
       left: 'title',
       center: '',
       right: 'prev,next'
     },
     weekends: true,
+    moreLinkClick: (info) => {
+      this.selectDate(info.date.toISOString().split('T')[0]);
+      return 'popover';
+    },
     dateClick: (info) => this.selectDate(info.dateStr)
   };
 
@@ -158,12 +163,17 @@ export class CalendarViewComponent implements OnInit {
       initialView: 'dayGridMonth',
       events,
       locale: 'de',
+      dayMaxEvents: 2,
       headerToolbar: {
         left: 'title',
         center: '',
         right: 'prev,next'
       },
       weekends: true,
+      moreLinkClick: (info) => {
+        this.selectDate(info.date.toISOString().split('T')[0]);
+        return 'popover';
+      },
       dateClick: (info) => this.selectDate(info.dateStr)
     };
   }

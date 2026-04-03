@@ -28,6 +28,7 @@ import { VerifyCodeResponse } from '../../models/responses/user/VerifyCodeRespon
   styleUrls: ['./enter-code.component.css']
 })
 export class EnterCodeComponent implements OnInit {
+  private readonly returnUrlKey = 'passwordResetReturnUrl';
   formGroup!: FormGroup;
   submitted = false;
   loading = false;
@@ -137,8 +138,9 @@ export class EnterCodeComponent implements OnInit {
   }
 
   goBack(): void {
-    localStorage.removeItem('resetEmail');
-    this.router.navigate(['/auth/email-reset']);
+    this.router.navigate(['/auth/email-reset'], {
+      state: { returnUrl: this.getReturnUrl() }
+    });
   }
 
   resetForm(): void {
@@ -150,5 +152,9 @@ export class EnterCodeComponent implements OnInit {
       digit5: '',
       digit6: '',
     });
+  }
+
+  private getReturnUrl(): string {
+    return localStorage.getItem(this.returnUrlKey) || '/login';
   }
 }

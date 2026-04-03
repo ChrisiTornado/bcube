@@ -31,6 +31,7 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
   styleUrl: './email-reset.component.css'
 })
 export class EmailResetComponent {
+  private readonly returnUrlKey = 'passwordResetReturnUrl';
   @Input() notification!: Notification;
   formGroup!: FormGroup;
   loading = false;
@@ -43,6 +44,9 @@ export class EmailResetComponent {
   }
 
   ngOnInit(): void {
+    const returnUrl = history.state?.returnUrl as string | undefined;
+    localStorage.setItem(this.returnUrlKey, returnUrl || '/login');
+
     this.formGroup = this.formBuilder.group({
       email: [null, [Validators.required, Validators.email]]
     })
@@ -79,10 +83,16 @@ export class EmailResetComponent {
 
   goBack(): void {
     localStorage.removeItem('resetEmail');
-    this.router.navigate(['/auth/login']);
+    const returnUrl = this.getReturnUrl();
+    localStorage.removeItem(this.returnUrlKey);
+    this.router.navigate([returnUrl]);
   }
 
   get email(): AbstractControl {
     return this.formGroup.get('email')!;
+  }
+
+  private getReturnUrl(): string {
+    return localStorage.getItem(this.returnUrlKey) || '/login';
   }
 }

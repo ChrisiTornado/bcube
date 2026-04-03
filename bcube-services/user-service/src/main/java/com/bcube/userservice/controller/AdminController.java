@@ -2,7 +2,7 @@ package com.bcube.userservice.controller;
 
 import com.bcube.userservice.service.AdminService;
 import com.bcube.userservice.service.dto.request.CreateUserRequest;
-import com.bcube.userservice.service.dto.request.UpdateUserRequest;
+import com.bcube.userservice.service.dto.request.AdminUpdateUserRequest;
 import com.bcube.userservice.service.dto.response.ApiResponse;
 import com.bcube.userservice.service.dto.response.UserNameResponse;
 import com.bcube.userservice.service.dto.response.UserResponse;
@@ -37,8 +37,8 @@ public class AdminController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse<UserResponse>> updateUser(@PathVariable long id, @Valid @RequestBody UpdateUserRequest updateUserRequest) {
-        UserResponse response = adminService.updateUser(id, updateUserRequest);
+    public ResponseEntity<ApiResponse<UserResponse>> updateUser(@PathVariable long id, @Valid @RequestBody AdminUpdateUserRequest adminUpdateUserRequest) {
+        UserResponse response = adminService.updateUser(id, adminUpdateUserRequest);
         return ResponseEntity.ok(new ApiResponse<>("User erfolgreich aktuallisiert", response));
     }
 

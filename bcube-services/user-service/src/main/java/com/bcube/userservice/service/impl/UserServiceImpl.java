@@ -1,9 +1,11 @@
 package com.bcube.userservice.service.impl;
 
+import com.bcube.userservice.exception.UserNotFoundException;
 import com.bcube.userservice.persistance.entity.Role;
 import com.bcube.userservice.persistance.entity.User;
 import com.bcube.userservice.persistance.repository.UserRepository;
 import com.bcube.userservice.service.UserService;
+import com.bcube.userservice.service.dto.request.UpdateOwnUserRequest;
 import com.bcube.userservice.service.dto.response.UserResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -23,6 +25,26 @@ public class UserServiceImpl implements UserService {
         return new UserResponse(
                 user.getId(),
                 user.getRole() == Role.ADMIN,
+                user.getEmail(),
+                user.getPhone(),
+                user.getFirstName(),
+                user.getLastName()
+        );
+    }
+
+    @Override
+    public UserResponse updateUserById(String email, UpdateOwnUserRequest request) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException("User nicht gefunden:  " + email));
+
+        user.setFirstName(request.getFirstName());
+        user.setLastName(request.getLastName());
+        user.setPhone(request.getPhone());
+        user.setEmail(request.getEmail());
+        userRepository.save(user);
+        return new UserResponse(
+                user.getId(),
+                false,
                 user.getEmail(),
                 user.getPhone(),
                 user.getFirstName(),

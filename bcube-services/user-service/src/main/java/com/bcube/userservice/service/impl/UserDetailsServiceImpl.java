@@ -1,5 +1,6 @@
 package com.bcube.userservice.service.impl;
 
+import com.bcube.userservice.exception.UserNotFoundException;
 import com.bcube.userservice.persistance.entity.User;
 import com.bcube.userservice.persistance.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -15,10 +16,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = userRepository.findByEmail(email);
-        if (user == null) {
-            throw new UsernameNotFoundException("User Not Found with email: " + email);
-        }
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException("Kein Benutzer mit der E-Mail-Adresse gefunden: " + email));
 
         return UserDetailsImpl.build(user);
     }

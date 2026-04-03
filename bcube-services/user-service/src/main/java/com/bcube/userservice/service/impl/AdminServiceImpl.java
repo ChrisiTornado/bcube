@@ -5,7 +5,7 @@ import com.bcube.userservice.persistance.entity.User;
 import com.bcube.userservice.persistance.repository.UserRepository;
 import com.bcube.userservice.service.AdminService;
 import com.bcube.userservice.service.dto.request.CreateUserRequest;
-import com.bcube.userservice.service.dto.request.UpdateUserRequest;
+import com.bcube.userservice.service.dto.request.AdminUpdateUserRequest;
 import com.bcube.userservice.service.dto.response.UserNameResponse;
 import com.bcube.userservice.service.dto.response.UserResponse;
 import lombok.RequiredArgsConstructor;
@@ -72,15 +72,15 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public UserResponse updateUser(long id, UpdateUserRequest updateUserRequest) {
+    public UserResponse updateUser(long id, AdminUpdateUserRequest adminUpdateUserRequest) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User nicht gefunden"));
 
-        user.setFirstName(updateUserRequest.getFirstName());
-        user.setLastName(updateUserRequest.getLastName());
-        user.setEmail(updateUserRequest.getEmail());
-        user.setPhone(updateUserRequest.getPhone());
-        user.setRole(updateUserRequest.isAdmin() ? Role.ADMIN : Role.USER);
+        user.setFirstName(adminUpdateUserRequest.getFirstName());
+        user.setLastName(adminUpdateUserRequest.getLastName());
+        user.setEmail(adminUpdateUserRequest.getEmail());
+        user.setPhone(adminUpdateUserRequest.getPhone());
+        user.setRole(adminUpdateUserRequest.isAdmin() ? Role.ADMIN : Role.USER);
 
         User updated = userRepository.save(user);
 

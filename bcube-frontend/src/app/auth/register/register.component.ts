@@ -36,7 +36,8 @@ export class RegisterComponent implements OnInit {
       password: [null, Validators.required],
       firstName: [null, Validators.required],
       lastName: [null, Validators.required],
-      phone: [null, Validators.required]
+      phone: [null, Validators.required],
+      acceptTerms: [false, Validators.requiredTrue]
     })
   }
 
@@ -106,5 +107,9 @@ export class RegisterComponent implements OnInit {
 
   get phone(): AbstractControl {
     return this.registerForm.get('phone')!;
+  }
+
+  get acceptTerms(): AbstractControl {
+    return this.registerForm.get('acceptTerms')!;
   }
 }

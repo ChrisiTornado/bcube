@@ -15,10 +15,13 @@ import { BookingDetailsComponent } from './dashboards/shared/views/bookings-view
 import { ChangePasswordComponent } from './auth/change-password/change-password.component';
 import { EmailResetComponent } from './auth/email-reset/email-reset.component';
 import { EnterCodeComponent } from './auth/enter-code/enter-code.component';
+import { ProfileViewComponent } from './dashboards/shared/views/profile-view/profile-view.component';
+import { LegalComponent } from './legal/legal.component';
 
 export const routes: Routes = [
     { path: 'login', component: LoginComponent },
     { path: 'register', component: RegisterComponent },
+    { path: 'legal', component: LegalComponent },
 
     {
         path: 'auth',
@@ -42,6 +45,7 @@ export const routes: Routes = [
             { path: 'map', component: MapViewComponent },
             { path: 'bookings', component: BookingsViewComponent },
             { path: 'calendar', component: CalendarViewComponent },
+            { path: 'profile', component: ProfileViewComponent },
             { path: 'studio-details/:id', component: StudioDetailsComponent },
             { path: 'booking-details/:id', component: BookingDetailsComponent }
         ]
@@ -59,6 +63,7 @@ export const routes: Routes = [
             { path: 'map', component: MapViewComponent },
             { path: 'bookings', component: BookingsViewComponent },
             { path: 'calendar', component: CalendarViewComponent },
+            { path: 'profile', component: ProfileViewComponent },
             { path: 'studio-details/:id', component: StudioDetailsComponent },
             { path: 'booking-details/:id', component: BookingDetailsComponent }
         ]

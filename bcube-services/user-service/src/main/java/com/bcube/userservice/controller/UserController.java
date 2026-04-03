@@ -1,13 +1,13 @@
 package com.bcube.userservice.controller;
 import com.bcube.userservice.service.UserService;
+import com.bcube.userservice.service.dto.request.UpdateOwnUserRequest;
 import com.bcube.userservice.service.dto.response.ApiResponse;
 import com.bcube.userservice.service.dto.response.UserResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -17,7 +17,17 @@ public class UserController {
 
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<UserResponse>> getUserById(@PathVariable long id) {
-        var user = userService.getUserById(id);
+        UserResponse user = userService.getUserById(id);
+        return ResponseEntity.ok(new ApiResponse<>("User erfolgreich geladen", user));
+    }
+
+    @PutMapping("/me")
+    public ResponseEntity<ApiResponse<UserResponse>> updateUser(Authentication authentication, @Valid @RequestBody UpdateOwnUserRequest updateOwnUserRequest) {
+        System.out.println("AUTH NAME: " + authentication.getName());
+        System.out.println("AUTH CLASS: " + authentication.getClass().getName());
+        String email = authentication.getName();
+
+        UserResponse user = userService.updateUserById(email, updateOwnUserRequest);
         return ResponseEntity.ok(new ApiResponse<>("User erfolgreich geladen", user));
     }
 }

@@ -105,4 +105,16 @@ export class UserDashboardComponent implements OnInit {
       }
     ];
   }
+
+  get avatarLabel(): string {
+    const user = this.authService.getUser();
+    const source = [user?.firstName, user?.lastName].filter(Boolean).join(' ').trim() || user?.email || 'B';
+
+    return source
+      .split(/[\s@._-]+/)
+      .filter(Boolean)
+      .slice(0, 2)
+      .map(part => part[0]?.toUpperCase() ?? '')
+      .join('');
+  }
 }
