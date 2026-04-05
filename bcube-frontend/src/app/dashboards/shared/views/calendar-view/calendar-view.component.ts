@@ -144,7 +144,7 @@ export class CalendarViewComponent implements OnInit {
     const sortedDates = [...new Set(this.bookings.map(booking => this.toIsoDate(booking.date)))].sort();
     const nextDate = sortedDates.find(date => date >= todayIso);
 
-    return nextDate ?? sortedDates[0] ?? null;
+    return nextDate ?? null;
   }
 
   private refreshCalendarOptions(): void {

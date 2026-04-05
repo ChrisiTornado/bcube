@@ -19,39 +19,66 @@ import org.springframework.web.bind.annotation.*;
 public class BookingController {
 
     private final BookingService bookingService;
+
+    private String extractToken(String authorizationHeader) {
+        return authorizationHeader.replace("Bearer ", "");
+    }
+
     @GetMapping
-    public ResponseEntity<ApiResponse<Page<BookingResponse>>> getBookings(AdminBookingQueryRequest request) {
-        Page<BookingResponse> bookings = bookingService.getBookings(request.getPage(), request.getSize(), request.getUserId(), request.getStudioId());
+    public ResponseEntity<ApiResponse<Page<BookingResponse>>> getBookings(
+            AdminBookingQueryRequest request,
+            @RequestHeader("Authorization") String authorizationHeader
+    ) {
+        Page<BookingResponse> bookings = bookingService.getBookings(
+                request.getPage(),
+                request.getSize(),
+                request.getUserId(),
+                request.getStudioId(),
+                extractToken(authorizationHeader)
+        );
         return  ResponseEntity.ok(new ApiResponse<>("Freie Zeiten erfolgreich geladen", bookings));
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<BookingDetailsResponse>> bookStudio(@RequestBody BookStudioRequest bookStudioRequest) {
-        BookingDetailsResponse booking = bookingService.bookTimeSlot(bookStudioRequest);
+    public ResponseEntity<ApiResponse<BookingDetailsResponse>> bookStudio(
+            @RequestBody BookStudioRequest bookStudioRequest,
+            @RequestHeader("Authorization") String authorizationHeader
+    ) {
+        BookingDetailsResponse booking = bookingService.bookTimeSlot(bookStudioRequest, extractToken(authorizationHeader));
         return ResponseEntity.ok(new ApiResponse<>(booking.getStudio().getName()+" erfolgreich gebucht", booking));
     }
 
     @GetMapping("/user/{userId}")
-    public ResponseEntity<ApiResponse<Page<BookingResponse>>> getBookingsByUserId(UserBookingQueryRequest request) {
-        Page<BookingResponse> bookings = bookingService.getBookingsByUserId(request.getUserId(), request.getPage(), request.getSize(), request.getStudioId());
+    public ResponseEntity<ApiResponse<Page<BookingResponse>>> getBookingsByUserId(UserBookingQueryRequest request, @RequestHeader("Authorization") String authorizationHeader) {
+        String token = extractToken(authorizationHeader);
+        Page<BookingResponse> bookings = bookingService.getBookingsByUserId(request.getUserId(), request.getPage(), request.getSize(), request.getStudioId(), token);
         return  ResponseEntity.ok(new ApiResponse<>("Buchungen erfolgreich geladen", bookings));
     }
 
     @GetMapping("/{bookingId}")
-    public ResponseEntity<ApiResponse<BookingDetailsResponse>> getBookingById(@PathVariable Long bookingId) {
-        BookingDetailsResponse booking = bookingService.getBookingById(bookingId);
+    public ResponseEntity<ApiResponse<BookingDetailsResponse>> getBookingById(
+            @PathVariable Long bookingId,
+            @RequestHeader("Authorization") String authorizationHeader
+    ) {
+        BookingDetailsResponse booking = bookingService.getBookingById(bookingId, extractToken(authorizationHeader));
         return ResponseEntity.ok(new ApiResponse<>("Buchung erfolgreich gesendet", booking));
     }
 
     @DeleteMapping("/{bookingId}")
-    public ResponseEntity<ApiResponse<BookingResponse>> stornoBookingById(@PathVariable Long bookingId) {
-        BookingResponse booking = bookingService.stornoBooking(bookingId);
+    public ResponseEntity<ApiResponse<BookingResponse>> stornoBookingById(
+            @PathVariable Long bookingId,
+            @RequestHeader("Authorization") String authorizationHeader
+    ) {
+        BookingResponse booking = bookingService.stornoBooking(bookingId, extractToken(authorizationHeader));
         return ResponseEntity.ok(new ApiResponse<>("Buchung: " + bookingId + " erfolgreich storniert", booking));
     }
 
     @GetMapping("/studio/{studioId}")
-    public ResponseEntity<ApiResponse<BookingResponse[]>> getBookingsByStudio(@PathVariable Long studioId) {
-        BookingResponse[] bookings = bookingService.getBookingsByStudioId(studioId);
+    public ResponseEntity<ApiResponse<BookingResponse[]>> getBookingsByStudio(
+            @PathVariable Long studioId,
+            @RequestHeader("Authorization") String authorizationHeader
+    ) {
+        BookingResponse[] bookings = bookingService.getBookingsByStudioId(studioId, extractToken(authorizationHeader));
         return ResponseEntity.ok(new ApiResponse<>("Buchungen erfolgreich geladen", bookings));
     }
 }

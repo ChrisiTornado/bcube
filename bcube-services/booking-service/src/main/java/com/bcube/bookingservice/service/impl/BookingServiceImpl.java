@@ -46,7 +46,8 @@ public class BookingServiceImpl implements BookingService {
             int page,
             int size,
             Long userId,
-            Long studioId
+            Long studioId,
+            String token
     ) {
         Pageable pageable = PageRequest.of(
                 page,
@@ -75,7 +76,7 @@ public class BookingServiceImpl implements BookingService {
         // ToDo: Bulk import
 
         return bookings.map(booking -> {
-            UserDto user = userClient.getUserById(booking.getUserId());
+            UserDto user = userClient.getUserById(booking.getUserId(), token);
             StudioDto studio = studioClient.getStudioById(booking.getStudioId());
 
             return new BookingResponse(
@@ -92,8 +93,8 @@ public class BookingServiceImpl implements BookingService {
 
     @Transactional(readOnly = true)
     @Override
-    public Page<BookingResponse> getBookingsByUserId(Long userId, int page, int size, Long studioId) {
-        if (!userClient.userExists(userId)) {
+    public Page<BookingResponse> getBookingsByUserId(Long userId, int page, int size, Long studioId, String token) {
+        if (!userClient.userExists(userId, token)) {
             throw new IllegalArgumentException("User mit ID " + userId + " nicht gefunden");
         }
 
@@ -107,7 +108,7 @@ public class BookingServiceImpl implements BookingService {
         }
 
         return bookings.map(booking -> {
-            UserDto user = userClient.getUserById(booking.getUserId());
+            UserDto user = userClient.getUserById(booking.getUserId(), token);
             StudioDto studio = studioClient.getStudioById(booking.getStudioId());
 
             return new BookingResponse(
@@ -122,10 +123,10 @@ public class BookingServiceImpl implements BookingService {
         });
     }
 
-    private BookingResponse[] getBookingResponses(List<Booking> bookings) {
+    private BookingResponse[] getBookingResponses(List<Booking> bookings, String token) {
         List<BookingResponse> responses = bookings.stream()
                 .map(booking -> {
-                    UserDto user = userClient.getUserById(booking.getUserId());
+                    UserDto user = userClient.getUserById(booking.getUserId(), token);
                     StudioDto studio = studioClient.getStudioById(booking.getStudioId());
 
                     return new BookingResponse(
@@ -144,22 +145,22 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public BookingResponse[] getBookingsByStudioId(long studioId) {
+    public BookingResponse[] getBookingsByStudioId(long studioId, String token) {
         if (!studioClient.studioExists(studioId)) {
             throw new IllegalArgumentException("User mit ID " + studioId + " nicht gefunden");
         }
 
         List<Booking> bookings = bookingRepository.findAllByStudioId(studioId);
 
-        return getBookingResponses(bookings);
+        return getBookingResponses(bookings, token);
     }
 
     @Override
-    public BookingDetailsResponse getBookingById(Long bookingId) {
+    public BookingDetailsResponse getBookingById(Long bookingId, String token) {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new IllegalArgumentException("Buchung mit ID " + bookingId + "nicht gefunden"));
 
-        UserDto user = userClient.getUserById(booking.getUserId());
+        UserDto user = userClient.getUserById(booking.getUserId(), token);
         StudioDto studio = studioClient.getStudioById(booking.getStudioId());
 
         AccessCodeResponse accessCodeResponse = accessCodeClient.getAccessCode(bookingId);
@@ -181,7 +182,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public BookingResponse stornoBooking(Long bookingId) {
+    public BookingResponse stornoBooking(Long bookingId, String token) {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new IllegalArgumentException("Buchung mit ID " + bookingId + " nicht gefunden"));
 
@@ -201,7 +202,7 @@ public class BookingServiceImpl implements BookingService {
 
         booking.setStatus(BookingStatus.CANCELLED);
         bookingRepository.save(booking);
-        UserDto user = userClient.getUserById(booking.getUserId());
+        UserDto user = userClient.getUserById(booking.getUserId(), token);
         StudioDto studio = studioClient.getStudioById(booking.getStudioId());
 
         return new BookingResponse(
@@ -217,7 +218,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Transactional
     @Override
-    public BookingDetailsResponse bookTimeSlot(BookStudioRequest bookStudioRequest) {
+    public BookingDetailsResponse bookTimeSlot(BookStudioRequest bookStudioRequest, String token) {
         // ToDo : Facade Pattern?
         Booking booking = createBookingEntity(bookStudioRequest);
         AccessRequest request = new AccessRequest(
@@ -232,7 +233,7 @@ public class BookingServiceImpl implements BookingService {
 
             booking.setStatus(BookingStatus.CONFIRMED);
 
-            UserDto user = userClient.getUserById(booking.getUserId());
+            UserDto user = userClient.getUserById(booking.getUserId(), token);
             StudioDto studio = studioClient.getStudioById(booking.getStudioId());
 
             //get temp code

@@ -18,11 +18,12 @@ public class UserClient {
 
     private final WebClient.Builder webClientBuilder;
 
-    public boolean userExists(Long userId) {
+    public boolean userExists(Long userId, String token) {
         try {
             webClientBuilder.build()
                     .get()
                     .uri(userServiceBaseUrl + "/" + userId)
+                    .headers(headers -> headers.setBearerAuth(token))
                     .retrieve()
                     .toBodilessEntity()
                     .block();
@@ -32,11 +33,12 @@ public class UserClient {
         }
     }
 
-    public UserDto getUserById(Long userId) {
+    public UserDto getUserById(Long userId, String token) {
         try {
             ApiResponse<UserDto> response = webClientBuilder.build()
                     .get()
                     .uri(userServiceBaseUrl + "/" + userId)
+                    .headers(headers -> headers.setBearerAuth(token))
                     .retrieve()
                     .bodyToMono(new ParameterizedTypeReference<ApiResponse<UserDto>>() {})
                     .block();

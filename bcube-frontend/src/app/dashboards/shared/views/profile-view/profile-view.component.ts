@@ -128,10 +128,10 @@ export class ProfileViewComponent implements OnInit {
     }
 
     this.confirmationService.confirm({
-      message: 'Moechtest du deinen Account wirklich loeschen? Diese Aktion kann nicht rueckgaengig gemacht werden.',
-      header: 'Account loeschen',
+      message: 'Moechtest du deinen Account wirklich löschen? Diese Aktion kann nicht rueckgaengig gemacht werden.',
+      header: 'Account löschen',
       icon: 'pi pi-exclamation-triangle',
-      acceptLabel: 'Ja, loeschen',
+      acceptLabel: 'Ja, löschen',
       rejectLabel: 'Abbrechen',
       accept: () => this.deleteAccount()
     });

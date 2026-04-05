@@ -1,14 +1,14 @@
-import {Component, OnInit} from '@angular/core';
-import {Router} from '@angular/router';
-import {StudioService} from '../../../../services/studio.service';
-import {Studio} from '../../../../models/Studio';
-import {TableModule} from 'primeng/table';
-import {ButtonModule} from 'primeng/button';
-import {UpdateStudioComponent} from './update-studio/update-studio.component';
-import {DeleteStudioComponent} from './delete-studio/delete-studio.component';
-import {LoadingSpinnerComponent} from '../../../../shared/loading-spinner/loading-spinner.component';
-import {CommonModule} from '@angular/common';
-import {AuthService} from '../../../../services/auth/auth.service';
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { StudioService } from '../../../../services/studio.service';
+import { Studio } from '../../../../models/Studio';
+import { TableModule } from 'primeng/table';
+import { ButtonModule } from 'primeng/button';
+import { UpdateStudioComponent } from './update-studio/update-studio.component';
+import { DeleteStudioComponent } from './delete-studio/delete-studio.component';
+import { LoadingSpinnerComponent } from '../../../../shared/loading-spinner/loading-spinner.component';
+import { CommonModule } from '@angular/common';
+import { AuthService } from '../../../../services/auth/auth.service';
 import { StudiosComponent } from '../../components/studios/studios.component';
 
 @Component({
