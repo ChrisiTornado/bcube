@@ -61,3 +61,5 @@ bcube-frontend/.tailwind-cache/
 # .env
 
 node_modules
+bcube-frontend/src/environments/environment.ts
+bcube-frontend/src/environments/environment.prod.ts
