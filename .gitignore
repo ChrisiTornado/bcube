@@ -36,6 +36,7 @@ build/
 # === ANGULAR / FRONTEND ===
 # node modules
 bcube-frontend/node_modules/
+bcube-frontend/src/environments
 
 # build output
 bcube-frontend/dist/
@@ -61,5 +62,3 @@ bcube-frontend/.tailwind-cache/
 # .env
 
 node_modules
-bcube-frontend/src/environments/environment.ts
-bcube-frontend/src/environments/environment.prod.ts
