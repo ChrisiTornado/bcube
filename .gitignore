@@ -36,6 +36,7 @@ build/
 # === ANGULAR / FRONTEND ===
 # node modules
 bcube-frontend/node_modules/
+bcube-frontend/src/environments
 
 # build output
 bcube-frontend/dist/
