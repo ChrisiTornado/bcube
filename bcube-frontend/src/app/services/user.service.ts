@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { User } from '../models/User';
-import { environment } from '../../environments/environment';
+import { environment } from '../../environments/environment.local';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { ApiResponse } from '../models/responses/ApiResponse';
 import { finalize } from 'rxjs/operators';

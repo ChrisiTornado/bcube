@@ -12,7 +12,7 @@ import { Router } from '@angular/router';
 import * as mapboxgl from 'mapbox-gl';
 import { Subject, takeUntil } from 'rxjs';
 
-import { environment } from '../../../../../environments/environment';
+import { environment } from '../../../../../environments/environment.local';
 import { StudioService } from '../../../../services/studio.service';
 import { Studio } from '../../../../models/Studio';
 import { LoadingSpinnerComponent } from '../../../../shared/loading-spinner/loading-spinner.component';

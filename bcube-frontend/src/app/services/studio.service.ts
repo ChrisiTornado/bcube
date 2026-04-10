@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { finalize, map } from 'rxjs/operators';
 
-import { environment } from '../../environments/environment';
+import { environment } from '../../environments/environment.local';
 import { Studio } from '../models/Studio';
 import { CreateStudioRequest } from '../models/requests/studio/CreateStudioRequest';
 import { UpdateStudioRequest } from '../models/requests/studio/UpdateStudioRequest';

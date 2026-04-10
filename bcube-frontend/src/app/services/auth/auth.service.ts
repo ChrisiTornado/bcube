@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { User } from '../../models/User';
 import { LoginRequest } from '../../models/requests/user/LoginRequest';
 import { RegisterRequest } from '../../models/requests/user/RegisterRequest';
-import { environment } from '../../../environments/environment';
+import { environment } from '../../../environments/environment.local';
 import { ApiResponse } from '../../models/responses/ApiResponse';
 import { JwtResponse } from '../../models/responses/user/JwtResponse';
 import { Observable } from 'rxjs';
