@@ -23,7 +23,7 @@ struct MainTabView: View {
                 BookingsListView()
             }
             .tabItem {
-                Label("Buchungen", systemImage: "calendar.badge.clock")
+                Label("Buchungen", systemImage: "checklist")
             }
 
             NavigationStack {

@@ -15,6 +15,7 @@ final class CalendarOverviewViewModel: ObservableObject {
     @Published var isLoading = false
     @Published var errorMessage: String?
     @Published private(set) var markedDates: Set<String> = []
+    @Published private(set) var completedDates: Set<String> = []
     @Published private(set) var selectedDayBookings: [Booking] = []
     @Published private(set) var emptyState: CalendarEmptyState = .none
 
@@ -27,14 +28,16 @@ final class CalendarOverviewViewModel: ObservableObject {
 
         do {
             bookings = try await bookingService.getAllBookingsForUser(userID: userID, pageSize: 50, token: token)
-                .filter { $0.status == .confirmed }
+                .filter { $0.status == .confirmed || $0.status == .done }
                 .sorted {
                     ($0.dateValue ?? .distantPast, $0.startTime) < ($1.dateValue ?? .distantPast, $1.startTime)
                 }
-            markedDates = Set(bookings.map(\.dayKey))
+            markedDates = Set(bookings.filter { $0.status == .confirmed }.map(\.dayKey))
+            completedDates = Set(bookings.filter { $0.status == .done }.map(\.dayKey))
         } catch {
             bookings = []
             markedDates = []
+            completedDates = []
             errorMessage = error.localizedDescription
         }
 
@@ -58,9 +61,9 @@ final class CalendarOverviewViewModel: ObservableObject {
         case .none:
             return ""
         case .noBookingsInMonth:
-            return "In diesem Monat gibt es keine bestätigten Sessions."
+            return "In diesem Monat gibt es keine geplanten oder abgeschlossenen Sessions."
         case .noBookingsOnDay:
-            return "Wähle einen markierten Tag, um deine bestätigten Sessions zu sehen."
+            return "Wähle einen markierten Tag, um deine geplanten oder abgeschlossenen Sessions zu sehen."
         }
     }
 
@@ -131,6 +134,7 @@ struct CalendarOverviewView: View {
                                     set: { viewModel.updateSelectedDate($0) }
                                 ),
                                 markedDates: viewModel.markedDates,
+                                completedDates: viewModel.completedDates,
                                 blockedDates: [],
                                 onMonthChange: { month, direction in
                                     viewModel.updateDisplayedMonth(month, direction: direction)

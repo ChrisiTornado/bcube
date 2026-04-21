@@ -276,6 +276,7 @@ struct BookingMonthCalendarView: View {
     @State private var displayedMonth: Date
     @Binding var selectedDate: Date
     let markedDates: Set<String>
+    let completedDates: Set<String>
     let blockedDates: Set<String>
     var disablePastDates = false
     var onMonthChange: ((Date, Int) -> Void)?
@@ -292,6 +293,7 @@ struct BookingMonthCalendarView: View {
         month: Date,
         selectedDate: Binding<Date>,
         markedDates: Set<String>,
+        completedDates: Set<String> = [],
         blockedDates: Set<String>,
         disablePastDates: Bool = false,
         onMonthChange: ((Date, Int) -> Void)? = nil
@@ -300,6 +302,7 @@ struct BookingMonthCalendarView: View {
         _displayedMonth = State(initialValue: month.startOfMonth(using: calendar))
         _selectedDate = selectedDate
         self.markedDates = markedDates
+        self.completedDates = completedDates
         self.blockedDates = blockedDates
         self.disablePastDates = disablePastDates
         self.onMonthChange = onMonthChange
@@ -393,12 +396,22 @@ struct BookingMonthCalendarView: View {
     }
 
     private func indicatorColor(for date: Date) -> Color {
-        blockedDates.contains(date.viennaDayKey()) ? BcubeTheme.Colors.danger : BcubeTheme.Colors.accent
+        let dayKey = date.viennaDayKey()
+
+        if blockedDates.contains(dayKey) {
+            return BcubeTheme.Colors.danger
+        }
+
+        if completedDates.contains(dayKey) {
+            return Color(hex: "8A93A3")
+        }
+
+        return BcubeTheme.Colors.accent
     }
 
     private func showsIndicator(for date: Date) -> Bool {
         let dayKey = date.viennaDayKey()
-        return markedDates.contains(dayKey) || blockedDates.contains(dayKey)
+        return markedDates.contains(dayKey) || completedDates.contains(dayKey) || blockedDates.contains(dayKey)
     }
 
     private func isDisabled(_ date: Date) -> Bool {

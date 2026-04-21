@@ -11,19 +11,24 @@
 
     <aside class="day-bookings-panel">
       <div class="day-bookings-header">
-        <h2 class="m-0">Deine geplanten Sessions</h2>
+        <h2 class="m-0">Deine Sessions</h2>
         <span>{{ getSelectedDateLabel() }}</span>
       </div>
 
       <div class="day-bookings-list" *ngIf="selectedDayBookings.length > 0; else noBookingsTemplate">
-        <article class="day-booking-card" *ngFor="let booking of selectedDayBookings">
+        <article class="day-booking-card" [class.day-booking-card-done]="isDoneBooking(booking)" *ngFor="let booking of selectedDayBookings">
           <div class="booking-card-top">
             <div class="booking-image-wrap">
               <img [src]="booking.studio.imageBase64" [alt]="booking.studio.name" class="booking-studio-thumb">
             </div>
 
             <div class="booking-card-copy">
-              <h3 class="m-0">{{ booking.studio.name }}</h3>
+              <div class="booking-card-title-row">
+                <h3 class="m-0">{{ booking.studio.name }}</h3>
+                <span class="booking-status-badge" [class.booking-status-badge-done]="isDoneBooking(booking)">
+                  {{ getStatusLabel(booking.status) }}
+                </span>
+              </div>
               <p class="booking-location m-0">
                 {{ booking.studio.street }}, {{ booking.studio.plz }} {{ booking.studio.city }}
               </p>

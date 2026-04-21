@@ -67,12 +67,6 @@
             Gewähltes Datum: {{ formatSelectedDateLabel() }}
           </div>
 
-          <div class="occupied-slots-list" *ngIf="selectedDateBookings.length > 0">
-            <div class="occupied-slot" *ngFor="let booking of selectedDateBookings">
-              {{ formatBookingRange(booking) }}
-            </div>
-          </div>
-
           <div class="time-field-row">
             <label for="startTime" class="time-field-label">Startzeitpunkt:</label>
             <p-calendar

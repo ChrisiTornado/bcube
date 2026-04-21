@@ -17,6 +17,7 @@ import interactionPlugin from '@fullcalendar/interaction';
 import { User } from '../../../../models/User';
 import { RouterLink } from '@angular/router';
 import { LoadingSpinnerComponent } from '../../../../shared/loading-spinner/loading-spinner.component';
+import { BookingStatus } from '../../../../models/BookingStatus';
 
 @Component({
   selector: 'app-calendar-view',
@@ -34,6 +35,7 @@ import { LoadingSpinnerComponent } from '../../../../shared/loading-spinner/load
   styleUrl: './calendar-view.component.css'
 })
 export class CalendarViewComponent implements OnInit {
+  readonly bookingStatus = BookingStatus;
   date = null;
   selectedDate: string | null = null;
   displayedMonth: Date = this.startOfMonth(new Date());
@@ -66,15 +68,19 @@ export class CalendarViewComponent implements OnInit {
     events: this.calendarEvents,
     locale: 'de',
     dayMaxEvents: 2,
+    fixedWeekCount: false,
+    showNonCurrentDates: true,
     headerToolbar: {
       left: 'title',
       center: '',
       right: 'prev,next'
     },
     weekends: true,
+    dayCellClassNames: (arg) => this.selectedDate === this.toIsoDate(arg.date) ? ['fc-day-selected'] : [],
     datesSet: (info) => this.handleMonthChange(info),
+    moreLinkContent: (arg) => ({ html: `+${arg.num} Mehr` }),
     moreLinkClick: (info) => {
-      this.selectDate(info.date.toISOString().split('T')[0]);
+      this.selectDate(this.toIsoDate(info.date));
       return 'popover';
     },
     dateClick: (info) => this.selectDate(info.dateStr)
@@ -84,16 +90,10 @@ export class CalendarViewComponent implements OnInit {
     this.user = this.authService.getUser();
 
     this.bookingService.getAllBookingsByUserId(+this.user!.id, 50).subscribe(bookings => {
-      this.bookings = bookings.filter(b => b.status === 'CONFIRMED');
+      this.bookings = bookings.filter(b => b.status === BookingStatus.CONFIRMED || b.status === BookingStatus.DONE);
       this.markCalendarDates();
 
-      this.bookingEventEntries = this.bookings.map(b => ({
-        title: this.formatBookingTimeRange(b),
-        date: this.toIsoDate(b.date),
-        color: '#ffa722',
-        textColor: '#111111',
-        borderColor: '#ffa722'
-      }));
+      this.bookingEventEntries = this.bookings.map(b => this.toCalendarEvent(b));
       this.applyMonthSelection(this.displayedMonth, 0);
       this.refreshCalendarOptions();
 
@@ -127,10 +127,31 @@ export class CalendarViewComponent implements OnInit {
 
   get emptyStateMessage(): string {
     if (this.emptyStateMode === 'month') {
-      return 'In diesem Monat gibt es keine Cube-Sessions.';
+      return 'In diesem Monat gibt es keine geplanten oder abgeschlossenen Cube-Sessions.';
     }
 
-    return 'Für diesen Tag gibt es keine Cube-Sessions.';
+    return 'Für diesen Tag gibt es keine geplanten oder abgeschlossenen Cube-Sessions.';
+  }
+
+  getStatusLabel(status: BookingStatus): string {
+    switch (status) {
+      case BookingStatus.CONFIRMED:
+        return 'Bestätigt';
+      case BookingStatus.DONE:
+        return 'Abgeschlossen';
+      case BookingStatus.CANCELLED:
+        return 'Storniert';
+      case BookingStatus.PENDING:
+        return 'Ausstehend';
+      case BookingStatus.FAILED:
+        return 'Fehlgeschlagen';
+      default:
+        return status;
+    }
+  }
+
+  isDoneBooking(booking: Booking): boolean {
+    return booking.status === BookingStatus.DONE;
   }
 
   showBookingDetails(booking: Booking): void {
@@ -140,31 +161,25 @@ export class CalendarViewComponent implements OnInit {
   }
 
   private refreshCalendarOptions(): void {
-    const events = [...this.bookingEventEntries];
-
-    if (this.selectedDate && this.emptyStateMode !== 'month') {
-      events.push({
-        start: this.selectedDate,
-        display: 'background',
-        color: 'rgba(255, 167, 34, 0.14)'
-      });
-    }
-
     this.calendarOptions = {
       plugins: this.calendarPlugins,
       initialView: 'dayGridMonth',
-      events,
+      events: [...this.bookingEventEntries],
       locale: 'de',
       dayMaxEvents: 2,
+      fixedWeekCount: false,
+      showNonCurrentDates: true,
       headerToolbar: {
         left: 'title',
         center: '',
         right: 'prev,next'
       },
       weekends: true,
+      dayCellClassNames: (arg) => this.selectedDate === this.toIsoDate(arg.date) ? ['fc-day-selected'] : [],
       datesSet: (info) => this.handleMonthChange(info),
+      moreLinkContent: (arg) => ({ html: `+${arg.num} Mehr` }),
       moreLinkClick: (info) => {
-        this.selectDate(info.date.toISOString().split('T')[0]);
+        this.selectDate(this.toIsoDate(info.date));
         return 'popover';
       },
       dateClick: (info) => this.selectDate(info.dateStr)
@@ -172,7 +187,7 @@ export class CalendarViewComponent implements OnInit {
   }
 
   private handleMonthChange(info: DatesSetArg): void {
-    const nextMonth = this.startOfMonth(info.start);
+    const nextMonth = this.startOfMonth((info.view as any).currentStart ?? info.start);
     const currentMonth = this.startOfMonth(this.displayedMonth);
 
     if (this.isSameMonth(nextMonth, currentMonth)) {
@@ -186,8 +201,15 @@ export class CalendarViewComponent implements OnInit {
   }
 
   private toIsoDate(dateValue: string | Date): string {
+    if (typeof dateValue === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(dateValue)) {
+      return dateValue;
+    }
+
     const normalizedDate = dateValue instanceof Date ? dateValue : new Date(dateValue);
-    return normalizedDate.toISOString().split('T')[0];
+    const year = normalizedDate.getFullYear();
+    const month = String(normalizedDate.getMonth() + 1).padStart(2, '0');
+    const day = String(normalizedDate.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   }
 
   private applyMonthSelection(month: Date, direction: number): void {
@@ -217,6 +239,19 @@ export class CalendarViewComponent implements OnInit {
     this.selectedDate = this.toIsoDate(month);
     this.selectedDayBookings = [];
     this.emptyStateMode = 'month';
+  }
+
+  private toCalendarEvent(booking: Booking): EventInput {
+    const isDone = booking.status === BookingStatus.DONE;
+
+    return {
+      title: this.formatBookingTimeRange(booking),
+      date: this.toIsoDate(booking.date),
+      color: isDone ? '#6f7785' : '#ffa722',
+      textColor: isDone ? '#f5f7fb' : '#111111',
+      borderColor: isDone ? '#6f7785' : '#ffa722',
+      classNames: [isDone ? 'calendar-event-done' : 'calendar-event-confirmed']
+    };
   }
 
   private formatDisplayDate(value: Date): string {
@@ -314,7 +349,7 @@ export class CalendarViewComponent implements OnInit {
         console.warn('Ungültiges Datum:', dateStr);
         return;
       }
-      const isoDate = dateObj.toISOString().split('T')[0];
+      const isoDate = this.toIsoDate(dateObj);
 
       // Alle Einzelbuchungen (Events)
       for (const b of bookingsOnDate) {
@@ -333,7 +368,7 @@ export class CalendarViewComponent implements OnInit {
         this.calendarEvents.push({
           start: isoDate,
           display: 'background',
-          color: '#e0e0e0',
+          color: 'rgba(167, 176, 194, 0.16)',
         });
       }
     });

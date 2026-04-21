@@ -69,12 +69,16 @@ export class StudioDetailsComponent implements OnInit {
     events: this.calendarEvents,
     locale: 'de',
     dayMaxEvents: 2,
+    fixedWeekCount: false,
+    showNonCurrentDates: true,
     headerToolbar: {
       left: 'title',
       center: '',
       right: 'prev,next'
     },
     weekends: true,
+    dayCellClassNames: (arg) => this.date && this.toIsoDate(this.date) === this.toIsoDate(arg.date) ? ['fc-day-selected'] : [],
+    moreLinkContent: (arg) => ({ html: `+${arg.num} Mehr` }),
     moreLinkClick: 'popover',
     dateClick: this.handleDateClick.bind(this)
   };
@@ -132,7 +136,7 @@ export class StudioDetailsComponent implements OnInit {
 
       const events = this.bookings.map(b => ({
         title: `${this.formatTime(new Date(b.startTime))} – ${this.formatTime(new Date(b.endTime))}`,
-        date: new Date(b.date).toISOString().split('T')[0],
+        date: this.toIsoDate(new Date(b.date)),
         color: '#ffa722',
         textColor: '#111111',
         borderColor: '#ffa722'
@@ -145,16 +149,20 @@ export class StudioDetailsComponent implements OnInit {
         events,
         locale: 'de',
         dayMaxEvents: 2,
+        fixedWeekCount: false,
+        showNonCurrentDates: true,
         headerToolbar: {
           left: 'title',
           center: '',
           right: 'prev,next'
         },
         weekends: true,
+        dayCellClassNames: (arg) => this.date && this.toIsoDate(this.date) === this.toIsoDate(arg.date) ? ['fc-day-selected'] : [],
+        moreLinkContent: (arg) => ({ html: `+${arg.num} Mehr` }),
         moreLinkClick: 'popover',
         dateClick: this.handleDateClick.bind(this),
         ...(this.isUser && {
-          validRange: { start: today.toISOString().split('T')[0] }
+          validRange: { start: this.toIsoDate(today) }
         })
       };
     });
@@ -166,31 +174,14 @@ export class StudioDetailsComponent implements OnInit {
   handleDateClick(arg: any): void {
     const clickedDate = new Date(arg.dateStr);
     this.date = clickedDate;
-    this.checkTimeConflict()
-
-    const isoDate = clickedDate.toISOString().split('T')[0];
-    const currentEvents = Array.isArray(this.calendarOptions.events)
-      ? this.calendarOptions.events as EventInput[]
-      : [];
-
-    // Entfernt vorherige Markierungen
-    const otherEvents = currentEvents.filter(
-      (e: any) => e.display !== 'background' || e.color !== '#cce5ff'
-    );
-
-    // Hebt das gewählte Datum hervor
-    const highlightEvent: EventInput = {
-      start: isoDate,
-      end: isoDate,
-      display: 'background',
-      color: '#cce5ff'
-    };
+    this.checkTimeConflict();
 
     this.calendarOptions = {
       ...this.calendarOptions,
       dayMaxEvents: 2,
+      moreLinkContent: (arg) => ({ html: `+${arg.num} Mehr` }),
       moreLinkClick: 'popover',
-      events: [...otherEvents, highlightEvent]
+      dayCellClassNames: (cellArg) => this.date && this.toIsoDate(this.date) === this.toIsoDate(cellArg.date) ? ['fc-day-selected'] : []
     };
   }
 
@@ -221,7 +212,7 @@ export class StudioDetailsComponent implements OnInit {
       const dateObj = new Date(dateStr);
       if (isNaN(dateObj.getTime())) return;
 
-      const isoDate = dateObj.toISOString().split('T')[0];
+      const isoDate = this.toIsoDate(dateObj);
 
       for (const b of bookingsOnDate) {
         this.calendarEvents.push({
@@ -238,7 +229,7 @@ export class StudioDetailsComponent implements OnInit {
         this.calendarEvents.push({
           start: isoDate,
           display: 'background',
-          color: '#e0e0e0'
+          color: 'rgba(167, 176, 194, 0.16)'
         });
       }
     });
@@ -477,7 +468,10 @@ export class StudioDetailsComponent implements OnInit {
   }
 
   private toIsoDate(date: Date): string {
-    return date.toISOString().split('T')[0];
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   }
 
   private formatTimeVienna(date: Date): string {

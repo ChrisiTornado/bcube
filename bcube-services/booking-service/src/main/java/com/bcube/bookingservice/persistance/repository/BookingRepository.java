@@ -1,14 +1,16 @@
 package com.bcube.bookingservice.persistance.repository;
 
 import com.bcube.bookingservice.persistance.entity.Booking;
+import com.bcube.bookingservice.persistance.entity.BookingStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.time.LocalDate;
 
 @Repository
 public interface BookingRepository extends JpaRepository<Booking, Long> {
@@ -26,5 +28,10 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             Long userId,
             Long studioId,
             Pageable pageable
+    );
+
+    List<Booking> findAllByStatusInAndDateLessThanEqual(
+            Collection<BookingStatus> statuses,
+            LocalDate date
     );
 }
