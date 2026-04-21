@@ -10,10 +10,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 
 @Entity
-@Table(
-        name = "bookings",
-        uniqueConstraints = @UniqueConstraint(columnNames = {"studio_id", "start_time"})
-)
+@Table(name = "bookings")
 @Data
 @Builder
 @AllArgsConstructor

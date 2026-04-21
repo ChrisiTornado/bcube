@@ -30,10 +30,17 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
 public class BookingServiceImpl implements BookingService {
+
+    private static final Set<BookingStatus> BLOCKING_STATUSES = Set.of(
+            BookingStatus.CONFIRMED,
+            BookingStatus.PENDING,
+            BookingStatus.DONE
+    );
 
     private final BookingRepository bookingRepository;
     private final UserClient userClient;
@@ -202,6 +209,7 @@ public class BookingServiceImpl implements BookingService {
 
         booking.setStatus(BookingStatus.CANCELLED);
         bookingRepository.save(booking);
+        accessCodeClient.deleteAccessCode(bookingId);
         UserDto user = userClient.getUserById(booking.getUserId(), token);
         StudioDto studio = studioClient.getStudioById(booking.getStudioId());
 
@@ -270,6 +278,22 @@ public class BookingServiceImpl implements BookingService {
 
         if (now.isAfter(endTime)) {
             throw new IllegalArgumentException("End time is after the current time");
+        }
+
+        List<Booking> dayBookings = bookingRepository.findAllByStudioIdAndDate(
+                bookStudioRequest.getStudioID(),
+                date
+        );
+
+        boolean overlapsWithActiveBooking = dayBookings.stream()
+                .filter(existing -> BLOCKING_STATUSES.contains(existing.getStatus()))
+                .anyMatch(existing ->
+                        startTime.isBefore(existing.getEndTime()) &&
+                        endTime.isAfter(existing.getStartTime())
+                );
+
+        if (overlapsWithActiveBooking) {
+            throw new IllegalArgumentException("Der gewählte Zeitraum überschneidet sich mit einer bestehenden Buchung");
         }
 
         Booking booking = Booking.builder()

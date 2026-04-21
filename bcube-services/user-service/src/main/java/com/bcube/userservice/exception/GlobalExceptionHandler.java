@@ -21,6 +21,7 @@ public class GlobalExceptionHandler {
         String firstErrorMessage = ex.getBindingResult().getFieldErrors().stream()
                 .findFirst()
                 .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                .map(this::toGermanValidationMessage)
                 .orElse("Ungültige Eingabe – bitte überprüfe deine Angaben");
         return new ResponseEntity<>(new ApiResponse<>(firstErrorMessage, null), HttpStatus.BAD_REQUEST);
     }
@@ -48,5 +49,18 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InvalidResetTokenException.class)
     public ResponseEntity<ApiResponse<Void>> handleInvalidResetToken(InvalidResetTokenException ex) {
         return new ResponseEntity<>(new ApiResponse<>(ex.getMessage(), null), HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+
+    private String toGermanValidationMessage(String message) {
+        if (message == null || message.isBlank()) {
+            return "Ungültige Eingabe – bitte überprüfe deine Angaben";
+        }
+
+        return switch (message.trim()) {
+            case "must be a well-formed email address" -> "Bitte gib eine gültige E-Mail-Adresse ein";
+            case "must not be blank" -> "Dieses Feld ist erforderlich";
+            case "must not be null" -> "Dieses Feld ist erforderlich";
+            default -> message;
+        };
     }
 }

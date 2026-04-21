@@ -1,0 +1,109 @@
+<section class="profile-view">
+  <p-toast position="top-right"></p-toast>
+  <p-confirmDialog></p-confirmDialog>
+
+  <div class="profile-loading" *ngIf="loading">
+    <div class="profile-loader"></div>
+  </div>
+
+  <div class="profile-shell" *ngIf="!loading">
+    <div class="profile-hero">
+      <div class="profile-avatar">
+        <span>{{ initials }}</span>
+      </div>
+
+      <div class="profile-intro">
+        <h1>{{ displayName }}</h1>
+        <p>Verwalte hier deine persönlichen Daten, Sicherheitseinstellungen und rechtlichen Informationen an einem Ort.</p>
+      </div>
+    </div>
+
+    <div class="profile-grid">
+      <article class="profile-card">
+        <div class="profile-card-header">
+          <h2>Persönliche Daten</h2>
+          <span>Profil</span>
+        </div>
+
+        <form [formGroup]="profileForm" class="profile-fields">
+          <div class="profile-field">
+            <label>Vorname</label>
+            <input pInputText formControlName="firstName" class="profile-input" />
+          </div>
+
+          <div class="profile-field">
+            <label>Nachname</label>
+            <input pInputText formControlName="lastName" class="profile-input" />
+          </div>
+
+          <div class="profile-field profile-field-wide">
+            <label>E-Mail</label>
+            <input pInputText formControlName="email" class="profile-input" />
+          </div>
+
+          <div class="profile-field profile-field-wide">
+            <label>Telefonnummer</label>
+            <input pInputText formControlName="phone" class="profile-input" />
+          </div>
+
+          <div class="profile-save-row profile-field-wide">
+            <p-button
+              label="Speichern"
+              icon="pi pi-save"
+              [loading]="saving"
+              styleClass="profile-save-button"
+              (onClick)="saveProfile()">
+            </p-button>
+          </div>
+        </form>
+      </article>
+
+      <aside class="profile-card profile-side-card">
+        <div class="profile-card-header">
+          <h2>Einstellungen</h2>
+        </div>
+
+        <button type="button" class="settings-item" (click)="goToPasswordFlow()">
+          <span class="settings-item-icon pi pi-lock"></span>
+          <span class="settings-item-copy">
+            <span class="settings-item-title">Passwort ändern</span>
+            <span class="settings-item-text">Starte den sicheren Passwort-Reset mit Code per E-Mail.</span>
+          </span>
+          <span class="settings-item-arrow pi pi-chevron-right"></span>
+        </button>
+
+        <button type="button" class="settings-item" (click)="openPaymentInfo()">
+          <span class="settings-item-icon pi pi-credit-card"></span>
+          <span class="settings-item-copy">
+            <span class="settings-item-title">Zahlungsmittel</span>
+            <span class="settings-item-text">Dieser Bereich ist vorbereitet und kann als nächstes ergänzt werden.</span>
+          </span>
+          <span class="settings-item-arrow pi pi-chevron-right"></span>
+        </button>
+
+        <a routerLink="/legal" [state]="{ returnUrl: '/user-dashboard/profile' }" class="settings-item">
+          <span class="settings-item-icon pi pi-file-edit"></span>
+          <span class="settings-item-copy">
+            <span class="settings-item-title">Rechtliches</span>
+            <span class="settings-item-text">Impressum, Datenschutzerklärung und AGB gesammelt aufrufen.</span>
+          </span>
+          <span class="settings-item-arrow pi pi-chevron-right"></span>
+        </a>
+
+        <button type="button" class="settings-item settings-item-danger" (click)="openDeleteAccountDialog()">
+          <span class="settings-item-icon pi pi-trash"></span>
+          <span class="settings-item-copy">
+            <span class="settings-item-title">Account löschen</span>
+            <span class="settings-item-text">Diese Aktion ist dauerhaft und kann nicht rückgängig gemacht werden.</span>
+          </span>
+          <span class="settings-item-arrow" *ngIf="!deleting; else deletingState">
+            <span class="pi pi-chevron-right"></span>
+          </span>
+          <ng-template #deletingState>
+            <span class="settings-item-loading pi pi-spin pi-spinner"></span>
+          </ng-template>
+        </button>
+      </aside>
+    </div>
+  </div>
+</section>

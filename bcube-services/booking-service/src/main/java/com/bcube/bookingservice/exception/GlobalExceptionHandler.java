@@ -28,4 +28,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<StudioNotFoundException>> studioNotFoundException(StudioNotFoundException ex) {
         return new ResponseEntity<>(new ApiResponse<>(ex.getMessage(), null), HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ApiResponse<Void>> illegalArgumentException(IllegalArgumentException ex) {
+        return new ResponseEntity<>(new ApiResponse<>(ex.getMessage(), null), HttpStatus.BAD_REQUEST);
+    }
 }

@@ -43,7 +43,24 @@ public class AccessCodeClient {
         } catch (WebClientResponseException.NotFound e) {
             return null;
         } catch (WebClientResponseException e) {
-            throw new RuntimeException("Fehler beim Abrufen des Studios: " + e.getMessage(), e);
+            throw new RuntimeException("Fehler beim Abrufen des Zutrittscodes: " + e.getMessage(), e);
+        }
+    }
+
+    public void deleteAccessCode(Long bookingId) {
+        try {
+            webClientBuilder.build()
+                    .delete()
+                    .uri(accessServiceBaseUrl + "/" + bookingId)
+                    .retrieve()
+                    .toBodilessEntity()
+                    .block();
+        } catch (WebClientResponseException.NotFound ignored) {
+            // Bereits gelöscht oder nicht vorhanden.
+        } catch (WebClientResponseException.BadRequest ignored) {
+            // Access-Service meldet aktuell fehlende Codes als 400.
+        } catch (WebClientResponseException e) {
+            throw new RuntimeException("Fehler beim Löschen des Zutrittscodes: " + e.getMessage(), e);
         }
     }
 }

@@ -8,10 +8,13 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.time.LocalDate;
 
 @Repository
 public interface BookingRepository extends JpaRepository<Booking, Long> {
     Optional<Booking> findById(Long id);
+
+    List<Booking> findAllByStudioIdAndDate(Long studioId, LocalDate date);
 
     Page<Booking> findAllByUserId(Long userId, Pageable pageable);
 

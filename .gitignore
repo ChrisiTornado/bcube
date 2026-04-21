@@ -35,30 +35,39 @@ build/
 
 # === ANGULAR / FRONTEND ===
 # node modules
-bcube-frontend/node_modules/
-bcube-frontend/src/environments/environment.local.ts
+bcube-web/node_modules/
+bcube-web/src/environments/environment.local.ts
 
 # build output
-bcube-frontend/dist/
-bcube-frontend/.angular/
+bcube-web/dist/
+bcube-web/.angular/
 
 # IDE/project settings
-bcube-frontend/.vscode/
-bcube-frontend/.idea/
+bcube-web/.vscode/
+bcube-web/.idea/
 
 # test coverage
-bcube-frontend/coverage/
+bcube-web/coverage/
 
 # Angular-specific logs
-bcube-frontend/npm-debug.log*
-bcube-frontend/yarn-error.log*
-bcube-frontend/pnpm-debug.log*
+bcube-web/npm-debug.log*
+bcube-web/yarn-error.log*
+bcube-web/pnpm-debug.log*
 
 # Tailwind cache (falls verwendet)
-bcube-frontend/.tailwind-cache/
+bcube-web/.tailwind-cache/
 
 # env files
 # environment*
 # .env
 
 node_modules
+
+# === IOS / XCODE ===
+bcube-ios/**/xcuserdata/
+bcube-ios/**/*.xcuserstate
+bcube-ios/**/UserInterfaceState.xcuserstate
+bcube-ios/DerivedData/
+
+# macOS Finder
+**/.DS_Store

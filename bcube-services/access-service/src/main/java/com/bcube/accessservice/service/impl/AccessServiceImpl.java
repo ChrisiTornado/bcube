@@ -12,13 +12,14 @@ import com.bcube.accessservice.service.dto.response.StornoResponse;
 import com.bcube.accessservice.utility.CryptoUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.security.SecureRandom;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.Optional;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +29,7 @@ public class AccessServiceImpl implements AccessService {
     private final CryptoUtil cryptoUtil;
 
     @Override
+    @Transactional
     public AccessCodeResponse createPermission(AccessRequest accessRequest) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy'T'HH:mm:ss"); // z. B. "07.07.2025T13:15:00"
 
@@ -55,12 +57,21 @@ public class AccessServiceImpl implements AccessService {
             throw new EncryptionException("PIN encryption failed");
         }
 
-        AccessPermission accessPermission = AccessPermission.builder()
-                .accessCode(encryptedPin)
-                .bookingId(accessRequest.getBookingId())
-                .validFrom(validFrom)
-                .validUntil(validUntil)
-                .build();
+        List<AccessPermission> existingPermissions = accessRepository
+                .findAllByBookingIdOrderByIdDesc(accessRequest.getBookingId());
+
+        AccessPermission accessPermission = existingPermissions.stream()
+                .findFirst()
+                .orElseGet(AccessPermission::new);
+
+        accessPermission.setBookingId(accessRequest.getBookingId());
+        accessPermission.setAccessCode(encryptedPin);
+        accessPermission.setValidFrom(validFrom);
+        accessPermission.setValidUntil(validUntil);
+
+        if (existingPermissions.size() > 1) {
+            accessRepository.deleteAll(existingPermissions.stream().skip(1).toList());
+        }
 
         accessRepository.save(accessPermission);
         return new AccessCodeResponse(
@@ -69,25 +80,26 @@ public class AccessServiceImpl implements AccessService {
     }
 
     @Override
+    @Transactional
     public StornoResponse deletePermission(Long bookingId) {
-        Optional<AccessPermission> pinCode = accessRepository.findByBookingId(bookingId);
-        if (pinCode.isEmpty()) {
+        List<AccessPermission> existingPermissions = accessRepository.findAllByBookingIdOrderByIdDesc(bookingId);
+        if (existingPermissions.isEmpty()) {
             throw new AccessCodeDoesNotExistException("Access code does not exist");
         }
-        accessRepository.deleteByBookingId(bookingId);
+        accessRepository.deleteAll(existingPermissions);
         return new StornoResponse(true);
     }
 
     @Override
     public AccessCodeResponse getAccessCode(Long bookingId) {
-        AccessPermission permission = accessRepository.findByBookingId(bookingId)
+        AccessPermission permission = accessRepository.findFirstByBookingIdOrderByIdDesc(bookingId)
                 .orElseThrow(() -> new AccessCodeDoesNotExistException("Access code does not exist"));
 
         String encryptedPin;
         try {
             encryptedPin = cryptoUtil.decrypt(permission.getAccessCode());
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new EncryptionException("Zutrittscode konnte nicht gelesen werden");
         }
         return new AccessCodeResponse(encryptedPin);
     }
