@@ -21,7 +21,6 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class BookingStatusMaintenanceService {
 
-    private static final ZoneId VIENNA_ZONE = ZoneId.of("Europe/Vienna");
     private static final Set<BookingStatus> OPEN_STATUSES = Set.of(
             BookingStatus.CONFIRMED,
             BookingStatus.PENDING
@@ -34,7 +33,7 @@ public class BookingStatusMaintenanceService {
     @Scheduled(fixedDelayString = "${booking.status.scheduler.delay-ms:300000}")
     public void markFinishedBookingsAsDone() {
         Instant now = Instant.now(bookingClock);
-        LocalDate today = LocalDate.now(bookingClock.withZone(VIENNA_ZONE));
+        LocalDate today = LocalDate.now(bookingClock);
 
         List<Booking> candidateBookings = bookingRepository.findAllByStatusInAndDateLessThanEqual(
                 OPEN_STATUSES,
