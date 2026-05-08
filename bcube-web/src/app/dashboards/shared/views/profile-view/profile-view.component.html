@@ -90,6 +90,15 @@
           <span class="settings-item-arrow pi pi-chevron-right"></span>
         </a>
 
+        <button type="button" class="settings-item" (click)="openLogoutDialog()">
+          <span class="settings-item-icon pi pi-sign-out"></span>
+          <span class="settings-item-copy">
+            <span class="settings-item-title">Logout</span>
+            <span class="settings-item-text">Beende deine aktuelle Sitzung sicher direkt aus den Einstellungen.</span>
+          </span>
+          <span class="settings-item-arrow pi pi-chevron-right"></span>
+        </button>
+
         <button type="button" class="settings-item settings-item-danger" (click)="openDeleteAccountDialog()">
           <span class="settings-item-icon pi pi-trash"></span>
           <span class="settings-item-copy">

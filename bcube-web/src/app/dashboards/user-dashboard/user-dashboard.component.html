@@ -3,7 +3,7 @@
 
 <!-- Titelzeile -->
 <header class="user-header">
-  <div class="header-content">
+  <div class="header-brand">
     <img 
       src="assets/images/nice.jpg" 
       alt="bcube logo" 
@@ -12,21 +12,17 @@
     <span class="brand-text">cube</span>
   </div>
 
+  <p-megaMenu
+    [model]="items"
+    styleClass="user-top-menu">
+  </p-megaMenu>
+
   <a class="profile-avatar-button" routerLink="/user-dashboard/profile" aria-label="Zum Profil">
     <span>{{ avatarLabel }}</span>
   </a>
 </header>
 
-<!-- Hauptbereich -->
 <div class="user-layout">
-  <!-- Linkes Menü -->
-  <p-megaMenu 
-    [model]="items" 
-    orientation="vertical" 
-    styleClass="admin-menu">
-  </p-megaMenu>
-
-  <!-- Rechter Inhaltsbereich -->
   <div class="page-content">
     <router-outlet></router-outlet>
   </div>

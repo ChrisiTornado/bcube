@@ -1,76 +1,181 @@
-<div class="view-header flex align-items-center flex-wrap gap-4 mb-4">
-    <h1 class="m-0">Cubes</h1>
-    <app-studios *ngIf="isAdmin"></app-studios>
+<div class="explore-shell">
+  <section class="results-panel" #resultsPanel>
+    <div class="results-toolbar">
+      <div class="results-copy">
+        <p class="eyebrow">Over {{ totalStudios || studios.length }} Bcube spots in Vienna</p>
+        <h1>Cubes in Wien entdecken</h1>
+      </div>
+      <app-studios *ngIf="isAdmin"></app-studios>
+    </div>
+
+    <div class="results-grid" *ngIf="studios.length > 0; else emptyState">
+      <article
+        *ngFor="let studio of studios; trackBy: trackByStudioId"
+        #studioCard
+        class="studio-card"
+        [class.is-selected]="selectedStudio?.id === studio.id"
+        [attr.data-studio-id]="studio.id"
+        (click)="navigateToDetails(studio)"
+      >
+        <div class="studio-media">
+          <div class="media-track" [style.transform]="getStudioTranslate(studio)">
+            <img
+              *ngFor="let image of studio.gallery; let index = index; trackBy: trackByImage"
+              [src]="image"
+              [alt]="studio.name + ' Bild ' + (index + 1)"
+              loading="lazy"
+              decoding="async"
+              (error)="handleStudioImageError($event, studio)"
+            />
+          </div>
+          <button
+            *ngIf="studio.gallery.length > 1"
+            type="button"
+            class="media-nav media-nav-prev"
+            (click)="showPreviousStudioImage(studio, $event)"
+            aria-label="Vorheriges Bild">
+            ‹
+          </button>
+          <button
+            *ngIf="studio.gallery.length > 1"
+            type="button"
+            class="media-nav media-nav-next"
+            (click)="showNextStudioImage(studio, $event)"
+            aria-label="Nächstes Bild">
+            ›
+          </button>
+          <div class="media-dots" *ngIf="studio.gallery.length > 1">
+            <span
+              *ngFor="let image of studio.gallery; let index = index; trackBy: trackByImage"
+              class="media-dot"
+              [class.is-active]="index === getStudioImageIndex(studio)">
+            </span>
+          </div>
+          <span class="studio-badge">Bcube Spot</span>
+        </div>
+
+        <div class="studio-copy">
+          <div class="studio-heading">
+            <h2>{{ studio.name }}</h2>
+            <span class="studio-rating">{{ studio.city }}</span>
+          </div>
+
+          <p class="studio-address">{{ studio.street }}, {{ studio.plz }} {{ studio.city }}</p>
+          <p class="studio-description">{{ getStudioTeaser(studio) }}</p>
+          <p class="studio-meta">Flexible Sessions · {{ studio.country }}</p>
+
+          <div class="admin-actions" *ngIf="isAdmin">
+            <app-update-studio [studio]="studio" (click)="$event.stopPropagation()"></app-update-studio>
+            <app-delete-studio [studio]="studio" (click)="$event.stopPropagation()"></app-delete-studio>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <div class="results-actions" *ngIf="canLoadMore">
+      <button
+        pButton
+        type="button"
+        [label]="loadingMore ? 'Lade...' : 'Mehr anzeigen'"
+        class="load-more-button"
+        [disabled]="loadingMore"
+        (click)="loadMoreStudios()"
+      ></button>
+    </div>
+
+    <ng-template #emptyState>
+      <div class="empty-state">
+        <h2>Aktuell sind keine Cubes verfügbar.</h2>
+        <p>Sobald neue Standorte online sind, erscheinen sie hier direkt neben der Karte.</p>
+      </div>
+    </ng-template>
+  </section>
+
+  <aside class="map-panel">
+    <div class="map-frame">
+      <div #mapSurface class="map-surface"></div>
+
+      <div class="map-chip map-chip-top">{{ totalStudios || studios.length }} Ergebnisse</div>
+
+      <button
+        *ngIf="selectedStudio"
+        type="button"
+        class="map-chip map-chip-reset"
+        (click)="clearSelection()"
+      >
+        Ansicht zurücksetzen
+      </button>
+
+      <article class="map-preview-card" *ngIf="selectedStudio">
+        <div class="map-preview-media">
+          <div class="media-track map-media-track" [style.transform]="getMapPreviewTranslate(selectedStudio)">
+            <img
+              *ngFor="let image of selectedStudio.gallery; let index = index; trackBy: trackByImage"
+              [src]="image"
+              [alt]="selectedStudio.name + ' Bild ' + (index + 1)"
+              loading="lazy"
+              decoding="async"
+              (error)="handleStudioImageError($event, selectedStudio)"
+              class="map-preview-image"
+            />
+          </div>
+        </div>
+        <button
+          *ngIf="selectedStudio.gallery.length > 1"
+          type="button"
+          class="media-nav media-nav-prev map-media-nav"
+          (click)="showPreviousMapPreviewImage(selectedStudio, $event)"
+          aria-label="Vorheriges Bild">
+          ‹
+        </button>
+        <button
+          *ngIf="selectedStudio.gallery.length > 1"
+          type="button"
+          class="media-nav media-nav-next map-media-nav"
+          (click)="showNextMapPreviewImage(selectedStudio, $event)"
+          aria-label="Nächstes Bild">
+          ›
+        </button>
+        <div class="media-dots map-media-dots" *ngIf="selectedStudio.gallery.length > 1">
+          <span
+            *ngFor="let image of selectedStudio.gallery; let index = index; trackBy: trackByImage"
+            class="media-dot"
+            [class.is-active]="index === getMapPreviewImageIndex(selectedStudio)">
+          </span>
+        </div>
+
+        <div class="map-preview-copy">
+          <h3>{{ selectedStudio.name }}</h3>
+          <p
+            class="map-preview-address"
+            [title]="selectedStudio.street + ', ' + selectedStudio.plz + ' ' + selectedStudio.city"
+          >
+            {{ selectedStudio.street }}, {{ selectedStudio.plz }} {{ selectedStudio.city }}
+          </p>
+
+          <div class="map-preview-actions">
+            <button
+              pButton
+              type="button"
+              class="preview-button"
+              label="Details ansehen"
+              (click)="navigateToDetails(selectedStudio)"
+            ></button>
+
+            <button
+              type="button"
+              class="preview-text-link"
+              (click)="openDirections(selectedStudio, $event)"
+            >
+              Route
+            </button>
+          </div>
+        </div>
+      </article>
+    </div>
+  </aside>
 </div>
 
-<app-loading-spinner *ngIf="loading$ | async"></app-loading-spinner>
-
-<ng-container *ngIf="!(loading$ | async) && (studios$ | async) as studios">
-    <div class="table-shell" style="padding-bottom: 0.5rem;">
-        <p-table class="small-rows" [value]="studios ?? []">
-            <ng-template pTemplate="header">
-                <tr>
-                    <th style="width:20%">Cubebild</th>
-                    <th pSortableColumn="name" style="width:20%">
-                        Name <p-sortIcon field="name"></p-sortIcon>
-                    </th>
-                    <th style="width:20%">Adresse</th>
-                    <th pSortableColumn="country" style="width:20%">
-                        Land <p-sortIcon field="country"></p-sortIcon>
-                    </th>
-                    <th *ngIf="isAdmin">Bearbeiten</th>
-                    <th *ngIf="isAdmin">Löschen</th>
-                </tr>
-            </ng-template>
-
-            <ng-template pTemplate="body" let-studio>
-                <tr (click)="navigateToDetails(studio)" style="cursor: pointer;">
-                    <td>
-                        <div class="studio-image-cell">
-                            <img [src]="studio.imageBase64" alt="Cubebild">
-                        </div>
-                    </td>
-                    <td>{{ studio.name }}</td>
-                    <td>{{ studio.street }}, {{ studio.plz }} {{ studio.city }}</td>
-                    <td>{{ studio.country }}</td>
-
-                    <td *ngIf="isAdmin">
-                        <div class="studio-action-cell">
-                            <app-update-studio [studio]="studio"
-                                               (click)="$event.stopPropagation()">
-                            </app-update-studio>
-                        </div>
-                    </td>
-
-                    <td *ngIf="isAdmin">
-                        <div class="studio-action-cell">
-                            <app-delete-studio [studio]="studio"
-                                               (click)="$event.stopPropagation()">
-                            </app-delete-studio>
-                        </div>
-                    </td>
-                </tr>
-            </ng-template>
-        </p-table>
-    </div>
-    <!-- 🔥 Ende Scrollbereich -->
-
-    <!-- Pagination unten fix -->
-    <div class="pager-shell flex justify-content-center gap-4 mt-4" *ngIf="totalPages > 1">
-        <button pButton label="<- Zurück"
-                [style]="{'background-color': 'white', 'border-color': 'black', 'color': 'black'}"
-                (click)="loadPage(this.studioService.page - 1)"
-                [disabled]="this.studioService.page === 0">
-        </button>
-
-        <span class="mt-2 mx-3 font-bold">
-            Seite {{ this.studioService.page + 1 }} von {{ totalPages }}
-        </span>
-
-        <button pButton label="Weiter ->"
-                [style]="{'background-color': 'white', 'border-color': 'black', 'color': 'black'}"
-                (click)="loadPage(this.studioService.page + 1)"
-                [disabled]="this.studioService.page >= totalPages - 1">
-        </button>
-    </div>
-</ng-container>
+<div class="loading-overlay" *ngIf="isInitialLoading">
+  <app-loading-spinner></app-loading-spinner>
+</div>

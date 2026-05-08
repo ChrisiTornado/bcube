@@ -62,7 +62,7 @@ export class AdminDashboardComponent implements OnInit {
         label: 'Cubes',
         icon: 'pi pi-fw pi-building',
         routerLink: 'studios',
-        styleClass: this.isRouteActive(['studios', 'studio-details']) ? 'p-menuitem-link-active' : ''
+        styleClass: this.isRouteActive(['studios', 'studio-details', 'map']) ? 'p-menuitem-link-active' : ''
       },
       {
         label: 'Users',
@@ -71,18 +71,11 @@ export class AdminDashboardComponent implements OnInit {
         styleClass: this.isRouteActive(['users']) ? 'p-menuitem-link-active' : ''
       },
       {
-        label: 'Karte',
-        icon: 'pi pi-fw pi-map',
-        routerLink: 'map',
-        styleClass: this.isRouteActive(['map']) ? 'p-menuitem-link-active' : ''
-      },
-      {
         label: 'Buchungen',
         icon: 'pi pi-fw pi-folder-open',
         routerLink: 'bookings',
         styleClass: this.isRouteActive(['bookings', 'booking-details', 'booking-confirmation']) ? 'p-menuitem-link-active' : ''
       },
-    
       {
         label: 'Logout',
         icon: 'pi pi-fw pi-sign-out',

@@ -7,7 +7,6 @@ import { AdminDashboardComponent } from './dashboards/admin-dashboard/admin-dash
 import { UserDashboardComponent } from './dashboards/user-dashboard/user-dashboard.component';
 import { UsersViewComponent } from './dashboards/admin-dashboard/views/users-view/users-view.component';
 import { StudiosViewComponent } from './dashboards/shared/views/studios-view/studios-view.component';
-import { MapViewComponent } from './dashboards/shared/views/map-view/map-view.component';
 import { CalendarViewComponent } from './dashboards/shared/views/calendar-view/calendar-view.component';
 import { BookingsViewComponent } from './dashboards/shared/views/bookings-view/bookings-view.component';
 import { StudioDetailsComponent } from './dashboards/shared/views/studios-view/studio-details/studio-details.component';
@@ -42,7 +41,7 @@ export const routes: Routes = [
             { path: 'studios', component: StudiosViewComponent },
             { path: 'users', component: UsersViewComponent },
             { path: 'studio', component: StudiosViewComponent },
-            { path: 'map', component: MapViewComponent },
+            { path: 'map', redirectTo: 'studios', pathMatch: 'full' },
             { path: 'bookings', component: BookingsViewComponent },
             { path: 'calendar', component: CalendarViewComponent },
             { path: 'profile', component: ProfileViewComponent },
@@ -60,9 +59,10 @@ export const routes: Routes = [
             { path: 'studios', component: StudiosViewComponent },
             { path: 'users', component: UsersViewComponent },
             { path: 'studio', component: StudiosViewComponent },
-            { path: 'map', component: MapViewComponent },
-            { path: 'bookings', component: BookingsViewComponent },
-            { path: 'calendar', component: CalendarViewComponent },
+            { path: 'map', redirectTo: 'studios', pathMatch: 'full' },
+            { path: 'bookings', component: CalendarViewComponent },
+            { path: 'all-bookings', component: BookingsViewComponent },
+            { path: 'calendar', redirectTo: 'bookings', pathMatch: 'full' },
             { path: 'profile', component: ProfileViewComponent },
             { path: 'studio-details/:id', component: StudioDetailsComponent },
             { path: 'booking-details/:id', component: BookingDetailsComponent }

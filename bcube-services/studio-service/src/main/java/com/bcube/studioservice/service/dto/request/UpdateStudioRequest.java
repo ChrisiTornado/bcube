@@ -13,6 +13,7 @@ public class UpdateStudioRequest {
     private String city;
     private String country;
     private byte[] image;
+    private List<byte[]> images;
     private int id;
     private String name;
     private String description;

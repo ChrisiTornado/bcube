@@ -9,5 +9,6 @@ export interface StudioResponse {
   country: string;
   latitude: number;
   longitude: number;
-  image: number[];
+  imageBase64: string;
+  imageGalleryBase64: string[];
 }

@@ -139,6 +139,17 @@ export class ProfileViewComponent implements OnInit {
     });
   }
 
+  openLogoutDialog(): void {
+    this.confirmationService.confirm({
+      message: 'Moechtest du dich wirklich ausloggen?',
+      header: 'Logout bestaetigen',
+      icon: 'pi pi-sign-out',
+      acceptLabel: 'Ja, ausloggen',
+      rejectLabel: 'Abbrechen',
+      accept: () => this.authService.logout()
+    });
+  }
+
   private deleteAccount(): void {
     if (!this.user?.id) {
       return;

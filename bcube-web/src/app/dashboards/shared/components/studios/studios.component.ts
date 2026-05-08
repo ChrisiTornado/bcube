@@ -34,7 +34,8 @@ export class StudiosComponent implements OnInit{
   @ViewChild('fileUpload') fileUpload: any;
   isAdmin = false;
 
-  selectedImage: File | null = null;
+  selectedImages: File[] = [];
+  imagePreviews: string[] = [];
 
   constructor(private fb: FormBuilder,
               public studioService: StudioService,
@@ -49,19 +50,25 @@ export class StudiosComponent implements OnInit{
       country: [null, Validators.required],
       plz: [null, Validators.required],
       street: [null, Validators.required],
-      image: [null, Validators.required]
+      images: [null, Validators.required]
     });
     this.isAdmin = this.authService.getRole() === "ADMIN"
   }
 
   onFileSelected(event: any): void {
-  const file = event.files?.[0];
-  if (file) {
-    this.selectedImage = file;
-    this.createForm.patchValue({ image: file });
-    this.createForm.get('image')?.updateValueAndValidity();
+    const files = event.files as File[] | undefined;
+    if (!files?.length) {
+      return;
+    }
+
+    this.selectedImages = files;
+    this.createForm.patchValue({ images: files });
+    this.createForm.get('images')?.updateValueAndValidity();
+
+    Promise.all(files.map(file => this.readFileAsDataUrl(file))).then(previews => {
+      this.imagePreviews = previews;
+    });
   }
-}
 
   get name() { return this.createForm.get('name')!; }
   get description() { return this.createForm.get('description')!; }
@@ -69,7 +76,7 @@ export class StudiosComponent implements OnInit{
   get country() { return this.createForm.get('country')!; }
   get plz() { return this.createForm.get('plz')!; }
   get street() { return this.createForm.get('street')!; }
-  get image() { return this.createForm.get('image')!; }
+  get images() { return this.createForm.get('images')!; }
 
   openDialog(): void {
     this.visible = true;
@@ -79,7 +86,8 @@ export class StudiosComponent implements OnInit{
     this.visible = false;
     this.createForm.reset();
     this.submitted = false;
-    this.selectedImage = null;
+    this.selectedImages = [];
+    this.imagePreviews = [];
 
     if (this.fileUpload) {
       this.fileUpload.clear();
@@ -88,12 +96,14 @@ export class StudiosComponent implements OnInit{
 
   async submit(): Promise<void> {
       this.submitted = true;
-      if (this.createForm.invalid || !this.selectedImage) return;
+      if (this.createForm.invalid || this.selectedImages.length === 0) return;
   
       this.loading = true;
   
       try {
-      const imageBytes = await this.readFileAsByteArray(this.selectedImage);
+      const imageBytes = await Promise.all(
+        this.selectedImages.map(file => this.readFileAsByteArray(file).then(bytes => Array.from(bytes)))
+      );
       
       const payload: CreateStudioRequest = {
         name: this.name.value,
@@ -102,14 +112,15 @@ export class StudiosComponent implements OnInit{
         country: this.country.value,
         plz: this.plz.value,
         street: this.street.value,
-        image: Array.from(imageBytes)
+        image: imageBytes[0] ?? [],
+        images: imageBytes
       };
   
       this.studioService.create(payload)
         .pipe(finalize(() => this.loading = false))
         .subscribe({
           next: (res: ApiResponse<StudioResponse>) => {
-            this.studioService.reloadStudios();
+            this.studioService.reloadAllStudios();
             this.closeDialog()
             this.messageService.add({
               key: 'main',
@@ -140,6 +151,15 @@ export class StudiosComponent implements OnInit{
         };
         reader.onerror = reject;
         reader.readAsArrayBuffer(file);
+      });
+    }
+
+    private readFileAsDataUrl(file: File): Promise<string> {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result ?? ''));
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
       });
     }
 }

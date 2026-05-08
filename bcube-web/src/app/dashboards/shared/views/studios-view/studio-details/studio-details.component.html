@@ -1,8 +1,7 @@
 <app-loading-spinner *ngIf="loading$ | async"></app-loading-spinner>
 
-<ng-container *ngIf="!(loading$ | async)">
-  <ng-container *ngIf="studio">
-
+<ng-container *ngIf="!(loading$ | async) && studio">
+  <div class="studio-details-page">
     <div class="top-actions">
       <button
         pButton
@@ -15,20 +14,34 @@
       </button>
 
       <app-update-studio
-        *ngIf="isAdmin && studio"
+        *ngIf="isAdmin"
         [studio]="studio"
         [detailMode]="true">
       </app-update-studio>
     </div>
 
-    <div class="studio-header">
-      <h2 class="studio-title">{{ studio.name }}</h2>
-      <img
-        [src]="studio.imageBase64"
-        alt="Cubebild"
-        class="studio-logo"
-        (click)="showOverlay(studio.imageBase64)">
-    </div>
+    <header class="details-header">
+      <div>
+        <h1 class="studio-title">{{ studio.name }}</h1>
+        <p class="studio-subtitle">{{ studio.street }}, {{ studio.plz }} {{ studio.city }}, {{ studio.country }}</p>
+      </div>
+    </header>
+
+    <section class="hero-gallery" *ngIf="featuredGalleryImage">
+      <button type="button" class="gallery-feature" (click)="showOverlay(featuredGalleryImage)">
+        <img [src]="featuredGalleryImage" [alt]="studio.name">
+      </button>
+
+      <div class="gallery-secondary" *ngIf="secondaryGalleryImages.length > 0">
+        <button
+          type="button"
+          class="gallery-thumb"
+          *ngFor="let image of secondaryGalleryImages; let index = index"
+          (click)="showOverlay(image)">
+          <img [src]="image" [alt]="studio.name + ' Bild ' + (index + 2)">
+        </button>
+      </div>
+    </section>
 
     <div *ngIf="overlayVisible" class="overlay" (click)="hideOverlay()">
       <img
@@ -40,91 +53,105 @@
     </div>
 
     <div class="studio-layout">
-      <div class="calendar-column">
-        <div class="calendar-shell">
-          <full-calendar class="calendar-frame" [options]="calendarOptions"></full-calendar>
-        </div>
-      </div>
+      <div class="content-column">
+        <section class="clean-card">
+          <h2>Cubeübersicht</h2>
+          <p class="address-line">{{ studio.street }}, {{ studio.plz }} {{ studio.city }}, {{ studio.country }}</p>
 
-      <div class="info-column">
-        <p-card class="info-card" [style]="{ overflow: 'hidden' }">
-          <ng-template pTemplate="title">Cubeübersicht</ng-template>
+          <div
+            class="studio-description-content"
+            [innerHTML]="renderMarkdown(studio.description)">
+          </div>
+        </section>
 
-          <div class="studio-description">
-            <strong>Beschreibung:</strong>
-            <div
-              class="studio-description-content"
-              [innerHTML]="renderMarkdown(studio.description)">
+        <section class="clean-card calendar-card">
+          <div class="section-head">
+            <div>
+              <h2>Kalender</h2>
+              <p>Verfügbare und belegte Zeiten direkt im Überblick.</p>
             </div>
           </div>
 
-          <p><strong>Adresse:</strong> {{ studio.street }}, {{ studio.plz }} {{ studio.city }}</p>
-          <p><strong>Land:</strong> {{ studio.country }}</p>
-        </p-card>
+          <div class="calendar-shell">
+            <full-calendar class="calendar-frame" [options]="calendarOptions"></full-calendar>
+          </div>
 
-        <div class="booking-elements" *ngIf="isUser">
           <div class="selected-date-note booking-date-note" *ngIf="date">
             Gewähltes Datum: {{ formatSelectedDateLabel() }}
           </div>
+        </section>
 
-          <div class="time-field-row">
-            <label for="startTime" class="time-field-label">Startzeitpunkt:</label>
-            <p-calendar
-              class="time-field-input"
-              id="startTime"
-              [(ngModel)]="startTime"
-              [timeOnly]="true"
-              hourFormat="24"
-              [stepMinute]="15"
-              placeholder="Startzeit wählen"
-              [showIcon]="true"
-              (onFocus)="setDefaultTime('start')"
-              (ngModelChange)="startTime = normalizeToQuarterHour($event); checkTimeConflict();">
-            </p-calendar>
-          </div>
-
-          <div class="time-field-row">
-            <label for="endTime" class="time-field-label">Endzeitpunkt:</label>
-            <p-calendar
-              class="time-field-input"
-              id="endTime"
-              [(ngModel)]="endTime"
-              [timeOnly]="true"
-              hourFormat="24"
-              [stepMinute]="15"
-              placeholder="Endzeit wählen"
-              [showIcon]="true"
-              (onFocus)="setDefaultTime('end')"
-              (ngModelChange)="endTime = normalizeToQuarterHour($event); checkTimeConflict();">
-            </p-calendar>
-          </div>
-
-          <div class="booking-error-wrap">
-            <p class="booking-error" *ngIf="!isEndTimeValid()">
-              Endzeit muss nach der Startzeit liegen.
-            </p>
-
-            <p class="booking-error" *ngIf="date && startTime && endTime && isBookingInPast()">
-              Diese Uhrzeit ist bereits abgelaufen.
-            </p>
-
-            <p class="booking-error" *ngIf="hasTimeConflict">
-              Der gewählte Zeitraum ist bereits belegt.
-            </p>
-          </div>
-        </div>
-
-        <div class="info-booking-action" *ngIf="isUser">
-          <button
-            pButton
-            type="button"
-            label="Cube buchen"
-            [disabled]="!canBook()"
-            class="booking-button"
-            (click)="confirmBooking()">
-          </button>
-        </div>
       </div>
+
+      <aside class="booking-sidebar">
+        <section class="clean-card sidebar-card">
+          <h2>Buchungsdetails</h2>
+          <p class="sidebar-note">Wähle Datum und Zeit direkt hier aus und prüfe freie Slots im Kalender.</p>
+
+          <div class="booking-elements" *ngIf="isUser">
+            <div class="time-field-row">
+              <label for="startTime" class="time-field-label">Startzeitpunkt</label>
+              <p-calendar
+                class="time-field-input"
+                id="startTime"
+                [(ngModel)]="startTime"
+                [timeOnly]="true"
+                hourFormat="24"
+                [stepMinute]="15"
+                placeholder="Startzeit wählen"
+                [showIcon]="true"
+                (onFocus)="setDefaultTime('start')"
+                (ngModelChange)="startTime = normalizeToQuarterHour($event); checkTimeConflict();">
+              </p-calendar>
+            </div>
+
+            <div class="time-field-row">
+              <label for="endTime" class="time-field-label">Endzeitpunkt</label>
+              <p-calendar
+                class="time-field-input"
+                id="endTime"
+                [(ngModel)]="endTime"
+                [timeOnly]="true"
+                hourFormat="24"
+                [stepMinute]="15"
+                placeholder="Endzeit wählen"
+                [showIcon]="true"
+                (onFocus)="setDefaultTime('end')"
+                (ngModelChange)="endTime = normalizeToQuarterHour($event); checkTimeConflict();">
+              </p-calendar>
+            </div>
+
+            <div class="booking-error-wrap">
+              <p class="booking-error" *ngIf="!isEndTimeValid()">
+                Endzeit muss nach der Startzeit liegen.
+              </p>
+
+              <p class="booking-error" *ngIf="date && startTime && endTime && isBookingInPast()">
+                Diese Uhrzeit ist bereits abgelaufen.
+              </p>
+
+              <p class="booking-error" *ngIf="hasTimeConflict">
+                Der gewählte Zeitraum ist bereits belegt.
+              </p>
+            </div>
+
+            <div class="info-booking-action">
+              <button
+                pButton
+                type="button"
+                label="Cube buchen"
+                [disabled]="!canBook()"
+                class="booking-button"
+                (click)="confirmBooking()">
+              </button>
+            </div>
+          </div>
+
+          <div *ngIf="isAdmin" class="admin-hint">
+            <p>Als Admin kannst du Bilder und Stammdaten direkt hier aktualisieren.</p>
+          </div>
+        </section>
+      </aside>
     </div>
-  </ng-container>
+  </div>
 </ng-container>

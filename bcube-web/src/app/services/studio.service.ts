@@ -68,6 +68,12 @@ export class StudioService {
     });
   }
 
+  reloadAllStudios(): void {
+    this.getAllStudios().subscribe(studios => {
+      this.studiosSubject.next(studios);
+    });
+  }
+
   getStudioFilter(page: number, size: number): Observable<PageResponse<StudioNameResponse>> {
     return this.http
       .get<ApiResponse<PageResponse<StudioNameResponse>>>(

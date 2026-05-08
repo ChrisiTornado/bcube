@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.Instant;
+import java.util.List;
 
 @Entity
 @Table(name = "studios")
@@ -46,6 +47,10 @@ public class Studio {
     @Lob
     @Column(name = "image_data")
     private byte[] image;
+
+    @Lob
+    @Column(name = "image_gallery_json", columnDefinition = "TEXT")
+    private String imageGalleryJson;
 
     @Column(name = "is_active", nullable = false)
     private boolean isActive;

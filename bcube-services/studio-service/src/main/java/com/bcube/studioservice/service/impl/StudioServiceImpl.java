@@ -26,7 +26,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -49,9 +49,8 @@ public class StudioServiceImpl implements StudioService {
                         studio.getCountry(),
                         studio.getLatitude(),
                         studio.getLongitude(),
-                        studio.getImage() != null
-                                ? "data:image/jpeg;base64," + Base64.getEncoder().encodeToString(studio.getImage())
-                                : null,
+                        StudioImageMapper.toDataImage(studio.getImage()),
+                        StudioImageMapper.toImageGalleryBase64(studio),
                         true,
                         studio.getCreatedAt()
                 ));
@@ -72,9 +71,8 @@ public class StudioServiceImpl implements StudioService {
                 studio.getCountry(),
                 studio.getLatitude(),
                 studio.getLongitude(),
-                studio.getImage() != null
-                        ? "data:image/jpeg;base64," + Base64.getEncoder().encodeToString(studio.getImage())
-                        : null,
+                StudioImageMapper.toDataImage(studio.getImage()),
+                StudioImageMapper.toImageGalleryBase64(studio),
                 studio.isActive(),
                 studio.getCreatedAt()
         );
@@ -106,7 +104,8 @@ public class StudioServiceImpl implements StudioService {
                         studio.getCountry(),
                         studio.getLatitude(),
                         studio.getLongitude(),
-                        Arrays.toString(studio.getImage()),
+                        StudioImageMapper.toDataImage(studio.getImage()),
+                        StudioImageMapper.toImageGalleryBase64(studio),
                         studio.isActive(),
                         studio.getCreatedAt()
                 )).toList();

@@ -21,7 +21,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
-import java.util.Base64;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -42,6 +42,11 @@ public class AdminStudioImpl implements AdminStudioService {
         Double latitude = geocodeLatitude(fullAddress);
         Double longitude = geocodeLongitude(fullAddress);
 
+        List<byte[]> images = StudioImageMapper.normalizeImages(
+                createStudioRequest.getImages(),
+                createStudioRequest.getImage()
+        );
+
         // 3. Studio-Entity bauen
         Studio studio = Studio.builder()
                 .name(createStudioRequest.getName())
@@ -50,7 +55,8 @@ public class AdminStudioImpl implements AdminStudioService {
                 .plz(createStudioRequest.getPlz())
                 .city(createStudioRequest.getCity())
                 .country(createStudioRequest.getCountry())
-                .image(createStudioRequest.getImage())
+                .image(images.isEmpty() ? null : images.get(0))
+                .imageGalleryJson(StudioImageMapper.toImageGalleryJson(images))
                 .isActive(true)
                 .latitude(latitude)
                 .longitude(longitude)
@@ -70,9 +76,8 @@ public class AdminStudioImpl implements AdminStudioService {
                 saved.getCountry(),
                 saved.getLatitude(),
                 saved.getLongitude(),
-                studio.getImage() != null
-                        ? "data:image/jpeg;base64," + Base64.getEncoder().encodeToString(studio.getImage())
-                        : null,
+                StudioImageMapper.toDataImage(saved.getImage()),
+                StudioImageMapper.toImageGalleryBase64(saved),
                 saved.isActive(),
                 saved.getCreatedAt()
         );
@@ -115,8 +120,10 @@ public class AdminStudioImpl implements AdminStudioService {
         studio.setLatitude(latitude);
         studio.setLongitude(longitude);
 
-        if (request.getImage() != null) {
-            studio.setImage(request.getImage());
+        List<byte[]> images = StudioImageMapper.normalizeImages(request.getImages(), request.getImage());
+        if (!images.isEmpty()) {
+            studio.setImage(images.get(0));
+            studio.setImageGalleryJson(StudioImageMapper.toImageGalleryJson(images));
         }
 
         // 5. speichern
@@ -133,9 +140,8 @@ public class AdminStudioImpl implements AdminStudioService {
                 updated.getCountry(),
                 updated.getLatitude(),
                 updated.getLongitude(),
-                updated.getImage() != null
-                        ? "data:image/jpeg;base64," + Base64.getEncoder().encodeToString(updated.getImage())
-                        : null,
+                StudioImageMapper.toDataImage(updated.getImage()),
+                StudioImageMapper.toImageGalleryBase64(updated),
                 updated.isActive(),
                 updated.getCreatedAt()
         );

@@ -89,6 +89,10 @@ export class BookingsViewComponent implements OnInit {
     this.bookings$ = this.bookingService.bookings$;
   }
 
+  get showCalendarSwitch(): boolean {
+    return !this.isAdmin && this.router.url.includes('/user-dashboard/all-bookings');
+  }
+
   updateFilters(): void {
     this.bookingService.page = 0;
 
@@ -157,6 +161,10 @@ export class BookingsViewComponent implements OnInit {
   navigateToBookingCreation(): void {
     const basePath = this.isAdmin ? '/admin-dashboard' : '/user-dashboard';
     this.router.navigate([basePath, 'studios']);
+  }
+
+  navigateToCalendarView(): void {
+    this.router.navigate(['/user-dashboard', 'bookings']);
   }
 
   getStatusLabel(status: string): string {

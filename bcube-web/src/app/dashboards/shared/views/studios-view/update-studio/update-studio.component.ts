@@ -30,12 +30,13 @@ export class UpdateStudioComponent implements OnInit {
   @Input() detailMode = false;
   loading!: boolean;
   selectedImageBase64: string | null = null;
+  galleryPreviews: string[] = [];
 
   createForm!: FormGroup;
   visible!: boolean;
   submitted!: boolean;
-  selectedImage: File | null = null;
-  selectedImageBytes: number[] | null = null;
+  selectedImages: File[] = [];
+  selectedImageBytes: number[][] = [];
   @ViewChild('fileUpload') fileUpload: any;
 
   constructor(private studioService: StudioService, private messageService: MessageService, private fb: FormBuilder) {}
@@ -48,8 +49,10 @@ ngOnInit(): void {
     country: [this.studio.country, Validators.required],
     plz: [this.studio.plz, [Validators.required, Validators.minLength(4)]],
     street: [this.studio.street, Validators.required],
-    image: [this.studio.imageBase64]
+    images: [this.studio.imageGalleryBase64 ?? [this.studio.imageBase64]]
   });
+
+  this.galleryPreviews = this.getExistingGallery();
 }
 
 openDialog() {
@@ -58,9 +61,11 @@ openDialog() {
 
   closeDialog() {
   this.visible = false;
-  this.selectedImage = null;
+  this.selectedImages = [];
   this.selectedImageBase64 = null;
-  this.fileUpload.clear();
+  this.selectedImageBytes = [];
+  this.galleryPreviews = this.getExistingGallery();
+  this.fileUpload?.clear();
 
   this.createForm.patchValue({
     name: this.studio.name,
@@ -69,21 +74,27 @@ openDialog() {
     country: this.studio.country,
     plz: this.studio.plz,
     street: this.studio.street,
-    image: this.studio.imageBase64
+    images: this.getExistingGallery()
   });
 }
 
   onFileSelected(event: any): void {
-  const file = event.files?.[0];
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = () => {
-      const arrayBuffer = reader.result as ArrayBuffer;
-      this.selectedImageBytes = Array.from(new Uint8Array(arrayBuffer));
-    };
-    reader.readAsArrayBuffer(file);
+    const files = event.files as File[] | undefined;
+    if (!files?.length) {
+      return;
+    }
+
+    this.selectedImages = files;
+
+    Promise.all(files.map(file => this.readFileAsByteArray(file).then(bytes => Array.from(bytes)))).then(images => {
+      this.selectedImageBytes = images;
+    });
+
+    Promise.all(files.map(file => this.readFileAsDataUrl(file))).then(previews => {
+      this.galleryPreviews = previews;
+      this.createForm.patchValue({ images: previews });
+    });
   }
-}
 
 submit() {
   this.submitted = true;
@@ -99,13 +110,17 @@ submit() {
     return Array.from(bytes);
   };
 
-  let imageBytes: number[] | null = null;
+  let galleryBytes: number[][] = [];
 
-  if (this.selectedImageBytes) {
-    imageBytes = this.selectedImageBytes;
-  } else if (this.image?.value && typeof this.image.value === 'string') {
-    const base64String = this.image.value.split(',')[1] || this.image.value;
-    imageBytes = convertBase64ToByteArray(base64String);
+  if (this.selectedImageBytes.length > 0) {
+    galleryBytes = this.selectedImageBytes;
+  } else if (Array.isArray(this.images?.value)) {
+    galleryBytes = this.images.value
+      .filter((value: unknown) => typeof value === 'string')
+      .map((value: string) => {
+        const base64String = value.split(',')[1] || value;
+        return convertBase64ToByteArray(base64String);
+      });
   }
 
   const payload: UpdateStudioRequest = {
@@ -116,14 +131,15 @@ submit() {
     country: this.country.value,
     plz: this.plz.value,
     street: this.street.value,
-    image: imageBytes ?? []
+    image: galleryBytes[0] ?? [],
+    images: galleryBytes
   };
 
   this.studioService.update(payload)
     .pipe(finalize(() => this.loading = false))
     .subscribe({
       next: (res: ApiResponse<StudioResponse>) => {
-        this.studioService.reloadStudios();
+        this.studioService.reloadAllStudios();
         this.messageService.add({ key: 'main', severity: 'success', summary: 'Erfolgreich', detail: res.message });
         this.closeDialog();
       },
@@ -144,11 +160,34 @@ submit() {
   return value.startsWith('data:image') ? value : 'data:image/png;base64,' + value;
 }
 
+  getExistingGallery(): string[] {
+    const gallery = this.studio.imageGalleryBase64?.filter(Boolean) ?? [];
+    return gallery.length > 0 ? gallery : (this.studio.imageBase64 ? [this.getImageSrc()] : []);
+  }
+
   get name() { return this.createForm.get('name')!; }
   get description() { return this.createForm.get('description')!; }
   get city() { return this.createForm.get('city')!; }
   get country() { return this.createForm.get('country')!; }
   get plz() { return this.createForm.get('plz')!; }
   get street() { return this.createForm.get('street')!; }
-  get image() { return this.createForm.get('image')!; }
+  get images() { return this.createForm.get('images')!; }
+
+  private readFileAsByteArray(file: File): Promise<Uint8Array> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(new Uint8Array(reader.result as ArrayBuffer));
+      reader.onerror = reject;
+      reader.readAsArrayBuffer(file);
+    });
+  }
+
+  private readFileAsDataUrl(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result ?? ''));
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
 }

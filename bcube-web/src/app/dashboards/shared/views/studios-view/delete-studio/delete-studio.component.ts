@@ -42,7 +42,7 @@ export class DeleteStudioComponent {
             summary: 'Erfolg',
             detail: res.message
           });
-          this.studioService.reloadStudios();
+          this.studioService.reloadAllStudios();
         },
         error: (err) => {
           this.messageService.add({

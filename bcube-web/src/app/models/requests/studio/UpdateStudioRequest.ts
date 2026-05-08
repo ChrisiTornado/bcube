@@ -7,4 +7,5 @@ export interface UpdateStudioRequest {
     city: string;
     country: string;
     image: number[];
+    images: number[][];
 }

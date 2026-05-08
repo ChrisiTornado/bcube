@@ -11,4 +11,5 @@ export interface Studio {
     longitude?: number | null;
     image: number[];
     imageBase64: string;
-}
+    imageGalleryBase64?: string[];
+} 

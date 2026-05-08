@@ -64,19 +64,31 @@
           </div>
 
         <div class="mb-4">
-            <label for="image" class="block text-900 font-medium mb-2">Cubebild</label>
+            <label for="images" class="block text-900 font-medium mb-2">Cubebilder</label>
             <p-fileUpload
                 #fileUpload
-                name="image"
+                name="images"
                 accept="image/*"
+                [multiple]="true"
                 (onSelect)="onFileSelected($event)"
                 chooseLabel="Datei auswählen"
                 auto="true"
                 styleClass="black-upload">
             </p-fileUpload>
 
+            <small class="block mt-2 text-500">Das erste Bild wird als Titelbild verwendet.</small>
+
+            <div *ngIf="imagePreviews.length > 0" class="grid grid-nogutter gap-3 mt-3">
+              <img
+                *ngFor="let preview of imagePreviews; let index = index"
+                [src]="preview"
+                [alt]="'Vorschau ' + (index + 1)"
+                class="w-8rem h-8rem border-round border-1 surface-border"
+                style="object-fit: cover;">
+            </div>
+
             <div style="position: relative">
-              <small style="position: absolute; color: red" *ngIf="image.hasError('required') && submitted">Cubebild ist erforderlich</small>
+              <small style="position: absolute; color: red" *ngIf="images.hasError('required') && submitted">Mindestens ein Cubebild ist erforderlich</small>
             </div>
           </div>
 

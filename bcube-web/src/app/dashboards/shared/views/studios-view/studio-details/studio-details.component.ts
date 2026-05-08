@@ -39,6 +39,14 @@ import { UpdateStudioComponent } from '../update-studio/update-studio.component'
 })
 export class StudioDetailsComponent implements OnInit {
   private readonly blockingStatuses = new Set(['CONFIRMED', 'PENDING', 'DONE']);
+  private readonly previewImages = [
+    'assets/images/inside 1.png',
+    'assets/images/interior_2.jpg',
+    'assets/images/new_render_3.jpg',
+    'assets/images/new_render_6.jpg',
+    'assets/images/new_render_7.jpg',
+    'assets/images/nice.jpg'
+  ];
 
   // === Properties ===
   studio: Studio | null = null;
@@ -85,15 +93,29 @@ export class StudioDetailsComponent implements OnInit {
 
   loading$ = this.studioService.loading$;
 
-  get selectedDateBookings(): Booking[] {
-    if (!this.date) {
+  get galleryImages(): string[] {
+    if (!this.studio) {
       return [];
     }
 
-    const selectedDateIso = this.toIsoDate(this.date);
-    return this.bookings
-      .filter(booking => this.toIsoDate(new Date(booking.date)) === selectedDateIso)
-      .sort((a, b) => a.startTime.localeCompare(b.startTime));
+    const gallery = this.studio.imageGalleryBase64?.filter(Boolean) ?? [];
+    if (gallery.length > 0) {
+      return this.withDefaultGallery(this.studio.id, gallery.map(image => this.normalizeImage(image)));
+    }
+
+    if (this.studio.imageBase64) {
+      return this.withDefaultGallery(this.studio.id, [this.normalizeImage(this.studio.imageBase64)]);
+    }
+
+    return this.withDefaultGallery(this.studio.id, []);
+  }
+
+  get featuredGalleryImage(): string | null {
+    return this.galleryImages[0] ?? null;
+  }
+
+  get secondaryGalleryImages(): string[] {
+    return this.galleryImages.slice(1, 5);
   }
 
   constructor(
@@ -590,5 +612,19 @@ private inlineMarkdown(text: string): string {
     .replace(/__(.+?)__/g, '<strong>$1</strong>')
     .replace(/\*(.+?)\*/g, '<em>$1</em>')
     .replace(/_(.+?)_/g, '<em>$1</em>');
+}
+
+private normalizeImage(value: string): string {
+  return value.startsWith('data:image') ? value : `data:image/jpeg;base64,${value}`;
+}
+
+private withDefaultGallery(studioId: number, images: string[]): string[] {
+  const gallery = [...images];
+
+  for (let offset = 0; gallery.length < 5; offset++) {
+    gallery.push(this.previewImages[(studioId + offset) % this.previewImages.length]);
+  }
+
+  return gallery.slice(0, 5);
 }
 }

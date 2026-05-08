@@ -6,4 +6,5 @@ export interface CreateStudioRequest {
     city: string;
     country: string;
     image: number[];
+    images: number[][];
 }

@@ -6,9 +6,17 @@
 }
 
 .view-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
   margin-bottom: 1rem;
   flex-shrink: 0;
   padding-left: 1rem;
+}
+
+.all-bookings-button {
+  flex-shrink: 0;
 }
 
 .calendar-layout {

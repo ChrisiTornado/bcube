@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.time.Instant;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -18,6 +19,7 @@ public class StudioResponse {
     private Double latitude;
     private Double longitude;
     private String imageBase64;
+    private List<String> imageGalleryBase64;
     private boolean isActive;
     private Instant createdAt;
 }

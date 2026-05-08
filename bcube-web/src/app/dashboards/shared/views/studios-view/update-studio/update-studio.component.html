@@ -73,24 +73,30 @@
             </div>
           </div>
 
-          <div *ngIf="studio.imageBase64" class="mb-4">
-            <label class="block text-900 font-medium mb-2">Aktuelles Cubebild</label>
-            <img [src]="getImageSrc()" 
-                alt="Cubebild" 
-                class="max-w-full h-auto border-round shadow-2" 
-                style="max-height: 200px;">
+          <div *ngIf="galleryPreviews.length > 0" class="mb-4">
+            <label class="block text-900 font-medium mb-2">Aktuelle Cubebilder</label>
+            <div class="grid grid-nogutter gap-3">
+              <img
+                *ngFor="let image of galleryPreviews; let index = index"
+                [src]="image"
+                [alt]="'Cubebild ' + (index + 1)"
+                class="w-8rem h-8rem border-round border-1 surface-border"
+                style="object-fit: cover;">
+            </div>
           </div>
         <div class="mb-4">
-            <label for="image" class="block text-900 font-medium mb-2">Cubebild</label>
+            <label for="images" class="block text-900 font-medium mb-2">Cubebilder</label>
             <p-fileUpload 
                 #fileUpload
-                name="image" 
+                name="images" 
                 accept="image/*" 
+                [multiple]="true"
                 (onSelect)="onFileSelected($event)" 
                 chooseLabel="Datei auswählen"
                 styleClass="black-upload"
                 auto="true">
             </p-fileUpload>
+            <small class="block mt-2 text-500">Das erste Bild wird als Titelbild verwendet.</small>
           </div>
 
         <div class="flex justify-content-end">

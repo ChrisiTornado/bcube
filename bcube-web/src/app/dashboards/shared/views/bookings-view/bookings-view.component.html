@@ -1,5 +1,13 @@
 <div class="view-header">
   <h1 class="m-0">Buchungen</h1>
+  <button
+    *ngIf="showCalendarSwitch"
+    pButton
+    type="button"
+    label="Kalenderansicht"
+    class="calendar-switch-button"
+    (click)="navigateToCalendarView()">
+  </button>
 </div>
 
 <app-loading-spinner *ngIf="loading$ | async"></app-loading-spinner>

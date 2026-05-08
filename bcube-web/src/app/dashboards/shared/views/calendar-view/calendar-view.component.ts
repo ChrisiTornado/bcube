@@ -103,6 +103,12 @@ export class CalendarViewComponent implements OnInit {
     });
   }
 
+  navigateToAllBookings(): void {
+    this.router.navigate(['/user-dashboard', 'all-bookings'], {
+      state: { returnUrl: this.router.url }
+    });
+  }
+
   selectDate(dateStr: string): void {
     this.selectedDate = dateStr;
     this.displayedMonth = this.startOfMonth(new Date(dateStr));

@@ -2,7 +2,14 @@
 
 <ng-container *ngIf="!isLoading">
   <div class="view-header">
-    <h1 class="m-0">Mein Kalendar</h1>
+    <h1 class="m-0">Buchungen</h1>
+    <button
+      pButton
+      type="button"
+      label="Alle Buchungen"
+      class="all-bookings-button"
+      (click)="navigateToAllBookings()">
+    </button>
   </div>
   <div class="calendar-layout">
     <div class="calendar-shell">

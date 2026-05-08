@@ -7,7 +7,6 @@ import { AuthService } from '../../services/auth/auth.service';
 import { MegaMenuModule } from 'primeng/megamenu';
 import { RouterModule, Router, NavigationEnd } from '@angular/router';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { ConfirmationService } from 'primeng/api';
 import { filter } from 'rxjs/operators';
 
 @Component({
@@ -29,8 +28,7 @@ export class UserDashboardComponent implements OnInit {
   constructor(
     private router: Router,
     private messageService: MessageService,
-    private authService: AuthService,
-    private confirmationService: ConfirmationService
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -67,41 +65,13 @@ export class UserDashboardComponent implements OnInit {
         label: 'Cubes',
         icon: 'pi pi-fw pi-building',
         routerLink: 'studios',
-        styleClass: this.isRouteActive(['studios', 'studio-details']) ? 'p-menuitem-link-active' : ''
-      },
-      {
-        label: 'Karte',
-        icon: 'pi pi-fw pi-map',
-        routerLink: 'map',
-        styleClass: this.isRouteActive(['map']) ? 'p-menuitem-link-active' : ''
+        styleClass: this.isRouteActive(['studios', 'studio-details', 'map']) ? 'p-menuitem-link-active' : ''
       },
       {
         label: 'Buchungen',
         icon: 'pi pi-fw pi-folder-open',
         routerLink: 'bookings',
-        styleClass: this.isRouteActive(['bookings', 'booking-details', 'booking-confirmation']) ? 'p-menuitem-link-active' : ''
-      },
-      {
-        label: 'Kalendar',
-        icon: 'pi pi-fw pi-calendar',
-        routerLink: 'calendar',
-        styleClass: this.isRouteActive(['calendar']) ? 'p-menuitem-link-active' : ''
-      },
-      {
-        label: 'Logout',
-        icon: 'pi pi-fw pi-sign-out',
-        command: () => {
-          this.confirmationService.confirm({
-            message: 'Sind Sie sicher, dass Sie sich abmelden möchten?',
-            header: 'Abmeldung bestätigen',
-            icon: 'pi pi-exclamation-triangle',
-            acceptLabel: 'Ja',
-            rejectLabel: 'Abbrechen',
-            accept: () => {
-              this.authService.logout();
-            }
-          });
-        }
+        styleClass: this.isRouteActive(['bookings', 'all-bookings', 'calendar', 'booking-details', 'booking-confirmation']) ? 'p-menuitem-link-active' : ''
       }
     ];
   }
