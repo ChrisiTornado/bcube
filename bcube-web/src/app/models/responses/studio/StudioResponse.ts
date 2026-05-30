@@ -1,5 +1,6 @@
 export interface StudioResponse {
   id: number;
+  smartlockId: number;
   name: string;
   description: string;
   street: string;

@@ -43,6 +43,7 @@ export class UpdateStudioComponent implements OnInit {
 
 ngOnInit(): void {
   this.createForm = this.fb.group({
+    smartlockId: [this.studio.smartlockId, Validators.required],
     name: [this.studio.name, Validators.required],
     description: [this.studio.description, Validators.required],
     city: [this.studio.city, Validators.required],
@@ -68,6 +69,7 @@ openDialog() {
   this.fileUpload?.clear();
 
   this.createForm.patchValue({
+    smartlockId: this.studio.smartlockId,
     name: this.studio.name,
     description: this.studio.description,
     city: this.studio.city,
@@ -125,6 +127,7 @@ submit() {
 
   const payload: UpdateStudioRequest = {
     id: this.studio.id,
+    smartlockId: this.smartlockId.value,
     name: this.name.value,
     description: this.description.value,
     city: this.city.value,
@@ -172,6 +175,7 @@ submit() {
   get plz() { return this.createForm.get('plz')!; }
   get street() { return this.createForm.get('street')!; }
   get images() { return this.createForm.get('images')!; }
+  get smartlockId() { return this.createForm.get('smartlockId')!; }
 
   private readFileAsByteArray(file: File): Promise<Uint8Array> {
     return new Promise((resolve, reject) => {

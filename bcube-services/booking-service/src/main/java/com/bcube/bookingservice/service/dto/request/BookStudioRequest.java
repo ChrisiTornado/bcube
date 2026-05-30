@@ -8,6 +8,7 @@ import lombok.Data;
 public class BookStudioRequest {
     private Long userID;
     private Long studioID;
+    private Long smartlockID;
     private String date;
     private String startTime;
     private String endTime;

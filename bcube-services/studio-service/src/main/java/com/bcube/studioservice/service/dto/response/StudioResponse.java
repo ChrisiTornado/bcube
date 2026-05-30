@@ -10,6 +10,7 @@ import java.util.List;
 @AllArgsConstructor
 public class StudioResponse {
     private Long id;
+    private Long smartlockId;
     private String name;
     private String description;
     private String street;

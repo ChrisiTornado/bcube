@@ -8,6 +8,7 @@ import lombok.Data;
 public class AccessRequest
 {
     public Long bookingId;
+    public Long smartlockId;
     public String validFrom;
     public String validUntil;
 }

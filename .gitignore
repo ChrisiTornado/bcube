@@ -58,8 +58,8 @@ bcube-web/pnpm-debug.log*
 bcube-web/.tailwind-cache/
 
 # env files
-# environment*
-# .env
+environment*
+.env
 
 node_modules
 

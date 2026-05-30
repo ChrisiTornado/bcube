@@ -21,8 +21,8 @@ public class AccessPermission {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // @Column(name = "nuki_auth_id", nullable = false)
-    // private Long nukiAuthId;
+    @Column(name = "smartlock_id", nullable = false)
+    private Long smartLockId;
 
     @Column(name = "booking_id", nullable = false)
     private Long bookingId;

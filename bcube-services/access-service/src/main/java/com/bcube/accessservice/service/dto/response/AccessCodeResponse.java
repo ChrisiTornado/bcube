@@ -6,5 +6,5 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class AccessCodeResponse {
-    public String accessCode;
+    public int accessCode;
 }

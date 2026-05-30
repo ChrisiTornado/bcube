@@ -49,6 +49,7 @@ public class AdminStudioImpl implements AdminStudioService {
 
         // 3. Studio-Entity bauen
         Studio studio = Studio.builder()
+                .smartlockId(createStudioRequest.getSmartlockId())
                 .name(createStudioRequest.getName())
                 .description(createStudioRequest.getDescription())
                 .street(createStudioRequest.getStreet())
@@ -68,6 +69,7 @@ public class AdminStudioImpl implements AdminStudioService {
         // 5. StudioResponse zurückgeben
         return new StudioResponse(
                 saved.getId(),
+                saved.getSmartlockId(),
                 saved.getName(),
                 saved.getDescription(),
                 saved.getStreet(),
@@ -111,6 +113,7 @@ public class AdminStudioImpl implements AdminStudioService {
         Double longitude = geocodeLongitude(fullAddress);
 
         // 4. Felder aktualisieren
+        studio.setSmartlockId(request.getSmartlockId());
         studio.setName(request.getName());
         studio.setDescription(request.getDescription());
         studio.setStreet(request.getStreet());
@@ -132,6 +135,7 @@ public class AdminStudioImpl implements AdminStudioService {
         // 6. Response zurückgeben
         return new StudioResponse(
                 updated.getId(),
+                updated.getSmartlockId(),
                 updated.getName(),
                 updated.getDescription(),
                 updated.getStreet(),

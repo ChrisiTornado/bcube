@@ -1,4 +1,5 @@
 export interface CreateStudioRequest {
+    smartlockId: number;
     name: string;
     description: string;
     street: string;

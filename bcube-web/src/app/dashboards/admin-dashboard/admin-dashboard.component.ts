@@ -77,6 +77,12 @@ export class AdminDashboardComponent implements OnInit {
         styleClass: this.isRouteActive(['bookings', 'booking-details', 'booking-confirmation']) ? 'p-menuitem-link-active' : ''
       },
       {
+        label: 'Schlösser',
+        icon: 'pi pi-fw pi-lock',
+        // routerLink: 'bookings',
+        // styleClass: this.isRouteActive(['bookings', 'booking-details', 'booking-confirmation']) ? 'p-menuitem-link-active' : ''
+      },
+      {
         label: 'Logout',
         icon: 'pi pi-fw pi-sign-out',
         styleClass: 'logout-item',

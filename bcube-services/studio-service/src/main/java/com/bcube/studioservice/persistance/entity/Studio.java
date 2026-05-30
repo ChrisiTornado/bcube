@@ -20,6 +20,9 @@ public class Studio {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name="smartlock_id", nullable = false)
+    private Long smartlockId;
+
     @Column(nullable = false, length = 50)
     private String name;
 

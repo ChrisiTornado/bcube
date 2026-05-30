@@ -28,6 +28,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Set;
@@ -229,10 +230,14 @@ public class BookingServiceImpl implements BookingService {
     public BookingDetailsResponse bookTimeSlot(BookStudioRequest bookStudioRequest, String token) {
         // ToDo : Facade Pattern?
         Booking booking = createBookingEntity(bookStudioRequest);
+        DateTimeFormatter isoUtcFmt = DateTimeFormatter
+                .ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+                .withZone(ZoneOffset.UTC);
         AccessRequest request = new AccessRequest(
                 booking.getId(),
-                bookStudioRequest.getDate() + "T" + bookStudioRequest.getStartTime() + ":00",
-                bookStudioRequest.getDate() + "T" + bookStudioRequest.getEndTime() + ":00"
+                bookStudioRequest.getSmartlockID(),
+                isoUtcFmt.format(booking.getStartTime()),
+                isoUtcFmt.format(booking.getEndTime())
         );
             AccessCodeResponse accessCodeResponse = accessCodeClient.generateAccessCode(request);
             if (accessCodeResponse == null) {
@@ -261,10 +266,11 @@ public class BookingServiceImpl implements BookingService {
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
         LocalDate date = LocalDate.parse(bookStudioRequest.getDate(), dateFormatter);
 
-        String startDateTimeString = bookStudioRequest.getDate() + "T" + bookStudioRequest.getStartTime() + ":00"; // z. B. "07.07.2025T13:15:00"
-        String endDateTimeString = bookStudioRequest.getDate() + "T" + bookStudioRequest.getEndTime() + ":00";
+        String dateWithDashes = date.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
+        String startDateTimeString = dateWithDashes + "T" + bookStudioRequest.getStartTime() + ":00.000Z";// z. B. "07-07-2025T13:15:00.000Z"
+        String endDateTimeString = dateWithDashes + "T" + bookStudioRequest.getEndTime() + ":00.000Z";
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy'T'HH:mm:ss");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy'T'HH:mm:ss.SSS'Z'");
         LocalDateTime start = LocalDateTime.parse(startDateTimeString, formatter);
         LocalDateTime end = LocalDateTime.parse(endDateTimeString, formatter);
 

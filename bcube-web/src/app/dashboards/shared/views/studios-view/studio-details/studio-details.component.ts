@@ -279,6 +279,7 @@ export class StudioDetailsComponent implements OnInit {
     const payload: CreateBookingRequest = {
       userID: this.authService.getUser()!.id,
       studioID: this.studio!.id,
+      smartlockID: this.studio!.smartlockId,  
       date: this.formatDateVienna(this.date),
       startTime: this.formatTimeVienna(this.startTime),
       endTime: this.formatTimeVienna(this.endTime)
@@ -506,14 +507,16 @@ export class StudioDetailsComponent implements OnInit {
 }
 
 private formatDateVienna(date: Date): string {
-  const formatter = new Intl.DateTimeFormat('de-AT', {
+  const parts = new Intl.DateTimeFormat('de-AT', {
     day: '2-digit',
     month: '2-digit',
     year: 'numeric',
     timeZone: 'Europe/Vienna'
-  });
-
-  return formatter.format(date);
+  }).formatToParts(date);
+  const day   = parts.find(p => p.type === 'day')!.value;
+  const month = parts.find(p => p.type === 'month')!.value;
+  const year  = parts.find(p => p.type === 'year')!.value;
+  return `${day}.${month}.${year}`;
 }
 
 formatSelectedDateLabel(): string {

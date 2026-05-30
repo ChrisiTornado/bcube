@@ -44,6 +44,7 @@ export class StudiosComponent implements OnInit{
 
    ngOnInit(): void {
     this.createForm = this.fb.group({
+      smartlockId: [null, Validators.required],
       name: [null, Validators.required],
       description: [null, Validators.required],
       city: [null, Validators.required],
@@ -56,20 +57,21 @@ export class StudiosComponent implements OnInit{
   }
 
   onFileSelected(event: any): void {
-    const files = event.files as File[] | undefined;
+    const files = event?.files ?? event?.currentFiles ?? [];
     if (!files?.length) {
       return;
     }
 
-    this.selectedImages = files;
-    this.createForm.patchValue({ images: files });
-    this.createForm.get('images')?.updateValueAndValidity();
+    this.selectedImages = Array.from(files);
+  this.createForm.patchValue({ images: this.selectedImages });
+  this.createForm.get('images')?.updateValueAndValidity();
 
-    Promise.all(files.map(file => this.readFileAsDataUrl(file))).then(previews => {
-      this.imagePreviews = previews;
-    });
+    Promise.all(this.selectedImages.map(file => this.readFileAsDataUrl(file))).then(previews => {
+    this.imagePreviews = previews;
+  });
   }
 
+  get smartlockId() { return this.createForm.get('smartlockId')!; }
   get name() { return this.createForm.get('name')!; }
   get description() { return this.createForm.get('description')!; }
   get city() { return this.createForm.get('city')!; }
@@ -106,6 +108,7 @@ export class StudiosComponent implements OnInit{
       );
       
       const payload: CreateStudioRequest = {
+        smartlockId: this.smartlockId.value,
         name: this.name.value,
         description: this.description.value,
         city: this.city.value,

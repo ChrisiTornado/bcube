@@ -41,6 +41,7 @@ public class StudioServiceImpl implements StudioService {
 
         return studioList.map(studio -> new StudioResponse(
                         studio.getId(),
+                        studio.getSmartlockId(),
                         studio.getName(),
                         studio.getDescription(),
                         studio.getStreet(),
@@ -63,6 +64,7 @@ public class StudioServiceImpl implements StudioService {
 
         return new StudioResponse(
                 studio.getId(),
+                studio.getSmartlockId(),
                 studio.getName(),
                 studio.getDescription(),
                 studio.getStreet(),
@@ -96,6 +98,7 @@ public class StudioServiceImpl implements StudioService {
         List<StudioResponse> response = studios.stream()
                 .map(studio -> new StudioResponse(
                         studio.getId(),
+                        studio.getSmartlockId(),
                         studio.getName(),
                         studio.getDescription(),
                         studio.getStreet(),

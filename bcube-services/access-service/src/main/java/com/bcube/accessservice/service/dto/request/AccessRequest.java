@@ -9,6 +9,7 @@ import java.time.Instant;
 @AllArgsConstructor
 public class AccessRequest {
     public Long bookingId;
+    public Long smartlockId;
     public String validFrom;
     public String validUntil;
 }

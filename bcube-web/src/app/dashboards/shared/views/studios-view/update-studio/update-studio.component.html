@@ -73,6 +73,15 @@
             </div>
           </div>
 
+          <div class="mb-4">
+            <label for="smartlockId" class="block text-900 font-medium mb-2">Smartlock ID</label>
+            <input id="smartlockId" formControlName="smartlockId" type="number" placeholder="Smartlock ID" pInputText pAutoFocus [autofocus]="true" class="w-full">
+
+            <div style="position: relative">
+              <small style="position: absolute; color: red" *ngIf="smartlockId.hasError('required') && submitted">Smartlock ID ist erforderlich</small>
+            </div>
+          </div>
+
           <div *ngIf="galleryPreviews.length > 0" class="mb-4">
             <label class="block text-900 font-medium mb-2">Aktuelle Cubebilder</label>
             <div class="grid grid-nogutter gap-3">

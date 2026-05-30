@@ -3,20 +3,11 @@
 <ng-container *ngIf="!(loading$ | async) && studio">
   <div class="studio-details-page">
     <div class="top-actions">
-      <button
-        pButton
-        type="button"
-        class="p-button-outlined"
-        icon="pi pi-arrow-left"
-        label="Zurück"
-        [style]="{ 'border-color': 'black', 'color': 'black' }"
-        (click)="goBack()">
+      <button pButton type="button" class="p-button-outlined" icon="pi pi-arrow-left" label="Zurück"
+        [style]="{ 'border-color': 'black', 'color': 'black' }" (click)="goBack()">
       </button>
 
-      <app-update-studio
-        *ngIf="isAdmin"
-        [studio]="studio"
-        [detailMode]="true">
+      <app-update-studio *ngIf="isAdmin" [studio]="studio" [detailMode]="true">
       </app-update-studio>
     </div>
 
@@ -33,10 +24,7 @@
       </button>
 
       <div class="gallery-secondary" *ngIf="secondaryGalleryImages.length > 0">
-        <button
-          type="button"
-          class="gallery-thumb"
-          *ngFor="let image of secondaryGalleryImages; let index = index"
+        <button type="button" class="gallery-thumb" *ngFor="let image of secondaryGalleryImages; let index = index"
           (click)="showOverlay(image)">
           <img [src]="image" [alt]="studio.name + ' Bild ' + (index + 2)">
         </button>
@@ -44,11 +32,7 @@
     </section>
 
     <div *ngIf="overlayVisible" class="overlay" (click)="hideOverlay()">
-      <img
-        [src]="overlayImage"
-        alt="Großes Bild"
-        class="overlay-img"
-        (click)="$event.stopPropagation()">
+      <img [src]="overlayImage" alt="Großes Bild" class="overlay-img" (click)="$event.stopPropagation()">
       <button class="close-btn" (click)="hideOverlay()">✖</button>
     </div>
 
@@ -58,9 +42,11 @@
           <h2>Cubeübersicht</h2>
           <p class="address-line">{{ studio.street }}, {{ studio.plz }} {{ studio.city }}, {{ studio.country }}</p>
 
-          <div
-            class="studio-description-content"
-            [innerHTML]="renderMarkdown(studio.description)">
+          <div *ngIf="isAdmin">
+            Smartlock ID: {{ studio.smartlockId }}
+          </div>
+
+          <div class="studio-description-content" [innerHTML]="renderMarkdown(studio.description)">
           </div>
         </section>
 
@@ -91,15 +77,8 @@
           <div class="booking-elements" *ngIf="isUser">
             <div class="time-field-row">
               <label for="startTime" class="time-field-label">Startzeitpunkt</label>
-              <p-calendar
-                class="time-field-input"
-                id="startTime"
-                [(ngModel)]="startTime"
-                [timeOnly]="true"
-                hourFormat="24"
-                [stepMinute]="15"
-                placeholder="Startzeit wählen"
-                [showIcon]="true"
+              <p-calendar class="time-field-input" id="startTime" [(ngModel)]="startTime" [timeOnly]="true"
+                hourFormat="24" [stepMinute]="15" placeholder="Startzeit wählen" [showIcon]="true"
                 (onFocus)="setDefaultTime('start')"
                 (ngModelChange)="startTime = normalizeToQuarterHour($event); checkTimeConflict();">
               </p-calendar>
@@ -107,16 +86,8 @@
 
             <div class="time-field-row">
               <label for="endTime" class="time-field-label">Endzeitpunkt</label>
-              <p-calendar
-                class="time-field-input"
-                id="endTime"
-                [(ngModel)]="endTime"
-                [timeOnly]="true"
-                hourFormat="24"
-                [stepMinute]="15"
-                placeholder="Endzeit wählen"
-                [showIcon]="true"
-                (onFocus)="setDefaultTime('end')"
+              <p-calendar class="time-field-input" id="endTime" [(ngModel)]="endTime" [timeOnly]="true" hourFormat="24"
+                [stepMinute]="15" placeholder="Endzeit wählen" [showIcon]="true" (onFocus)="setDefaultTime('end')"
                 (ngModelChange)="endTime = normalizeToQuarterHour($event); checkTimeConflict();">
               </p-calendar>
             </div>
@@ -136,12 +107,7 @@
             </div>
 
             <div class="info-booking-action">
-              <button
-                pButton
-                type="button"
-                label="Cube buchen"
-                [disabled]="!canBook()"
-                class="booking-button"
+              <button pButton type="button" label="Cube buchen" [disabled]="!canBook()" class="booking-button"
                 (click)="confirmBooking()">
               </button>
             </div>

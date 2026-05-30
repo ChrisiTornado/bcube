@@ -8,6 +8,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 public class UpdateStudioRequest {
+    private Long smartlockId;
     private String street;
     private int plz;
     private String city;
