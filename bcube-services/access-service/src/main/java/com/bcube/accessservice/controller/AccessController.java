@@ -1,12 +1,18 @@
 package com.bcube.accessservice.controller;
+
 import com.bcube.accessservice.service.AccessService;
 import com.bcube.accessservice.service.dto.request.AccessRequest;
+import com.bcube.accessservice.service.dto.request.CheckInRequest;
 import com.bcube.accessservice.service.dto.response.AccessCodeResponse;
 import com.bcube.accessservice.service.dto.response.ApiResponse;
+import com.bcube.accessservice.service.dto.response.CheckInResponse;
+import com.bcube.accessservice.service.dto.response.FaceVerificationResponse;
 import com.bcube.accessservice.service.dto.response.StornoResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
@@ -17,8 +23,7 @@ public class AccessController {
     @PostMapping
     public ResponseEntity<ApiResponse<AccessCodeResponse>> createPermission(@RequestBody AccessRequest request) {
         AccessCodeResponse response = accessService.createPermission(request);
-        System.out.println(response);
-        return ResponseEntity.ok(new ApiResponse<>("Code erfolgreich gesendet",  response));
+        return ResponseEntity.ok(new ApiResponse<>("Code erfolgreich gespeichert", response));
     }
 
     @DeleteMapping("/{id}")
@@ -33,5 +38,23 @@ public class AccessController {
         return ResponseEntity.ok(new ApiResponse<>("Code erfolgreich gesendet", response));
     }
 
-    // ToDo: clean up job
+    @PostMapping("/check-in")
+    public ResponseEntity<ApiResponse<CheckInResponse>> checkIn(@RequestBody CheckInRequest request) {
+        CheckInResponse response = accessService.checkIn(request);
+        return ResponseEntity.ok(new ApiResponse<>("Code verifiziert", response));
+    }
+
+    @PostMapping(value = "/verify-face", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ApiResponse<FaceVerificationResponse>> verifyFace(
+            @RequestPart("image") MultipartFile image,
+            @RequestParam("bookingId") Long bookingId) {
+        FaceVerificationResponse response = accessService.verifyFace(image, bookingId);
+        return ResponseEntity.ok(new ApiResponse<>("Gesicht verifiziert", response));
+    }
+
+    @PostMapping("/generate-nuki-code/{bookingId}")
+    public ResponseEntity<ApiResponse<AccessCodeResponse>> generateNukiCode(@PathVariable Long bookingId) {
+        AccessCodeResponse response = accessService.generateNukiCode(bookingId);
+        return ResponseEntity.ok(new ApiResponse<>("Nuki-Code generiert", response));
+    }
 }

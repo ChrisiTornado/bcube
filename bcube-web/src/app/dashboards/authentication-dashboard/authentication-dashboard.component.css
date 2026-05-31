@@ -1,0 +1,95 @@
+.code-input {
+    width: 54px;
+    height: 62px;
+    text-align: center;
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0 6px;
+    border: 1px solid rgba(255, 167, 34, 0.18);
+    border-radius: 14px;
+    background: rgba(42, 42, 42, 0.92);
+    color: #ffffff;
+}
+
+.code-input:focus {
+    border-color: #ffa722;
+    box-shadow: 0 0 0 4px rgba(255, 167, 34, 0.16);
+    outline: none;
+}
+
+.code-input:disabled {
+    background-color: rgba(35, 35, 35, 0.9);
+}
+
+.enter-code-form {
+    max-width: 980px;
+    margin: 0 auto;
+}
+
+:host ::ng-deep .code-action-button .p-button {
+    font-size: 0.86rem !important;
+    padding: 0.85rem 1.8rem !important;
+    white-space: nowrap !important;
+}
+
+/* Step 2 - Camera */
+.face-scan-wrapper {
+    max-width: 520px;
+    margin: 0 auto;
+}
+
+.camera-container {
+    position: relative;
+    border-radius: 20px;
+    overflow: hidden;
+    border: 2px solid rgba(255, 167, 34, 0.3);
+    background: #111;
+}
+
+.camera-preview {
+    width: 100%;
+    display: block;
+    border-radius: 18px;
+    transform: scaleX(-1); /* mirror for selfie */
+}
+
+.capture-canvas {
+    display: none;
+}
+
+.camera-error {
+    padding: 2rem;
+    border: 1px solid rgba(255, 167, 34, 0.2);
+    border-radius: 14px;
+    background: rgba(42, 42, 42, 0.6);
+}
+
+/* Step 3 - Nuki Code */
+.nuki-result {
+    padding: 1rem 0;
+}
+
+.nuki-label {
+    font-size: 0.95rem;
+    color: rgba(255, 255, 255, 0.55);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.nuki-code {
+    font-size: clamp(2.8rem, 8vw, 4.5rem);
+    font-weight: 800;
+    letter-spacing: 0.25em;
+    color: #ffa722;
+    padding: 1.2rem 2rem;
+    border: 2px solid rgba(255, 167, 34, 0.3);
+    border-radius: 20px;
+    background: rgba(255, 167, 34, 0.06);
+    display: inline-block;
+    min-width: 280px;
+}
+
+.nuki-hint {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.45);
+}

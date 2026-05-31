@@ -11,4 +11,5 @@ import java.util.Optional;
 public interface AccessRepository extends JpaRepository<AccessPermission, Long> {
     Optional<AccessPermission> findFirstByBookingIdOrderByIdDesc(Long bookingId);
     List<AccessPermission> findAllByBookingIdOrderByIdDesc(Long bookingId);
+    Optional<AccessPermission> findByAuthCodeHash(String authCodeHash);
 }

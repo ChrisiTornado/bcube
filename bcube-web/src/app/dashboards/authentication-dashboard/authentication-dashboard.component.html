@@ -1,0 +1,69 @@
+<p-toast position="top-right"></p-toast>
+
+<app-auth-container [title]="stepTitle">
+
+  <!-- Step 1: Auth Code eingeben -->
+  <form *ngIf="step === 1" [formGroup]="formGroup" class="enter-code-form">
+    <div class="flex justify-content-center mb-3">
+      <input id="digit1" type="text" formControlName="digit1" maxlength="1" class="code-input"
+        (input)="moveFocus($event, 'digit2')" />
+      <input id="digit2" type="text" formControlName="digit2" maxlength="1" class="code-input"
+        (input)="moveFocus($event, 'digit3')" />
+      <input id="digit3" type="text" formControlName="digit3" maxlength="1" class="code-input"
+        (input)="moveFocus($event, 'digit4')" />
+      <input id="digit4" type="text" formControlName="digit4" maxlength="1" class="code-input"
+        (input)="moveFocus($event, 'digit5')" />
+      <input id="digit5" type="text" formControlName="digit5" maxlength="1" class="code-input"
+        (input)="moveFocus($event, 'digit6')" />
+      <input id="digit6" type="text" formControlName="digit6" maxlength="1" class="code-input" />
+    </div>
+
+    <div *ngIf="submitted && formGroup.invalid" class="p-error mb-3 text-center">
+      Bitte geben Sie alle 6 Ziffern des Codes ein.
+    </div>
+
+    <div class="flex justify-content-center mt-4">
+      <p-button pRipple type="button" label="Code verifizieren" [loading]="loading" [disabled]="loading"
+        (click)="submitCode()" class="code-action-button"
+        [style]="{'background-color': 'black', 'border-color': 'black', 'color': 'white'}">
+      </p-button>
+    </div>
+  </form>
+
+  <!-- Step 2: Gesicht scannen -->
+  <div *ngIf="step === 2" class="face-scan-wrapper">
+
+    <div *ngIf="cameraError" class="camera-error text-center mb-4">
+      <p class="text-500 mb-3">Kamera nicht verfügbar.</p>
+      <p-button label="Erneut versuchen" (click)="startCamera()"
+        [style]="{'background-color': 'black', 'border-color': 'black', 'color': 'white'}">
+      </p-button>
+    </div>
+
+    <div *ngIf="!cameraError" class="camera-container">
+      <video #videoEl autoplay playsinline class="camera-preview"></video>
+      <canvas #canvasEl class="capture-canvas"></canvas>
+    </div>
+
+    <div class="flex justify-content-center mt-4">
+      <p-button pRipple label="Foto aufnehmen" [loading]="loading" [disabled]="loading || cameraError"
+        (click)="captureAndVerify()"
+        [style]="{'background-color': 'black', 'border-color': 'black', 'color': 'white'}">
+      </p-button>
+    </div>
+  </div>
+
+  <!-- Step 3: Nuki-Code anzeigen -->
+  <div *ngIf="step === 3" class="nuki-result text-center">
+    <p class="nuki-label mb-3">Ihr Keypad-Code</p>
+    <div class="nuki-code">{{ nukiCode }}</div>
+    <p class="nuki-hint mt-3">Geben Sie diesen Code am Nuki-Keypad ein.</p>
+
+    <div class="flex justify-content-center mt-5">
+      <p-button pRipple label="Zurücksetzen" (click)="reset()"
+        [style]="{'background-color': 'black', 'border-color': 'black', 'color': 'white'}">
+      </p-button>
+    </div>
+  </div>
+
+</app-auth-container>

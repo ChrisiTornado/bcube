@@ -30,6 +30,9 @@ public class AccessPermission {
     @Column(name = "access_code", nullable = false)
     private String accessCode;
 
+    @Column(name = "auth_code_hash")
+    private String authCodeHash;
+
     @Column(name = "valid_from", nullable = false)
     private Instant validFrom;
 

@@ -7,16 +7,22 @@ import com.bcube.accessservice.persistance.entity.AccessPermission;
 import com.bcube.accessservice.persistance.repository.AccessRepository;
 import com.bcube.accessservice.service.AccessService;
 import com.bcube.accessservice.service.dto.request.AccessRequest;
+import com.bcube.accessservice.service.dto.request.CheckInRequest;
 import com.bcube.accessservice.service.dto.response.AccessCodeResponse;
+import com.bcube.accessservice.service.dto.response.CheckInResponse;
+import com.bcube.accessservice.service.dto.response.FaceVerificationResponse;
 import com.bcube.accessservice.service.dto.response.StornoResponse;
 import com.bcube.accessservice.service.nuki.NukiService;
 import com.bcube.accessservice.utility.CryptoUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.security.MessageDigest;
 import java.security.SecureRandom;
 import java.time.Instant;
+import java.util.HexFormat;
 import java.util.List;
 
 @Service
@@ -33,12 +39,6 @@ public class AccessServiceImpl implements AccessService {
         Instant validFrom = Instant.parse(accessRequest.getValidFrom());
         Instant validUntil = Instant.parse(accessRequest.getValidUntil());
 
-        Instant now = Instant.now();
-
-        if (now.isAfter(validFrom)) {
-            throw new BookingDoneException("Booking done");
-        }
-
         if (validFrom.isAfter(validUntil)) {
             throw new IllegalArgumentException("Invalid time range");
         }
@@ -51,6 +51,8 @@ public class AccessServiceImpl implements AccessService {
             throw new EncryptionException("PIN encryption failed");
         }
 
+        String authCodeHash = sha256(Integer.toString(pinCode));
+
         List<AccessPermission> existingPermissions = accessRepository
                 .findAllByBookingIdOrderByIdDesc(accessRequest.getBookingId());
 
@@ -61,6 +63,7 @@ public class AccessServiceImpl implements AccessService {
         accessPermission.setBookingId(accessRequest.getBookingId());
         accessPermission.setSmartLockId(accessRequest.smartlockId);
         accessPermission.setAccessCode(encryptedPin);
+        accessPermission.setAuthCodeHash(authCodeHash);
         accessPermission.setValidFrom(validFrom);
         accessPermission.setValidUntil(validUntil);
 
@@ -68,11 +71,9 @@ public class AccessServiceImpl implements AccessService {
             accessRepository.deleteAll(existingPermissions.stream().skip(1).toList());
         }
 
-        nukiService.addSmartKeyCode(accessRequest.getBookingId(), pinCode, accessRequest.smartlockId, validFrom, validUntil);
+        // Nuki code is NOT pushed here — it is generated after face verification at check-in
         accessRepository.save(accessPermission);
-        return new AccessCodeResponse(
-                pinCode
-        );
+        return new AccessCodeResponse(pinCode);
     }
 
     @Override
@@ -100,14 +101,70 @@ public class AccessServiceImpl implements AccessService {
         return new AccessCodeResponse(Integer.parseInt(decryptedPin));
     }
 
+    @Override
+    public CheckInResponse checkIn(CheckInRequest request) {
+        String hash = sha256(request.getAuthCode());
+        AccessPermission permission = accessRepository.findByAuthCodeHash(hash)
+                .orElseThrow(() -> new AccessCodeDoesNotExistException("Code ungültig oder nicht gefunden"));
+
+        if (Instant.now().isAfter(permission.getValidUntil())) {
+            throw new BookingDoneException("Buchung ist bereits abgelaufen");
+        }
+
+        return new CheckInResponse(
+                permission.getBookingId(),
+                permission.getSmartLockId(),
+                permission.getValidFrom(),
+                permission.getValidUntil()
+        );
+    }
+
+    @Override
+    public FaceVerificationResponse verifyFace(MultipartFile image, Long bookingId) {
+        // TODO: integrate AWS Rekognition CompareFaces
+        return new FaceVerificationResponse(true);
+    }
+
+    @Override
+    @Transactional
+    public AccessCodeResponse generateNukiCode(Long bookingId) {
+        AccessPermission permission = accessRepository.findFirstByBookingIdOrderByIdDesc(bookingId)
+                .orElseThrow(() -> new AccessCodeDoesNotExistException("Keine Berechtigung gefunden"));
+
+        if (Instant.now().isAfter(permission.getValidUntil())) {
+            throw new BookingDoneException("Buchung ist bereits abgelaufen");
+        }
+
+        int nukiPin = generateAccessCode();
+        nukiService.addSmartKeyCode(
+                permission.getBookingId(),
+                nukiPin,
+                permission.getSmartLockId(),
+                permission.getValidFrom(),
+                permission.getValidUntil()
+        );
+
+        return new AccessCodeResponse(nukiPin);
+    }
+
     private int generateAccessCode() {
         int code;
         do {
             code = 0;
             for (int i = 0; i < 6; i++) {
-                code = code * 10 + (1 + secureRandom.nextInt(9)); // Ziffern 1-9
+                code = code * 10 + (1 + secureRandom.nextInt(9));
             }
-        } while (code / 10000 == 12); // erste zwei Ziffern != 12
+        } while (code / 10000 == 12);
         return code;
+    }
+
+    private String sha256(String input) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(input.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+            return HexFormat.of().formatHex(hash);
+        } catch (Exception e) {
+            throw new RuntimeException("Hashing failed", e);
+        }
     }
 }

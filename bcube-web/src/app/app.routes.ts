@@ -16,6 +16,7 @@ import { EmailResetComponent } from './auth/email-reset/email-reset.component';
 import { EnterCodeComponent } from './auth/enter-code/enter-code.component';
 import { ProfileViewComponent } from './dashboards/shared/views/profile-view/profile-view.component';
 import { LegalComponent } from './legal/legal.component';
+import { AuthenticationDashboardComponent } from './dashboards/authentication-dashboard/authentication-dashboard.component';
 
 export const routes: Routes = [
     { path: 'login', component: LoginComponent },
@@ -67,6 +68,13 @@ export const routes: Routes = [
             { path: 'studio-details/:id', component: StudioDetailsComponent },
             { path: 'booking-details/:id', component: BookingDetailsComponent }
         ]
+    },
+
+    {
+        path: 'authentication-dashboard',
+        component: AuthenticationDashboardComponent,
+        canActivate: [authGuard, roleGuard],
+        data: { expectedRole: 'AUTHENTICATOR' }
     },
 
     { path: '', redirectTo: 'login', pathMatch: 'full' },

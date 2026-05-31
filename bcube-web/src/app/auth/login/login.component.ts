@@ -68,7 +68,11 @@ export class LoginComponent implements OnInit {
           this.auth.storeAuth(jwt.token, user);
           sessionStorage.setItem('loginSuccessMessage', res.message);
           const role = jwt.role;
-          this.router.navigate([role === 'ADMIN' ? '/admin-dashboard/studios' : '/user-dashboard/studios']);
+          const redirectMap: Record<string, string> = {
+            ADMIN: '/admin-dashboard/studios',
+            AUTHENTICATOR: '/authentication-dashboard'
+          };
+          this.router.navigate([redirectMap[role] ?? '/user-dashboard/studios']);
         },
         error: (e) => {
           const message = e?.error?.message ?? 'Ein unbekannter Fehler ist aufgetreten.';
