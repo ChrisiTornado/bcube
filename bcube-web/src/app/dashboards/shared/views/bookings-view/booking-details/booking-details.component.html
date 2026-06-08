@@ -12,10 +12,11 @@
         Auftrag {{ booking.id }} - {{ booking.studio.name }}
       </h2>
       <img
+        *ngIf="booking.studio.imageBase64"
         [src]="booking.studio.imageBase64"
         alt="Studiobild"
         class="booking-studio-image"
-        (click)="showOverlay(booking.studio.imageBase64)"
+        (click)="showOverlay(booking.studio.imageBase64!)"
       >
     </div>
 

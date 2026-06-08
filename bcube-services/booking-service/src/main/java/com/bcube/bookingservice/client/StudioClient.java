@@ -36,7 +36,7 @@ public class StudioClient {
         try {
             ApiResponse<StudioDto> response = webClientBuilder.build()
                     .get()
-                    .uri(studioServiceBaseUrl + "/" + studioId)
+                    .uri(studioServiceBaseUrl + "/" + studioId + "/slim")
                     .retrieve()
                     .bodyToMono(new ParameterizedTypeReference<ApiResponse<StudioDto>>() {})
                     .block();

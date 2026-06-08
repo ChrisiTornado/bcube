@@ -33,33 +33,46 @@
   <!-- Step 2: Gesicht scannen -->
   <div *ngIf="step === 2" class="face-scan-wrapper">
 
-    <div *ngIf="cameraError" class="camera-error text-center mb-4">
-      <p class="text-500 mb-3">Kamera nicht verfügbar.</p>
-      <p-button label="Erneut versuchen" (click)="startCamera()"
+    <!-- Fehler nach Verifikation -->
+    <div *ngIf="verificationFailed" class="text-center">
+      <i class="pi pi-times-circle" style="font-size: 3rem; color: #ef4444;"></i>
+      <p class="mt-3 mb-1" style="font-weight: 600;">Gesichtserkennung fehlgeschlagen</p>
+      <p class="text-500 mb-4">Bitte erneut versuchen.</p>
+      <p-button label="Nochmal versuchen" (click)="retryCamera()"
         [style]="{'background-color': 'black', 'border-color': 'black', 'color': 'white'}">
       </p-button>
     </div>
 
-    <div *ngIf="!cameraError" class="camera-container">
-      <video #videoEl autoplay playsinline class="camera-preview"></video>
-      <canvas #canvasEl class="capture-canvas"></canvas>
-    </div>
+    <!-- Kamera -->
+    <ng-container *ngIf="!verificationFailed">
+      <div *ngIf="cameraError" class="camera-error text-center mb-4">
+        <p class="text-500 mb-3">Kamera nicht verfügbar.</p>
+        <p-button label="Erneut versuchen" (click)="startCamera()"
+          [style]="{'background-color': 'black', 'border-color': 'black', 'color': 'white'}">
+        </p-button>
+      </div>
 
-    <div class="flex justify-content-center mt-4">
-      <p-button pRipple label="Foto aufnehmen" [loading]="loading" [disabled]="loading || cameraError"
-        (click)="captureAndVerify()"
-        [style]="{'background-color': 'black', 'border-color': 'black', 'color': 'white'}">
-      </p-button>
-    </div>
+      <div *ngIf="!cameraError" class="camera-container">
+        <video #videoEl autoplay playsinline class="camera-preview"></video>
+        <canvas #canvasEl class="capture-canvas"></canvas>
+      </div>
+
+      <div class="flex justify-content-center mt-4">
+        <p-button pRipple label="Foto aufnehmen" [loading]="loading" [disabled]="loading || cameraError"
+          (click)="captureAndVerify()"
+          [style]="{'background-color': 'black', 'border-color': 'black', 'color': 'white'}">
+        </p-button>
+      </div>
+    </ng-container>
   </div>
 
-  <!-- Step 3: Nuki-Code anzeigen -->
+  <!-- Step 3: Bestätigung -->
   <div *ngIf="step === 3" class="nuki-result text-center">
-    <p class="nuki-label mb-3">Ihr Keypad-Code</p>
-    <div class="nuki-code">{{ nukiCode }}</div>
-    <p class="nuki-hint mt-3">Geben Sie diesen Code am Nuki-Keypad ein.</p>
+    <i class="pi pi-check-circle" style="font-size: 3rem; color: #22c55e;"></i>
+    <p class="nuki-label mt-3 mb-2">Gesichtserkennung erfolgreich</p>
+    <p class="nuki-hint mb-4">Dein Keypad-Code wurde an deine E-Mail-Adresse gesendet.<br>Gib den erhaltenen Code am Nuki-Keypad ein.</p>
 
-    <div class="flex justify-content-center mt-5">
+    <div class="flex justify-content-center mt-4">
       <p-button pRipple label="Zurücksetzen" (click)="reset()"
         [style]="{'background-color': 'black', 'border-color': 'black', 'color': 'white'}">
       </p-button>

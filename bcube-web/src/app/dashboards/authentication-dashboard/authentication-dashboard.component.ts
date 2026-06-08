@@ -5,7 +5,7 @@ import { CommonModule } from '@angular/common';
 import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
 import { ButtonModule } from 'primeng/button';
-import { finalize } from 'rxjs';
+import { EMPTY, from, finalize, switchMap } from 'rxjs';
 import { AccessService, CheckInResponse } from '../../services/access.service';
 
 @Component({
@@ -29,6 +29,7 @@ export class AuthenticationDashboardComponent implements OnInit, OnDestroy {
   cameraStream: MediaStream | null = null;
   cameraError = false;
   nukiCode: number | null = null;
+  verificationFailed = false;
 
   constructor(
     private fb: FormBuilder,
@@ -112,58 +113,34 @@ export class AuthenticationDashboardComponent implements OnInit, OnDestroy {
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
     canvas.getContext('2d')!.drawImage(video, 0, 0);
-
+    this.stopCamera();
     this.loading = true;
-    canvas.toBlob(blob => {
-      if (!blob) {
-        this.loading = false;
-        return;
+
+    from(new Promise<Blob>(resolve =>
+      canvas.toBlob(blob => resolve(blob!), 'image/jpeg', 0.9)
+    )).pipe(
+      switchMap(blob => this.accessService.verifyFace(blob, this.checkInData!.bookingId)),
+      switchMap(res => {
+        if (!res.verified) {
+          this.verificationFailed = true;
+          return EMPTY;
+        }
+        return this.accessService.generateNukiCode(this.checkInData!.bookingId);
+      }),
+      finalize(() => this.loading = false)
+    ).subscribe({
+      next: () => {
+        this.step = 3;
+      },
+      error: () => {
+        this.verificationFailed = true;
       }
-      this.stopCamera();
-      this.accessService.verifyFace(blob, this.checkInData!.bookingId)
-        .pipe(finalize(() => this.loading = false))
-        .subscribe({
-          next: (res) => {
-            if (res.verified) {
-              this.generateNukiCode();
-            } else {
-              this.messageService.add({
-                severity: 'error',
-                summary: 'Fehler',
-                detail: 'Gesichtserkennung fehlgeschlagen'
-              });
-              setTimeout(() => this.startCamera(), 300);
-            }
-          },
-          error: (err) => {
-            this.messageService.add({
-              severity: 'error',
-              summary: 'Fehler',
-              detail: err?.error?.message ?? 'Verifikation fehlgeschlagen'
-            });
-            setTimeout(() => this.startCamera(), 300);
-          }
-        });
-    }, 'image/jpeg', 0.9);
+    });
   }
 
-  private generateNukiCode(): void {
-    this.loading = true;
-    this.accessService.generateNukiCode(this.checkInData!.bookingId)
-      .pipe(finalize(() => this.loading = false))
-      .subscribe({
-        next: (res) => {
-          this.nukiCode = res.accessCode;
-          this.step = 3;
-        },
-        error: (err) => {
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Fehler',
-            detail: err?.error?.message ?? 'Nuki-Code konnte nicht generiert werden'
-          });
-        }
-      });
+  retryCamera(): void {
+    this.verificationFailed = false;
+    this.startCamera();
   }
 
   reset(): void {
@@ -171,6 +148,7 @@ export class AuthenticationDashboardComponent implements OnInit, OnDestroy {
     this.submitted = false;
     this.checkInData = null;
     this.nukiCode = null;
+    this.verificationFailed = false;
     this.formGroup.reset();
     this.stopCamera();
   }

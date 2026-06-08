@@ -4,6 +4,7 @@ import com.bcube.studioservice.service.StudioService;
 import com.bcube.studioservice.service.dto.response.ApiResponse;
 import com.bcube.studioservice.service.dto.response.StudioNameResponse;
 import com.bcube.studioservice.service.dto.response.StudioResponse;
+import com.bcube.studioservice.service.dto.response.StudioSlimResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +31,12 @@ public class StudioController {
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<StudioResponse>> getStudioById(@PathVariable long id)   {
         StudioResponse response = studioService.getStudioById(id);
+        return ResponseEntity.ok(new ApiResponse<>("Studio erfolgreich gesendet", response));
+    }
+
+    @GetMapping("/{id}/slim")
+    public ResponseEntity<ApiResponse<StudioSlimResponse>> getStudioByIdSlim(@PathVariable long id) {
+        StudioSlimResponse response = studioService.getStudioByIdSlim(id);
         return ResponseEntity.ok(new ApiResponse<>("Studio erfolgreich gesendet", response));
     }
 

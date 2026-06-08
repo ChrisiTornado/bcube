@@ -12,4 +12,5 @@ public class AccessRequest {
     public Long smartlockId;
     public String validFrom;
     public String validUntil;
+    public String userEmail;
 }

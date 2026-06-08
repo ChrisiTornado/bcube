@@ -233,11 +233,13 @@ public class BookingServiceImpl implements BookingService {
         DateTimeFormatter isoUtcFmt = DateTimeFormatter
                 .ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
                 .withZone(ZoneOffset.UTC);
+        UserDto user = userClient.getUserById(booking.getUserId(), token);
         AccessRequest request = new AccessRequest(
                 booking.getId(),
                 bookStudioRequest.getSmartlockID(),
                 isoUtcFmt.format(booking.getStartTime()),
-                isoUtcFmt.format(booking.getEndTime())
+                isoUtcFmt.format(booking.getEndTime()),
+                user != null ? user.getEmail() : null
         );
             AccessCodeResponse accessCodeResponse = accessCodeClient.generateAccessCode(request);
             if (accessCodeResponse == null) {
@@ -246,7 +248,6 @@ public class BookingServiceImpl implements BookingService {
 
             booking.setStatus(BookingStatus.CONFIRMED);
 
-            UserDto user = userClient.getUserById(booking.getUserId(), token);
             StudioDto studio = studioClient.getStudioById(booking.getStudioId());
 
             //get temp code

@@ -1,4 +1,4 @@
-package com.bcube.bookingservice.service.dto.Classes;
+package com.bcube.studioservice.service.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,8 +7,8 @@ import java.time.Instant;
 
 @Data
 @AllArgsConstructor
-public class StudioDto {
-    private int id;
+public class StudioSlimResponse {
+    private Long id;
     private Long smartlockId;
     private String name;
     private String description;

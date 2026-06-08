@@ -38,4 +38,7 @@ public class AccessPermission {
 
     @Column(name = "valid_until", nullable = false)
     private Instant validUntil;
+
+    @Column(name = "user_email")
+    private String userEmail;
 }

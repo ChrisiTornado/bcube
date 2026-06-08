@@ -9,6 +9,7 @@ import com.bcube.studioservice.service.dto.request.UpdateStudioRequest;
 import com.bcube.studioservice.service.dto.response.DeleteResponse;
 import com.bcube.studioservice.service.dto.response.StudioNameResponse;
 import com.bcube.studioservice.service.dto.response.StudioResponse;
+import com.bcube.studioservice.service.dto.response.StudioSlimResponse;
 import lombok.RequiredArgsConstructor;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -81,6 +82,27 @@ public class StudioServiceImpl implements StudioService {
     }
 
 
+
+    @Override
+    public StudioSlimResponse getStudioByIdSlim(long id) {
+        Studio studio = studioRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Studio mit ID " + id + " nicht gefunden"));
+
+        return new StudioSlimResponse(
+                studio.getId(),
+                studio.getSmartlockId(),
+                studio.getName(),
+                studio.getDescription(),
+                studio.getStreet(),
+                studio.getPlz(),
+                studio.getCity(),
+                studio.getCountry(),
+                studio.getLatitude(),
+                studio.getLongitude(),
+                studio.isActive(),
+                studio.getCreatedAt()
+        );
+    }
 
     @Override
     public Page<StudioNameResponse> getAllStudioNames(int page, int size) {

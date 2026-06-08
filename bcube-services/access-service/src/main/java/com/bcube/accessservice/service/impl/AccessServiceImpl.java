@@ -15,16 +15,28 @@ import com.bcube.accessservice.service.dto.response.StornoResponse;
 import com.bcube.accessservice.service.nuki.NukiService;
 import com.bcube.accessservice.utility.CryptoUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.core.SdkBytes;
+import software.amazon.awssdk.services.rekognition.RekognitionClient;
+import software.amazon.awssdk.services.rekognition.model.Image;
+import software.amazon.awssdk.services.rekognition.model.InvalidParameterException;
+import software.amazon.awssdk.services.rekognition.model.SearchFacesByImageRequest;
+import software.amazon.awssdk.services.rekognition.model.SearchFacesByImageResponse;
 
+import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
 import java.time.Instant;
 import java.util.HexFormat;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AccessServiceImpl implements AccessService {
@@ -32,6 +44,14 @@ public class AccessServiceImpl implements AccessService {
     private final NukiService nukiService;
     private final AccessRepository accessRepository;
     private final CryptoUtil cryptoUtil;
+    private final RekognitionClient rekognitionClient;
+    private final JavaMailSender mailSender;
+
+    @Value("${aws.rekognition.collection-id}")
+    private String collectionId;
+
+    @Value("${aws.rekognition.confidence-threshold}")
+    private float confidenceThreshold;
 
     @Override
     @Transactional
@@ -66,6 +86,7 @@ public class AccessServiceImpl implements AccessService {
         accessPermission.setAuthCodeHash(authCodeHash);
         accessPermission.setValidFrom(validFrom);
         accessPermission.setValidUntil(validUntil);
+        accessPermission.setUserEmail(accessRequest.getUserEmail());
 
         if (existingPermissions.size() > 1) {
             accessRepository.deleteAll(existingPermissions.stream().skip(1).toList());
@@ -121,12 +142,43 @@ public class AccessServiceImpl implements AccessService {
 
     @Override
     public FaceVerificationResponse verifyFace(MultipartFile image, Long bookingId) {
-        // TODO: integrate AWS Rekognition CompareFaces
-        return new FaceVerificationResponse(true);
+        byte[] imageBytes;
+        try {
+            imageBytes = image.getBytes();
+        } catch (IOException e) {
+            throw new RuntimeException("Bild konnte nicht gelesen werden", e);
+        }
+
+        SearchFacesByImageRequest request = SearchFacesByImageRequest.builder()
+                .collectionId(collectionId)
+                .image(Image.builder()
+                        .bytes(SdkBytes.fromByteArray(imageBytes))
+                        .build())
+                .faceMatchThreshold(confidenceThreshold)
+                .maxFaces(1)
+                .build();
+
+        try {
+            log.info("Calling Rekognition searchFacesByImage — collection={}, threshold={}", collectionId, confidenceThreshold);
+            SearchFacesByImageResponse response = rekognitionClient.searchFacesByImage(request);
+            boolean verified = !response.faceMatches().isEmpty();
+            log.info("Rekognition result: {} match(es) found — verified={}", response.faceMatches().size(), verified);
+            if (verified) {
+                log.info("Matched FaceId={}, confidence={}",
+                        response.faceMatches().get(0).face().faceId(),
+                        response.faceMatches().get(0).face().confidence());
+            }
+            return new FaceVerificationResponse(verified);
+        } catch (InvalidParameterException e) {
+            log.warn("Rekognition: kein Gesicht im Bild erkannt — {}", e.getMessage());
+            return new FaceVerificationResponse(false);
+        } catch (Exception e) {
+            log.error("Rekognition Fehler: {} — {}", e.getClass().getSimpleName(), e.getMessage());
+            throw new RuntimeException("Gesichtserkennung fehlgeschlagen: " + e.getMessage(), e);
+        }
     }
 
     @Override
-    @Transactional
     public AccessCodeResponse generateNukiCode(Long bookingId) {
         AccessPermission permission = accessRepository.findFirstByBookingIdOrderByIdDesc(bookingId)
                 .orElseThrow(() -> new AccessCodeDoesNotExistException("Keine Berechtigung gefunden"));
@@ -136,15 +188,41 @@ public class AccessServiceImpl implements AccessService {
         }
 
         int nukiPin = generateAccessCode();
-        nukiService.addSmartKeyCode(
-                permission.getBookingId(),
-                nukiPin,
-                permission.getSmartLockId(),
-                permission.getValidFrom(),
-                permission.getValidUntil()
-        );
+        log.info("Nuki-Code generiert: {} für Booking {}", nukiPin, bookingId);
+
+        try {
+            nukiService.addSmartKeyCode(
+                    permission.getBookingId(),
+                    nukiPin,
+                    permission.getSmartLockId(),
+                    permission.getValidFrom(),
+                    permission.getValidUntil()
+            );
+            log.info("Nuki API: Code erfolgreich registriert");
+        } catch (Exception e) {
+            log.error("Nuki API Fehler (nicht-fatal): {}", e.getMessage());
+        }
+
+        if (permission.getUserEmail() != null) {
+            sendNukiCodeByMail(permission.getUserEmail(), nukiPin);
+        } else {
+            log.warn("Keine E-Mail für Booking {} gespeichert — kein Mail-Versand", bookingId);
+        }
 
         return new AccessCodeResponse(nukiPin);
+    }
+
+    private void sendNukiCodeByMail(String to, int nukiPin) {
+        try {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setTo(to);
+            message.setSubject("Dein bcube Keypad-Code");
+            message.setText("Dein Keypad-Code lautet: " + nukiPin + "\n\nGib diesen Code am Nuki-Keypad ein, um Zugang zu erhalten.");
+            mailSender.send(message);
+            log.info("Nuki-Code per E-Mail gesendet an {}", to);
+        } catch (Exception e) {
+            log.error("E-Mail konnte nicht gesendet werden an {}: {}", to, e.getMessage());
+        }
     }
 
     private int generateAccessCode() {
