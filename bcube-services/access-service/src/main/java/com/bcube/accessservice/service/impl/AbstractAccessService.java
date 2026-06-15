@@ -7,29 +7,15 @@ import com.bcube.accessservice.persistance.entity.AccessPermission;
 import com.bcube.accessservice.persistance.repository.AccessRepository;
 import com.bcube.accessservice.service.AccessService;
 import com.bcube.accessservice.service.dto.request.AccessRequest;
-import com.bcube.accessservice.service.dto.request.CheckInRequest;
 import com.bcube.accessservice.service.dto.response.AccessCodeResponse;
-import com.bcube.accessservice.service.dto.response.CheckInResponse;
-import com.bcube.accessservice.service.dto.response.FaceVerificationResponse;
 import com.bcube.accessservice.service.dto.response.StornoResponse;
 import com.bcube.accessservice.service.nuki.NukiService;
 import com.bcube.accessservice.utility.CryptoUtil;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
-import software.amazon.awssdk.core.SdkBytes;
-import software.amazon.awssdk.services.rekognition.RekognitionClient;
-import software.amazon.awssdk.services.rekognition.model.Image;
-import software.amazon.awssdk.services.rekognition.model.InvalidParameterException;
-import software.amazon.awssdk.services.rekognition.model.SearchFacesByImageRequest;
-import software.amazon.awssdk.services.rekognition.model.SearchFacesByImageResponse;
 
-import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
 import java.time.Instant;
@@ -37,21 +23,25 @@ import java.util.HexFormat;
 import java.util.List;
 
 @Slf4j
-@Service
-@RequiredArgsConstructor
-public class AccessServiceImpl implements AccessService {
+public abstract class AbstractAccessService implements AccessService {
+
     private static final SecureRandom secureRandom = new SecureRandom();
-    private final NukiService nukiService;
-    private final AccessRepository accessRepository;
-    private final CryptoUtil cryptoUtil;
-    private final RekognitionClient rekognitionClient;
-    private final JavaMailSender mailSender;
 
-    @Value("${aws.rekognition.collection-id}")
-    private String collectionId;
+    protected final NukiService nukiService;
+    protected final AccessRepository accessRepository;
+    protected final CryptoUtil cryptoUtil;
+    protected final JavaMailSender mailSender;
 
-    @Value("${aws.rekognition.confidence-threshold}")
-    private float confidenceThreshold;
+    protected AbstractAccessService(
+            NukiService nukiService,
+            AccessRepository accessRepository,
+            CryptoUtil cryptoUtil,
+            JavaMailSender mailSender) {
+        this.nukiService = nukiService;
+        this.accessRepository = accessRepository;
+        this.cryptoUtil = cryptoUtil;
+        this.mailSender = mailSender;
+    }
 
     @Override
     @Transactional
@@ -87,12 +77,14 @@ public class AccessServiceImpl implements AccessService {
         accessPermission.setValidFrom(validFrom);
         accessPermission.setValidUntil(validUntil);
         accessPermission.setUserEmail(accessRequest.getUserEmail());
+        accessPermission.setCheckInCompleted(false);
+        accessPermission.setFaceVerified(false);
 
         if (existingPermissions.size() > 1) {
             accessRepository.deleteAll(existingPermissions.stream().skip(1).toList());
         }
 
-        // Nuki code is NOT pushed here — it is generated after face verification at check-in
+        pushNukiCode(accessPermission, pinCode);
         accessRepository.save(accessPermission);
         return new AccessCodeResponse(pinCode);
     }
@@ -112,7 +104,6 @@ public class AccessServiceImpl implements AccessService {
     public AccessCodeResponse getAccessCode(Long bookingId) {
         AccessPermission permission = accessRepository.findFirstByBookingIdOrderByIdDesc(bookingId)
                 .orElseThrow(() -> new AccessCodeDoesNotExistException("Access code does not exist"));
-
         String decryptedPin;
         try {
             decryptedPin = cryptoUtil.decrypt(permission.getAccessCode());
@@ -122,74 +113,7 @@ public class AccessServiceImpl implements AccessService {
         return new AccessCodeResponse(Integer.parseInt(decryptedPin));
     }
 
-    @Override
-    public CheckInResponse checkIn(CheckInRequest request) {
-        String hash = sha256(request.getAuthCode());
-        AccessPermission permission = accessRepository.findByAuthCodeHash(hash)
-                .orElseThrow(() -> new AccessCodeDoesNotExistException("Code ungültig oder nicht gefunden"));
-
-        if (Instant.now().isAfter(permission.getValidUntil())) {
-            throw new BookingDoneException("Buchung ist bereits abgelaufen");
-        }
-
-        return new CheckInResponse(
-                permission.getBookingId(),
-                permission.getSmartLockId(),
-                permission.getValidFrom(),
-                permission.getValidUntil()
-        );
-    }
-
-    @Override
-    public FaceVerificationResponse verifyFace(MultipartFile image, Long bookingId) {
-        byte[] imageBytes;
-        try {
-            imageBytes = image.getBytes();
-        } catch (IOException e) {
-            throw new RuntimeException("Bild konnte nicht gelesen werden", e);
-        }
-
-        SearchFacesByImageRequest request = SearchFacesByImageRequest.builder()
-                .collectionId(collectionId)
-                .image(Image.builder()
-                        .bytes(SdkBytes.fromByteArray(imageBytes))
-                        .build())
-                .faceMatchThreshold(confidenceThreshold)
-                .maxFaces(1)
-                .build();
-
-        try {
-            log.info("Calling Rekognition searchFacesByImage — collection={}, threshold={}", collectionId, confidenceThreshold);
-            SearchFacesByImageResponse response = rekognitionClient.searchFacesByImage(request);
-            boolean verified = !response.faceMatches().isEmpty();
-            log.info("Rekognition result: {} match(es) found — verified={}", response.faceMatches().size(), verified);
-            if (verified) {
-                log.info("Matched FaceId={}, confidence={}",
-                        response.faceMatches().get(0).face().faceId(),
-                        response.faceMatches().get(0).face().confidence());
-            }
-            return new FaceVerificationResponse(verified);
-        } catch (InvalidParameterException e) {
-            log.warn("Rekognition: kein Gesicht im Bild erkannt — {}", e.getMessage());
-            return new FaceVerificationResponse(false);
-        } catch (Exception e) {
-            log.error("Rekognition Fehler: {} — {}", e.getClass().getSimpleName(), e.getMessage());
-            throw new RuntimeException("Gesichtserkennung fehlgeschlagen: " + e.getMessage(), e);
-        }
-    }
-
-    @Override
-    public AccessCodeResponse generateNukiCode(Long bookingId) {
-        AccessPermission permission = accessRepository.findFirstByBookingIdOrderByIdDesc(bookingId)
-                .orElseThrow(() -> new AccessCodeDoesNotExistException("Keine Berechtigung gefunden"));
-
-        if (Instant.now().isAfter(permission.getValidUntil())) {
-            throw new BookingDoneException("Buchung ist bereits abgelaufen");
-        }
-
-        int nukiPin = generateAccessCode();
-        log.info("Nuki-Code generiert: {} für Booking {}", nukiPin, bookingId);
-
+    protected void pushNukiCode(AccessPermission permission, int nukiPin) {
         try {
             nukiService.addSmartKeyCode(
                     permission.getBookingId(),
@@ -202,17 +126,9 @@ public class AccessServiceImpl implements AccessService {
         } catch (Exception e) {
             log.error("Nuki API Fehler (nicht-fatal): {}", e.getMessage());
         }
-
-        if (permission.getUserEmail() != null) {
-            sendNukiCodeByMail(permission.getUserEmail(), nukiPin);
-        } else {
-            log.warn("Keine E-Mail für Booking {} gespeichert — kein Mail-Versand", bookingId);
-        }
-
-        return new AccessCodeResponse(nukiPin);
     }
 
-    private void sendNukiCodeByMail(String to, int nukiPin) {
+    protected void sendNukiCodeByMail(String to, int nukiPin) {
         try {
             SimpleMailMessage message = new SimpleMailMessage();
             message.setTo(to);
@@ -225,7 +141,7 @@ public class AccessServiceImpl implements AccessService {
         }
     }
 
-    private int generateAccessCode() {
+    protected int generateAccessCode() {
         int code;
         do {
             code = 0;
@@ -236,7 +152,7 @@ public class AccessServiceImpl implements AccessService {
         return code;
     }
 
-    private String sha256(String input) {
+    protected String sha256(String input) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             byte[] hash = digest.digest(input.getBytes(java.nio.charset.StandardCharsets.UTF_8));

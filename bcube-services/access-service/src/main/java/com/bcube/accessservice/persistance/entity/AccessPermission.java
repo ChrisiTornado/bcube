@@ -41,4 +41,10 @@ public class AccessPermission {
 
     @Column(name = "user_email")
     private String userEmail;
+
+    @Column(name = "check_in_completed")
+    private boolean checkInCompleted = false;
+
+    @Column(name = "face_verified")
+    private boolean faceVerified = false;
 }
