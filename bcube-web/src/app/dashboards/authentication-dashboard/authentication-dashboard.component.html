@@ -70,7 +70,16 @@
   <div *ngIf="step === 3" class="nuki-result text-center">
     <i class="pi pi-check-circle" style="font-size: 3rem; color: #22c55e;"></i>
     <p class="nuki-label mt-3 mb-2">Gesichtserkennung erfolgreich</p>
-    <p class="nuki-hint mb-4">Dein Keypad-Code wurde an deine E-Mail-Adresse gesendet.<br>Gib den erhaltenen Code am Nuki-Keypad ein.</p>
+
+    <ng-container *ngIf="nukiCode; else emailSent">
+      <p class="nuki-hint mb-2">Dein Keypad-Code:</p>
+      <p class="nuki-code mb-4">{{ nukiCode }}</p>
+      <p class="nuki-hint mb-4">Gib diesen Code am Nuki-Keypad ein.</p>
+    </ng-container>
+
+    <ng-template #emailSent>
+      <p class="nuki-hint mb-4">Dein Keypad-Code wurde an deine E-Mail-Adresse gesendet.<br>Gib den erhaltenen Code am Nuki-Keypad ein.</p>
+    </ng-template>
 
     <div class="flex justify-content-center mt-4">
       <p-button pRipple label="Zurücksetzen" (click)="reset()"

@@ -1,0 +1,7 @@
+{
+  "/api": {
+    "target": "http://bcube-alb-222243899.eu-central-1.elb.amazonaws.com",
+    "secure": false,
+    "changeOrigin": true
+  }
+}

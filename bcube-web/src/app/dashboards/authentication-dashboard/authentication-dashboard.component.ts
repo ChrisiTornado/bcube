@@ -110,6 +110,11 @@ export class AuthenticationDashboardComponent implements OnInit, OnDestroy {
     const canvas = this.canvasEl?.nativeElement;
     if (!video || !canvas) return;
 
+    if (video.readyState < 2 || video.videoWidth === 0) {
+      this.messageService.add({ severity: 'warn', summary: 'Kamera', detail: 'Kamera noch nicht bereit, bitte kurz warten.' });
+      return;
+    }
+
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
     canvas.getContext('2d')!.drawImage(video, 0, 0);
@@ -129,7 +134,8 @@ export class AuthenticationDashboardComponent implements OnInit, OnDestroy {
       }),
       finalize(() => this.loading = false)
     ).subscribe({
-      next: () => {
+      next: (res) => {
+        this.nukiCode = res.accessCode > 0 ? res.accessCode : null;
         this.step = 3;
       },
       error: () => {
