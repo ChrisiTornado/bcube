@@ -1,6 +1,9 @@
 package com.bcube.accessservice.service.impl;
 
+import com.bcube.accessservice.exception.AccessCodeDoesNotExistException;
+import com.bcube.accessservice.persistance.entity.AccessPermission;
 import com.bcube.accessservice.persistance.repository.AccessRepository;
+import com.bcube.accessservice.service.dto.response.AccessCodeResponse;
 import com.bcube.accessservice.service.nuki.NukiService;
 import com.bcube.accessservice.utility.CryptoUtil;
 import jakarta.annotation.PostConstruct;
@@ -24,6 +27,20 @@ public class Access3FAServiceImpl extends Access2FAServiceImpl {
             JavaMailSender mailSender,
             RekognitionClient rekognitionClient) {
         super(nukiService, accessRepository, cryptoUtil, mailSender, rekognitionClient);
+    }
+
+    @Override
+    public AccessCodeResponse generateNukiCode(Long bookingId) {
+        AccessPermission permission = accessRepository.findFirstByBookingIdOrderByIdDesc(bookingId)
+                .orElseThrow(() -> new AccessCodeDoesNotExistException("Keine Berechtigung gefunden"));
+        if (!permission.isFaceVerified()) {
+            throw new IllegalStateException("Face-Verifikation muss zuerst abgeschlossen werden");
+        }
+        int nukiPin = generateAccessCode();
+        log.info("3FA — Nuki-Code generiert: {} für Booking {}", nukiPin, bookingId);
+        pushNukiCode(permission, nukiPin);
+        sendNukiCodeByMail("christophe.andunda@gmail.com", nukiPin);
+        return new AccessCodeResponse(0); // Code wird per Email gesendet, nicht angezeigt
     }
 
     @Override

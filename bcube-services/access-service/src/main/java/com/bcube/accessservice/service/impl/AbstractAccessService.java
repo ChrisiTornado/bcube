@@ -12,6 +12,7 @@ import com.bcube.accessservice.service.dto.response.StornoResponse;
 import com.bcube.accessservice.service.nuki.NukiService;
 import com.bcube.accessservice.utility.CryptoUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +32,9 @@ public abstract class AbstractAccessService implements AccessService {
     protected final AccessRepository accessRepository;
     protected final CryptoUtil cryptoUtil;
     protected final JavaMailSender mailSender;
+
+    @Value("${spring.mail.from:christophe.andunda@gmail.com}")
+    private String mailFrom;
 
     protected AbstractAccessService(
             NukiService nukiService,
@@ -84,7 +88,6 @@ public abstract class AbstractAccessService implements AccessService {
             accessRepository.deleteAll(existingPermissions.stream().skip(1).toList());
         }
 
-        pushNukiCode(accessPermission, pinCode);
         accessRepository.save(accessPermission);
         return new AccessCodeResponse(pinCode);
     }
@@ -101,7 +104,7 @@ public abstract class AbstractAccessService implements AccessService {
     }
 
     @Override
-    public AccessCodeResponse getAccessCode(Long bookingId) {
+        public AccessCodeResponse getAccessCode(Long bookingId) {
         AccessPermission permission = accessRepository.findFirstByBookingIdOrderByIdDesc(bookingId)
                 .orElseThrow(() -> new AccessCodeDoesNotExistException("Access code does not exist"));
         String decryptedPin;
@@ -131,7 +134,8 @@ public abstract class AbstractAccessService implements AccessService {
     protected void sendNukiCodeByMail(String to, int nukiPin) {
         try {
             SimpleMailMessage message = new SimpleMailMessage();
-            message.setTo(to);
+            message.setFrom(mailFrom);
+            message.setTo("christophe.andunda@gmail.com");
             message.setSubject("Dein bcube Keypad-Code");
             message.setText("Dein Keypad-Code lautet: " + nukiPin + "\n\nGib diesen Code am Nuki-Keypad ein, um Zugang zu erhalten.");
             mailSender.send(message);

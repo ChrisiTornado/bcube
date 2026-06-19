@@ -10,11 +10,13 @@ import com.bcube.accessservice.service.dto.response.CheckInResponse;
 import com.bcube.accessservice.service.dto.response.FaceVerificationResponse;
 import com.bcube.accessservice.service.nuki.NukiService;
 import com.bcube.accessservice.utility.CryptoUtil;
+import com.bcube.accessservice.service.dto.request.AccessRequest;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.Instant;
@@ -30,6 +32,15 @@ public class Access1FAServiceImpl extends AbstractAccessService {
             CryptoUtil cryptoUtil,
             JavaMailSender mailSender) {
         super(nukiService, accessRepository, cryptoUtil, mailSender);
+    }
+
+    @Override
+    @Transactional
+    public AccessCodeResponse createPermission(AccessRequest accessRequest) {
+        AccessCodeResponse response = super.createPermission(accessRequest);
+        accessRepository.findFirstByBookingIdOrderByIdDesc(accessRequest.getBookingId())
+                .ifPresent(permission -> pushNukiCode(permission, response.getAccessCode()));
+        return response;
     }
 
     @PostConstruct

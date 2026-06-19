@@ -1,0 +1,11 @@
+\section{Conclusion}
+
+Access control in IoT-enabled physical spaces sits at the intersection of security engineering and cloud economics. As smart lock systems move from simple PIN-based mechanisms to biometric and multi-factor verification, the cost implications of that transition remain underexplored in practice.
+
+This work addresses the question of how much stronger access control actually costs in a deployed cloud environment. The gap between theoretical security gains and their operational price is rarely quantified in concrete, reproducible terms.
+
+To answer this, a prototype booking and access system was implemented as four Spring Boot microservices on AWS ECS Fargate and evaluated across three scenarios: single-factor PIN access (1FA), two-factor biometric verification via Amazon Rekognition (2FA), and three-factor verification with out-of-band code delivery via Amazon SES (3FA).
+
+The central finding is that the cost of stronger access control is dominated by the integration of managed AI inference services, not by compute or infrastructure overhead. Moving from 1FA to 3FA adds \$0.0011 per access attempt in variable costs, with Rekognition accounting for 91\% of that figure. CPU and memory utilization of the Access Service remain indistinguishable across all three scenarios, as the computationally intensive work is offloaded to AWS-managed infrastructure. At moderate usage volumes, the fixed infrastructure baseline of \$4.43 per month outweighs the security surcharge by a wide margin.
+
+Future work should investigate the cost behavior at higher access volumes, evaluate caching strategies to reduce repeated Rekognition invocations for frequent users, and extend the comparison to additional physical access scenarios beyond music studio bookings.

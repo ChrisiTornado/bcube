@@ -129,9 +129,6 @@ public class Access2FAServiceImpl extends AbstractAccessService {
         int nukiPin = generateAccessCode();
         log.info("2FA — Nuki-Code generiert: {} für Booking {}", nukiPin, bookingId);
         pushNukiCode(permission, nukiPin);
-        if (permission.getUserEmail() != null) {
-            sendNukiCodeByMail(permission.getUserEmail(), nukiPin);
-        }
         return new AccessCodeResponse(nukiPin);
     }
 }

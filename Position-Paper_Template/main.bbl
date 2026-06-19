@@ -1,0 +1,221 @@
+%%% -*-BibTeX-*-
+%%% Do NOT edit. File created by BibTeX with style
+%%% ACM-Reference-Format-Journals [18-Jan-2012].
+
+\begin{thebibliography}{21}
+
+%%% ====================================================================
+%%% NOTE TO THE USER: you can override these defaults by providing
+%%% customized versions of any of these macros before the \bibliography
+%%% command.  Each of them MUST provide its own final punctuation,
+%%% except for \shownote{} and \showURL{}.  The latter two
+%%% do not use final punctuation, in order to avoid confusing it with
+%%% the Web address.
+%%%
+%%% To suppress output of a particular field, define its macro to expand
+%%% to an empty string, or better, \unskip, like this:
+%%%
+%%% \newcommand{\showURL}[1]{\unskip}   % LaTeX syntax
+%%%
+%%% \def \showURL #1{\unskip}           % plain TeX syntax
+%%%
+%%% ====================================================================
+
+\ifx \showCODEN    \undefined \def \showCODEN     #1{\unskip}     \fi
+\ifx \showISBNx    \undefined \def \showISBNx     #1{\unskip}     \fi
+\ifx \showISBNxiii \undefined \def \showISBNxiii  #1{\unskip}     \fi
+\ifx \showISSN     \undefined \def \showISSN      #1{\unskip}     \fi
+\ifx \showLCCN     \undefined \def \showLCCN      #1{\unskip}     \fi
+\ifx \shownote     \undefined \def \shownote      #1{#1}          \fi
+\ifx \showarticletitle \undefined \def \showarticletitle #1{#1}   \fi
+\ifx \showURL      \undefined \def \showURL       {\relax}        \fi
+% The following commands are used for tagged output and should be
+% invisible to TeX
+\providecommand\bibfield[2]{#2}
+\providecommand\bibinfo[2]{#2}
+\providecommand\natexlab[1]{#1}
+\providecommand\showeprint[2][]{arXiv:#2}
+
+\bibitem[Allen et~al\mbox{.}(2024)]%
+        {allen2024androidiot}
+\bibfield{author}{\bibinfo{person}{Joseph Allen}, \bibinfo{person}{Lo'ai Tawalbeh}, \bibinfo{person}{Fadi Muheidat}, \bibinfo{person}{Rami Alkhawaldeh}, {and} \bibinfo{person}{Yaser Jararweh}.} \bibinfo{year}{2024}\natexlab{}.
+\newblock \showarticletitle{Security Evaluation of Companion Android Applications in IoT: The Case of Smart Security Devices}.
+\newblock \bibinfo{journal}{\emph{Sensors}} \bibinfo{volume}{24}, \bibinfo{number}{17} (\bibinfo{year}{2024}), \bibinfo{pages}{5465}.
+\newblock
+\urldef\tempurl%
+\url{https://www.mdpi.com/1424-8220/24/17/5465}
+\showURL{%
+\tempurl}
+
+
+\bibitem[Caballero-Gil et~al\mbox{.}(2024)]%
+        {caballero2023smartlocks}
+\bibfield{author}{\bibinfo{person}{C{\'a}ndido Caballero-Gil}, \bibinfo{person}{Rafael {\'A}lvarez}, \bibinfo{person}{Candelaria Hern{\'a}ndez-Goya}, {and} \bibinfo{person}{Jezabel Molina-Gil}.} \bibinfo{year}{2024}\natexlab{}.
+\newblock \showarticletitle{Research on smart-locks cybersecurity and vulnerabilities}.
+\newblock \bibinfo{journal}{\emph{Wireless Networks}}  \bibinfo{volume}{30} (\bibinfo{year}{2024}), \bibinfo{pages}{5905--5917}.
+\newblock
+
+
+\bibitem[Derbali(2023)]%
+        {derbali2023iotsdl}
+\bibfield{author}{\bibinfo{person}{Morched Derbali}.} \bibinfo{year}{2023}\natexlab{}.
+\newblock \bibinfo{title}{Toward Secure Door Lock System: Development IoT Smart Door Lock Device}.
+\newblock \bibinfo{howpublished}{Preprint}.
+\newblock
+\shownote{Posted: 2023-04-03}.
+\newblock
+\href{https://doi.org/10.22541/au.168055385.54003954/v1}{doi:\nolinkurl{10.22541/au.168055385.54003954/v1}}
+
+
+\bibitem[Diao et~al\mbox{.}(2025)]%
+        {diao2025masterlock}
+\bibfield{author}{\bibinfo{person}{Chengsong Diao}, \bibinfo{person}{Danielle Dang}, \bibinfo{person}{Sierra Lira}, \bibinfo{person}{Angela Tsai}, \bibinfo{person}{Miro Haller}, {and} \bibinfo{person}{Nadia Heninger}.} \bibinfo{year}{2025}\natexlab{}.
+\newblock \showarticletitle{No Key, No Problem: Vulnerabilities in Master Lock Smart Locks}. In \bibinfo{booktitle}{\emph{Proceedings of the 19th USENIX Conference on Offensive Technologies (WOOT '25)}}. \bibinfo{publisher}{USENIX Association}, \bibinfo{pages}{69--85}.
+\newblock
+\urldef\tempurl%
+\url{https://dl.acm.org/doi/10.5555/3769714.3769719}
+\showURL{%
+\tempurl}
+
+
+\bibitem[{Grand View Research}(2023)]%
+        {refMarket}
+\bibfield{author}{\bibinfo{person}{{Grand View Research}}.} \bibinfo{year}{2023}\natexlab{}.
+\newblock \bibinfo{title}{Smart Lock Market Size, Share \& Trends Analysis Report}.
+\newblock \bibinfo{howpublished}{\url{https://www.grandviewresearch.com/industry-analysis/smart-lock-market}}.
+\newblock
+\shownote{Accessed: 2026-04-27}.
+\newblock
+
+
+\bibitem[Grassi et~al\mbox{.}(2017)]%
+        {nist80063b}
+\bibfield{author}{\bibinfo{person}{Paul~A. Grassi}, \bibinfo{person}{Michael~E. Garcia}, {and} \bibinfo{person}{James~L. Fenton}.} \bibinfo{year}{2017}\natexlab{}.
+\newblock \bibinfo{booktitle}{\emph{{NIST Special Publication 800-63B: Digital Identity Guidelines -- Authentication and Lifecycle Management}}}.
+\newblock \bibinfo{type}{{T}echnical {R}eport}. \bibinfo{institution}{National Institute of Standards and Technology}.
+\newblock
+\href{https://doi.org/10.6028/NIST.SP.800-63b}{doi:\nolinkurl{10.6028/NIST.SP.800-63b}}
+
+
+\bibitem[Greenberg(2016)]%
+        {refSmartHome}
+\bibfield{author}{\bibinfo{person}{Andy Greenberg}.} \bibinfo{year}{2016}\natexlab{}.
+\newblock \bibinfo{title}{Flaws in Samsung's Smart Home Let Hackers Unlock Doors}.
+\newblock \bibinfo{howpublished}{\url{https://www.wired.com/2016/05/flaws-samsungs-smart-home-let-hackers-unlock-doors-set-off-fire-alarms/}}.
+\newblock
+\shownote{Accessed: 2026-04-27}.
+\newblock
+
+
+\bibitem[Hazazi and Shehab(2024)]%
+        {hazazi2024automation}
+\bibfield{author}{\bibinfo{person}{Hussein Hazazi} {and} \bibinfo{person}{Mohamed Shehab}.} \bibinfo{year}{2024}\natexlab{}.
+\newblock \showarticletitle{Exploring End Users' Perceptions of Smart Lock Automation Within the Smart Home Environment}. In \bibinfo{booktitle}{\emph{Proceedings of the 2024 European Symposium on Usable Security}} \emph{(\bibinfo{series}{EuroUSEC 2024})}. \bibinfo{publisher}{ACM}.
+\newblock
+\href{https://doi.org/10.1145/3688459.3688480}{doi:\nolinkurl{10.1145/3688459.3688480}}
+
+
+\bibitem[Ho et~al\mbox{.}(2016)]%
+        {ho2016smartlocks}
+\bibfield{author}{\bibinfo{person}{Grant Ho}, \bibinfo{person}{Derek Leung}, \bibinfo{person}{Pratyush Mishra}, \bibinfo{person}{Ashkan Hosseini}, \bibinfo{person}{Dawn Song}, {and} \bibinfo{person}{David Wagner}.} \bibinfo{year}{2016}\natexlab{}.
+\newblock \showarticletitle{Smart Locks: Lessons for Securing Commodity Internet of Things Devices}. In \bibinfo{booktitle}{\emph{Proceedings of the 11th ACM on Asia Conference on Computer and Communications Security}} \emph{(\bibinfo{series}{ASIA CCS '16})}. \bibinfo{publisher}{ACM}, \bibinfo{pages}{461--472}.
+\newblock
+\href{https://doi.org/10.1145/2897845.2897886}{doi:\nolinkurl{10.1145/2897845.2897886}}
+
+
+\bibitem[Ivki{\'c} et~al\mbox{.}(2019a)]%
+        {ref01}
+\bibfield{author}{\bibinfo{person}{Igor Ivki{\'c}}, \bibinfo{person}{Andreas Mauthe}, {and} \bibinfo{person}{Markus Tauber}.} \bibinfo{year}{2019}\natexlab{a}.
+\newblock \showarticletitle{Towards a security cost model for cyber-physical systems}. In \bibinfo{booktitle}{\emph{2019 16th IEEE Annual Consumer Communications \& Networking Conference (CCNC)}}. IEEE, \bibinfo{pages}{1--7}.
+\newblock
+
+
+\bibitem[Ivki{\'c} et~al\mbox{.}(2019b)]%
+        {ref02}
+\bibfield{author}{\bibinfo{person}{Igor Ivki{\'c}}, \bibinfo{person}{Harald Pichler}, \bibinfo{person}{Mario Zsilak}, \bibinfo{person}{Andreas Mauthe}, {and} \bibinfo{person}{Markus Tauber}.} \bibinfo{year}{2019}\natexlab{b}.
+\newblock \showarticletitle{A framework for measuring the costs of security at runtime}.
+\newblock \bibinfo{journal}{\emph{arXiv preprint arXiv:1905.11180}} (\bibinfo{year}{2019}).
+\newblock
+
+
+\bibitem[Ivki{\'c} et~al\mbox{.}(2022)]%
+        {ref03}
+\bibfield{author}{\bibinfo{person}{Igor Ivki{\'c}}, \bibinfo{person}{Patrizia Sailer}, \bibinfo{person}{Antonios Gouglidis}, \bibinfo{person}{Andreas Mauthe}, {and} \bibinfo{person}{Markus Tauber}.} \bibinfo{year}{2022}\natexlab{}.
+\newblock \showarticletitle{A security cost modelling framework for cyber-physical systems}.
+\newblock \bibinfo{journal}{\emph{ACM Transactions on Internet Technology (TOIT)}} \bibinfo{volume}{22}, \bibinfo{number}{2} (\bibinfo{year}{2022}), \bibinfo{pages}{1--31}.
+\newblock
+
+
+\bibitem[Maurya et~al\mbox{.}(2020)]%
+        {maurya2020cloudnative}
+\bibfield{author}{\bibinfo{person}{Rishabh Maurya}, \bibinfo{person}{Kushagra Jaiswal}, \bibinfo{person}{Prankur Kohli}, \bibinfo{person}{Shikar Kumar}, {and} \bibinfo{person}{Abhilasha Varshney}.} \bibinfo{year}{2020}\natexlab{}.
+\newblock \showarticletitle{Design and Implementation of Cloud Native Door Lock System}.
+\newblock \bibinfo{journal}{\emph{International Journal of Engineering Research \& Technology}} \bibinfo{volume}{9}, \bibinfo{number}{5} (\bibinfo{year}{2020}), \bibinfo{pages}{985--987}.
+\newblock
+
+
+\bibitem[Naylor et~al\mbox{.}(2014)]%
+        {naylor2014cost}
+\bibfield{author}{\bibinfo{person}{David Naylor}, \bibinfo{person}{Alessandro Finamore}, \bibinfo{person}{Ilias Leontiadis}, \bibinfo{person}{Yan Grunenberger}, \bibinfo{person}{Marco Mellia}, \bibinfo{person}{Maurizio Munafò}, \bibinfo{person}{Konstantina Papagiannaki}, {and} \bibinfo{person}{Peter Steenkiste}.} \bibinfo{year}{2014}\natexlab{}.
+\newblock \showarticletitle{The Cost of the “S” in HTTPS}. In \bibinfo{booktitle}{\emph{CoNEXT}}. \bibinfo{pages}{133--140}.
+\newblock
+
+
+\bibitem[{Nordic Semiconductor}(2018)]%
+        {refBluetooth}
+\bibfield{author}{\bibinfo{person}{{Nordic Semiconductor}}.} \bibinfo{year}{2018}\natexlab{}.
+\newblock \bibinfo{title}{Wireless Smart Lock Makers React to Security Scares}.
+\newblock \bibinfo{howpublished}{\url{https://www.nordicsemi.com/Nordic-news/2018/08/Wireless-smart-lock-makers-react-to-security-scares}}.
+\newblock
+\shownote{Accessed: 2026-04-27}.
+\newblock
+
+
+\bibitem[Salvadore(2022)]%
+        {salvadore2022smartlocks}
+\bibfield{author}{\bibinfo{person}{Nicola Salvadore}.} \bibinfo{year}{2022}\natexlab{}.
+\newblock \emph{\bibinfo{title}{Study and design of an application for door smart-locks and smart-keys}}.
+\newblock \bibinfo{thesistype}{Master's\ thesis}. \bibinfo{school}{University of Padova}.
+\newblock
+
+
+\bibitem[Turk(2023)]%
+        {turk2023smartlock}
+\bibfield{author}{\bibinfo{person}{K. Turk}.} \bibinfo{year}{2023}\natexlab{}.
+\newblock \emph{\bibinfo{title}{Locked into stupidity: A smart lock security analysis}}.
+\newblock \bibinfo{thesistype}{Master's\ thesis}. \bibinfo{school}{University of Cambridge}.
+\newblock
+
+
+\bibitem[Veijalainen and Karlsson(2021)]%
+        {veijalainen2021evaluating}
+\bibfield{author}{\bibinfo{person}{Sebastian Veijalainen} {and} \bibinfo{person}{Tommy~Noreng Karlsson}.} \bibinfo{year}{2021}\natexlab{}.
+\newblock \bibinfo{booktitle}{\emph{Evaluating the Security of a Smart Door Lock System}}.
+\newblock \bibinfo{type}{KTH Thesis Report}. \bibinfo{institution}{KTH Royal Institute of Technology}, \bibinfo{address}{Stockholm, Sweden}.
+\newblock
+
+
+\bibitem[Wang et~al\mbox{.}(2019)]%
+        {wang2019mirror}
+\bibfield{author}{\bibinfo{person}{Xueqiang Wang}, \bibinfo{person}{Chengyu Zhang}, {et~al\mbox{.}}} \bibinfo{year}{2019}\natexlab{}.
+\newblock \showarticletitle{Looking from the Mirror: Evaluating IoT Device Security through Mobile Companion Apps}. In \bibinfo{booktitle}{\emph{Proceedings of the 28th USENIX Security Symposium}}. \bibinfo{pages}{1151--1168}.
+\newblock
+
+
+\bibitem[Zebic(2023)]%
+        {zebic2023azure}
+\bibfield{author}{\bibinfo{person}{Luka Zebic}.} \bibinfo{year}{2023}\natexlab{}.
+\newblock \emph{\bibinfo{title}{IoT Implementations in Microsoft Azure}}.
+\newblock \bibinfo{thesistype}{Master's\ thesis}. \bibinfo{school}{FH Campus Vienna}.
+\newblock
+
+
+\bibitem[Zheng et~al\mbox{.}(2024)]%
+        {zheng2024stm32}
+\bibfield{author}{\bibinfo{person}{Zhiguo Zheng}, \bibinfo{person}{Yujie Wang}, \bibinfo{person}{Jie Chen}, \bibinfo{person}{Shuteng Lin}, {and} \bibinfo{person}{Meirong Lin}.} \bibinfo{year}{2024}\natexlab{}.
+\newblock \showarticletitle{Design and Implementation of a Smart Door Lock Based on STM32}. In \bibinfo{booktitle}{\emph{Proceedings of the 2024 8th International Conference on Electronic Information Technology and Computer Engineering}} \emph{(\bibinfo{series}{EITCE 2024})}. \bibinfo{publisher}{ACM}, \bibinfo{pages}{1348--1352}.
+\newblock
+\href{https://doi.org/10.1145/3711129.3711355}{doi:\nolinkurl{10.1145/3711129.3711355}}
+
+
+\end{thebibliography}

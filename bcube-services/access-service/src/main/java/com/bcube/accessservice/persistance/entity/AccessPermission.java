@@ -21,7 +21,7 @@ public class AccessPermission {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "smartlock_id", nullable = false)
+    @Column(name = "smartlock_id")
     private Long smartLockId;
 
     @Column(name = "booking_id", nullable = false)

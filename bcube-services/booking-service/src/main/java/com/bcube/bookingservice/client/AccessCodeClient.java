@@ -19,15 +19,19 @@ public class AccessCodeClient {
     private final WebClient.Builder webClientBuilder;
 
     public AccessCodeResponse generateAccessCode(AccessRequest request) {
+        try {
             ApiResponse<AccessCodeResponse> response = webClientBuilder.build()
                     .post()
                     .uri(accessServiceBaseUrl)
                     .bodyValue(request)
                     .retrieve()
-                    .bodyToMono(new  ParameterizedTypeReference<ApiResponse<AccessCodeResponse>>() {})
+                    .bodyToMono(new ParameterizedTypeReference<ApiResponse<AccessCodeResponse>>() {})
                     .block();
 
             return response != null ? response.getData() : null;
+        } catch (WebClientResponseException e) {
+            throw new RuntimeException("Access-Service Fehler (" + e.getStatusCode() + "): " + e.getResponseBodyAsString(), e);
+        }
     }
 
     public AccessCodeResponse getAccessCode(Long bookingId) {
