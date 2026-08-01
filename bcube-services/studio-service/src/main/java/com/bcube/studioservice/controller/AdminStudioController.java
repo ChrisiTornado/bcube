@@ -17,7 +17,7 @@ public class AdminStudioController {
     private final AdminStudioService adminStudioService;
 
     @PostMapping
-    public ResponseEntity<ApiResponse<StudioResponse>> createStudio(@RequestBody CreateStudioRequest createStudioRequest) {
+    public ResponseEntity<ApiResponse<StudioResponse>> createStudio(@Valid @RequestBody CreateStudioRequest createStudioRequest) {
         StudioResponse response = adminStudioService.createStudio(createStudioRequest);
         return ResponseEntity.ok(new ApiResponse<>("Studio erfolgreich erstellt", response));
     }
