@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { UserService } from '../../../../services/user.service';
 import { User } from '../../../../models/User';
@@ -10,6 +10,7 @@ import { DeleteUserComponent } from './delete-user/delete-user.component';
 import { LoadingSpinnerComponent } from '../../../../shared/loading-spinner/loading-spinner.component';
 import { CommonModule } from '@angular/common';
 import { UsersComponent } from '../../components/users/users.component';
+import { LIGHT_BUTTON_STYLE } from '../../../../shared/button-style';
 
 @Component({
   selector: 'app-users-view',
@@ -27,17 +28,20 @@ import { UsersComponent } from '../../components/users/users.component';
   styleUrl: './users-view.component.css'
 })
 export class UsersViewComponent implements OnInit {
+  readonly lightButtonStyle = LIGHT_BUTTON_STYLE;
+
   users$!: Observable<User[]>;
   loading$ = this.userService.loading$;
   totalPages = 0;
 
-  constructor(public userService: UserService, private router: Router, private route: ActivatedRoute) { }
+  constructor(public userService: UserService, private router: Router) { }
 
   ngOnInit(): void {
     this.users$ = this.userService.users$;
     this.loadPage(0);
   }
 
+  /** Not currently wired to a click handler in the table (row has cursor:pointer but no (click) yet). */
   navigateToDetails(user: User) {
     const navigationUrl = ['/admin/user-details', user.id];
     this.router.navigate(navigationUrl, {

@@ -5,16 +5,17 @@ import { FormsModule } from '@angular/forms';
 import { CalendarModule } from 'primeng/calendar';
 import { ButtonModule } from 'primeng/button';
 import { finalize } from 'rxjs';
+import { HttpErrorResponse } from '@angular/common/http';
 import { AuthService } from '../../../../../services/auth/auth.service';
 import { StudioService } from '../../../../../services/studio.service';
 import { BookingService } from '../../../../../services/booking.service';
 import { MessageService, ConfirmationService } from 'primeng/api';
-import { Location } from '@angular/common';
 import { LoadingSpinnerComponent } from '../../../../../shared/loading-spinner/loading-spinner.component';
 import { FullCalendarModule } from '@fullcalendar/angular';
 import { CardModule } from 'primeng/card';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
+import { DateClickArg } from '@fullcalendar/interaction';
 import { CalendarOptions, EventInput } from '@fullcalendar/core';
 import { Studio } from '../../../../../models/Studio';
 import { Booking } from '../../../../../models/Booking';
@@ -71,25 +72,7 @@ export class StudioDetailsComponent implements OnInit {
   calendarPlugins = [dayGridPlugin, interactionPlugin];
   calendarEvents: EventInput[] = [];
 
-  calendarOptions: CalendarOptions = {
-    plugins: this.calendarPlugins,
-    initialView: 'dayGridMonth',
-    events: this.calendarEvents,
-    locale: 'de',
-    dayMaxEvents: 2,
-    fixedWeekCount: false,
-    showNonCurrentDates: true,
-    headerToolbar: {
-      left: 'title',
-      center: '',
-      right: 'prev,next'
-    },
-    weekends: true,
-    dayCellClassNames: (arg) => this.date && this.toIsoDate(this.date) === this.toIsoDate(arg.date) ? ['fc-day-selected'] : [],
-    moreLinkContent: (arg) => ({ html: `+${arg.num} Mehr` }),
-    moreLinkClick: 'popover',
-    dateClick: this.handleDateClick.bind(this)
-  };
+  calendarOptions: CalendarOptions = this.buildCalendarOptions(this.calendarEvents);
 
   loading$ = this.studioService.loading$;
 
@@ -125,8 +108,7 @@ export class StudioDetailsComponent implements OnInit {
     private authService: AuthService,
     private bookingService: BookingService,
     private confirmationService: ConfirmationService,
-    private messageService: MessageService,
-    private location: Location
+    private messageService: MessageService
   ) { }
 
   // === Lifecycle ===
@@ -142,7 +124,7 @@ export class StudioDetailsComponent implements OnInit {
 
     const studioId = this.route.snapshot.paramMap.get('id');
     if (studioId) {
-      this.studioService.getStudioById(+studioId).subscribe(data => (this.studio = data))
+      this.studioService.getStudioById(+studioId).subscribe(data => (this.studio = data));
       this.loadBookings(+studioId);
     }
   }
@@ -154,7 +136,7 @@ export class StudioDetailsComponent implements OnInit {
     this.bookingService.getBookingsByStudioId(studioId).subscribe(bookings => {
       this.bookings = bookings.filter(b => this.blockingStatuses.has(b.status));
       this.markCalendarDates();
-      this.checkTimeConflict()
+      this.checkTimeConflict();
 
       const events = this.bookings.map(b => ({
         title: `${this.formatTime(new Date(b.startTime))} – ${this.formatTime(new Date(b.endTime))}`,
@@ -165,35 +147,41 @@ export class StudioDetailsComponent implements OnInit {
       }));
 
       const today = new Date();
-      this.calendarOptions = {
-        plugins: this.calendarPlugins,
-        initialView: 'dayGridMonth',
+      this.calendarOptions = this.buildCalendarOptions(
         events,
-        locale: 'de',
-        dayMaxEvents: 2,
-        fixedWeekCount: false,
-        showNonCurrentDates: true,
-        headerToolbar: {
-          left: 'title',
-          center: '',
-          right: 'prev,next'
-        },
-        weekends: true,
-        dayCellClassNames: (arg) => this.date && this.toIsoDate(this.date) === this.toIsoDate(arg.date) ? ['fc-day-selected'] : [],
-        moreLinkContent: (arg) => ({ html: `+${arg.num} Mehr` }),
-        moreLinkClick: 'popover',
-        dateClick: this.handleDateClick.bind(this),
-        ...(this.isUser && {
-          validRange: { start: this.toIsoDate(today) }
-        })
-      };
+        this.isUser ? { start: this.toIsoDate(today) } : undefined
+      );
     });
   }
 
   // === Calendar interaction ===
 
+  /** Shared FullCalendar config for both the initial field value and every rebuild after a data/date change. */
+  private buildCalendarOptions(events: EventInput[], validRangeStart?: { start: string }): CalendarOptions {
+    return {
+      plugins: this.calendarPlugins,
+      initialView: 'dayGridMonth',
+      events,
+      locale: 'de',
+      dayMaxEvents: 2,
+      fixedWeekCount: false,
+      showNonCurrentDates: true,
+      headerToolbar: {
+        left: 'title',
+        center: '',
+        right: 'prev,next'
+      },
+      weekends: true,
+      dayCellClassNames: (arg) => this.date && this.toIsoDate(this.date) === this.toIsoDate(arg.date) ? ['fc-day-selected'] : [],
+      moreLinkContent: (arg) => ({ html: `+${arg.num} Mehr` }),
+      moreLinkClick: 'popover',
+      dateClick: this.handleDateClick.bind(this),
+      ...(validRangeStart && { validRange: validRangeStart })
+    };
+  }
+
   /** Wird ausgelöst, wenn ein Datum im Kalender angeklickt wird */
-  handleDateClick(arg: any): void {
+  handleDateClick(arg: DateClickArg): void {
     const clickedDate = new Date(arg.dateStr);
     this.date = clickedDate;
     this.checkTimeConflict();
@@ -279,7 +267,7 @@ export class StudioDetailsComponent implements OnInit {
     const payload: CreateBookingRequest = {
       userID: this.authService.getUser()!.id,
       studioID: this.studio!.id,
-      smartlockID: this.studio!.smartlockId,  
+      smartlockID: this.studio!.smartlockId,
       date: this.formatDateVienna(this.date),
       startTime: this.formatTimeVienna(this.startTime),
       endTime: this.formatTimeVienna(this.endTime)
@@ -293,7 +281,7 @@ export class StudioDetailsComponent implements OnInit {
           this.startTime = null;
           this.endTime = null;
           this.date = null;
-        
+
           this.messageService.add({
             key: 'main',
             severity: 'success',
@@ -305,7 +293,7 @@ export class StudioDetailsComponent implements OnInit {
             { state: { returnUrl: this.router.url } }
           );
         },
-        error: (err) => {
+        error: (err: HttpErrorResponse) => {
           this.messageService.add({
             key: 'main',
             severity: 'error',
@@ -338,44 +326,43 @@ export class StudioDetailsComponent implements OnInit {
   }
 
   public checkTimeConflict(): void {
-  if (!this.date || !this.startTime || !this.endTime) {
-    this.hasTimeConflict = false;
-    return;
+    if (!this.date || !this.startTime || !this.endTime) {
+      this.hasTimeConflict = false;
+      return;
+    }
+
+    const selectedStart = this.combineDateAndTime(
+      this.date,
+      this.startTime
+    );
+
+    const selectedEnd = this.combineDateAndTime(
+      this.date,
+      this.endTime
+    );
+
+    if (selectedEnd <= selectedStart) {
+      this.hasTimeConflict = false;
+      return;
+    }
+
+    const selectedDateIso = this.toIsoDate(this.date);
+
+    this.hasTimeConflict = this.bookings
+      .filter(b => {
+        const bookingIso = this.toIsoDate(new Date(b.date));
+        const sameDate = bookingIso === selectedDateIso;
+        return sameDate;
+      })
+      .some(b => {
+        const existingStart = new Date(b.startTime);
+        const existingEnd = new Date(b.endTime);
+        const overlap =
+          selectedStart < existingEnd &&
+          selectedEnd > existingStart;
+        return overlap;
+      });
   }
-
-  const selectedStart = this.combineDateAndTime(
-    this.date,
-    this.startTime
-  );
-
-  const selectedEnd = this.combineDateAndTime(
-    this.date,
-    this.endTime
-  );
-
-  if (selectedEnd <= selectedStart) {
-    this.hasTimeConflict = false;
-    return;
-  }
-
-  const selectedDateIso = this.toIsoDate(this.date);
-
-  this.hasTimeConflict = this.bookings
-    .filter(b => {
-      const bookingIso = this.toIsoDate(new Date(b.date));
-      const sameDate = bookingIso === selectedDateIso;
-      return sameDate;
-    })
-    .some(b => {
-      const existingStart = new Date(b.startTime);
-      const existingEnd = new Date(b.endTime);
-      const overlap =
-        selectedStart < existingEnd &&
-        selectedEnd > existingStart;
-      return overlap;
-    });
-}
-
 
   isBookingInPast(): boolean {
     if (!this.date || !this.startTime) return true;
@@ -409,13 +396,13 @@ export class StudioDetailsComponent implements OnInit {
 
   /** Navigiert zurück zur vorherigen Seite */
   goBack(): void {
-      if (this.returnUrl) {
-        this.router.navigateByUrl(this.returnUrl);
-        return;
-      }
+    if (this.returnUrl) {
+      this.router.navigateByUrl(this.returnUrl);
+      return;
+    }
 
-      const basePath = this.isUser ? '/user-dashboard' : '/admin-dashboard';
-      this.router.navigate([`${basePath}/studios`]);
+    const basePath = this.isUser ? '/user-dashboard' : '/admin-dashboard';
+    this.router.navigate([`${basePath}/studios`]);
   }
 
   /** Öffnet das Overlay mit dem Studiobild */
@@ -432,14 +419,6 @@ export class StudioDetailsComponent implements OnInit {
 
   // === Helper ===
 
-  /** Formatiert Datum zu DD.MM.YYYY */
-  private formatDate(date: Date): string {
-    const day = date.getDate().toString().padStart(2, '0');
-    const month = (date.getMonth() + 1).toString().padStart(2, '0');
-    const year = date.getFullYear();
-    return `${day}.${month}.${year}`;
-  }
-
   normalizeToQuarterHour(date: Date | null): Date | null {
     if (!date) return null;
     const minutes = date.getMinutes();
@@ -453,27 +432,27 @@ export class StudioDetailsComponent implements OnInit {
   }
 
   setDefaultTime(type: 'start' | 'end'): void {
-  const defaultDateStart = new Date();
-  const defaultDateEnd = new Date();
-  defaultDateStart.setHours(12, 0, 0, 0);
-  defaultDateEnd.setHours(15, 0, 0, 0);
+    const defaultDateStart = new Date();
+    const defaultDateEnd = new Date();
+    defaultDateStart.setHours(12, 0, 0, 0);
+    defaultDateEnd.setHours(15, 0, 0, 0);
 
-  let changed = false;
+    let changed = false;
 
-  if (type === 'start' && !this.startTime) {
-    this.startTime = new Date(defaultDateStart);
-    changed = true;
+    if (type === 'start' && !this.startTime) {
+      this.startTime = new Date(defaultDateStart);
+      changed = true;
+    }
+
+    if (type === 'end' && !this.endTime) {
+      this.endTime = new Date(defaultDateEnd);
+      changed = true;
+    }
+
+    if (changed) {
+      this.checkTimeConflict();
+    }
   }
-
-  if (type === 'end' && !this.endTime) {
-    this.endTime = new Date(defaultDateEnd);
-    changed = true;
-  }
-
-  if (changed) {
-    this.checkTimeConflict();
-  }
-}
 
   /** Formatiert Uhrzeit zu HH:mm */
   private formatTime(date: Date): string {
@@ -498,136 +477,136 @@ export class StudioDetailsComponent implements OnInit {
   }
 
   private formatTimeVienna(date: Date): string {
-  return new Intl.DateTimeFormat('de-AT', {
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false,
-    timeZone: 'Europe/Vienna'
-  }).format(date);
-}
-
-private formatDateVienna(date: Date): string {
-  const parts = new Intl.DateTimeFormat('de-AT', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-    timeZone: 'Europe/Vienna'
-  }).formatToParts(date);
-  const day   = parts.find(p => p.type === 'day')!.value;
-  const month = parts.find(p => p.type === 'month')!.value;
-  const year  = parts.find(p => p.type === 'year')!.value;
-  return `${day}.${month}.${year}`;
-}
-
-formatSelectedDateLabel(): string {
-  if (!this.date) {
-    return '';
+    return new Intl.DateTimeFormat('de-AT', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+      timeZone: 'Europe/Vienna'
+    }).format(date);
   }
 
-  return new Intl.DateTimeFormat('de-AT', {
-    weekday: 'long',
-    day: '2-digit',
-    month: 'long',
-    year: 'numeric',
-    timeZone: 'Europe/Vienna'
-  }).format(this.date);
-}
-
-formatBookingRange(booking: Booking): string {
-  return `${this.formatBookingTimeString(booking.startTime)} - ${this.formatBookingTimeString(booking.endTime)}`;
-}
-
-private formatBookingTimeString(value: string): string {
-  if (!value) {
-    return '';
+  private formatDateVienna(date: Date): string {
+    const parts = new Intl.DateTimeFormat('de-AT', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      timeZone: 'Europe/Vienna'
+    }).formatToParts(date);
+    const day = parts.find(p => p.type === 'day')!.value;
+    const month = parts.find(p => p.type === 'month')!.value;
+    const year = parts.find(p => p.type === 'year')!.value;
+    return `${day}.${month}.${year}`;
   }
 
-  if (value.includes('T') || value.length > 5) {
-    const parsed = new Date(value);
-    if (!isNaN(parsed.getTime())) {
-      return new Intl.DateTimeFormat('de-AT', {
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: false,
-        timeZone: 'Europe/Vienna'
-      }).format(parsed);
+  formatSelectedDateLabel(): string {
+    if (!this.date) {
+      return '';
     }
+
+    return new Intl.DateTimeFormat('de-AT', {
+      weekday: 'long',
+      day: '2-digit',
+      month: 'long',
+      year: 'numeric',
+      timeZone: 'Europe/Vienna'
+    }).format(this.date);
   }
 
-  return value.slice(0, 5);
-}
-
-renderMarkdown(markdown: string | null | undefined): string {
-  if (!markdown) {
-    return '';
+  formatBookingRange(booking: Booking): string {
+    return `${this.formatBookingTimeString(booking.startTime)} - ${this.formatBookingTimeString(booking.endTime)}`;
   }
 
-  const escaped = markdown
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;');
+  private formatBookingTimeString(value: string): string {
+    if (!value) {
+      return '';
+    }
 
-  const lines = escaped.split(/\r?\n/);
-  const blocks: string[] = [];
-  let paragraph: string[] = [];
-  let listItems: string[] = [];
+    if (value.includes('T') || value.length > 5) {
+      const parsed = new Date(value);
+      if (!isNaN(parsed.getTime())) {
+        return new Intl.DateTimeFormat('de-AT', {
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false,
+          timeZone: 'Europe/Vienna'
+        }).format(parsed);
+      }
+    }
 
-  const flushParagraph = () => {
-    if (!paragraph.length) return;
-    blocks.push(`<p>${this.inlineMarkdown(paragraph.join('<br>'))}</p>`);
-    paragraph = [];
-  };
+    return value.slice(0, 5);
+  }
 
-  const flushList = () => {
-    if (!listItems.length) return;
-    blocks.push(`<ul>${listItems.map(item => `<li>${this.inlineMarkdown(item)}</li>`).join('')}</ul>`);
-    listItems = [];
-  };
+  renderMarkdown(markdown: string | null | undefined): string {
+    if (!markdown) {
+      return '';
+    }
 
-  for (const rawLine of lines) {
-    const line = rawLine.trim();
+    const escaped = markdown
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
 
-    if (!line) {
-      flushParagraph();
+    const lines = escaped.split(/\r?\n/);
+    const blocks: string[] = [];
+    let paragraph: string[] = [];
+    let listItems: string[] = [];
+
+    const flushParagraph = () => {
+      if (!paragraph.length) return;
+      blocks.push(`<p>${this.inlineMarkdown(paragraph.join('<br>'))}</p>`);
+      paragraph = [];
+    };
+
+    const flushList = () => {
+      if (!listItems.length) return;
+      blocks.push(`<ul>${listItems.map(item => `<li>${this.inlineMarkdown(item)}</li>`).join('')}</ul>`);
+      listItems = [];
+    };
+
+    for (const rawLine of lines) {
+      const line = rawLine.trim();
+
+      if (!line) {
+        flushParagraph();
+        flushList();
+        continue;
+      }
+
+      if (/^[-*]\s+/.test(line)) {
+        flushParagraph();
+        listItems.push(line.replace(/^[-*]\s+/, ''));
+        continue;
+      }
+
       flushList();
-      continue;
+      paragraph.push(line);
     }
 
-    if (/^[-*]\s+/.test(line)) {
-      flushParagraph();
-      listItems.push(line.replace(/^[-*]\s+/, ''));
-      continue;
-    }
-
+    flushParagraph();
     flushList();
-    paragraph.push(line);
+
+    return blocks.join('');
   }
 
-  flushParagraph();
-  flushList();
-
-  return blocks.join('');
-}
-
-private inlineMarkdown(text: string): string {
-  return text
-    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    .replace(/__(.+?)__/g, '<strong>$1</strong>')
-    .replace(/\*(.+?)\*/g, '<em>$1</em>')
-    .replace(/_(.+?)_/g, '<em>$1</em>');
-}
-
-private normalizeImage(value: string): string {
-  return value.startsWith('data:image') ? value : `data:image/jpeg;base64,${value}`;
-}
-
-private withDefaultGallery(studioId: number, images: string[]): string[] {
-  const gallery = [...images];
-
-  for (let offset = 0; gallery.length < 5; offset++) {
-    gallery.push(this.previewImages[(studioId + offset) % this.previewImages.length]);
+  private inlineMarkdown(text: string): string {
+    return text
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      .replace(/__(.+?)__/g, '<strong>$1</strong>')
+      .replace(/\*(.+?)\*/g, '<em>$1</em>')
+      .replace(/_(.+?)_/g, '<em>$1</em>');
   }
 
-  return gallery.slice(0, 5);
-}
+  private normalizeImage(value: string): string {
+    return value.startsWith('data:image') ? value : `data:image/jpeg;base64,${value}`;
+  }
+
+  private withDefaultGallery(studioId: number, images: string[]): string[] {
+    const gallery = [...images];
+
+    for (let offset = 0; gallery.length < 5; offset++) {
+      gallery.push(this.previewImages[(studioId + offset) % this.previewImages.length]);
+    }
+
+    return gallery.slice(0, 5);
+  }
 }

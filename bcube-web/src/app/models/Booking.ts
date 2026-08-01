@@ -3,11 +3,11 @@ import { Studio } from "./Studio";
 import { User } from "./User";
 
 export interface Booking {
-    id: number,
+    id: number;
     studio: Studio;
     user: User;
-    date: string,
-    startTime: string,
-    endTime: string,
-    status: BookingStatus
+    date: string;
+    startTime: string;
+    endTime: string;
+    status: BookingStatus;
 }

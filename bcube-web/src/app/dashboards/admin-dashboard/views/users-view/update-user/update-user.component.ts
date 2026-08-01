@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { finalize } from 'rxjs';
+import { HttpErrorResponse } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
@@ -12,6 +13,7 @@ import { User } from '../../../../../models/User';
 import { UpdateUserRequest } from '../../../../../models/requests/user/UpdateUserRequest';
 import { ApiResponse } from '../../../../../models/responses/ApiResponse';
 import { UserResponse } from '../../../../../models/responses/user/UserResponse';
+import { DARK_BUTTON_STYLE } from '../../../../../shared/button-style';
 
 @Component({
   selector: 'app-update-user',
@@ -29,6 +31,8 @@ import { UserResponse } from '../../../../../models/responses/user/UserResponse'
 })
 export class UpdateUserComponent implements OnInit {
   @Input() user!: User;
+
+  readonly darkButtonStyle = DARK_BUTTON_STYLE;
 
   updateForm!: FormGroup;
   visible: boolean = false;
@@ -89,7 +93,7 @@ export class UpdateUserComponent implements OnInit {
           this.messageService.add({ severity: 'success', summary: 'Erfolgreich', detail: res.message });
           this.closeDialog();
         },
-        error: (e: any) => {
+        error: (e: HttpErrorResponse) => {
           const message = e?.error?.message ?? 'Ein unbekannter Fehler ist aufgetreten.';
           this.messageService.add({ severity: 'error', summary: 'Fehler', detail: message });
         }

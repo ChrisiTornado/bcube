@@ -1,5 +1,6 @@
 import {Component, Input, ViewChild, OnInit} from '@angular/core';
 import {finalize} from "rxjs";
+import { HttpErrorResponse } from '@angular/common/http';
 import { Studio } from '../../../../../models/Studio';
 import { StudioService } from '../../../../../services/studio.service';
 import { MessageService } from 'primeng/api';
@@ -9,7 +10,7 @@ import { ApiResponse } from '../../../../../models/responses/ApiResponse';
 import { StudioResponse } from '../../../../../models/responses/studio/StudioResponse';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
-import { FileUploadModule } from 'primeng/fileupload';
+import { FileUpload, FileUploadModule, FileSelectEvent } from 'primeng/fileupload';
 import { ReactiveFormsModule } from '@angular/forms';
 import { DialogModule } from 'primeng/dialog';
 import { CommonModule } from '@angular/common';
@@ -17,6 +18,7 @@ import { LoadingSpinnerComponent } from '../../../../../shared/loading-spinner/l
 import { InputTextModule } from 'primeng/inputtext';
 import { InputTextareaModule } from 'primeng/inputtextarea';
 import { ToastModule } from 'primeng/toast';
+import { DARK_BUTTON_STYLE } from '../../../../../shared/button-style';
 
 @Component({
   selector: 'app-update-studio',
@@ -28,6 +30,7 @@ import { ToastModule } from 'primeng/toast';
 export class UpdateStudioComponent implements OnInit {
   @Input() studio!: Studio;
   @Input() detailMode = false;
+  readonly darkButtonStyle = DARK_BUTTON_STYLE;
   loading!: boolean;
   selectedImageBase64: string | null = null;
   galleryPreviews: string[] = [];
@@ -37,7 +40,7 @@ export class UpdateStudioComponent implements OnInit {
   submitted!: boolean;
   selectedImages: File[] = [];
   selectedImageBytes: number[][] = [];
-  @ViewChild('fileUpload') fileUpload: any;
+  @ViewChild('fileUpload') fileUpload?: FileUpload;
 
   constructor(private studioService: StudioService, private messageService: MessageService, private fb: FormBuilder) {}
 
@@ -80,7 +83,7 @@ openDialog() {
   });
 }
 
-  onFileSelected(event: any): void {
+  onFileSelected(event: FileSelectEvent): void {
     const files = event.files as File[] | undefined;
     if (!files?.length) {
       return;
@@ -146,7 +149,7 @@ submit() {
         this.messageService.add({ key: 'main', severity: 'success', summary: 'Erfolgreich', detail: res.message });
         this.closeDialog();
       },
-      error: (e: any) => {
+      error: (e: HttpErrorResponse) => {
         const message = e?.error?.message ?? 'Ein unbekannter Fehler ist aufgetreten.';
         this.messageService.add({ key: 'main', severity: 'error', summary: 'Fehler', detail: message });
       }

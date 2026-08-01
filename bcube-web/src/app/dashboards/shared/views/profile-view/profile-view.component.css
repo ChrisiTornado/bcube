@@ -16,6 +16,7 @@
   gap: 1.5rem;
 }
 
+/* ===== Loading state ===== */
 .profile-loading {
   min-height: 340px;
   display: grid;
@@ -31,6 +32,7 @@
   animation: profile-spin 0.85s linear infinite;
 }
 
+/* ===== Hero (avatar + name) ===== */
 .profile-hero {
   display: grid;
   grid-template-columns: 128px minmax(0, 1fr);
@@ -79,6 +81,7 @@
   line-height: 1.55;
 }
 
+/* ===== Two-column card grid (form + settings) ===== */
 .profile-grid {
   display: grid;
   grid-template-columns: minmax(0, 1.4fr) minmax(320px, 0.9fr);
@@ -173,6 +176,7 @@
   color: #111111 !important;
 }
 
+/* ===== Settings list (password, payment, legal, logout, delete) ===== */
 .settings-item {
   width: 100%;
   display: grid;
@@ -238,6 +242,7 @@
   background: rgba(255, 98, 98, 0.08);
 }
 
+/* ===== Responsive ===== */
 @media (max-width: 960px) {
   .profile-hero,
   .profile-grid {

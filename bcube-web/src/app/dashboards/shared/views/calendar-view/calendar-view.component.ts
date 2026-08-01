@@ -1,14 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CalendarModule } from 'primeng/calendar';
 import { DropdownModule } from 'primeng/dropdown';
 import { ButtonModule } from 'primeng/button';
 import { AuthService } from '../../../../services/auth/auth.service';
-import { StudioService } from '../../../../services/studio.service';
 import { BookingService } from '../../../../services/booking.service';
-import { MessageService, ConfirmationService } from 'primeng/api';
 import { Booking } from '../../../../models/Booking';
 import { FullCalendarModule } from '@fullcalendar/angular';
 import dayGridPlugin from '@fullcalendar/daygrid';
@@ -36,7 +34,6 @@ import { BookingStatus } from '../../../../models/BookingStatus';
 })
 export class CalendarViewComponent implements OnInit {
   readonly bookingStatus = BookingStatus;
-  date = null;
   selectedDate: string | null = null;
   displayedMonth: Date = this.startOfMonth(new Date());
   selectedDayBookings: Booking[] = [];
@@ -46,12 +43,8 @@ export class CalendarViewComponent implements OnInit {
 
   constructor(
     private router: Router,
-    private route: ActivatedRoute,
-    private studioService: StudioService,
     private authService: AuthService,
-    private bookingService: BookingService,
-    private confirmationService: ConfirmationService,
-    private messageService: MessageService
+    private bookingService: BookingService
   ) { }
 
   calendarPlugins = [dayGridPlugin, interactionPlugin];
@@ -62,29 +55,7 @@ export class CalendarViewComponent implements OnInit {
 
   user: User | null = null;
 
-  calendarOptions: CalendarOptions = {
-    plugins: this.calendarPlugins,
-    initialView: 'dayGridMonth',
-    events: this.calendarEvents,
-    locale: 'de',
-    dayMaxEvents: 2,
-    fixedWeekCount: false,
-    showNonCurrentDates: true,
-    headerToolbar: {
-      left: 'title',
-      center: '',
-      right: 'prev,next'
-    },
-    weekends: true,
-    dayCellClassNames: (arg) => this.selectedDate === this.toIsoDate(arg.date) ? ['fc-day-selected'] : [],
-    datesSet: (info) => this.handleMonthChange(info),
-    moreLinkContent: (arg) => ({ html: `+${arg.num} Mehr` }),
-    moreLinkClick: (info) => {
-      this.selectDate(this.toIsoDate(info.date));
-      return 'popover';
-    },
-    dateClick: (info) => this.selectDate(info.dateStr)
-  };
+  calendarOptions: CalendarOptions = this.buildCalendarOptions(this.calendarEvents);
 
   ngOnInit(): void {
     this.user = this.authService.getUser();
@@ -167,10 +138,15 @@ export class CalendarViewComponent implements OnInit {
   }
 
   private refreshCalendarOptions(): void {
-    this.calendarOptions = {
+    this.calendarOptions = this.buildCalendarOptions([...this.bookingEventEntries]);
+  }
+
+  /** Shared FullCalendar config for both the initial field value and every re-render after a data/month change. */
+  private buildCalendarOptions(events: EventInput[]): CalendarOptions {
+    return {
       plugins: this.calendarPlugins,
       initialView: 'dayGridMonth',
-      events: [...this.bookingEventEntries],
+      events,
       locale: 'de',
       dayMaxEvents: 2,
       fixedWeekCount: false,
@@ -193,7 +169,7 @@ export class CalendarViewComponent implements OnInit {
   }
 
   private handleMonthChange(info: DatesSetArg): void {
-    const nextMonth = this.startOfMonth((info.view as any).currentStart ?? info.start);
+    const nextMonth = this.startOfMonth(info.view.currentStart ?? info.start);
     const currentMonth = this.startOfMonth(this.displayedMonth);
 
     if (this.isSameMonth(nextMonth, currentMonth)) {

@@ -8,7 +8,7 @@ import { ApiResponse } from '../../models/responses/ApiResponse';
 import { JwtResponse } from '../../models/responses/user/JwtResponse';
 import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
-import { ResetPasswordRequest } from '../../models/requests/studio/ResetPasswordRequest';
+import { ResetPasswordRequest } from '../../models/requests/user/ResetPasswordRequest';
 import { ResetPasswordResponse } from '../../models/responses/user/ResetPasswordResponse';
 import { VerifyCodeResponse } from '../../models/responses/user/VerifyCodeResponse';
 import { ChangePasswordResponse } from '../../models/responses/user/ChangePasswordResponse';
@@ -18,7 +18,6 @@ import { ChangePasswordRequest } from '../../models/requests/user/ChangePassword
 export class AuthService {
   private readonly tokenKey = 'auth_token';
   private readonly userKey = 'auth_user';
-  private email!: string;
 
   constructor(private http: HttpClient, private router: Router) { }
 

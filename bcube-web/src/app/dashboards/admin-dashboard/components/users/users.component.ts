@@ -2,8 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import { finalize } from 'rxjs';
+import { HttpErrorResponse } from '@angular/common/http';
 import { UserService } from '../../../../services/user.service';
-import { User } from '../../../../models/User';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -13,6 +13,9 @@ import { LoadingSpinnerComponent } from '../../../../shared/loading-spinner/load
 import { InputTextModule } from 'primeng/inputtext';
 import { DropdownModule } from 'primeng/dropdown';
 import { CreateUserRequest } from '../../../../models/requests/user/CreateUserRequest';
+import { ApiResponse } from '../../../../models/responses/ApiResponse';
+import { UserResponse } from '../../../../models/responses/user/UserResponse';
+import { DARK_BUTTON_STYLE } from '../../../../shared/button-style';
 
 @Component({
   selector: 'app-users',
@@ -22,11 +25,12 @@ import { CreateUserRequest } from '../../../../models/requests/user/CreateUserRe
   styleUrl: './users.component.css'
 })
 export class UsersComponent implements OnInit {
+  readonly darkButtonStyle = DARK_BUTTON_STYLE;
+
   createForm!: FormGroup;
   visible: boolean = false;
   submitted: boolean = false;
   loading: boolean = false;
-  users: User[] = [];
 
   roleOptions = [
     { label: 'Benutzer', value: 'USER' },
@@ -82,7 +86,7 @@ export class UsersComponent implements OnInit {
     this.userService.createUser(payload)
       .pipe(finalize(() => this.loading = false))
       .subscribe({
-        next: (res) => {
+        next: (res: ApiResponse<UserResponse>) => {
           this.userService.reloadUsers();
           this.closeDialog();
           this.messageService.add({
@@ -92,7 +96,7 @@ export class UsersComponent implements OnInit {
             detail: 'Benutzer erfolgreich erstellt.'
           });
         },
-        error: (e) => {
+        error: (e: HttpErrorResponse) => {
           const message = e?.error?.message ?? 'Ein unbekannter Fehler ist aufgetreten.';
           this.messageService.add({
             key: 'main',

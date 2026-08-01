@@ -9,6 +9,7 @@ import {
 import { Observable, catchError, throwError } from 'rxjs';
 import { Router } from '@angular/router';
 
+/** Attaches the bearer token to every request and force-logs-out on a 401 (expired/invalid session). */
 @Injectable({ providedIn: 'root' })
 export class InterceptorService implements HttpInterceptor {
   constructor(private router: Router) {}

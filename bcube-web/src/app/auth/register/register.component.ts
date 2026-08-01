@@ -4,17 +4,18 @@ import { AbstractControl, FormBuilder, FormGroup, Validators } from "@angular/fo
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { User } from '../../models/User';
 import { AuthContainerComponent } from '../auth-container/auth-container.component';
 import { ButtonModule } from "primeng/button";
 import { ReactiveFormsModule } from '@angular/forms';
 import { MessageService } from "primeng/api";
 import { finalize } from "rxjs";
+import { HttpErrorResponse } from '@angular/common/http';
 import { LoadingSpinnerComponent } from '../../shared/loading-spinner/loading-spinner.component';
 import { RegisterRequest } from '../../models/requests/user/RegisterRequest';
 import { ApiResponse } from '../../models/responses/ApiResponse';
 import { JwtResponse } from '../../models/responses/user/JwtResponse';
 import { InputTextModule } from 'primeng/inputtext';
+import { handleAuthSuccess } from '../shared/auth-success.util';
 
 @Component({
   selector: 'app-register',
@@ -63,21 +64,8 @@ export class RegisterComponent implements OnInit {
       }
       ))
       .subscribe({
-        next: (res: ApiResponse<JwtResponse>) => {
-          const jwt = res.data;
-
-          const user: User = {
-            id: jwt.id,
-            email: jwt.email,
-            role: jwt.role
-          };
-
-          this.auth.storeAuth(jwt.token, user);
-          sessionStorage.setItem('loginSuccessMessage', res.message);
-          const role = jwt.role;
-          this.router.navigate([role === 'ADMIN' ? '/admin-dashboard/studios' : '/user-dashboard/studios']);
-        },
-        error: (e) => {
+        next: (res: ApiResponse<JwtResponse>) => handleAuthSuccess(res, this.auth, this.router),
+        error: (e: HttpErrorResponse) => {
           const message = e?.error?.message ?? 'Ein unbekannter Fehler ist aufgetreten.';
           this.messageService.add({
             key: 'main',

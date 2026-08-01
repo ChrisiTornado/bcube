@@ -1,4 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideRouter } from '@angular/router';
+import { MessageService, ConfirmationService } from 'primeng/api';
 
 import { EnterCodeComponent } from './enter-code.component';
 
@@ -8,7 +12,8 @@ describe('EnterCodeComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [EnterCodeComponent]
+      imports: [EnterCodeComponent],
+      providers: [provideHttpClient(), provideHttpClientTesting(), provideRouter([]), MessageService, ConfirmationService]
     })
     .compileComponents();
     

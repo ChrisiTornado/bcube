@@ -1,7 +1,8 @@
-import { Component, Input } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { HttpErrorResponse } from '@angular/common/http';
 import { finalize } from 'rxjs';
 import { AuthService } from '../../services/auth/auth.service';
 import { MessageService } from 'primeng/api';
@@ -13,6 +14,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { ApiResponse } from '../../models/responses/ApiResponse';
 import { ResetPasswordResponse } from '../../models/responses/user/ResetPasswordResponse';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { DARK_BUTTON_STYLE } from '../../shared/button-style';
 
 @Component({
   selector: 'app-email-reset',
@@ -30,9 +32,12 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
   templateUrl: './email-reset.component.html',
   styleUrl: './email-reset.component.css'
 })
-export class EmailResetComponent {
+export class EmailResetComponent implements OnInit {
+  /** Persisted across the multi-step (email → code → password) reset flow since each step is its own route/page load. */
   private readonly returnUrlKey = 'passwordResetReturnUrl';
-  @Input() notification!: Notification;
+
+  readonly darkButtonStyle = DARK_BUTTON_STYLE;
+
   formGroup!: FormGroup;
   loading = false;
   submitted = false;
@@ -44,6 +49,7 @@ export class EmailResetComponent {
   }
 
   ngOnInit(): void {
+    // Captures where this flow was entered from (e.g. login) so "Zurück" can restore it later.
     const returnUrl = history.state?.returnUrl as string | undefined;
     localStorage.setItem(this.returnUrlKey, returnUrl || '/login');
 
@@ -66,12 +72,11 @@ export class EmailResetComponent {
       }))
       .subscribe({
         next: (response: ApiResponse<ResetPasswordResponse>) => {
-          console.log(this.email.value)
           localStorage.setItem('resetEmail', this.email.value);
           localStorage.setItem('successMessage', response.message)
           this.router.navigate(['/auth/enter-code'])
         },
-        error: (err: any) => {
+        error: (err: HttpErrorResponse) => {
           this.messageService.add({
             severity: 'error',
             summary: 'Fehler',

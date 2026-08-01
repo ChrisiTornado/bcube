@@ -1,9 +1,12 @@
 import { Injectable } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { BookingService } from './booking.service';
 import { BookingResponse } from '../models/responses/booking/BookingResponse';
+import { ApiResponse } from '../models/responses/ApiResponse';
 import { finalize } from 'rxjs';
 import { ConfirmationService, MessageService } from 'primeng/api';
 
+/** Shared confirm-then-cancel-booking flow, reused by both the admin and user booking views. */
 @Injectable({
   providedIn: 'root'
 })
@@ -40,7 +43,7 @@ export class BookingActionService {
     this.bookingService.storno(booking.id)
       .pipe(finalize(() => setLoading?.(false)))
       .subscribe({
-        next: (res) => {
+        next: (res: ApiResponse<number>) => {
           this.messageService.add({
             key: 'main',
             severity: 'success',
@@ -50,7 +53,7 @@ export class BookingActionService {
           this.bookingService.reloadBookings();
           onSuccess?.();
         },
-        error: (err) => {
+        error: (err: HttpErrorResponse) => {
           this.messageService.add({
             key: 'main',
             severity: 'error',

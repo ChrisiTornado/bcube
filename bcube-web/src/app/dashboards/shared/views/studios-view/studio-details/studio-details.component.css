@@ -32,6 +32,7 @@
   font-size: 1rem;
 }
 
+/* ===== Hero gallery ===== */
 .hero-gallery {
   display: grid;
   grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
@@ -63,6 +64,7 @@
   gap: 1rem;
 }
 
+/* ===== Content layout (overview/calendar column + booking sidebar) ===== */
 .studio-layout {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(360px, 430px);
@@ -135,6 +137,7 @@
   margin-bottom: 1rem;
 }
 
+/* ===== Booking form (time fields, validation, submit) ===== */
 .booking-elements {
   display: flex;
   flex-direction: column;
@@ -176,6 +179,7 @@
   color: white !important;
 }
 
+/* ===== Image overlay (lightbox) ===== */
 .overlay {
   position: fixed;
   inset: 0;
@@ -207,6 +211,7 @@
   cursor: pointer;
 }
 
+/* ===== FullCalendar (fc) deep overrides ===== */
 :host ::ng-deep .fc .fc-scrollgrid-sync-table {
   table-layout: fixed !important;
 }
@@ -358,6 +363,7 @@
   background: transparent !important;
 }
 
+/* ===== PrimeNG time-picker (p-calendar) deep overrides ===== */
 :host ::ng-deep .booking-elements .time-field-input .p-calendar {
   width: 100%;
 }
@@ -395,6 +401,7 @@
   color: #ffffff !important;
 }
 
+/* ===== Responsive ===== */
 @media (max-width: 1160px) {
   .hero-gallery,
   .studio-layout {

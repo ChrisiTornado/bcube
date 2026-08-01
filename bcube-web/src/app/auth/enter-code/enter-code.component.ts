@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthContainerComponent } from '../auth-container/auth-container.component';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
 import { AuthService } from '../../services/auth/auth.service';
 import { MessageService } from 'primeng/api';
 import { finalize } from 'rxjs';
@@ -12,6 +13,7 @@ import { ButtonModule } from 'primeng/button';
 import { ApiResponse } from '../../models/responses/ApiResponse';
 import { ResetPasswordResponse } from '../../models/responses/user/ResetPasswordResponse';
 import { VerifyCodeResponse } from '../../models/responses/user/VerifyCodeResponse';
+import { DARK_BUTTON_STYLE } from '../../shared/button-style';
 
 @Component({
   selector: 'app-enter-code',
@@ -28,16 +30,19 @@ import { VerifyCodeResponse } from '../../models/responses/user/VerifyCodeRespon
   styleUrls: ['./enter-code.component.css']
 })
 export class EnterCodeComponent implements OnInit {
+  /** Persisted across the multi-step (email → code → password) reset flow since each step is its own route/page load. */
   private readonly returnUrlKey = 'passwordResetReturnUrl';
+
+  readonly darkButtonStyle = DARK_BUTTON_STYLE;
+
   formGroup!: FormGroup;
   submitted = false;
   loading = false;
   resendCodeLoading = false;
-  email: any;
+  email: string | null = null;
 
   constructor(
     private fb: FormBuilder,
-    private route: ActivatedRoute,
     private router: Router,
     private authService: AuthService,
     private messageService: MessageService
@@ -57,7 +62,6 @@ export class EnterCodeComponent implements OnInit {
     }
 
     this.email = localStorage.getItem('resetEmail')
-    console.log(this.email)
     this.formGroup = this.fb.group({
       digit1: [{ value: '', disabled: this.loading }, [Validators.required, Validators.pattern('^[0-9]$')]],
       digit2: [{ value: '', disabled: this.loading }, [Validators.required, Validators.pattern('^[0-9]$')]],
@@ -72,8 +76,10 @@ export class EnterCodeComponent implements OnInit {
     return this.formGroup.controls;
   }
 
-  moveFocus(event: any, nextFieldId: string): void {
-    if (event.target.value.length === 1) {
+  /** Auto-advances focus to the next digit box once one is filled in. */
+  moveFocus(event: Event, nextFieldId: string): void {
+    const input = event.target as HTMLInputElement;
+    if (input.value.length === 1) {
       const nextField = document.getElementById(nextFieldId) as HTMLElement;
       if (nextField) nextField.focus();
     }
@@ -81,20 +87,19 @@ export class EnterCodeComponent implements OnInit {
 
   submit(): void {
     this.submitted = true;
-    console.log(this.email)
     if (this.formGroup.invalid) return;
 
     const token = Object.values(this.formGroup.value).join('');
     this.loading = true;
 
-    this.authService.verifyCode(this.email, token)
+    this.authService.verifyCode(this.email!, token)
       .pipe(finalize(() => this.loading = false))
       .subscribe({
         next: (res: ApiResponse<VerifyCodeResponse>) => {
           localStorage.setItem('successMessage', res.message)
           this.router.navigate(['/auth/change-password'])
         },
-        error: (err) => {
+        error: (err: HttpErrorResponse) => {
           this.messageService.add({
             severity: 'error',
             summary: 'Fehler',
@@ -110,7 +115,7 @@ export class EnterCodeComponent implements OnInit {
     this.submitted = false;
     this.formGroup.disable();
 
-    this.authService.resetPassword({ email: this.email })
+    this.authService.resetPassword({ email: this.email! })
       .pipe(finalize(() => {
         this.resendCodeLoading = false;
         this.loading = false
@@ -127,7 +132,7 @@ export class EnterCodeComponent implements OnInit {
             });
           });
         },
-        error: (err: any) => {
+        error: (err: HttpErrorResponse) => {
           this.messageService.add({
             severity: 'error',
             summary: 'Fehler',
@@ -137,6 +142,7 @@ export class EnterCodeComponent implements OnInit {
       });
   }
 
+  /** Returns to email-reset, carrying forward the original entry point of the reset flow. */
   goBack(): void {
     this.router.navigate(['/auth/email-reset'], {
       state: { returnUrl: this.getReturnUrl() }

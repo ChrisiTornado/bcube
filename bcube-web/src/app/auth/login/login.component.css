@@ -1,3 +1,4 @@
+/* ===== Design tokens (local overrides of the global auth theme) ===== */
 :host {
   --bcube-orange: #ffa722;
   --bcube-black: #050505;
@@ -9,6 +10,7 @@
   font-family: "Avenir Next", "Montserrat", "Segoe UI", sans-serif;
 }
 
+/* ===== Background (auth-container surface, deep-styled from the host) ===== */
 :host ::ng-deep .surface-ground {
   min-height: 100vh;
   padding: 28px;
@@ -94,6 +96,7 @@
   color: var(--bcube-white) !important;
 }
 
+/* ===== Brand hero + title ===== */
 .login-hero {
   margin-bottom: 34px;
   display: flex;
@@ -145,6 +148,7 @@
   line-height: 1;
 }
 
+/* ===== Form fields ===== */
 .login-form {
   display: flex;
   flex-direction: column;
@@ -218,6 +222,7 @@
   font-weight: 600;
 }
 
+/* ===== Actions (login + register buttons) ===== */
 .login-link-row {
   margin: 2px 0 12px !important;
 }
@@ -284,6 +289,7 @@
   box-shadow: 0 0 0 3px rgba(255, 167, 34, 0.14);
 }
 
+/* ===== Responsive ===== */
 @media (max-width: 640px) {
   :host ::ng-deep .surface-ground {
     padding: 14px;

@@ -1,5 +1,5 @@
 <div class="card flex justify-content-center">
-  <p-button [style]="{'background-color': 'black', 'border-color': 'black', 'color': 'white'}" (click)="openDialog()" pRipple label="Benutzer anlegen" icon="pi pi-plus"
+  <p-button [style]="darkButtonStyle" (click)="openDialog()" pRipple label="Benutzer anlegen" icon="pi pi-plus"
             styleClass="p-button-primary"></p-button>
 
   <p-dialog header="Benutzer anlegen" [(visible)]="visible" [modal]="true" [style]="{ width: '50vw' }"
@@ -44,7 +44,7 @@
       </div>
 
       <div class="flex justify-content-end">
-        <p-button [style]="{'background-color': 'black', 'border-color': 'black', 'color': 'white'}" (click)="submit()" pRipple label="Erstellen" [loading]="loading" icon="pi pi-save"
+        <p-button [style]="darkButtonStyle" (click)="submit()" pRipple label="Erstellen" [loading]="loading" icon="pi pi-save"
                   styleClass="p-button-primary"></p-button>
       </div>
     </form>

@@ -42,7 +42,7 @@
   </div>
   <div class="pager-shell flex justify-content-center gap-3 mt-3">
       <button pButton label="<- Zurück"
-              [style]="{'background-color': 'white', 'border-color': 'black', 'color': 'black'}"
+              [style]="lightButtonStyle"
               (click)="loadPage(this.userService.page - 1)"
               [disabled]="this.userService.page === 0">
       </button>
@@ -52,7 +52,7 @@
       </span>
 
       <button pButton label="Weiter ->"
-              [style]="{'background-color': 'white', 'border-color': 'black', 'color': 'black'}"
+              [style]="lightButtonStyle"
               (click)="loadPage(this.userService.page + 1)"
               [disabled]="this.userService.page >= totalPages - 1">
       </button>

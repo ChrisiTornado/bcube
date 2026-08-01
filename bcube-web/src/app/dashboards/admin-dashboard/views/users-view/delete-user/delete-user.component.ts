@@ -1,9 +1,11 @@
 import { Component, Input } from '@angular/core';
 import { finalize } from 'rxjs';
+import { HttpErrorResponse } from '@angular/common/http';
 import { ButtonModule } from 'primeng/button';
 import { MessageService, ConfirmationService  } from 'primeng/api';
 import { UserService } from '../../../../../services/user.service';
 import { User } from '../../../../../models/User';
+import { ApiResponse } from '../../../../../models/responses/ApiResponse';
 
 @Component({
   selector: 'app-delete-user',
@@ -40,7 +42,7 @@ export class DeleteUserComponent {
     this.userService.deleteUser(this.user.id)
       .pipe(finalize(() => this.loading = false))
       .subscribe({
-        next: (res) => {
+        next: (res: ApiResponse<number>) => {
           this.messageService.add({
             key: 'main',
             severity: 'success',
@@ -49,7 +51,7 @@ export class DeleteUserComponent {
           });
           this.userService.reloadUsers();
         },
-        error: (err) => {
+        error: (err: HttpErrorResponse) => {
           this.messageService.add({
             key: 'main',
             severity: 'error',

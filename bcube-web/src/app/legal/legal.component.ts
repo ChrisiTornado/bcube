@@ -19,11 +19,13 @@ export class LegalComponent implements OnInit {
   constructor(private route: ActivatedRoute, private router: Router) {}
 
   ngOnInit(): void {
+    // Narrowed explicitly since queryParamMap only guarantees `string | null`, not our union type.
     const section = this.route.snapshot.queryParamMap.get('section');
     if (section === 'impressum' || section === 'datenschutz' || section === 'agb') {
       this.activeSection = section;
     }
 
+    // Lets register/login deep-link into a specific tab (e.g. the AGB checkbox) and return there via goBack().
     const stateReturnUrl = history.state?.returnUrl;
     if (typeof stateReturnUrl === 'string' && stateReturnUrl.trim()) {
       this.returnUrl = stateReturnUrl;

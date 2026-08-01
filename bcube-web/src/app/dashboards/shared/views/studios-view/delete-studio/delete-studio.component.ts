@@ -1,9 +1,11 @@
 import { Component, Input } from '@angular/core';
 import { finalize } from "rxjs";
+import { HttpErrorResponse } from '@angular/common/http';
 import { StudioService } from '../../../../../services/studio.service';
 import { Studio } from '../../../../../models/Studio';
 import { ButtonModule } from 'primeng/button';
 import { MessageService, ConfirmationService } from 'primeng/api';
+import { ApiResponse } from '../../../../../models/responses/ApiResponse';
 
 @Component({
   selector: 'app-delete-studio',
@@ -35,7 +37,7 @@ export class DeleteStudioComponent {
     this.studioService.delete(this.studio.id)
       .pipe(finalize(() => this.loading = false))
       .subscribe({
-        next: (res) => {
+        next: (res: ApiResponse<number>) => {
           this.messageService.add({
             key: 'main',
             severity: 'success',
@@ -44,7 +46,7 @@ export class DeleteStudioComponent {
           });
           this.studioService.reloadAllStudios();
         },
-        error: (err) => {
+        error: (err: HttpErrorResponse) => {
           this.messageService.add({
             key: 'main',
             severity: 'error',

@@ -5,6 +5,7 @@
   height: 100%;
 }
 
+/* ===== Page layout (header, two-column grid) ===== */
 .view-header {
   display: flex;
   align-items: center;
@@ -39,6 +40,7 @@
   margin-top: 0 !important;
 }
 
+/* ===== Selected-day bookings panel ===== */
 .day-bookings-panel {
   border-radius: 28px;
   border: 1px solid rgba(255, 167, 34, 0.14);
@@ -186,6 +188,7 @@
   padding: 1rem 1.1rem;
 }
 
+/* ===== FullCalendar (fc) deep overrides ===== */
 ::ng-deep .fc {
   max-width: 100%;
   font-size: 0.88rem;
@@ -343,6 +346,7 @@
   background: transparent !important;
 }
 
+/* ===== Responsive ===== */
 @media (max-width: 1100px) {
   .calendar-layout {
     grid-template-columns: 1fr;

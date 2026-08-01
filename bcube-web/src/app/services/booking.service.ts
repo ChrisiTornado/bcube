@@ -7,8 +7,6 @@ import { ApiResponse } from '../models/responses/ApiResponse';
 import { finalize } from 'rxjs/operators';
 import { Booking } from '../models/Booking';
 import { CreateBookingRequest } from '../models/requests/booking/CreateBookingRequest';
-import { BookingResponse } from '../models/responses/booking/BookingResponse';
-import { Studio } from '../models/Studio';
 import { PageResponse } from '../models/responses/PageResponse';
 import { BookingDetailsResponse } from '../models/responses/booking/BookingDetailsResponse';
 
@@ -38,17 +36,17 @@ export class BookingService {
 
     this.loadingSubject.next(true);
 
-    const params: any = {
+    const params: Record<string, number> = {
       page,
       size
     };
 
     if (userId != null) {
-      params.userId = userId;
+      params['userId'] = userId;
     }
 
     if (studioId != null) {
-      params.studioId = studioId;
+      params['studioId'] = studioId;
     }
 
     return this.http
@@ -66,18 +64,18 @@ export class BookingService {
     userId: number,
     page: number = 0,
     size: number = 10,
-    stuioId?: number
+    studioId?: number
   ): Observable<PageResponse<Booking>> {
     this.loadingSubject.next(true);
 
-    const params: any = {
+    const params: Record<string, number> = {
       userId,
       page,
       size
     };
 
-    if (stuioId != null) {
-      params.studioId = stuioId;
+    if (studioId != null) {
+      params['studioId'] = studioId;
     }
 
     return this.http
@@ -130,16 +128,6 @@ export class BookingService {
 
   setBookings(bookings: Booking[]): void {
     this.bookingSubject.next(bookings);
-  }
-
-  getStudioById(id: number): Observable<Booking> {
-    this.loadingSubject.next(true);
-    return this.http
-      .get<{ message: string; data: Booking }>(`${environment.bookingApiUrl}/${id}`)
-      .pipe(
-        map(res => res.data),
-        finalize(() => this.loadingSubject.next(false))
-      );
   }
 
   reloadBookings(userId?: number,

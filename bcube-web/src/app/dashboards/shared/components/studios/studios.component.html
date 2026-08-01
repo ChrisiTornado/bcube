@@ -1,5 +1,5 @@
 <div *ngIf="isAdmin" class="card flex justify-content-center">
-    <p-button  (click)="openDialog()" pRipple label="Cube anlegen" icon="pi pi-plus" [style]="{'background-color': 'black', 'border-color': 'black', 'color': 'white'}"></p-button>
+    <p-button  (click)="openDialog()" pRipple label="Cube anlegen" icon="pi pi-plus" [style]="darkButtonStyle"></p-button>
 
     <p-dialog header="Cube anlegen" [(visible)]="visible" [modal]="true" [style]="{ width: '50vw' }"
               [draggable]="false" [resizable]="false" (onHide)="closeDialog()">
@@ -8,8 +8,8 @@
             <label for="name" class="block text-900 font-medium mb-2">Name</label>
             <input id="name" formControlName="name" type="text" placeholder="Name" pInputText pAutoFocus [autofocus]="true" class="w-full">
 
-            <div style="position: relative">
-              <small style="position: absolute; color: red" *ngIf="name.hasError('required') && submitted">Name ist erforderlich</small>
+            <div class="field-error-wrap">
+              <small class="field-error" *ngIf="name.hasError('required') && submitted">Name ist erforderlich</small>
             </div>
           </div>
 
@@ -22,8 +22,8 @@
                       rows="6"
                       class="w-full studio-description-field"></textarea>
 
-            <div style="position: relative">
-              <small style="position: absolute; color: red" *ngIf="description.hasError('required') && submitted">Beschreibung ist erforderlich</small>
+            <div class="field-error-wrap">
+              <small class="field-error" *ngIf="description.hasError('required') && submitted">Beschreibung ist erforderlich</small>
             </div>
           </div>
 
@@ -31,8 +31,8 @@
             <label for="city" class="block text-900 font-medium mb-2">Stadt</label>
             <input id="city" formControlName="city" type="text" placeholder="Stadt" pInputText pAutoFocus [autofocus]="true" class="w-full">
 
-            <div style="position: relative">
-              <small style="position: absolute; color: red" *ngIf="city.hasError('required') && submitted">Stadt ist erforderlich</small>
+            <div class="field-error-wrap">
+              <small class="field-error" *ngIf="city.hasError('required') && submitted">Stadt ist erforderlich</small>
             </div>
           </div>
 
@@ -40,8 +40,8 @@
             <label for="country" class="block text-900 font-medium mb-2">Land</label>
             <input id="country" formControlName="country" type="text" placeholder="Land" pInputText pAutoFocus [autofocus]="true" class="w-full">
 
-            <div style="position: relative">
-              <small style="position: absolute; color: red" *ngIf="country.hasError('required') && submitted">Land ist erforderlich</small>
+            <div class="field-error-wrap">
+              <small class="field-error" *ngIf="country.hasError('required') && submitted">Land ist erforderlich</small>
             </div>
           </div>
 
@@ -49,8 +49,8 @@
             <label for="plz" class="block text-900 font-medium mb-2">Postleitzahl</label>
             <input id="plz" formControlName="plz" type="plz" placeholder="Postleitzahl" pInputText pAutoFocus [autofocus]="true" class="w-full">
 
-            <div style="position: relative">
-              <small style="position: absolute; color: red" *ngIf="plz.hasError('required') && submitted">Postleitzahl ist erforderlich</small>
+            <div class="field-error-wrap">
+              <small class="field-error" *ngIf="plz.hasError('required') && submitted">Postleitzahl ist erforderlich</small>
             </div>
           </div>
 
@@ -58,8 +58,8 @@
             <label for="street" class="block text-900 font-medium mb-2">Straße</label>
             <input id="street" formControlName="street" type="text" placeholder="Straße" pInputText pAutoFocus [autofocus]="true" class="w-full">
 
-            <div style="position: relative">
-              <small style="position: absolute; color: red" *ngIf="street.hasError('required') && submitted">Stadtname ist erforderlich</small>
+            <div class="field-error-wrap">
+              <small class="field-error" *ngIf="street.hasError('required') && submitted">Stadtname ist erforderlich</small>
             </div>
           </div>
 
@@ -67,8 +67,8 @@
             <label for="smartlockId" class="block text-900 font-medium mb-2">Smartlock ID</label>
             <input id="smartlockId" formControlName="smartlockId" type="number" placeholder="Smartlock ID" pInputText pAutoFocus [autofocus]="true" class="w-full">
 
-            <div style="position: relative">
-              <small style="position: absolute; color: red" *ngIf="smartlockId.hasError('required') && submitted">Smartlock ID ist erforderlich</small>
+            <div class="field-error-wrap">
+              <small class="field-error" *ngIf="smartlockId.hasError('required') && submitted">Smartlock ID ist erforderlich</small>
             </div>
           </div>
 
@@ -95,14 +95,14 @@
                 style="object-fit: cover;">
             </div>
 
-            <div style="position: relative">
-              <small style="position: absolute; color: red" *ngIf="images.hasError('required') && submitted">Mindestens ein Cubebild ist erforderlich</small>
+            <div class="field-error-wrap">
+              <small class="field-error" *ngIf="images.hasError('required') && submitted">Mindestens ein Cubebild ist erforderlich</small>
             </div>
           </div>
 
         <div class="flex justify-content-end">
           <p-button  (click)="submit()" pRipple label="Erstellen" [loading]="loading" icon="pi pi-save"
-                     [style]="{'background-color': 'black', 'border-color': 'black', 'color': 'white'}"></p-button>
+                     [style]="darkButtonStyle"></p-button>
         </div>
 
       </form>

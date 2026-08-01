@@ -8,6 +8,7 @@ import {
   ReactiveFormsModule
 } from '@angular/forms';
 import { Router } from '@angular/router';
+import { HttpErrorResponse } from '@angular/common/http';
 import { finalize } from 'rxjs';
 
 import { MessageService } from 'primeng/api';
@@ -19,6 +20,7 @@ import { ButtonModule } from 'primeng/button';
 import { AuthContainerComponent } from '../auth-container/auth-container.component';
 import { AuthService } from '../../services/auth/auth.service';
 import { ChangePasswordRequest } from '../../models/requests/user/ChangePasswordRequest';
+import { DARK_BUTTON_STYLE } from '../../shared/button-style';
 
 @Component({
   selector: 'app-change-password',
@@ -41,7 +43,10 @@ import { ChangePasswordRequest } from '../../models/requests/user/ChangePassword
   providers: [MessageService]
 })
 export class ChangePasswordComponent implements OnInit {
+  /** Persisted across the multi-step (email → code → password) reset flow since each step is its own route/page load. */
   private readonly returnUrlKey = 'passwordResetReturnUrl';
+
+  readonly darkButtonStyle = DARK_BUTTON_STYLE;
 
   formGroup!: FormGroup;
   loading = false;
@@ -99,7 +104,7 @@ export class ChangePasswordComponent implements OnInit {
           localStorage.removeItem(this.returnUrlKey);
           this.router.navigate(['/auth/login']);
         },
-        error: (err) => {
+        error: (err: HttpErrorResponse) => {
           this.messageService.add({
             severity: 'error',
             summary: 'Fehler',
@@ -109,6 +114,7 @@ export class ChangePasswordComponent implements OnInit {
       });
   }
 
+  /** Returns to enter-code, carrying forward the original entry point of the reset flow. */
   goBack(): void {
     this.router.navigate(['/auth/enter-code'], {
       state: { returnUrl: this.getReturnUrl() }

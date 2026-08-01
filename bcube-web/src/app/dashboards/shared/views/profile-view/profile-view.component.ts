@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { finalize } from 'rxjs';
+import { HttpErrorResponse } from '@angular/common/http';
 import { ButtonModule } from 'primeng/button';
 import { ToastModule } from 'primeng/toast';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
@@ -106,7 +107,7 @@ export class ProfileViewComponent implements OnInit {
             detail: 'Deine Profildaten wurden aktualisiert.'
           });
         },
-        error: (error) => {
+        error: (error: HttpErrorResponse) => {
           this.messageService.add({
             severity: 'error',
             summary: 'Fehler',
@@ -167,7 +168,7 @@ export class ProfileViewComponent implements OnInit {
           });
           this.authService.logout();
         },
-        error: (error) => {
+        error: (error: HttpErrorResponse) => {
           this.messageService.add({
             severity: 'error',
             summary: 'Fehler',

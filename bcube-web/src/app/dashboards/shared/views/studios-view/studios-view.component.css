@@ -5,6 +5,7 @@
   position: relative;
 }
 
+/* ===== Page shell (two-column: results list + sticky map) ===== */
 .explore-shell {
   display: grid;
   grid-template-columns: minmax(0, 0.98fr) minmax(460px, 1.02fr);
@@ -50,6 +51,7 @@
   background-clip: padding-box;
 }
 
+/* ===== Results header + grid ===== */
 .results-toolbar {
   display: flex;
   align-items: flex-start;
@@ -92,6 +94,7 @@
   box-shadow: none !important;
 }
 
+/* ===== Studio card + image carousel ===== */
 .studio-card {
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
@@ -227,6 +230,7 @@
   backdrop-filter: blur(10px);
 }
 
+/* ===== Studio card text + admin actions ===== */
 .studio-copy {
   margin-top: 0.9rem;
   padding: 0 0.35rem 0 0.15rem;
@@ -296,6 +300,7 @@
   margin-top: 0.9rem;
 }
 
+/* ===== Map panel (Mapbox surface, chips, selected-studio preview card) ===== */
 .map-panel {
   grid-area: map;
   position: sticky;
@@ -475,6 +480,7 @@
   box-shadow: 0 16px 32px rgba(0, 0, 0, 0.18) !important;
 }
 
+/* ===== Responsive ===== */
 @media (max-width: 1360px) {
   .explore-shell {
     grid-template-columns: minmax(0, 1fr) minmax(420px, 0.96fr);

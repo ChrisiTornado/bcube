@@ -1,3 +1,4 @@
+/* ===== Design tokens (local overrides of the global auth theme) ===== */
 :host {
   --bcube-orange: #ffa722;
   --bcube-black: #050505;
@@ -7,6 +8,7 @@
   font-family: "Avenir Next", "Montserrat", "Segoe UI", sans-serif;
 }
 
+/* ===== Brand hero + title ===== */
 .register-hero {
   margin-bottom: 34px;
   display: flex;
@@ -62,6 +64,7 @@
   color: var(--bcube-white) !important;
 }
 
+/* ===== Form fields ===== */
 :host ::ng-deep .p-inputtext {
   height: 48px;
   padding: 0 16px;
@@ -102,6 +105,7 @@
 }
 
 
+/* ===== Actions (register + login buttons) ===== */
 .register-actions {
   width: 100%;
   gap: 14px !important;
@@ -153,6 +157,7 @@
   box-shadow: 0 0 0 3px rgba(255, 167, 34, 0.14);
 }
 
+/* ===== Layout helpers (name row, field spacing, errors, terms) ===== */
 .name-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -222,6 +227,7 @@
   color: var(--bcube-orange);
 }
 
+/* ===== Responsive ===== */
 @media (max-width: 640px) {
   .register-brand-badge {
     width: 100%;

@@ -27,7 +27,7 @@
 
         <div class="card flex justify-content-between align-items-center mt-4 code-actions">
             <p-button pRipple label="Zurück" icon="pi pi-arrow-left" class="p-button-text text-900" (click)="goBack()"
-                [style]="{'background-color': 'black', 'border-color': 'black', 'color': 'white'}"></p-button>
+                [style]="darkButtonStyle"></p-button>
 
             <p-button pRipple label="Code erneut senden" [disabled]="resendCodeLoading" [loading]="resendCodeLoading" class="p-button-text text-900 code-action-button"
                 (click)="resendCode()"
@@ -35,7 +35,7 @@
 
             <p-button pRipple type="button" [disabled]="loading" label="Code verifizieren" [loading]="loading" (click)="submit()"
                 class="code-action-button bg-red-600 text-white"
-                [style]="{'background-color': 'black', 'border-color': 'black', 'color': 'white'}"></p-button>
+                [style]="darkButtonStyle"></p-button>
         </div>
     </form>
 </app-auth-container>

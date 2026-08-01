@@ -1,3 +1,4 @@
+/* ===== Header (brand + top nav + profile avatar) ===== */
 .user-header {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
@@ -67,6 +68,7 @@
   box-shadow: 0 22px 42px rgba(255, 167, 34, 0.12);
 }
 
+/* ===== Page layout ===== */
 .user-layout {
   display: block;
   height: calc(100vh - 96px);
@@ -89,6 +91,7 @@
   backdrop-filter: blur(12px);
 }
 
+/* ===== PrimeNG MegaMenu deep overrides (top nav pill) ===== */
 :host ::ng-deep .user-top-menu {
   justify-self: center;
   width: 100%;
@@ -182,6 +185,7 @@
   color: #111111 !important;
 }
 
+/* ===== Responsive ===== */
 @media (max-width: 1120px) {
   .user-header {
     grid-template-columns: 1fr;

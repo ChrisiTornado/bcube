@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { TableModule } from 'primeng/table';
@@ -11,16 +11,14 @@ import { AuthService } from '../../../../services/auth/auth.service';
 import { BookingService } from '../../../../services/booking.service';
 import { Booking } from '../../../../models/Booking';
 import { BookingStatus } from '../../../../models/BookingStatus';
-import { Studio } from '../../../../models/Studio';
-import { User } from '../../../../models/User';
 import { LoadingSpinnerComponent } from '../../../../shared/loading-spinner/loading-spinner.component';
-import { BookingsComponent } from '../../components/bookings/bookings.component';
 import { StornoBookingComponent } from './storno-booking/storno-booking.component';
 import { FormsModule } from '@angular/forms';
 import { StudioNameResponse } from '../../../../models/responses/studio/StudioNameResponse';
 import { StudioService } from '../../../../services/studio.service';
 import { UserNameResponse } from '../../../../models/responses/user/UserNameResponse';
 import { UserService } from '../../../../services/user.service';
+import { DARK_BUTTON_STYLE, LIGHT_BUTTON_STYLE } from '../../../../shared/button-style';
 
 @Component({
   selector: 'app-bookings-view',
@@ -32,7 +30,6 @@ import { UserService } from '../../../../services/user.service';
     DropdownModule,
     FloatLabelModule,
     LoadingSpinnerComponent,
-    BookingsComponent,
     StornoBookingComponent,
     FormsModule
   ],
@@ -40,9 +37,10 @@ import { UserService } from '../../../../services/user.service';
   styleUrls: ['./bookings-view.component.css']
 })
 export class BookingsViewComponent implements OnInit {
+  readonly darkButtonStyle = DARK_BUTTON_STYLE;
+  readonly lightButtonStyle = LIGHT_BUTTON_STYLE;
+
   bookings$!: Observable<Booking[]>;
-  users: User[] = [];
-  studios: Studio[] = [];
   loading$ = this.bookingService.loading$;
   isAdmin = false;
   bookingStatus = BookingStatus;
@@ -85,8 +83,6 @@ export class BookingsViewComponent implements OnInit {
         this.loadUserPage(userId, 0);
       }
     }
-
-    this.bookings$ = this.bookingService.bookings$;
   }
 
   get showCalendarSwitch(): boolean {

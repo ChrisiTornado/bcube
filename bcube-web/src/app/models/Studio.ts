@@ -6,8 +6,8 @@ export interface Studio {
     street: string;
     plz: number;
     isActive: boolean;
-    city: string;              
-    country: string;           
+    city: string;
+    country: string;
     latitude?: number | null;
     longitude?: number | null;
     image: number[];

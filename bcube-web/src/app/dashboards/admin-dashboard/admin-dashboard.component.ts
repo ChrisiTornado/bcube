@@ -44,6 +44,7 @@ export class AdminDashboardComponent implements OnInit {
 
     this.buildMenu();
 
+    // Rebuild on every navigation so the active-menu highlight (isRouteActive) tracks the current route.
     this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
       .subscribe(() => {
@@ -78,9 +79,7 @@ export class AdminDashboardComponent implements OnInit {
       },
       {
         label: 'Schlösser',
-        icon: 'pi pi-fw pi-lock',
-        // routerLink: 'bookings',
-        // styleClass: this.isRouteActive(['bookings', 'booking-details', 'booking-confirmation']) ? 'p-menuitem-link-active' : ''
+        icon: 'pi pi-fw pi-lock'
       },
       {
         label: 'Logout',

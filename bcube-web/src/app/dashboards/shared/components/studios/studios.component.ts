@@ -2,14 +2,14 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MessageService } from "primeng/api";
 import { finalize } from "rxjs";
+import { HttpErrorResponse } from '@angular/common/http';
 import { StudioService } from '../../../../services/studio.service';
-import { Studio } from '../../../../models/Studio';
 import { CreateStudioRequest } from '../../../../models/requests/studio/CreateStudioRequest';
 import { ApiResponse } from '../../../../models/responses/ApiResponse';
 import { StudioResponse } from '../../../../models/responses/studio/StudioResponse';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
-import { FileUploadModule } from 'primeng/fileupload';
+import { FileUpload, FileUploadModule, FileSelectEvent } from 'primeng/fileupload';
 import { ReactiveFormsModule } from '@angular/forms';
 import { DialogModule } from 'primeng/dialog';
 import { CommonModule } from '@angular/common';
@@ -17,6 +17,7 @@ import { LoadingSpinnerComponent } from '../../../../shared/loading-spinner/load
 import { InputTextModule } from 'primeng/inputtext';
 import { InputTextareaModule } from 'primeng/inputtextarea';
 import { AuthService } from '../../../../services/auth/auth.service';
+import { DARK_BUTTON_STYLE } from '../../../../shared/button-style';
 
 @Component({
   selector: 'app-studios',
@@ -26,12 +27,13 @@ import { AuthService } from '../../../../services/auth/auth.service';
   styleUrl: './studios.component.css'
 })
 export class StudiosComponent implements OnInit{
+  readonly darkButtonStyle = DARK_BUTTON_STYLE;
+
   createForm!: FormGroup;
   visible: boolean = false;
   submitted: boolean = false;
   loading: boolean = false;
-  studios: Studio[] = [];
-  @ViewChild('fileUpload') fileUpload: any;
+  @ViewChild('fileUpload') fileUpload?: FileUpload;
   isAdmin = false;
 
   selectedImages: File[] = [];
@@ -56,7 +58,7 @@ export class StudiosComponent implements OnInit{
     this.isAdmin = this.authService.getRole() === "ADMIN"
   }
 
-  onFileSelected(event: any): void {
+  onFileSelected(event: FileSelectEvent): void {
     const files = event?.files ?? event?.currentFiles ?? [];
     if (!files?.length) {
       return;
@@ -132,7 +134,7 @@ export class StudiosComponent implements OnInit{
               detail: res.message
             });
           },
-          error: (e) => {
+          error: (e: HttpErrorResponse) => {
             const message = e?.error?.message ?? 'Ein unbekannter Fehler ist aufgetreten.';
             this.messageService.add({
               key: 'main',
@@ -142,7 +144,9 @@ export class StudiosComponent implements OnInit{
             });
           }
         });
-      } catch {}
+      } catch {
+        // Swallow FileReader failures here; the form stays in its current (loading) state without a toast.
+      }
     }
 
     private readFileAsByteArray(file: File): Promise<Uint8Array> {
