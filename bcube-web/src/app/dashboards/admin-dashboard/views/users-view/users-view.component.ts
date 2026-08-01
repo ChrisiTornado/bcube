@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { UserService } from '../../../../services/user.service';
 import { User } from '../../../../models/User';
@@ -34,19 +33,11 @@ export class UsersViewComponent implements OnInit {
   loading$ = this.userService.loading$;
   totalPages = 0;
 
-  constructor(public userService: UserService, private router: Router) { }
+  constructor(public userService: UserService) { }
 
   ngOnInit(): void {
     this.users$ = this.userService.users$;
     this.loadPage(0);
-  }
-
-  /** Not currently wired to a click handler in the table (row has cursor:pointer but no (click) yet). */
-  navigateToDetails(user: User) {
-    const navigationUrl = ['/admin/user-details', user.id];
-    this.router.navigate(navigationUrl, {
-      queryParams: { user: JSON.stringify(user) }
-    });
   }
 
   loadPage(page: number) {

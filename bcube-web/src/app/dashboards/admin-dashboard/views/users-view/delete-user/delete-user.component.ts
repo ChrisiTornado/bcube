@@ -6,6 +6,7 @@ import { MessageService, ConfirmationService  } from 'primeng/api';
 import { UserService } from '../../../../../services/user.service';
 import { User } from '../../../../../models/User';
 import { ApiResponse } from '../../../../../models/responses/ApiResponse';
+import { extractErrorMessage } from '../../../../../shared/error-message.util';
 
 @Component({
   selector: 'app-delete-user',
@@ -56,7 +57,7 @@ export class DeleteUserComponent {
             key: 'main',
             severity: 'error',
             summary: 'Fehler',
-            detail: err?.error?.message ?? 'Löschen fehlgeschlagen.'
+            detail: extractErrorMessage(err, 'Löschen fehlgeschlagen.')
           });
         }
       });

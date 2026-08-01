@@ -50,8 +50,6 @@ export class CalendarViewComponent implements OnInit {
   calendarPlugins = [dayGridPlugin, interactionPlugin];
   calendarEvents: EventInput[] = [];
   bookings: Booking[] = [];
-  disabledDates: Date[] = [];
-  highlightedDates: { date: Date; styleClass: string }[] = [];
 
   user: User | null = null;
 
@@ -312,7 +310,6 @@ export class CalendarViewComponent implements OnInit {
       bookingsByDate.get(dateStr)!.push(booking);
     }
 
-    this.disabledDates = [];
     this.calendarEvents = [];
 
     bookingsByDate.forEach((bookingsOnDate, dateStr) => {
@@ -346,7 +343,6 @@ export class CalendarViewComponent implements OnInit {
 
       // Hintergrund-Blockade für vollgebuchte Tage
       if (ratio >= 0.95) {
-        this.disabledDates.push(dateObj); // zum Vergleichen in canBook
         this.calendarEvents.push({
           start: isoDate,
           display: 'background',
@@ -357,33 +353,4 @@ export class CalendarViewComponent implements OnInit {
   }
 
 
-  isDisabledDate(date: Date): boolean {
-    return this.disabledDates.some(d => this.sameDate(d, date));
-  }
-
-  isHighlightedDate(date: Date): boolean {
-    return this.highlightedDates.some(h => this.sameDate(h.date, date));
-  }
-
-  sameDate(a: Date, b: Date): boolean {
-    return a.getDate() === b.getDate() &&
-      a.getMonth() === b.getMonth() &&
-      a.getFullYear() === b.getFullYear();
-  }
-
-  highlightDaysInCalendar(): void {
-    setTimeout(() => {
-      const allTdElements = document.querySelectorAll('td[aria-label]');
-
-      allTdElements.forEach((td: Element) => {
-        const label = td.getAttribute('aria-label'); // e.g. "15 July 2025"
-        if (!label) return;
-
-        const parsedDate = new Date(label);
-        if (this.isHighlightedDate(parsedDate)) {
-          td.classList.add('partially-booked');
-        }
-      });
-    }, 0);
-  }
 }

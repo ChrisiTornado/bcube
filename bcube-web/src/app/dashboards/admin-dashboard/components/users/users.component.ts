@@ -16,6 +16,7 @@ import { CreateUserRequest } from '../../../../models/requests/user/CreateUserRe
 import { ApiResponse } from '../../../../models/responses/ApiResponse';
 import { UserResponse } from '../../../../models/responses/user/UserResponse';
 import { DARK_BUTTON_STYLE } from '../../../../shared/button-style';
+import { extractErrorMessage } from '../../../../shared/error-message.util';
 
 @Component({
   selector: 'app-users',
@@ -97,7 +98,7 @@ export class UsersComponent implements OnInit {
           });
         },
         error: (e: HttpErrorResponse) => {
-          const message = e?.error?.message ?? 'Ein unbekannter Fehler ist aufgetreten.';
+          const message = extractErrorMessage(e, 'Ein unbekannter Fehler ist aufgetreten.');
           this.messageService.add({
             key: 'main',
             severity: 'error',

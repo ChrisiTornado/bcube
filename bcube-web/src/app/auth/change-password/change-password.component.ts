@@ -21,6 +21,7 @@ import { AuthContainerComponent } from '../auth-container/auth-container.compone
 import { AuthService } from '../../services/auth/auth.service';
 import { ChangePasswordRequest } from '../../models/requests/user/ChangePasswordRequest';
 import { DARK_BUTTON_STYLE } from '../../shared/button-style';
+import { extractErrorMessage } from '../../shared/error-message.util';
 
 @Component({
   selector: 'app-change-password',
@@ -108,7 +109,7 @@ export class ChangePasswordComponent implements OnInit {
           this.messageService.add({
             severity: 'error',
             summary: 'Fehler',
-            detail: err?.error?.message ?? 'Unbekannter Fehler'
+            detail: extractErrorMessage(err, 'Unbekannter Fehler')
           });
         }
       });

@@ -17,6 +17,7 @@ import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { InputTextModule } from 'primeng/inputtext';
 import { handleAuthSuccess } from '../shared/auth-success.util';
+import { extractErrorMessage } from '../../shared/error-message.util';
 
 @Component({
   selector: 'app-login',
@@ -59,7 +60,7 @@ export class LoginComponent implements OnInit {
       .subscribe({
         next: (res: ApiResponse<JwtResponse>) => handleAuthSuccess(res, this.auth, this.router),
         error: (e: HttpErrorResponse) => {
-          const message = e?.error?.message ?? 'Ein unbekannter Fehler ist aufgetreten.';
+          const message = extractErrorMessage(e, 'Ein unbekannter Fehler ist aufgetreten.');
           this.messageService.add({
             key: 'main',
             severity: 'error',

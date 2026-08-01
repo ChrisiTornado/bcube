@@ -14,6 +14,7 @@ import { UpdateUserRequest } from '../../../../../models/requests/user/UpdateUse
 import { ApiResponse } from '../../../../../models/responses/ApiResponse';
 import { UserResponse } from '../../../../../models/responses/user/UserResponse';
 import { DARK_BUTTON_STYLE } from '../../../../../shared/button-style';
+import { extractErrorMessage } from '../../../../../shared/error-message.util';
 
 @Component({
   selector: 'app-update-user',
@@ -94,7 +95,7 @@ export class UpdateUserComponent implements OnInit {
           this.closeDialog();
         },
         error: (e: HttpErrorResponse) => {
-          const message = e?.error?.message ?? 'Ein unbekannter Fehler ist aufgetreten.';
+          const message = extractErrorMessage(e, 'Ein unbekannter Fehler ist aufgetreten.');
           this.messageService.add({ severity: 'error', summary: 'Fehler', detail: message });
         }
       });

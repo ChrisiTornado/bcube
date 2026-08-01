@@ -16,6 +16,7 @@ import { ApiResponse } from '../../models/responses/ApiResponse';
 import { JwtResponse } from '../../models/responses/user/JwtResponse';
 import { InputTextModule } from 'primeng/inputtext';
 import { handleAuthSuccess } from '../shared/auth-success.util';
+import { extractErrorMessage } from '../../shared/error-message.util';
 
 @Component({
   selector: 'app-register',
@@ -66,7 +67,7 @@ export class RegisterComponent implements OnInit {
       .subscribe({
         next: (res: ApiResponse<JwtResponse>) => handleAuthSuccess(res, this.auth, this.router),
         error: (e: HttpErrorResponse) => {
-          const message = e?.error?.message ?? 'Ein unbekannter Fehler ist aufgetreten.';
+          const message = extractErrorMessage(e, 'Ein unbekannter Fehler ist aufgetreten.');
           this.messageService.add({
             key: 'main',
             severity: 'error',

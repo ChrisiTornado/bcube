@@ -15,6 +15,7 @@ import { ApiResponse } from '../../models/responses/ApiResponse';
 import { ResetPasswordResponse } from '../../models/responses/user/ResetPasswordResponse';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DARK_BUTTON_STYLE } from '../../shared/button-style';
+import { extractErrorMessage } from '../../shared/error-message.util';
 
 @Component({
   selector: 'app-email-reset',
@@ -80,7 +81,7 @@ export class EmailResetComponent implements OnInit {
           this.messageService.add({
             severity: 'error',
             summary: 'Fehler',
-            detail: err.message
+            detail: extractErrorMessage(err, 'Ein unbekannter Fehler ist aufgetreten.')
           });
         }
       });

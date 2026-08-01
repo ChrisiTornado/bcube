@@ -13,6 +13,7 @@ import { AuthService } from '../../../../services/auth/auth.service';
 import { UserService } from '../../../../services/user.service';
 import { User } from '../../../../models/User';
 import { UpdateUserRequest } from '../../../../models/requests/user/UpdateUserRequest';
+import { extractErrorMessage } from '../../../../shared/error-message.util';
 
 @Component({
   selector: 'app-profile-view',
@@ -111,7 +112,7 @@ export class ProfileViewComponent implements OnInit {
           this.messageService.add({
             severity: 'error',
             summary: 'Fehler',
-            detail: error?.error?.message ?? 'Das Profil konnte nicht gespeichert werden.'
+            detail: extractErrorMessage(error, 'Das Profil konnte nicht gespeichert werden.')
           });
         }
       });
@@ -172,7 +173,7 @@ export class ProfileViewComponent implements OnInit {
           this.messageService.add({
             severity: 'error',
             summary: 'Fehler',
-            detail: error?.error?.message ?? 'Der Account konnte nicht geloescht werden.'
+            detail: extractErrorMessage(error, 'Der Account konnte nicht geloescht werden.')
           });
         }
       });

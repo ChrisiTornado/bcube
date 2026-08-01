@@ -6,6 +6,7 @@ import { Studio } from '../../../../../models/Studio';
 import { ButtonModule } from 'primeng/button';
 import { MessageService, ConfirmationService } from 'primeng/api';
 import { ApiResponse } from '../../../../../models/responses/ApiResponse';
+import { extractErrorMessage } from '../../../../../shared/error-message.util';
 
 @Component({
   selector: 'app-delete-studio',
@@ -51,7 +52,7 @@ export class DeleteStudioComponent {
             key: 'main',
             severity: 'error',
             summary: 'Fehler',
-            detail: err?.error?.message ?? 'Löschen fehlgeschlagen.'
+            detail: extractErrorMessage(err, 'Löschen fehlgeschlagen.')
           });
         }
       });

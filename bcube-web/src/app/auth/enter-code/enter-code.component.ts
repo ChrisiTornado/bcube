@@ -14,6 +14,7 @@ import { ApiResponse } from '../../models/responses/ApiResponse';
 import { ResetPasswordResponse } from '../../models/responses/user/ResetPasswordResponse';
 import { VerifyCodeResponse } from '../../models/responses/user/VerifyCodeResponse';
 import { DARK_BUTTON_STYLE } from '../../shared/button-style';
+import { extractErrorMessage } from '../../shared/error-message.util';
 
 @Component({
   selector: 'app-enter-code',
@@ -103,7 +104,7 @@ export class EnterCodeComponent implements OnInit {
           this.messageService.add({
             severity: 'error',
             summary: 'Fehler',
-            detail: err.error.message
+            detail: extractErrorMessage(err, 'Ein unbekannter Fehler ist aufgetreten.')
           });
         }
       });
@@ -136,7 +137,7 @@ export class EnterCodeComponent implements OnInit {
           this.messageService.add({
             severity: 'error',
             summary: 'Fehler',
-            detail: err.message
+            detail: extractErrorMessage(err, 'Ein unbekannter Fehler ist aufgetreten.')
           });
         }
       });

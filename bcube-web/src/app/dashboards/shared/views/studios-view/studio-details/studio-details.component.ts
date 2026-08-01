@@ -21,6 +21,7 @@ import { Studio } from '../../../../../models/Studio';
 import { Booking } from '../../../../../models/Booking';
 import { CreateBookingRequest } from '../../../../../models/requests/booking/CreateBookingRequest';
 import { UpdateStudioComponent } from '../update-studio/update-studio.component';
+import { extractErrorMessage } from '../../../../../shared/error-message.util';
 
 @Component({
   selector: 'app-studio-details',
@@ -64,7 +65,6 @@ export class StudioDetailsComponent implements OnInit {
 
   bookings: Booking[] = [];
   disabledDates: Date[] = [];
-  highlightedDates: { date: Date; styleClass: string }[] = [];
 
   overlayVisible = false;
   overlayImage: string | null = null;
@@ -298,7 +298,7 @@ export class StudioDetailsComponent implements OnInit {
             key: 'main',
             severity: 'error',
             summary: 'Fehler',
-            detail: err?.error?.message ?? 'Löschen fehlgeschlagen.'
+            detail: extractErrorMessage(err, 'Löschen fehlgeschlagen.')
           });
         }
       });

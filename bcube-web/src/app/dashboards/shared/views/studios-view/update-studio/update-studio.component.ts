@@ -19,6 +19,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { InputTextareaModule } from 'primeng/inputtextarea';
 import { ToastModule } from 'primeng/toast';
 import { DARK_BUTTON_STYLE } from '../../../../../shared/button-style';
+import { extractErrorMessage } from '../../../../../shared/error-message.util';
 
 @Component({
   selector: 'app-update-studio',
@@ -150,7 +151,7 @@ submit() {
         this.closeDialog();
       },
       error: (e: HttpErrorResponse) => {
-        const message = e?.error?.message ?? 'Ein unbekannter Fehler ist aufgetreten.';
+        const message = extractErrorMessage(e, 'Ein unbekannter Fehler ist aufgetreten.');
         this.messageService.add({ key: 'main', severity: 'error', summary: 'Fehler', detail: message });
       }
     });

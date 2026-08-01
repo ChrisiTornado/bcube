@@ -5,6 +5,7 @@ import { BookingResponse } from '../models/responses/booking/BookingResponse';
 import { ApiResponse } from '../models/responses/ApiResponse';
 import { finalize } from 'rxjs';
 import { ConfirmationService, MessageService } from 'primeng/api';
+import { extractErrorMessage } from '../shared/error-message.util';
 
 /** Shared confirm-then-cancel-booking flow, reused by both the admin and user booking views. */
 @Injectable({
@@ -58,7 +59,7 @@ export class BookingActionService {
             key: 'main',
             severity: 'error',
             summary: 'Fehler',
-            detail: err?.error?.message ?? 'Stornierung fehlgeschlagen.'
+            detail: extractErrorMessage(err, 'Stornierung fehlgeschlagen.')
           });
           onError?.();
         }
