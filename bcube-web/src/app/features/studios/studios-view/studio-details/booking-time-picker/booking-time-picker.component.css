@@ -1,0 +1,44 @@
+:host {
+  display: block;
+}
+
+.booking-elements {
+  display: flex;
+  flex-direction: column;
+  gap: 0.95rem;
+  margin-top: 1rem;
+}
+
+.time-field-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.time-field-label {
+  font-weight: 600;
+}
+
+.booking-error-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.booking-error {
+  margin: 0;
+  color: var(--bcube-orange);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.info-booking-action {
+  margin-top: 0.5rem;
+}
+
+.booking-button {
+  width: 100%;
+  background-color: black !important;
+  border-color: black !important;
+  color: white !important;
+}

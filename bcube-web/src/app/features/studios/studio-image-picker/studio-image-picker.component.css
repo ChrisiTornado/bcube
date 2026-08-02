@@ -1,0 +1,116 @@
+:host {
+  display: block;
+}
+
+.image-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.image-picker-choose {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  align-self: flex-start;
+  padding: 0.65rem 1.1rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 167, 34, 0.28);
+  background: rgba(255, 167, 34, 0.08);
+  color: var(--bcube-text);
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.18s ease, border-color 0.18s ease;
+}
+
+.image-picker-choose:hover {
+  background: rgba(255, 167, 34, 0.16);
+  border-color: rgba(255, 167, 34, 0.4);
+}
+
+.image-picker-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.85rem;
+  padding: 1rem;
+  border: 1px solid rgba(255, 167, 34, 0.28);
+  border-radius: 18px;
+  background: rgba(34, 34, 34, 0.92);
+}
+
+.image-picker-item {
+  position: relative;
+  width: 7.5rem;
+  height: 7.5rem;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  cursor: grab;
+}
+
+.image-picker-item:active {
+  cursor: grabbing;
+}
+
+.image-picker-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  pointer-events: none;
+}
+
+.image-picker-badge {
+  position: absolute;
+  left: 0.4rem;
+  top: 0.4rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 999px;
+  background: var(--bcube-orange);
+  color: #111111;
+  font-size: 0.65rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.image-picker-remove {
+  position: absolute;
+  right: 0.35rem;
+  top: 0.35rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.65);
+  color: #ffffff;
+  cursor: pointer;
+  font-size: 0.7rem;
+  padding: 0;
+}
+
+.image-picker-remove:hover {
+  background: rgba(0, 0, 0, 0.85);
+}
+
+.image-picker-hint {
+  color: var(--bcube-orange);
+}
+
+.cdk-drag-preview {
+  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.4);
+  border-radius: 12px;
+}
+
+.cdk-drag-placeholder {
+  opacity: 0.3;
+}
+
+.cdk-drop-list-dragging .image-picker-item:not(.cdk-drag-placeholder) {
+  transition: transform 0.2s ease;
+}

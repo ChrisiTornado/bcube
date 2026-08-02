@@ -1,0 +1,74 @@
+@if (loading$ | async) {
+  <app-loading-spinner></app-loading-spinner>
+}
+
+@if (!(loading$ | async) && studio) {
+  <div class="studio-details-page">
+    <div class="top-actions">
+      <button pButton type="button" class="p-button-outlined" icon="pi pi-arrow-left" label="Zurück"
+        [style]="{ 'border-color': 'black', 'color': 'black' }" (click)="goBack()">
+      </button>
+      @if (isAdmin) {
+        <app-update-studio [studio]="studio" [detailMode]="true">
+        </app-update-studio>
+      }
+    </div>
+    <header class="details-header">
+      <div>
+        <h1 class="studio-title">{{ studio.name }}</h1>
+        <p class="studio-subtitle">{{ studio.street }}, {{ studio.plz }} {{ studio.city }}, {{ studio.country }}</p>
+      </div>
+    </header>
+    <app-studio-gallery [studio]="studio"></app-studio-gallery>
+    <div class="studio-layout">
+      <div class="content-column">
+        <section class="clean-card">
+          <h2>Cubeübersicht</h2>
+          <p class="address-line">{{ studio.street }}, {{ studio.plz }} {{ studio.city }}, {{ studio.country }}</p>
+          @if (isAdmin) {
+            <div>
+              Smartlock ID: {{ studio.smartlockId }}
+            </div>
+          }
+          <div class="studio-description-content" [innerHTML]="studio.description | markdown">
+          </div>
+        </section>
+        <section class="clean-card calendar-card">
+          <div class="section-head">
+            <div>
+              <h2>Kalender</h2>
+              <p>Verfügbare und belegte Zeiten direkt im Überblick.</p>
+            </div>
+          </div>
+          <div class="calendar-shell">
+            <full-calendar class="calendar-frame" [options]="calendarOptions"></full-calendar>
+          </div>
+          @if (date) {
+            <div class="selected-date-note booking-date-note">
+              Gewähltes Datum: {{ formatSelectedDateLabel() }}
+            </div>
+          }
+        </section>
+      </div>
+      <aside class="booking-sidebar">
+        <section class="clean-card sidebar-card">
+          <h2>Buchungsdetails</h2>
+          <p class="sidebar-note">Wähle Datum und Zeit direkt hier aus und prüfe freie Slots im Kalender.</p>
+          @if (isUser) {
+            <app-booking-time-picker
+              [date]="date"
+              [bookings]="bookings"
+              [disabledDates]="disabledDates"
+              (bookRequested)="confirmBooking($event)">
+            </app-booking-time-picker>
+          }
+          @if (isAdmin) {
+            <div class="admin-hint">
+              <p>Als Admin kannst du Bilder und Stammdaten direkt hier aktualisieren.</p>
+            </div>
+          }
+        </section>
+      </aside>
+    </div>
+  </div>
+}

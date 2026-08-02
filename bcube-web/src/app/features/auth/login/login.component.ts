@@ -1,0 +1,85 @@
+import { Component, OnInit } from '@angular/core';
+import { AuthService } from '@core/services/auth.service';
+import { AbstractControl, FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { Router } from '@angular/router';
+
+import { RouterModule } from '@angular/router';
+import { ButtonModule } from "primeng/button";
+import { finalize } from "rxjs";
+import { HttpErrorResponse } from '@angular/common/http';
+import { AuthContainerComponent } from '@features/auth/auth-container/auth-container.component';
+import { ReactiveFormsModule } from '@angular/forms';
+import { LoadingSpinnerComponent } from '@shared/ui/loading-spinner/loading-spinner.component';
+import { ApiResponse } from '@models/responses/api-response';
+import { JwtResponse } from '@models/responses/user/jwt-response';
+import { LoginRequest } from '@models/requests/user/login-request';
+import { ToastModule } from 'primeng/toast';
+import { MessageService } from 'primeng/api';
+import { InputTextModule } from 'primeng/inputtext';
+import { handleAuthSuccess } from '@features/auth/shared/auth-success.util';
+import { extractErrorMessage } from '@shared/util/error-message.util';
+
+@Component({
+    selector: 'app-login',
+    imports: [LoadingSpinnerComponent, RouterModule, ButtonModule, AuthContainerComponent, ReactiveFormsModule, ToastModule, InputTextModule],
+    templateUrl: './login.component.html',
+    styleUrl: './login.component.css'
+})
+export class LoginComponent implements OnInit {
+  loginForm!: FormGroup;
+  loading!: boolean;
+  submitted: boolean = false;
+
+  constructor(private fb: FormBuilder, private messageService: MessageService, private auth: AuthService, private router: Router) { }
+
+  ngOnInit(): void {
+    this.loginForm = this.fb.group({
+      email: [null, [Validators.required, Validators.email]],
+      password: [null, Validators.required]
+    });
+  }
+
+  login(): void {
+    this.submitted = true;
+    if (this.loginForm.invalid) return;
+
+    this.loading = true;
+    this.loginForm.disable();
+
+    const payload: LoginRequest = {
+      email: this.email.value,
+      password: this.password.value
+    };
+
+    this.auth.login(payload)
+      .pipe(finalize(() => {
+        this.loading = false
+        this.loginForm.enable();
+      }))
+      .subscribe({
+        next: (res: ApiResponse<JwtResponse>) => handleAuthSuccess(res, this.auth, this.router),
+        error: (e: HttpErrorResponse) => {
+          const message = extractErrorMessage(e, 'Ein unbekannter Fehler ist aufgetreten.');
+          this.messageService.add({
+            key: 'main',
+            severity: 'error',
+            summary: 'Fehler',
+            detail: message
+          });
+        }
+      });
+  }
+
+  resetPasswort() {
+    this.router.navigate(['/auth/email-reset']).then(() => {
+    });
+  }
+
+  get email(): AbstractControl {
+    return this.loginForm.get('email')!;
+  }
+
+  get password(): AbstractControl {
+    return this.loginForm.get('password')!;
+  }
+}

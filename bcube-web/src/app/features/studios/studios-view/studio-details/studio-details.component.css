@@ -1,0 +1,309 @@
+:host {
+  display: block;
+  height: 100%;
+  overflow-y: auto;
+  padding: 0 0.35rem 2rem;
+}
+
+.studio-details-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+  width: min(100%, 1440px);
+  margin: 0 auto;
+  padding-bottom: 2rem;
+}
+
+.top-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.studio-title {
+  margin: 0;
+  font-size: clamp(2.15rem, 2.8vw, 3.35rem);
+  line-height: 1.05;
+}
+
+.studio-subtitle {
+  margin: 0.6rem 0 0;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 1rem;
+}
+
+/* ===== Content layout (overview/calendar column + booking sidebar) ===== */
+.studio-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(360px, 430px);
+  gap: 2rem;
+  align-items: start;
+}
+
+.content-column,
+.booking-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  min-width: 0;
+}
+
+.booking-sidebar {
+  position: sticky;
+  top: 1rem;
+}
+
+.clean-card {
+  border-radius: 1.75rem;
+  border: 1px solid rgba(255, 167, 34, 0.14);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.015)),
+    rgba(18, 18, 18, 0.92);
+  box-shadow: 0 24px 50px rgba(0, 0, 0, 0.2);
+  padding: 1.35rem;
+}
+
+.clean-card h2 {
+  margin: 0 0 0.75rem;
+  font-size: 1.35rem;
+}
+
+.address-line,
+.sidebar-note,
+.section-head p,
+.admin-hint p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.55;
+}
+
+.studio-description-content {
+  margin-top: 1rem;
+  line-height: 1.7;
+}
+
+.studio-description-content :is(p, ul) {
+  margin: 0 0 0.8rem;
+}
+
+.studio-description-content ul {
+  padding-left: 1.2rem;
+}
+
+.calendar-shell {
+  border-radius: 1.5rem;
+  overflow: hidden;
+  max-width: 980px;
+}
+
+.selected-date-note {
+  margin-top: 1rem;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.calendar-card .section-head p {
+  margin-bottom: 1rem;
+}
+
+/* ===== FullCalendar (fc) deep overrides ===== */
+:host ::ng-deep .fc .fc-scrollgrid-sync-table {
+  table-layout: fixed !important;
+}
+
+:host ::ng-deep .fc .fc-scroller,
+:host ::ng-deep .fc .fc-scroller-harness {
+  overflow: hidden !important;
+}
+
+:host ::ng-deep .fc .fc-daygrid-day-frame {
+  min-height: 5rem;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+:host ::ng-deep .fc .fc-toolbar.fc-header-toolbar {
+  margin-bottom: 0.8rem;
+}
+
+:host ::ng-deep .fc .fc-toolbar-title {
+  font-size: 1.9rem !important;
+}
+
+:host ::ng-deep .fc .fc-day-other .fc-daygrid-day-number {
+  color: rgba(255, 255, 255, 0.38) !important;
+}
+
+:host ::ng-deep .fc .fc-daygrid-day-events {
+  min-height: 0;
+}
+
+:host ::ng-deep .fc .fc-daygrid-day.fc-day-selected {
+  background: rgba(255, 167, 34, 0.22) !important;
+}
+
+:host ::ng-deep .fc .fc-daygrid-day.fc-day-selected .fc-daygrid-day-frame {
+  background:
+    linear-gradient(180deg, rgba(255, 167, 34, 0.18), rgba(255, 167, 34, 0.08)) !important;
+  box-shadow: inset 0 0 0 2px rgba(255, 167, 34, 0.72) !important;
+  border-radius: 0 !important;
+}
+
+:host ::ng-deep .fc .fc-daygrid-day.fc-day-selected .fc-daygrid-day-number {
+  color: #ffffff !important;
+  font-weight: 800;
+  text-shadow: 0 0 14px rgba(255, 167, 34, 0.32);
+}
+
+:host ::ng-deep .fc .fc-daygrid-day.fc-day-selected .fc-daygrid-event {
+  box-shadow: 0 0 0 1px rgba(255, 167, 34, 0.4), 0 6px 16px rgba(0, 0, 0, 0.24) !important;
+}
+
+:host ::ng-deep .fc .fc-daygrid-event-harness {
+  margin-top: 0.18rem !important;
+}
+
+:host ::ng-deep .fc .fc-daygrid-event {
+  border-radius: 8px !important;
+  padding: 0.08rem 0.35rem !important;
+  font-size: 0.76rem !important;
+  line-height: 1.15 !important;
+  box-shadow: none !important;
+}
+
+:host ::ng-deep .fc .calendar-event-done {
+  background: #6f7785 !important;
+  border-color: #6f7785 !important;
+  color: #f5f7fb !important;
+}
+
+:host ::ng-deep .fc .calendar-event-confirmed {
+  background: #ffa722 !important;
+  border-color: #ffa722 !important;
+  color: #111111 !important;
+}
+
+:host ::ng-deep .fc .fc-daygrid-more-link {
+  color: #ffa722 !important;
+  font-weight: 700;
+}
+
+:host ::ng-deep .fc .fc-popover {
+  border-radius: 16px !important;
+  border: 1px solid rgba(255, 167, 34, 0.18) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.015)),
+    rgba(18, 18, 18, 0.98) !important;
+  color: #f5f5f5 !important;
+  box-shadow: 0 22px 48px rgba(0, 0, 0, 0.32) !important;
+}
+
+:host ::ng-deep .fc .fc-popover-header {
+  background: transparent !important;
+  color: #f5f5f5 !important;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 3rem;
+  padding: 0.65rem 2.5rem 0.45rem !important;
+  text-align: center;
+  font-weight: 700;
+}
+
+:host ::ng-deep .fc .fc-popover .fc-daygrid-event {
+  margin-bottom: 0.42rem;
+}
+
+:host ::ng-deep .fc .fc-popover-title {
+  width: 100%;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100%;
+  font-weight: 700;
+  color: #ffffff !important;
+}
+
+:host ::ng-deep .fc .fc-popover-close {
+  color: rgba(255, 255, 255, 0.78) !important;
+  position: absolute;
+  right: 0.8rem;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+:host ::ng-deep .fc .fc-popover .fc-daygrid-event .fc-event-main {
+  font-weight: 500 !important;
+  letter-spacing: 0;
+}
+
+:host ::ng-deep .fc .fc-popover .calendar-event-confirmed,
+:host ::ng-deep .fc .fc-popover .calendar-event-confirmed .fc-event-main {
+  color: #111111 !important;
+}
+
+:host ::ng-deep .fc .fc-popover .calendar-event-done,
+:host ::ng-deep .fc .fc-popover .calendar-event-done .fc-event-main {
+  color: #f5f7fb !important;
+}
+
+:host ::ng-deep .fc .fc-daygrid-day.fc-day-today {
+  background: rgba(171, 145, 38, 0.35) !important;
+}
+
+:host ::ng-deep .fc .fc-daygrid-day.fc-day-today .fc-daygrid-day-frame {
+  background: transparent !important;
+}
+
+/* ===== PrimeNG time-picker (p-datepicker, formerly p-calendar) deep overrides =====
+   PrimeNG 20 renamed the component's classes from .p-calendar/.p-datepicker to a
+   BEM-style p-datepicker-* scheme; selectors below were remapped accordingly. */
+:host ::ng-deep .booking-elements .time-field-input .p-datepicker {
+  width: 100%;
+}
+
+:host ::ng-deep .booking-elements .time-field-input .p-inputtext {
+  width: 100%;
+}
+
+:host ::ng-deep .p-datepicker .p-datepicker-dropdown {
+  background-color: black !important;
+  border: 1px solid black !important;
+  color: white !important;
+}
+
+:host ::ng-deep .p-datepicker-panel {
+  background: #171717 !important;
+  border: 1px solid rgba(255, 167, 34, 0.18) !important;
+  color: #ffffff !important;
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.28) !important;
+}
+
+:host ::ng-deep .p-datepicker-panel .p-datepicker-time-picker,
+:host ::ng-deep .p-datepicker-panel .p-datepicker-time-picker span,
+:host ::ng-deep .p-datepicker-panel .p-datepicker-time-picker button {
+  background: transparent !important;
+  color: #ffffff !important;
+}
+
+:host ::ng-deep .p-datepicker-panel .p-datepicker-time-picker button:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+
+:host ::ng-deep .p-datepicker-panel .p-datepicker-separator,
+:host ::ng-deep .p-datepicker-panel .p-datepicker-time-picker span {
+  color: #ffffff !important;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 1160px) {
+  .studio-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .booking-sidebar {
+    position: static;
+  }
+}

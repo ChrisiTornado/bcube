@@ -29,6 +29,11 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(new ApiResponse<>(ex.getMessage(), null), HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(BookingNotFoundException.class)
+    public ResponseEntity<ApiResponse<BookingNotFoundException>> bookingNotFoundException(BookingNotFoundException ex) {
+        return new ResponseEntity<>(new ApiResponse<>(ex.getMessage(), null), HttpStatus.NOT_FOUND);
+    }
+
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ApiResponse<Void>> illegalArgumentException(IllegalArgumentException ex) {
         return new ResponseEntity<>(new ApiResponse<>(ex.getMessage(), null), HttpStatus.BAD_REQUEST);

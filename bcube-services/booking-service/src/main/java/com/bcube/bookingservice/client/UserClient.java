@@ -44,7 +44,7 @@ public class UserClient {
                     .block();
 
             if (response == null || response.getData() == null) {
-                throw new UserNotFoundException("Studio nicht gefunden");
+                throw new UserNotFoundException("User nicht gefunden");
             }
 
             return response.getData();

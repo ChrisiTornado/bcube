@@ -5,6 +5,9 @@ import com.bcube.bookingservice.client.StudioClient;
 import com.bcube.bookingservice.client.UserClient;
 import com.bcube.bookingservice.exception.AccessCodeNotReceivedException;
 import com.bcube.bookingservice.exception.BookingDoneException;
+import com.bcube.bookingservice.exception.BookingNotFoundException;
+import com.bcube.bookingservice.exception.StudioNotFoundException;
+import com.bcube.bookingservice.exception.UserNotFoundException;
 import com.bcube.bookingservice.persistance.entity.Booking;
 import com.bcube.bookingservice.persistance.entity.BookingStatus;
 import com.bcube.bookingservice.persistance.repository.BookingRepository;
@@ -103,7 +106,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public Page<BookingResponse> getBookingsByUserId(Long userId, int page, int size, Long studioId, String token) {
         if (!userClient.userExists(userId, token)) {
-            throw new IllegalArgumentException("User mit ID " + userId + " nicht gefunden");
+            throw new UserNotFoundException("User mit ID " + userId + " nicht gefunden");
         }
 
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
@@ -155,7 +158,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public BookingResponse[] getBookingsByStudioId(long studioId, String token) {
         if (!studioClient.studioExists(studioId)) {
-            throw new IllegalArgumentException("User mit ID " + studioId + " nicht gefunden");
+            throw new StudioNotFoundException("Studio mit ID " + studioId + " nicht gefunden");
         }
 
         List<Booking> bookings = bookingRepository.findAllByStudioId(studioId);
@@ -166,12 +169,12 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public BookingDetailsResponse getBookingById(Long bookingId, String token) {
         Booking booking = bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new IllegalArgumentException("Buchung mit ID " + bookingId + "nicht gefunden"));
+                .orElseThrow(() -> new BookingNotFoundException("Buchung mit ID " + bookingId + " nicht gefunden"));
 
         UserDto user = userClient.getUserById(booking.getUserId(), token);
         StudioDto studio = studioClient.getStudioById(booking.getStudioId());
 
-        AccessCodeResponse accessCodeResponse = accessCodeClient.getAccessCode(bookingId);
+        AccessCodeResponse accessCodeResponse = accessCodeClient.getAccessCode(bookingId, token);
 
         if (accessCodeResponse == null) {
             throw new AccessCodeNotReceivedException("Zutrittscode konnte nicht erstellt werden");
@@ -192,7 +195,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public BookingResponse stornoBooking(Long bookingId, String token) {
         Booking booking = bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new IllegalArgumentException("Buchung mit ID " + bookingId + " nicht gefunden"));
+                .orElseThrow(() -> new BookingNotFoundException("Buchung mit ID " + bookingId + " nicht gefunden"));
 
         if (isFinished(booking, Instant.now())) {
             booking.setStatus(BookingStatus.DONE);
@@ -210,7 +213,7 @@ public class BookingServiceImpl implements BookingService {
 
         booking.setStatus(BookingStatus.CANCELLED);
         bookingRepository.save(booking);
-        accessCodeClient.deleteAccessCode(bookingId);
+        accessCodeClient.deleteAccessCode(bookingId, token);
         UserDto user = userClient.getUserById(booking.getUserId(), token);
         StudioDto studio = studioClient.getStudioById(booking.getStudioId());
 
@@ -239,7 +242,7 @@ public class BookingServiceImpl implements BookingService {
                 isoUtcFmt.format(booking.getStartTime()),
                 isoUtcFmt.format(booking.getEndTime())
         );
-            AccessCodeResponse accessCodeResponse = accessCodeClient.generateAccessCode(request);
+            AccessCodeResponse accessCodeResponse = accessCodeClient.generateAccessCode(request, token);
             if (accessCodeResponse == null) {
                 throw new AccessCodeNotReceivedException("Zutrittscode konnte nicht erstellt werden");
             }

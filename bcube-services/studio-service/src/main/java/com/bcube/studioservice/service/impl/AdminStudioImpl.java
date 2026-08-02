@@ -99,7 +99,7 @@ public class AdminStudioImpl implements AdminStudioService {
     public StudioResponse updateStudio(long id, UpdateStudioRequest request) {
         // 1. Bestehendes Studio aus DB holen
         Studio studio = studioRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Studio nicht gefunden mit ID: " + request.getId()));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Studio nicht gefunden mit ID: " + id));
 
         // 2. Adresse zusammensetzen für Geocoding
         String fullAddress = String.format("%s, %d %s, %s",

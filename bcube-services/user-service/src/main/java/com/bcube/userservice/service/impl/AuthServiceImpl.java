@@ -102,6 +102,7 @@ public class AuthServiceImpl implements AuthService {
 
         user.setResetCode(null);
         user.setResetCodeExpiresAt(null);
+        user.setResetVerifiedAt(Instant.now());
         userRepository.save(user);
         return new VerifyCodeResponse(true);
     }
@@ -111,7 +112,18 @@ public class AuthServiceImpl implements AuthService {
         User user = userRepository.findByEmail(changePasswordRequest.getEmail())
                 .orElseThrow(() -> new UserNotFoundException("Kein Benutzer mit der E-Mail-Adresse gefunden: " + changePasswordRequest.getEmail()));
 
+        if (user.getResetVerifiedAt() == null) {
+            throw new InvalidResetTokenException("Bitte bestätige zuerst den Reset-Code, bevor du ein neues Passwort setzt.");
+        }
+
+        if (user.getResetVerifiedAt().isBefore(Instant.now().minus(15, ChronoUnit.MINUTES))) {
+            user.setResetVerifiedAt(null);
+            userRepository.save(user);
+            throw new PasswordResetTokenExpiredException("Die Bestätigung ist abgelaufen. Bitte fordere einen neuen Code an.");
+        }
+
         user.setPassword(passwordEncoder.encode(changePasswordRequest.getPassword()));
+        user.setResetVerifiedAt(null);
         userRepository.save(user);
         return new ChangePasswordResponse(true);
     }

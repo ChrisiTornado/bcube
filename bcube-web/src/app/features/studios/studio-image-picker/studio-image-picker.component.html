@@ -1,0 +1,25 @@
+<div class="image-picker">
+  <input #fileInput type="file" accept="image/*" multiple hidden (change)="onFilesPicked($event)">
+  <button type="button" class="image-picker-choose" (click)="triggerFilePicker()">
+    <span class="pi pi-plus"></span>
+    Datei auswählen
+  </button>
+
+  @if (images.length > 0) {
+    <div class="image-picker-grid" cdkDropList cdkDropListOrientation="horizontal" (cdkDropListDropped)="onDrop($event)">
+      @for (image of images; track image.preview; let i = $index) {
+        <div class="image-picker-item" cdkDrag>
+          <img [src]="image.preview" [alt]="'Bild ' + (i + 1)">
+          @if (i === 0) {
+            <span class="image-picker-badge">Titelbild</span>
+          }
+          <button type="button" class="image-picker-remove" (click)="removeImage(i)" aria-label="Bild entfernen">
+            <span class="pi pi-times"></span>
+          </button>
+        </div>
+      }
+    </div>
+  }
+
+  <small class="image-picker-hint">Das erste Bild wird als Titelbild verwendet.</small>
+</div>

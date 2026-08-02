@@ -1,0 +1,39 @@
+<div class="booking-elements">
+  <div class="time-field-row">
+    <label for="startTime" class="time-field-label">Startzeitpunkt</label>
+    <p-datepicker class="time-field-input" id="startTime" [(ngModel)]="startTime" [timeOnly]="true"
+      hourFormat="24" [stepMinute]="15" placeholder="Startzeit wählen" [showIcon]="true"
+      (onFocus)="setDefaultTime('start')"
+      (ngModelChange)="startTime = normalizeToQuarterHour($event); checkTimeConflict();">
+    </p-datepicker>
+  </div>
+  <div class="time-field-row">
+    <label for="endTime" class="time-field-label">Endzeitpunkt</label>
+    <p-datepicker class="time-field-input" id="endTime" [(ngModel)]="endTime" [timeOnly]="true" hourFormat="24"
+      [stepMinute]="15" placeholder="Endzeit wählen" [showIcon]="true" (onFocus)="setDefaultTime('end')"
+      (ngModelChange)="endTime = normalizeToQuarterHour($event); checkTimeConflict();">
+    </p-datepicker>
+  </div>
+  <div class="booking-error-wrap">
+    @if (!isEndTimeValid()) {
+      <p class="booking-error">
+        Endzeit muss nach der Startzeit liegen.
+      </p>
+    }
+    @if (date && startTime && endTime && isBookingInPast()) {
+      <p class="booking-error">
+        Diese Uhrzeit ist bereits abgelaufen.
+      </p>
+    }
+    @if (hasTimeConflict) {
+      <p class="booking-error">
+        Der gewählte Zeitraum ist bereits belegt.
+      </p>
+    }
+  </div>
+  <div class="info-booking-action">
+    <button pButton type="button" label="Cube buchen" [disabled]="!canBook()" class="booking-button"
+      (click)="requestBooking()">
+    </button>
+  </div>
+</div>

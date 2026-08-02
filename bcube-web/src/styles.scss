@@ -12,6 +12,24 @@
   --bcube-text: #ffffff;
   --bcube-text-soft: rgba(255, 255, 255, 0.72);
   --bcube-shadow: 0 22px 60px rgba(0, 0, 0, 0.28);
+
+  // PrimeNG's Aura preset ships light-mode text/placeholder tokens (a slate blue-gray)
+  // that were never overridden for this app's all-dark UI, so every component reading
+  // them directly - nav items, dropdown text/placeholder, generic input placeholders,
+  // the loading spinner - rendered a muddy blue instead of white.
+  --p-text-color: var(--bcube-text);
+  --p-text-muted-color: var(--bcube-text-soft);
+  --p-content-color: var(--bcube-text);
+  --p-megamenu-color: var(--bcube-text);
+  --p-megamenu-item-color: var(--bcube-text);
+  --p-megamenu-item-icon-color: var(--bcube-text-soft);
+  --p-select-color: var(--bcube-text);
+  --p-select-placeholder-color: var(--bcube-text-soft);
+  --p-inputtext-placeholder-color: var(--bcube-text-soft);
+  --p-progressspinner-color-one: var(--bcube-text);
+  --p-progressspinner-color-two: var(--bcube-text);
+  --p-progressspinner-color-three: var(--bcube-text);
+  --p-progressspinner-color-four: var(--bcube-text);
 }
 
 // PrimeNG 18's base theme injects legacy-named "surface" utility classes with
@@ -29,6 +47,18 @@ body .surface-card {
 
 body .text-900 {
   color: var(--bcube-text) !important;
+}
+
+// Browsers don't inherit the page font into form controls by default, so plain
+// <button>/<input>/<select>/<textarea> elements (anything not wrapped by a PrimeNG
+// component, which sets its own font) silently fell back to the OS default (Arial) -
+// same declared font-weight, different typeface, so it read as "less bold" than text
+// sitting in a <a> or <span>.
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
 }
 
 body {
@@ -164,16 +194,26 @@ body {
   color: var(--bcube-text) !important;
 }
 
+// PrimeNG's own base CSS also matches ".p-button-text:hover"/".p-button-outlined:hover" on
+// the <p-button> HOST element (which carries that class too, from styleClass/class input),
+// painting a light hover background behind it. The host has border-radius: 0 while the
+// button it wraps is rounded, so that background peeked out as a square halo at the corners.
+p-button.p-button-text:hover,
+p-button.p-button-outlined:hover {
+  background: transparent !important;
+}
+
 .p-inputtext,
-.p-dropdown,
-.p-dropdown .p-dropdown-label,
+.p-textarea,
+.p-select,
+.p-select .p-select-label,
 .p-multiselect,
 .p-password-input {
   border-radius: 16px !important;
 }
 
 .p-inputtext,
-.p-dropdown,
+.p-textarea,
 .p-multiselect,
 .p-password-input {
   border: 1px solid rgba(255, 167, 34, 0.18) !important;
@@ -182,8 +222,42 @@ body {
   box-shadow: none !important;
 }
 
-.p-inputtext::placeholder {
-  color: rgba(255, 255, 255, 0.45);
+.p-inputtext::placeholder,
+.p-textarea::placeholder,
+.p-datepicker-input::placeholder {
+  color: rgba(255, 255, 255, 0.45) !important;
+}
+
+// Plain number inputs (e.g. Smartlock ID) don't need the native increment/decrement spinner.
+input[type="number"] {
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+// Dropdown surface matches the "Filter zurücksetzen" button's outlined dark palette.
+.p-select {
+  border: 1px solid rgba(255, 167, 34, 0.28) !important;
+  background: rgba(255, 167, 34, 0.08) !important;
+  color: var(--bcube-text) !important;
+  box-shadow: none !important;
+}
+
+.p-select .p-select-label {
+  color: var(--bcube-text) !important;
+}
+
+.p-select .p-select-label.p-select-label-empty {
+  color: var(--bcube-text-soft) !important;
+}
+
+.p-select-dropdown-icon {
+  color: var(--bcube-text-soft) !important;
 }
 
 input:-webkit-autofill,
@@ -205,22 +279,21 @@ select:-webkit-autofill:focus {
 }
 
 .p-inputtext:enabled:hover,
-.p-dropdown:not(.p-disabled):hover,
+.p-select:not(.p-disabled):hover,
 .p-multiselect:not(.p-disabled):hover {
   border-color: rgba(255, 167, 34, 0.42) !important;
 }
 
 .p-inputtext:enabled:focus,
-.p-dropdown:not(.p-disabled).p-focus,
+.p-select:not(.p-disabled).p-focus,
 .p-multiselect:not(.p-disabled).p-focus {
   border-color: var(--bcube-orange) !important;
   box-shadow: 0 0 0 4px rgba(255, 167, 34, 0.16) !important;
 }
 
-.p-dropdown-panel,
+.p-select-overlay,
 .p-dialog,
-.p-confirm-dialog,
-.p-toast-message,
+.p-confirmdialog,
 .p-card {
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.02)),
@@ -230,14 +303,38 @@ select:-webkit-autofill:focus {
   box-shadow: var(--bcube-shadow) !important;
 }
 
-.p-dropdown-item,
-.p-dropdown-label,
+.p-toast-message {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.02)),
+    rgba(12, 12, 12, 0.96) !important;
+  border: 1px solid rgba(255, 167, 34, 0.18) !important;
+  box-shadow: var(--bcube-shadow) !important;
+}
+
+.p-select-option,
 .p-dialog .p-dialog-title,
 .p-dialog .p-dialog-content,
 .p-card .p-card-title,
 .p-card .p-card-content,
 .p-card .p-card-subtitle {
   color: var(--bcube-text) !important;
+}
+
+.p-toast-summary {
+  color: var(--bcube-text) !important;
+}
+
+.p-toast-detail {
+  color: var(--bcube-orange) !important;
+}
+
+.p-toast-close-icon,
+.p-toast-close-button {
+  color: var(--bcube-orange) !important;
+}
+
+.p-toast-close-button:hover {
+  background: rgba(255, 167, 34, 0.16) !important;
 }
 
 .p-dialog .p-dialog-header,
@@ -255,18 +352,17 @@ select:-webkit-autofill:focus {
   border-top: 1px solid rgba(255, 167, 34, 0.14) !important;
 }
 
-.p-dropdown-item:hover {
+.p-select-option:hover {
   background: rgba(255, 167, 34, 0.12) !important;
 }
 
-.p-dropdown-item.p-highlight,
-.p-dropdown-item.p-focus,
-.p-dropdown-panel .p-dropdown-items .p-dropdown-item.p-highlight {
+.p-select-option[data-p-selected="true"],
+.p-select-option[data-p-focused="true"] {
   background: rgba(255, 167, 34, 0.08) !important;
   color: var(--bcube-text) !important;
 }
 
-.p-dropdown-panel .p-dropdown-items .p-dropdown-item.p-highlight:hover {
+.p-select-option[data-p-selected="true"]:hover {
   background: rgba(255, 167, 34, 0.14) !important;
 }
 
@@ -276,19 +372,19 @@ select:-webkit-autofill:focus {
   backdrop-filter: blur(4px);
 }
 
-.p-confirm-dialog .p-dialog-header,
-.p-confirm-dialog .p-dialog-content,
-.p-confirm-dialog .p-dialog-footer {
+.p-confirmdialog .p-dialog-header,
+.p-confirmdialog .p-dialog-content,
+.p-confirmdialog .p-dialog-footer {
   background: transparent !important;
   color: var(--bcube-text) !important;
 }
 
-.p-confirm-dialog .p-dialog-header {
+.p-confirmdialog .p-dialog-header {
   border-bottom: 1px solid rgba(255, 167, 34, 0.14) !important;
   padding: 1.5rem 1.75rem !important;
 }
 
-.p-confirm-dialog .p-dialog-footer {
+.p-confirmdialog .p-dialog-footer {
   border-top: 1px solid rgba(255, 167, 34, 0.14) !important;
   padding: 1.25rem 1.75rem 1.5rem !important;
   display: flex !important;
@@ -298,24 +394,41 @@ select:-webkit-autofill:focus {
   flex-wrap: wrap !important;
 }
 
-.p-confirm-dialog .p-confirm-dialog-icon {
+.p-confirmdialog-icon {
   color: var(--bcube-orange) !important;
 }
 
-.p-confirm-dialog .p-dialog-content {
+.p-confirmdialog .p-dialog-content {
   padding: 1.5rem 1.75rem !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.85rem !important;
 }
 
-.p-confirm-dialog .p-dialog-footer .p-button {
+.p-confirmdialog .p-dialog-footer .p-button {
   margin: 0 !important;
 }
 
-.p-confirm-dialog .p-dialog-footer > * + * {
+.p-confirmdialog .p-dialog-footer > * + * {
   margin-left: 1.1rem !important;
 }
 
-.p-float-label label {
+.p-floatlabel label {
   color: var(--bcube-text-soft) !important;
+}
+
+.p-error {
+  color: var(--bcube-orange) !important;
+}
+
+// PrimeNG's own runtime theme CSS re-declares --p-progressspinner-color-* at :root after
+// this stylesheet loads, so the token override above loses the cascade for this one case.
+// Dropping the color-cycle animation (red/blue/green/yellow) and keeping only the spin/dash
+// animation is the reliable fix: with nothing left animating `stroke`, the !important below
+// actually sticks.
+.p-progressspinner-circle {
+  animation: p-progressspinner-dash 1.5s ease-in-out infinite !important;
+  stroke: var(--bcube-text) !important;
 }
 
 .fc {
@@ -345,46 +458,43 @@ select:-webkit-autofill:focus {
   color: #111111 !important;
 }
 
-.p-megamenu.admin-menu {
+.p-megamenu.admin-menu,
+.p-megamenu.user-top-menu {
   height: 100%;
   border: none !important;
   background: transparent !important;
 
-  p-megamenusub {
-    height: 100%;
+  .p-megamenu-item-link {
+    border-radius: 16px;
+  }
 
-    .p-menuitem-link {
-      border-radius: 16px;
-    }
+  .p-menuitem-link-active {
+    background: var(--bcube-orange) !important;
 
-    .p-menuitem-link-active {
-      background: var(--bcube-orange) !important;
-
-      * {
-        color: #111111 !important;
-      }
+    * {
+      color: #111111 !important;
     }
   }
 }
 
-.p-confirm-dialog-accept {
+.p-confirmdialog-accept-button {
   background: var(--bcube-orange) !important;
   border-color: var(--bcube-orange) !important;
   color: #111111 !important;
 }
 
-.p-confirm-dialog-accept:hover {
+.p-confirmdialog-accept-button:hover {
   background: var(--bcube-orange-strong) !important;
   border-color: var(--bcube-orange-strong) !important;
 }
 
-.p-confirm-dialog-reject {
+.p-confirmdialog-reject-button {
   background: rgba(255, 167, 34, 0.08) !important;
   color: white !important;
   border: 1px solid rgba(255, 167, 34, 0.26) !important;
 }
 
-.p-confirm-dialog-reject:hover {
+.p-confirmdialog-reject-button:hover {
   background: rgba(255, 167, 34, 0.16) !important;
 }
 

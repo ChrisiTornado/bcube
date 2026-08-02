@@ -8,7 +8,7 @@ import { ConfirmationService } from 'primeng/api';
 import { providePrimeNG } from 'primeng/config';
 import Aura from '@primeng/themes/aura';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
-import { InterceptorService } from './services/auth/interceptor.service';
+import { InterceptorService } from '@core/interceptors/interceptor.service';
 import { registerLocaleData } from '@angular/common';
 import localeDe from '@angular/common/locales/de';
 

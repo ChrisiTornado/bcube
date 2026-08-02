@@ -18,10 +18,11 @@ public class AccessCodeClient {
 
     private final WebClient.Builder webClientBuilder;
 
-    public AccessCodeResponse generateAccessCode(AccessRequest request) {
+    public AccessCodeResponse generateAccessCode(AccessRequest request, String token) {
             ApiResponse<AccessCodeResponse> response = webClientBuilder.build()
                     .post()
                     .uri(accessServiceBaseUrl)
+                    .headers(headers -> headers.setBearerAuth(token))
                     .bodyValue(request)
                     .retrieve()
                     .bodyToMono(new  ParameterizedTypeReference<ApiResponse<AccessCodeResponse>>() {})
@@ -30,11 +31,12 @@ public class AccessCodeClient {
             return response != null ? response.getData() : null;
     }
 
-    public AccessCodeResponse getAccessCode(Long bookingId) {
+    public AccessCodeResponse getAccessCode(Long bookingId, String token) {
         try {
             ApiResponse<AccessCodeResponse> response = webClientBuilder.build()
                     .get()
                     .uri(accessServiceBaseUrl + "/" + bookingId)
+                    .headers(headers -> headers.setBearerAuth(token))
                     .retrieve()
                     .bodyToMono(new ParameterizedTypeReference<ApiResponse<AccessCodeResponse>>() {})
                     .block();
@@ -47,11 +49,12 @@ public class AccessCodeClient {
         }
     }
 
-    public void deleteAccessCode(Long bookingId) {
+    public void deleteAccessCode(Long bookingId, String token) {
         try {
             webClientBuilder.build()
                     .delete()
                     .uri(accessServiceBaseUrl + "/" + bookingId)
+                    .headers(headers -> headers.setBearerAuth(token))
                     .retrieve()
                     .toBodilessEntity()
                     .block();

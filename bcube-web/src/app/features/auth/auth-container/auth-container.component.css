@@ -1,0 +1,85 @@
+:host {
+  display: block;
+}
+
+:host ::ng-deep .surface-ground {
+  min-height: 100vh;
+  padding: 28px;
+  background:
+    radial-gradient(circle at 12% 16%, rgba(255, 167, 34, 0.2), transparent 24%),
+    radial-gradient(circle at 88% 84%, rgba(255, 167, 34, 0.16), transparent 26%),
+    linear-gradient(135deg, #111111 0%, #191919 45%, #0b0b0b 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.auth-shell {
+  width: min(1120px, 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+:host ::ng-deep .surface-card {
+  width: 100%;
+  padding: 34px 34px 30px;
+  border-radius: 30px;
+  border: 1px solid rgba(255, 167, 34, 0.16);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02)),
+    rgba(9, 9, 9, 0.88);
+  box-shadow: 0 28px 70px rgba(0, 0, 0, 0.32);
+  backdrop-filter: blur(14px);
+}
+
+:host ::ng-deep .text-center {
+  margin-bottom: 22px !important;
+  position: relative;
+}
+
+:host ::ng-deep .p-button,
+:host ::ng-deep .p-button .p-button-label {
+  font-weight: 400 !important;
+}
+
+:host ::ng-deep .text-3xl {
+  display: inline-block;
+  padding: 0 22px 12px;
+  font-size: clamp(1.5rem, 3.4vw, 2.35rem) !important;
+  line-height: 1;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 800 !important;
+}
+
+:host ::ng-deep .text-3xl::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 72px;
+  height: 4px;
+  border-radius: 999px;
+  transform: translateX(-50%);
+  background: #ffa722;
+}
+
+:host ::ng-deep .text-900 {
+  color: #ffffff !important;
+}
+
+@media (max-width: 640px) {
+  :host ::ng-deep .surface-ground {
+    padding: 14px;
+  }
+
+  .auth-shell {
+    gap: 0.85rem;
+  }
+
+  :host ::ng-deep .surface-card {
+    padding: 22px 20px;
+    border-radius: 24px;
+  }
+}

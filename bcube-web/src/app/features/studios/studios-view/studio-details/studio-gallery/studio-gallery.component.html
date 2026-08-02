@@ -1,0 +1,23 @@
+@if (studio && featuredGalleryImage) {
+  <section class="hero-gallery">
+    <button type="button" class="gallery-feature" (click)="showOverlay(featuredGalleryImage)">
+      <img [src]="featuredGalleryImage" [alt]="studio.name">
+    </button>
+    @if (secondaryGalleryImages.length > 0) {
+      <div class="gallery-secondary">
+        @for (image of secondaryGalleryImages; track image; let index = $index) {
+          <button type="button" class="gallery-thumb"
+            (click)="showOverlay(image)">
+            <img [src]="image" [alt]="studio.name + ' Bild ' + (index + 2)">
+          </button>
+        }
+      </div>
+    }
+  </section>
+}
+@if (overlayVisible) {
+  <div class="overlay" (click)="hideOverlay()">
+    <img [src]="overlayImage" alt="Großes Bild" class="overlay-img" (click)="$event.stopPropagation()">
+    <button class="close-btn" (click)="hideOverlay()">✖</button>
+  </div>
+}

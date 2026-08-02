@@ -28,6 +28,6 @@ public class UserController {
         String email = authentication.getName();
 
         UserResponse user = userService.updateUserById(email, updateOwnUserRequest);
-        return ResponseEntity.ok(new ApiResponse<>("User erfolgreich geladen", user));
+        return ResponseEntity.ok(new ApiResponse<>("User erfolgreich aktualisiert", user));
     }
 }

@@ -47,6 +47,9 @@ public class User {
     @Column
     private Instant resetCodeExpiresAt;
 
+    @Column
+    private Instant resetVerifiedAt;
+
     @PrePersist
     public void prePersist() {
         this.createdAt = Instant.now();
