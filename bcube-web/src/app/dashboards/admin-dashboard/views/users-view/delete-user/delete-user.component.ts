@@ -9,10 +9,9 @@ import { ApiResponse } from '../../../../../models/responses/ApiResponse';
 import { extractErrorMessage } from '../../../../../shared/error-message.util';
 
 @Component({
-  selector: 'app-delete-user',
-  standalone: true,
-  imports: [ButtonModule],
-  template: `
+    selector: 'app-delete-user',
+    imports: [ButtonModule],
+    template: `
     <p-button icon="pi pi-trash"
               styleClass="p-button-danger"
               severity="danger" 

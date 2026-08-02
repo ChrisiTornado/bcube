@@ -17,18 +17,17 @@ import { DARK_BUTTON_STYLE } from '../../shared/button-style';
 import { extractErrorMessage } from '../../shared/error-message.util';
 
 @Component({
-  selector: 'app-enter-code',
-  standalone: true,
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    AuthContainerComponent,
-    ToastModule,
-    ButtonModule,
-    ConfirmDialogModule
-  ],
-  templateUrl: './enter-code.component.html',
-  styleUrls: ['./enter-code.component.css']
+    selector: 'app-enter-code',
+    imports: [
+        CommonModule,
+        ReactiveFormsModule,
+        AuthContainerComponent,
+        ToastModule,
+        ButtonModule,
+        ConfirmDialogModule
+    ],
+    templateUrl: './enter-code.component.html',
+    styleUrls: ['./enter-code.component.css']
 })
 export class EnterCodeComponent implements OnInit {
   /** Persisted across the multi-step (email → code → password) reset flow since each step is its own route/page load. */

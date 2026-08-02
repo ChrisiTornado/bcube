@@ -21,20 +21,19 @@ import { UserService } from '../../../../services/user.service';
 import { DARK_BUTTON_STYLE, LIGHT_BUTTON_STYLE } from '../../../../shared/button-style';
 
 @Component({
-  selector: 'app-bookings-view',
-  standalone: true,
-  imports: [
-    CommonModule,
-    TableModule,
-    ButtonModule,
-    DropdownModule,
-    FloatLabelModule,
-    LoadingSpinnerComponent,
-    StornoBookingComponent,
-    FormsModule
-  ],
-  templateUrl: './bookings-view.component.html',
-  styleUrls: ['./bookings-view.component.css']
+    selector: 'app-bookings-view',
+    imports: [
+        CommonModule,
+        TableModule,
+        ButtonModule,
+        DropdownModule,
+        FloatLabelModule,
+        LoadingSpinnerComponent,
+        StornoBookingComponent,
+        FormsModule
+    ],
+    templateUrl: './bookings-view.component.html',
+    styleUrls: ['./bookings-view.component.css']
 })
 export class BookingsViewComponent implements OnInit {
   readonly darkButtonStyle = DARK_BUTTON_STYLE;

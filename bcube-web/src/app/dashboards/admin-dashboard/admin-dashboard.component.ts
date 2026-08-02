@@ -11,11 +11,10 @@ import { ConfirmationService } from 'primeng/api';
 import { filter } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-admin-dashboard',
-  standalone: true,
-  imports: [CommonModule, RouterModule, ToastModule, MegaMenuModule, ConfirmDialogModule],
-  templateUrl: './admin-dashboard.component.html',
-  styleUrl: './admin-dashboard.component.css'
+    selector: 'app-admin-dashboard',
+    imports: [CommonModule, RouterModule, ToastModule, MegaMenuModule, ConfirmDialogModule],
+    templateUrl: './admin-dashboard.component.html',
+    styleUrl: './admin-dashboard.component.css'
 })
 export class AdminDashboardComponent implements OnInit {
   items: MegaMenuItem[] = [];

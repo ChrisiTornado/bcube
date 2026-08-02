@@ -5,10 +5,9 @@ import { ButtonModule } from 'primeng/button';
 import { BookingActionService } from '../../../../../services/booking-action.service';
 
 @Component({
-  selector: 'app-storno-booking',
-  standalone: true,
-  imports: [ButtonModule],
-  template: `<p-button severity="danger" icon="pi pi-trash" [loading]="loading" (click)="triggerStorno()"></p-button>`,
+    selector: 'app-storno-booking',
+    imports: [ButtonModule],
+    template: `<p-button severity="danger" icon="pi pi-trash" [loading]="loading" (click)="triggerStorno()"></p-button>`
 })
 export class StornoBookingComponent {
   @Input() booking!: Booking;

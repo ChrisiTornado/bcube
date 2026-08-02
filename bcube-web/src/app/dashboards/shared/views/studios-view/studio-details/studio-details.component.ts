@@ -24,20 +24,19 @@ import { UpdateStudioComponent } from '../update-studio/update-studio.component'
 import { extractErrorMessage } from '../../../../../shared/error-message.util';
 
 @Component({
-  selector: 'app-studio-details',
-  standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    CalendarModule,
-    ButtonModule,
-    LoadingSpinnerComponent,
-    FullCalendarModule,
-    CardModule,
-    UpdateStudioComponent
-  ],
-  templateUrl: './studio-details.component.html',
-  styleUrl: './studio-details.component.css'
+    selector: 'app-studio-details',
+    imports: [
+        CommonModule,
+        FormsModule,
+        CalendarModule,
+        ButtonModule,
+        LoadingSpinnerComponent,
+        FullCalendarModule,
+        CardModule,
+        UpdateStudioComponent
+    ],
+    templateUrl: './studio-details.component.html',
+    styleUrl: './studio-details.component.css'
 })
 export class StudioDetailsComponent implements OnInit {
   private readonly blockingStatuses = new Set(['CONFIRMED', 'PENDING', 'DONE']);

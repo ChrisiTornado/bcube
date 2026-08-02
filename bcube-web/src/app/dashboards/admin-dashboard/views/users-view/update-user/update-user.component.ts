@@ -17,18 +17,17 @@ import { DARK_BUTTON_STYLE } from '../../../../../shared/button-style';
 import { extractErrorMessage } from '../../../../../shared/error-message.util';
 
 @Component({
-  selector: 'app-update-user',
-  standalone: true,
-  imports: [
-    CommonModule,
-    DialogModule,
-    ButtonModule,
-    InputTextModule,
-    DropdownModule,
-    ReactiveFormsModule
-  ],
-  templateUrl: './update-user.component.html',
-  styleUrl: './update-user.component.css'
+    selector: 'app-update-user',
+    imports: [
+        CommonModule,
+        DialogModule,
+        ButtonModule,
+        InputTextModule,
+        DropdownModule,
+        ReactiveFormsModule
+    ],
+    templateUrl: './update-user.component.html',
+    styleUrl: './update-user.component.css'
 })
 export class UpdateUserComponent implements OnInit {
   @Input() user!: User;

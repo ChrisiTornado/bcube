@@ -12,19 +12,18 @@ import { UsersComponent } from '../../components/users/users.component';
 import { LIGHT_BUTTON_STYLE } from '../../../../shared/button-style';
 
 @Component({
-  selector: 'app-users-view',
-  standalone: true,
-  imports: [
-    UsersComponent,
-    CommonModule,
-    LoadingSpinnerComponent,
-    TableModule,
-    ButtonModule,
-    UpdateUserComponent,
-    DeleteUserComponent
-  ],
-  templateUrl: './users-view.component.html',
-  styleUrl: './users-view.component.css'
+    selector: 'app-users-view',
+    imports: [
+        UsersComponent,
+        CommonModule,
+        LoadingSpinnerComponent,
+        TableModule,
+        ButtonModule,
+        UpdateUserComponent,
+        DeleteUserComponent
+    ],
+    templateUrl: './users-view.component.html',
+    styleUrl: './users-view.component.css'
 })
 export class UsersViewComponent implements OnInit {
   readonly lightButtonStyle = LIGHT_BUTTON_STYLE;

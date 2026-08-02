@@ -6,11 +6,10 @@ import { Router, RouterModule } from '@angular/router';
 type LegalSection = 'impressum' | 'datenschutz' | 'agb';
 
 @Component({
-  selector: 'app-legal',
-  standalone: true,
-  imports: [CommonModule, RouterModule],
-  templateUrl: './legal.component.html',
-  styleUrl: './legal.component.css'
+    selector: 'app-legal',
+    imports: [CommonModule, RouterModule],
+    templateUrl: './legal.component.html',
+    styleUrl: './legal.component.css'
 })
 export class LegalComponent implements OnInit {
   activeSection: LegalSection = 'impressum';

@@ -19,11 +19,10 @@ import { handleAuthSuccess } from '../shared/auth-success.util';
 import { extractErrorMessage } from '../../shared/error-message.util';
 
 @Component({
-  selector: 'app-register',
-  standalone: true,
-  imports: [InputTextModule, LoadingSpinnerComponent, CommonModule, RouterModule, AuthContainerComponent, ButtonModule, ReactiveFormsModule],
-  templateUrl: './register.component.html',
-  styleUrl: './register.component.css'
+    selector: 'app-register',
+    imports: [InputTextModule, LoadingSpinnerComponent, CommonModule, RouterModule, AuthContainerComponent, ButtonModule, ReactiveFormsModule],
+    templateUrl: './register.component.html',
+    styleUrl: './register.component.css'
 })
 export class RegisterComponent implements OnInit {
   registerForm!: FormGroup;

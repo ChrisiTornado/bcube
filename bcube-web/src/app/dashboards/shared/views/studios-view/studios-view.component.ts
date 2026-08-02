@@ -27,18 +27,17 @@ import { DeleteStudioComponent } from './delete-studio/delete-studio.component';
 type StudioViewModel = Studio & { gallery: string[] };
 
 @Component({
-  selector: 'app-studios-view',
-  standalone: true,
-  imports: [
-    CommonModule,
-    ButtonModule,
-    LoadingSpinnerComponent,
-    StudiosComponent,
-    UpdateStudioComponent,
-    DeleteStudioComponent
-  ],
-  templateUrl: './studios-view.component.html',
-  styleUrl: './studios-view.component.css'
+    selector: 'app-studios-view',
+    imports: [
+        CommonModule,
+        ButtonModule,
+        LoadingSpinnerComponent,
+        StudiosComponent,
+        UpdateStudioComponent,
+        DeleteStudioComponent
+    ],
+    templateUrl: './studios-view.component.html',
+    styleUrl: './studios-view.component.css'
 })
 export class StudiosViewComponent implements OnInit, AfterViewInit, OnDestroy {
   studios: StudioViewModel[] = [];

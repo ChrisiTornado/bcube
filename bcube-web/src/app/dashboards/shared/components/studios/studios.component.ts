@@ -13,7 +13,6 @@ import { FileUpload, FileUploadModule, FileSelectEvent } from 'primeng/fileuploa
 import { ReactiveFormsModule } from '@angular/forms';
 import { DialogModule } from 'primeng/dialog';
 import { CommonModule } from '@angular/common';
-import { LoadingSpinnerComponent } from '../../../../shared/loading-spinner/loading-spinner.component';
 import { InputTextModule } from 'primeng/inputtext';
 import { InputTextarea } from 'primeng/inputtextarea';
 import { AuthService } from '../../../../services/auth/auth.service';
@@ -21,11 +20,10 @@ import { DARK_BUTTON_STYLE } from '../../../../shared/button-style';
 import { extractErrorMessage } from '../../../../shared/error-message.util';
 
 @Component({
-  selector: 'app-studios',
-  standalone: true,
-  imports: [InputTextModule, InputTextarea, LoadingSpinnerComponent, CommonModule, DialogModule, FileUploadModule, TableModule, ButtonModule, ReactiveFormsModule],
-  templateUrl: './studios.component.html',
-  styleUrl: './studios.component.css'
+    selector: 'app-studios',
+    imports: [InputTextModule, InputTextarea, CommonModule, DialogModule, FileUploadModule, TableModule, ButtonModule, ReactiveFormsModule],
+    templateUrl: './studios.component.html',
+    styleUrl: './studios.component.css'
 })
 export class StudiosComponent implements OnInit{
   readonly darkButtonStyle = DARK_BUTTON_STYLE;

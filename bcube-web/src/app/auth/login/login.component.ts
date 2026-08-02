@@ -20,11 +20,10 @@ import { handleAuthSuccess } from '../shared/auth-success.util';
 import { extractErrorMessage } from '../../shared/error-message.util';
 
 @Component({
-  selector: 'app-login',
-  standalone: true,
-  imports: [LoadingSpinnerComponent, CommonModule, RouterModule, ButtonModule, AuthContainerComponent, ReactiveFormsModule, ToastModule, InputTextModule],
-  templateUrl: './login.component.html',
-  styleUrl: './login.component.css'
+    selector: 'app-login',
+    imports: [LoadingSpinnerComponent, CommonModule, RouterModule, ButtonModule, AuthContainerComponent, ReactiveFormsModule, ToastModule, InputTextModule],
+    templateUrl: './login.component.html',
+    styleUrl: './login.component.css'
 })
 export class LoginComponent implements OnInit {
   loginForm!: FormGroup;

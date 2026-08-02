@@ -21,11 +21,10 @@ import { ButtonModule } from 'primeng/button';
 import { AuthService } from '../../../../services/auth/auth.service';
 
 @Component({
-  selector: 'app-map-view',
-  standalone: true,
-  imports: [CommonModule, LoadingSpinnerComponent, CardModule, ButtonModule],
-  templateUrl: './map-view.component.html',
-  styleUrls: ['./map-view.component.css']
+    selector: 'app-map-view',
+    imports: [CommonModule, LoadingSpinnerComponent, CardModule, ButtonModule],
+    templateUrl: './map-view.component.html',
+    styleUrls: ['./map-view.component.css']
 })
 export class MapViewComponent implements AfterViewInit, OnInit, OnDestroy {
   studios: Studio[] = [];

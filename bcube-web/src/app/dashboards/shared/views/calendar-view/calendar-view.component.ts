@@ -13,24 +13,21 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import { CalendarOptions, DatesSetArg, EventInput } from '@fullcalendar/core';
 import interactionPlugin from '@fullcalendar/interaction';
 import { User } from '../../../../models/User';
-import { RouterLink } from '@angular/router';
 import { LoadingSpinnerComponent } from '../../../../shared/loading-spinner/loading-spinner.component';
 import { BookingStatus } from '../../../../models/BookingStatus';
 
 @Component({
-  selector: 'app-calendar-view',
-  standalone: true,
-  imports: [CommonModule,
-    FormsModule,
-    CalendarModule,
-    DropdownModule,
-    ButtonModule,
-    FullCalendarModule,
-    RouterLink,
-    LoadingSpinnerComponent
-  ],
-  templateUrl: './calendar-view.component.html',
-  styleUrl: './calendar-view.component.css'
+    selector: 'app-calendar-view',
+    imports: [CommonModule,
+        FormsModule,
+        CalendarModule,
+        DropdownModule,
+        ButtonModule,
+        FullCalendarModule,
+        LoadingSpinnerComponent
+    ],
+    templateUrl: './calendar-view.component.html',
+    styleUrl: './calendar-view.component.css'
 })
 export class CalendarViewComponent implements OnInit {
   readonly bookingStatus = BookingStatus;

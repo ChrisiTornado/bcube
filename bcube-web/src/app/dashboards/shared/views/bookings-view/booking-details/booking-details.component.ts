@@ -14,19 +14,18 @@ import { CardModule } from 'primeng/card';
 import { BookingDetailsResponse } from '../../../../../models/responses/booking/BookingDetailsResponse';
 
 @Component({
-  selector: 'app-booking-details',
-  standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    CalendarModule,
-    DropdownModule,
-    ButtonModule,
-    LoadingSpinnerComponent,
-    CardModule
-  ],
-  templateUrl: './booking-details.component.html',
-  styleUrl: './booking-details.component.css'
+    selector: 'app-booking-details',
+    imports: [
+        CommonModule,
+        FormsModule,
+        CalendarModule,
+        DropdownModule,
+        ButtonModule,
+        LoadingSpinnerComponent,
+        CardModule
+    ],
+    templateUrl: './booking-details.component.html',
+    styleUrl: './booking-details.component.css'
 })
 export class BookingDetailsComponent implements OnInit {
   isUser = false;

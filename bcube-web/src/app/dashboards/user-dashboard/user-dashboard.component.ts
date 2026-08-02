@@ -10,17 +10,16 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { filter } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-user-dashboard',
-  standalone: true,
-  imports: [
-    CommonModule,
-    ToastModule,
-    ConfirmDialogModule,
-    RouterModule,
-    MegaMenuModule
-  ],
-  templateUrl: './user-dashboard.component.html',
-  styleUrl: './user-dashboard.component.css'
+    selector: 'app-user-dashboard',
+    imports: [
+        CommonModule,
+        ToastModule,
+        ConfirmDialogModule,
+        RouterModule,
+        MegaMenuModule
+    ],
+    templateUrl: './user-dashboard.component.html',
+    styleUrl: './user-dashboard.component.css'
 })
 export class UserDashboardComponent implements OnInit {
   items: MegaMenuItem[] = [];

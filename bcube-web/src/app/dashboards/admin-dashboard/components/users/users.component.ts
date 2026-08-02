@@ -9,7 +9,6 @@ import { ButtonModule } from 'primeng/button';
 import { ReactiveFormsModule } from '@angular/forms';
 import { DialogModule } from 'primeng/dialog';
 import { CommonModule } from '@angular/common';
-import { LoadingSpinnerComponent } from '../../../../shared/loading-spinner/loading-spinner.component';
 import { InputTextModule } from 'primeng/inputtext';
 import { DropdownModule } from 'primeng/dropdown';
 import { CreateUserRequest } from '../../../../models/requests/user/CreateUserRequest';
@@ -19,11 +18,10 @@ import { DARK_BUTTON_STYLE } from '../../../../shared/button-style';
 import { extractErrorMessage } from '../../../../shared/error-message.util';
 
 @Component({
-  selector: 'app-users',
-  standalone: true,
-  imports: [InputTextModule, DropdownModule, LoadingSpinnerComponent, CommonModule, DialogModule, TableModule, ButtonModule, ReactiveFormsModule],
-  templateUrl: './users.component.html',
-  styleUrl: './users.component.css'
+    selector: 'app-users',
+    imports: [InputTextModule, DropdownModule, CommonModule, DialogModule, TableModule, ButtonModule, ReactiveFormsModule],
+    templateUrl: './users.component.html',
+    styleUrl: './users.component.css'
 })
 export class UsersComponent implements OnInit {
   readonly darkButtonStyle = DARK_BUTTON_STYLE;

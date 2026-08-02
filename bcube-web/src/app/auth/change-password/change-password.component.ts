@@ -24,24 +24,21 @@ import { DARK_BUTTON_STYLE } from '../../shared/button-style';
 import { extractErrorMessage } from '../../shared/error-message.util';
 
 @Component({
-  selector: 'app-change-password',
-  standalone: true,
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-
-    // PrimeNG
-    ToastModule,
-    ConfirmDialogModule,
-    InputTextModule,
-    ButtonModule,
-
-    // Eigene Component
-    AuthContainerComponent
-  ],
-  templateUrl: './change-password.component.html',
-  styleUrl: './change-password.component.css',
-  providers: [MessageService]
+    selector: 'app-change-password',
+    imports: [
+        CommonModule,
+        ReactiveFormsModule,
+        // PrimeNG
+        ToastModule,
+        ConfirmDialogModule,
+        InputTextModule,
+        ButtonModule,
+        // Eigene Component
+        AuthContainerComponent
+    ],
+    templateUrl: './change-password.component.html',
+    styleUrl: './change-password.component.css',
+    providers: [MessageService]
 })
 export class ChangePasswordComponent implements OnInit {
   /** Persisted across the multi-step (email → code → password) reset flow since each step is its own route/page load. */

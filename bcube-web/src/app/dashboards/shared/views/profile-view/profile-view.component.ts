@@ -16,20 +16,19 @@ import { UpdateUserRequest } from '../../../../models/requests/user/UpdateUserRe
 import { extractErrorMessage } from '../../../../shared/error-message.util';
 
 @Component({
-  selector: 'app-profile-view',
-  standalone: true,
-  imports: [
-    CommonModule,
-    RouterModule,
-    ReactiveFormsModule,
-    ButtonModule,
-    ToastModule,
-    ConfirmDialogModule,
-    InputTextModule
-  ],
-  templateUrl: './profile-view.component.html',
-  styleUrl: './profile-view.component.css',
-  providers: [MessageService, ConfirmationService]
+    selector: 'app-profile-view',
+    imports: [
+        CommonModule,
+        RouterModule,
+        ReactiveFormsModule,
+        ButtonModule,
+        ToastModule,
+        ConfirmDialogModule,
+        InputTextModule
+    ],
+    templateUrl: './profile-view.component.html',
+    styleUrl: './profile-view.component.css',
+    providers: [MessageService, ConfirmationService]
 })
 export class ProfileViewComponent implements OnInit {
   user: User | null;

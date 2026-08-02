@@ -18,20 +18,19 @@ import { DARK_BUTTON_STYLE } from '../../shared/button-style';
 import { extractErrorMessage } from '../../shared/error-message.util';
 
 @Component({
-  selector: 'app-email-reset',
-  standalone: true,
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    ButtonModule,
-    ToastModule,
-    RippleModule,
-    AuthContainerComponent,
-    InputTextModule,
-    ConfirmDialogModule
-  ],
-  templateUrl: './email-reset.component.html',
-  styleUrl: './email-reset.component.css'
+    selector: 'app-email-reset',
+    imports: [
+        CommonModule,
+        ReactiveFormsModule,
+        ButtonModule,
+        ToastModule,
+        RippleModule,
+        AuthContainerComponent,
+        InputTextModule,
+        ConfirmDialogModule
+    ],
+    templateUrl: './email-reset.component.html',
+    styleUrl: './email-reset.component.css'
 })
 export class EmailResetComponent implements OnInit {
   /** Persisted across the multi-step (email → code → password) reset flow since each step is its own route/page load. */
