@@ -1,12 +1,13 @@
-<app-loading-spinner *ngIf="loading$ | async"></app-loading-spinner>
+@if (loading$ | async) {
+  <app-loading-spinner></app-loading-spinner>
+}
 
-<ng-container *ngIf="!(loading$ | async)">
+@if (!(loading$ | async)) {
   <div class="mb-4">
     <button pButton type="button" icon="pi pi-arrow-left" label="Zurück" (click)="goBack()" [style]="{'border-color': 'black', 'color': 'black'}"
-      class="p-button-outlined"></button>
+    class="p-button-outlined"></button>
   </div>
-
-  <ng-container *ngIf="booking">
+  @if (booking) {
     <div class="booking-header flex mb-4">
       <h2 class="text-2xl font-semibold mb-2">
         Auftrag {{ booking.id }} - {{ booking.studio.name }}
@@ -16,28 +17,29 @@
         alt="Studiobild"
         class="booking-studio-image"
         (click)="showOverlay(booking.studio.imageBase64)"
-      >
+        >
     </div>
-
-    <div *ngIf="overlayVisible" class="overlay" (click)="hideOverlay()">
-      <img [src]="overlayImage" alt="Großes Bild" class="overlay-img" (click)="$event.stopPropagation()">
-      <button class="close-btn" (click)="hideOverlay()">✖</button>
-    </div>
+    @if (overlayVisible) {
+      <div class="overlay" (click)="hideOverlay()">
+        <img [src]="overlayImage" alt="Großes Bild" class="overlay-img" (click)="$event.stopPropagation()">
+        <button class="close-btn" (click)="hideOverlay()">✖</button>
+      </div>
+    }
     <p class="mb-4"><strong>Status:</strong> {{ statusLabels[booking.status] }}</p>
     <div class="flex gap-4">
       <p-card [style]="{ width: '25rem', overflow: 'hidden' }" class="rounded-lg shadow-sm">
         <ng-template pTemplate="title">Auftragsinformationen</ng-template>
         <p><strong>Datum:</strong> {{ booking.date | date: 'dd. MMMM, yyyy' : undefined : 'de-AT' }}</p>
         <p><strong>Zeit:</strong> {{ booking.startTime | date: 'HH:mm' }} - {{ booking.endTime | date: 'HH:mm' }} Uhr
-        </p>
-        <p><strong>Straße:</strong> {{ booking.studio.street }}</p>
-        <p><strong>Stadt:</strong> {{ booking.studio.city }}</p>
-        <p><strong>PLZ:</strong> {{ booking.studio.plz }}</p>
-        <p><strong>Land:</strong> {{ booking.studio.country }}</p>
-        <p><strong>Zutrittscode:</strong> {{ booking.accessCode }}</p>
-      </p-card>
-
-      <p-card [style]="{ width: '25rem', overflow: 'hidden' }" *ngIf="!isUser"
+      </p>
+      <p><strong>Straße:</strong> {{ booking.studio.street }}</p>
+      <p><strong>Stadt:</strong> {{ booking.studio.city }}</p>
+      <p><strong>PLZ:</strong> {{ booking.studio.plz }}</p>
+      <p><strong>Land:</strong> {{ booking.studio.country }}</p>
+      <p><strong>Zutrittscode:</strong> {{ booking.accessCode }}</p>
+    </p-card>
+    @if (!isUser) {
+      <p-card [style]="{ width: '25rem', overflow: 'hidden' }"
         class="bg-gray-100 rounded-lg shadow-sm">
         <ng-template pTemplate="title">Kundendaten</ng-template>
         <p><strong>Kunden ID:</strong> {{ booking.user.id }}</p>
@@ -45,9 +47,12 @@
         <p><strong>E-Mail:</strong> {{ booking.user.email }}</p>
         <p><strong>Telefonnummer:</strong> {{ booking.user.phone }}</p>
       </p-card>
-    </div>
-    <div *ngIf="statusLabels[booking.status] !== statusLabels['CANCELLED']" class="mt-6 flex justify-center">
+    }
+  </div>
+  @if (statusLabels[booking.status] !== statusLabels['CANCELLED']) {
+    <div class="mt-6 flex justify-center">
       <button pButton type="button" label="Stornieren" (click)="triggerStorno()" severity="danger"></button>
     </div>
-  </ng-container>
-</ng-container>
+  }
+}
+}

@@ -7,99 +7,105 @@
     id="map"
     class="map-container"
     style="flex: 1; max-width: 1100px; height: 750px;"
-  >
-    <div class="selected-studio-overlay" *ngIf="selectedStudio">
-      <article class="selected-studio-card">
-        <img
-          [src]="getSelectedPreviewImage()"
-          [alt]="selectedStudio.name"
-          class="selected-studio-image"
-        />
-
-        <div class="selected-studio-copy">
-          <h3 class="m-0">{{ selectedStudio.name }}</h3>
-          <p class="selected-studio-address m-0">
-            {{ selectedStudio.street }}, {{ selectedStudio.plz }} {{ selectedStudio.city }}
-          </p>
-          <p class="selected-studio-description m-0">
-            {{ getSelectedStudioTeaser() }}
-          </p>
-        </div>
-      </article>
-    </div>
-  </div>
-
-  <div
-    class="map-sidebar"
-    style="flex: 0 0 350px; display: flex; flex-direction: column; height: 760px;"
-  >
-    <app-loading-spinner *ngIf="loading$ | async"></app-loading-spinner>
-
-    <h2 *ngIf="!(loading$ | async)">Liste verfügbarer Cubes</h2>
-
-    <button
-      *ngIf="!(loading$ | async)"
-      pButton
-      class="reset-button"
-      style="margin-bottom: 1rem;"
-      (click)="resetView()"
     >
-      Ansicht zurücksetzen
-    </button>
+    @if (selectedStudio) {
+      <div class="selected-studio-overlay">
+        <article class="selected-studio-card">
+          <img
+            [src]="getSelectedPreviewImage()"
+            [alt]="selectedStudio.name"
+            class="selected-studio-image"
+            />
+            <div class="selected-studio-copy">
+              <h3 class="m-0">{{ selectedStudio.name }}</h3>
+              <p class="selected-studio-address m-0">
+                {{ selectedStudio.street }}, {{ selectedStudio.plz }} {{ selectedStudio.city }}
+              </p>
+              <p class="selected-studio-description m-0">
+                {{ getSelectedStudioTeaser() }}
+              </p>
+            </div>
+          </article>
+        </div>
+      }
+    </div>
 
     <div
-      *ngIf="!(loading$ | async)"
-      class="sidebar-scroll"
-      style="flex: 1; overflow-y: auto; padding-right: 0.5rem;"
-    >
-      <div *ngIf="studios.length > 0; else noStudios">
-        <div
-          *ngFor="let studio of studios; let i = index"
-          class="studio-details"
-          #studioCard
-        >
-          <p-card
-            (click)="zoomToStudio(studio)"
-            [ngClass]="{ 'active-card': selectedStudio?.id === studio.id }"
+      class="map-sidebar"
+      style="flex: 0 0 350px; display: flex; flex-direction: column; height: 760px;"
+      >
+      @if (loading$ | async) {
+        <app-loading-spinner></app-loading-spinner>
+      }
+
+      @if (!(loading$ | async)) {
+        <h2>Liste verfügbarer Cubes</h2>
+      }
+
+      @if (!(loading$ | async)) {
+        <button
+          pButton
+          class="reset-button"
+          style="margin-bottom: 1rem;"
+          (click)="resetView()"
           >
-            <ng-template pTemplate="title">
-              {{ studio.name }}
-            </ng-template>
+          Ansicht zurücksetzen
+        </button>
+      }
 
-            <ng-template pTemplate="subtitle">
-              {{ studio.street }}, {{ studio.plz }} {{ studio.city }}
-            </ng-template>
-
-            <a
-              *ngIf="studio.latitude != null && studio.longitude != null"
-              [href]="'https://www.google.com/maps/dir/?api=1&destination=' + studio.latitude + ',' + studio.longitude"
-              target="_blank"
-              rel="noopener noreferrer"
-              (click)="$event.stopPropagation()"
-            >
-              Route in Google Maps öffnen
-            </a>
-
-            <ng-template pTemplate="footer">
-              <button
-                pButton
-                size="small"
-                severity="secondary"
-                class="details-button"
-                (click)="navigateToStudio(studio); $event.stopPropagation()"
-              >
-                Details ansehen
-              </button>
-            </ng-template>
+      @if (!(loading$ | async)) {
+        <div
+          class="sidebar-scroll"
+          style="flex: 1; overflow-y: auto; padding-right: 0.5rem;"
+          >
+        @if (studios.length > 0) {
+          <div>
+            @for (studio of studios; track studio; let i = $index) {
+              <div
+                class="studio-details"
+                #studioCard
+                >
+                <p-card
+                  (click)="zoomToStudio(studio)"
+                  [ngClass]="{ 'active-card': selectedStudio?.id === studio.id }"
+                  >
+                  <ng-template pTemplate="title">
+                    {{ studio.name }}
+                  </ng-template>
+                  <ng-template pTemplate="subtitle">
+                    {{ studio.street }}, {{ studio.plz }} {{ studio.city }}
+                  </ng-template>
+                  @if (studio.latitude != null && studio.longitude != null) {
+                    <a
+                      [href]="'https://www.google.com/maps/dir/?api=1&destination=' + studio.latitude + ',' + studio.longitude"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      (click)="$event.stopPropagation()"
+                      >
+                      Route in Google Maps öffnen
+                    </a>
+                  }
+                  <ng-template pTemplate="footer">
+                    <button
+                      pButton
+                      size="small"
+                      severity="secondary"
+                      class="details-button"
+                      (click)="navigateToStudio(studio); $event.stopPropagation()"
+                      >
+                      Details ansehen
+                    </button>
+                  </ng-template>
+                </p-card>
+              </div>
+            }
+          </div>
+        } @else {
+          <p-card>
+            <p>Aktuell sind keine Cubes verfügbar.</p>
           </p-card>
-        </div>
+        }
       </div>
-
-      <ng-template #noStudios>
-        <p-card>
-          <p>Aktuell sind keine Cubes verfügbar.</p>
-        </p-card>
-      </ng-template>
-    </div>
+    }
   </div>
 </div>

@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../../services/auth/auth.service';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { Router } from '@angular/router';
-import { CommonModule } from '@angular/common';
+
 import { RouterModule } from '@angular/router';
 import { ButtonModule } from "primeng/button";
 import { finalize } from "rxjs";
@@ -21,7 +21,7 @@ import { extractErrorMessage } from '../../shared/error-message.util';
 
 @Component({
     selector: 'app-login',
-    imports: [LoadingSpinnerComponent, CommonModule, RouterModule, ButtonModule, AuthContainerComponent, ReactiveFormsModule, ToastModule, InputTextModule],
+    imports: [LoadingSpinnerComponent, RouterModule, ButtonModule, AuthContainerComponent, ReactiveFormsModule, ToastModule, InputTextModule],
     templateUrl: './login.component.html',
     styleUrl: './login.component.css'
 })

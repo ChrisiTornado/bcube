@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { AuthContainerComponent } from '../auth-container/auth-container.component';
 import { Router } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+
 import { HttpErrorResponse } from '@angular/common/http';
 import { AuthService } from '../../services/auth/auth.service';
 import { MessageService } from 'primeng/api';
@@ -19,13 +19,12 @@ import { extractErrorMessage } from '../../shared/error-message.util';
 @Component({
     selector: 'app-enter-code',
     imports: [
-        CommonModule,
-        ReactiveFormsModule,
-        AuthContainerComponent,
-        ToastModule,
-        ButtonModule,
-        ConfirmDialogModule
-    ],
+    ReactiveFormsModule,
+    AuthContainerComponent,
+    ToastModule,
+    ButtonModule,
+    ConfirmDialogModule
+],
     templateUrl: './enter-code.component.html',
     styleUrls: ['./enter-code.component.css']
 })

@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { finalize } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
-import { CommonModule } from '@angular/common';
+
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
@@ -19,13 +19,12 @@ import { extractErrorMessage } from '../../../../../shared/error-message.util';
 @Component({
     selector: 'app-update-user',
     imports: [
-        CommonModule,
-        DialogModule,
-        ButtonModule,
-        InputTextModule,
-        SelectModule,
-        ReactiveFormsModule
-    ],
+    DialogModule,
+    ButtonModule,
+    InputTextModule,
+    SelectModule,
+    ReactiveFormsModule
+],
     templateUrl: './update-user.component.html',
     styleUrl: './update-user.component.css'
 })

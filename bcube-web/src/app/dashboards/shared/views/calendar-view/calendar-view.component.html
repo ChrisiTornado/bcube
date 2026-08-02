@@ -1,6 +1,8 @@
-<app-loading-spinner *ngIf="isLoading"></app-loading-spinner>
+@if (isLoading) {
+  <app-loading-spinner></app-loading-spinner>
+}
 
-<ng-container *ngIf="!isLoading">
+@if (!isLoading) {
   <div class="view-header">
     <h1 class="m-0">Buchungen</h1>
     <button
@@ -15,51 +17,49 @@
     <div class="calendar-shell">
       <full-calendar class="calendar-frame" [options]="calendarOptions"></full-calendar>
     </div>
-
     <aside class="day-bookings-panel">
       <div class="day-bookings-header">
         <h2 class="m-0">Deine Sessions</h2>
         <span>{{ getSelectedDateLabel() }}</span>
       </div>
-
-      <div class="day-bookings-list" *ngIf="selectedDayBookings.length > 0; else noBookingsTemplate">
-        <article class="day-booking-card" [class.day-booking-card-done]="isDoneBooking(booking)" *ngFor="let booking of selectedDayBookings">
-          <div class="booking-card-top">
-            <div class="booking-image-wrap">
-              <img [src]="booking.studio.imageBase64" [alt]="booking.studio.name" class="booking-studio-thumb">
-            </div>
-
-            <div class="booking-card-copy">
-              <div class="booking-card-title-row">
-                <h3 class="m-0">{{ booking.studio.name }}</h3>
-                <span class="booking-status-badge" [class.booking-status-badge-done]="isDoneBooking(booking)">
-                  {{ getStatusLabel(booking.status) }}
-                </span>
+      @if (selectedDayBookings.length > 0) {
+        <div class="day-bookings-list">
+          @for (booking of selectedDayBookings; track booking) {
+            <article class="day-booking-card" [class.day-booking-card-done]="isDoneBooking(booking)">
+              <div class="booking-card-top">
+                <div class="booking-image-wrap">
+                  <img [src]="booking.studio.imageBase64" [alt]="booking.studio.name" class="booking-studio-thumb">
+                </div>
+                <div class="booking-card-copy">
+                  <div class="booking-card-title-row">
+                    <h3 class="m-0">{{ booking.studio.name }}</h3>
+                    <span class="booking-status-badge" [class.booking-status-badge-done]="isDoneBooking(booking)">
+                      {{ getStatusLabel(booking.status) }}
+                    </span>
+                  </div>
+                  <p class="booking-location m-0">
+                    {{ booking.studio.street }}, {{ booking.studio.plz }} {{ booking.studio.city }}
+                  </p>
+                  <p class="booking-time m-0">
+                    {{ booking.date | date: 'dd. MMMM, yyyy' : undefined : 'de-AT' }} · {{ formatBookingTimeRange(booking) }}
+                  </p>
+                </div>
               </div>
-              <p class="booking-location m-0">
-                {{ booking.studio.street }}, {{ booking.studio.plz }} {{ booking.studio.city }}
-              </p>
-              <p class="booking-time m-0">
-                {{ booking.date | date: 'dd. MMMM, yyyy' : undefined : 'de-AT' }} · {{ formatBookingTimeRange(booking) }}
-              </p>
-            </div>
-          </div>
-
-          <button
-            pButton
-            type="button"
-            label="Details anzeigen"
-            class="booking-details-button"
-            (click)="showBookingDetails(booking)">
-          </button>
-        </article>
-      </div>
-
-      <ng-template #noBookingsTemplate>
+              <button
+                pButton
+                type="button"
+                label="Details anzeigen"
+                class="booking-details-button"
+                (click)="showBookingDetails(booking)">
+              </button>
+            </article>
+          }
+        </div>
+      } @else {
         <div class="empty-day-bookings">
           {{ emptyStateMessage }}
         </div>
-      </ng-template>
+      }
     </aside>
   </div>
-</ng-container>
+}

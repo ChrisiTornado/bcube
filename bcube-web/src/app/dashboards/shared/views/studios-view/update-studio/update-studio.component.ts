@@ -13,7 +13,7 @@ import { ButtonModule } from 'primeng/button';
 import { FileUpload, FileUploadModule, FileSelectEvent } from 'primeng/fileupload';
 import { ReactiveFormsModule } from '@angular/forms';
 import { DialogModule } from 'primeng/dialog';
-import { CommonModule } from '@angular/common';
+
 import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
 import { ToastModule } from 'primeng/toast';
@@ -22,7 +22,7 @@ import { extractErrorMessage } from '../../../../../shared/error-message.util';
 
 @Component({
     selector: 'app-update-studio',
-    imports: [ToastModule, InputTextModule, TextareaModule, CommonModule, DialogModule, TableModule, ButtonModule, FileUploadModule, ReactiveFormsModule],
+    imports: [ToastModule, InputTextModule, TextareaModule, DialogModule, TableModule, ButtonModule, FileUploadModule, ReactiveFormsModule],
     templateUrl: './update-studio.component.html',
     styleUrl: './update-studio.component.css'
 })

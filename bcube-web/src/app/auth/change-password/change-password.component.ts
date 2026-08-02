@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import {
   AbstractControl,
   FormBuilder,
@@ -26,16 +26,13 @@ import { extractErrorMessage } from '../../shared/error-message.util';
 @Component({
     selector: 'app-change-password',
     imports: [
-        CommonModule,
-        ReactiveFormsModule,
-        // PrimeNG
-        ToastModule,
-        ConfirmDialogModule,
-        InputTextModule,
-        ButtonModule,
-        // Eigene Component
-        AuthContainerComponent
-    ],
+    ReactiveFormsModule,
+    ToastModule,
+    ConfirmDialogModule,
+    InputTextModule,
+    ButtonModule,
+    AuthContainerComponent
+],
     templateUrl: './change-password.component.html',
     styleUrl: './change-password.component.css',
     providers: [MessageService]

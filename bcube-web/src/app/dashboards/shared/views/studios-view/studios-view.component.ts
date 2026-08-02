@@ -9,7 +9,7 @@ import {
   ViewChild,
   ViewChildren
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { Router } from '@angular/router';
 import * as mapboxgl from 'mapbox-gl';
 import { Subject, takeUntil } from 'rxjs';
@@ -29,13 +29,12 @@ type StudioViewModel = Studio & { gallery: string[] };
 @Component({
     selector: 'app-studios-view',
     imports: [
-        CommonModule,
-        ButtonModule,
-        LoadingSpinnerComponent,
-        StudiosComponent,
-        UpdateStudioComponent,
-        DeleteStudioComponent
-    ],
+    ButtonModule,
+    LoadingSpinnerComponent,
+    StudiosComponent,
+    UpdateStudioComponent,
+    DeleteStudioComponent
+],
     templateUrl: './studios-view.component.html',
     styleUrl: './studios-view.component.css'
 })

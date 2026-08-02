@@ -12,7 +12,7 @@ import { ButtonModule } from 'primeng/button';
 import { FileUpload, FileUploadModule, FileSelectEvent } from 'primeng/fileupload';
 import { ReactiveFormsModule } from '@angular/forms';
 import { DialogModule } from 'primeng/dialog';
-import { CommonModule } from '@angular/common';
+
 import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
 import { AuthService } from '../../../../services/auth/auth.service';
@@ -21,7 +21,7 @@ import { extractErrorMessage } from '../../../../shared/error-message.util';
 
 @Component({
     selector: 'app-studios',
-    imports: [InputTextModule, TextareaModule, CommonModule, DialogModule, FileUploadModule, TableModule, ButtonModule, ReactiveFormsModule],
+    imports: [InputTextModule, TextareaModule, DialogModule, FileUploadModule, TableModule, ButtonModule, ReactiveFormsModule],
     templateUrl: './studios.component.html',
     styleUrl: './studios.component.css'
 })

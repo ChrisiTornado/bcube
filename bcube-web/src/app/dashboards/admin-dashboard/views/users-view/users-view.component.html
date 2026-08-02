@@ -3,9 +3,11 @@
   <app-users></app-users>
 </div>
 
-<app-loading-spinner *ngIf="loading$ | async"></app-loading-spinner>
+@if (loading$ | async) {
+  <app-loading-spinner></app-loading-spinner>
+}
 
-<ng-container *ngIf="!(loading$ | async) && (users$ | async) as users">
+@if (!(loading$ | async) && (users$ | async); as users) {
   <div class="table-shell" style="padding-bottom: 0.5rem;">
     <p-table [value]="users">
       <ng-template pTemplate="header">
@@ -41,21 +43,18 @@
     </p-table>
   </div>
   <div class="pager-shell flex justify-content-center gap-3 mt-3">
-      <button pButton label="<- Zurück"
-              [style]="lightButtonStyle"
-              (click)="loadPage(this.userService.page - 1)"
-              [disabled]="this.userService.page === 0">
-      </button>
-
-      <span class="mt-2 mx-3 font-bold">
-          Seite {{ this.userService.page + 1 }} von {{ totalPages }}
-      </span>
-
-      <button pButton label="Weiter ->"
-              [style]="lightButtonStyle"
-              (click)="loadPage(this.userService.page + 1)"
-              [disabled]="this.userService.page >= totalPages - 1">
-      </button>
+    <button pButton label="<- Zurück"
+      [style]="lightButtonStyle"
+      (click)="loadPage(this.userService.page - 1)"
+      [disabled]="this.userService.page === 0">
+    </button>
+    <span class="mt-2 mx-3 font-bold">
+      Seite {{ this.userService.page + 1 }} von {{ totalPages }}
+    </span>
+    <button pButton label="Weiter ->"
+      [style]="lightButtonStyle"
+      (click)="loadPage(this.userService.page + 1)"
+      [disabled]="this.userService.page >= totalPages - 1">
+    </button>
   </div>
-
-</ng-container>
+}

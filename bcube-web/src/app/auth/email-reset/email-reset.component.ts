@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { ReactiveFormsModule, AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -20,15 +20,14 @@ import { extractErrorMessage } from '../../shared/error-message.util';
 @Component({
     selector: 'app-email-reset',
     imports: [
-        CommonModule,
-        ReactiveFormsModule,
-        ButtonModule,
-        ToastModule,
-        RippleModule,
-        AuthContainerComponent,
-        InputTextModule,
-        ConfirmDialogModule
-    ],
+    ReactiveFormsModule,
+    ButtonModule,
+    ToastModule,
+    RippleModule,
+    AuthContainerComponent,
+    InputTextModule,
+    ConfirmDialogModule
+],
     templateUrl: './email-reset.component.html',
     styleUrl: './email-reset.component.css'
 })

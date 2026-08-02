@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { finalize } from 'rxjs';
@@ -18,14 +18,13 @@ import { extractErrorMessage } from '../../../../shared/error-message.util';
 @Component({
     selector: 'app-profile-view',
     imports: [
-        CommonModule,
-        RouterModule,
-        ReactiveFormsModule,
-        ButtonModule,
-        ToastModule,
-        ConfirmDialogModule,
-        InputTextModule
-    ],
+    RouterModule,
+    ReactiveFormsModule,
+    ButtonModule,
+    ToastModule,
+    ConfirmDialogModule,
+    InputTextModule
+],
     templateUrl: './profile-view.component.html',
     styleUrl: './profile-view.component.css',
     providers: [MessageService, ConfirmationService]

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
 import { MegaMenuItem } from 'primeng/api';
@@ -12,12 +12,11 @@ import { filter } from 'rxjs/operators';
 @Component({
     selector: 'app-user-dashboard',
     imports: [
-        CommonModule,
-        ToastModule,
-        ConfirmDialogModule,
-        RouterModule,
-        MegaMenuModule
-    ],
+    ToastModule,
+    ConfirmDialogModule,
+    RouterModule,
+    MegaMenuModule
+],
     templateUrl: './user-dashboard.component.html',
     styleUrl: './user-dashboard.component.css'
 })

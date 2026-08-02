@@ -8,69 +8,67 @@
   <div class="register-local-title-wrap">
     <h1 class="register-screen-title m-0">Registrieren</h1>
   </div>
-  <ng-container *ngIf="!loading; else loadingTemplate">
+  @if (!loading) {
     <form [formGroup]="registerForm">
-
       <div class="mb-4 register-field">
         <label for="email" class="block text-900 font-medium mb-2">E-Mail-Adresse</label>
         <input id="email" formControlName="email" type="text" placeholder="E-Mail-Adresse" pInputText pAutoFocus
           [autofocus]="true" class="w-full mb-3">
-
         <div class="register-error-wrap">
-          <small class="register-error" *ngIf="email.hasError('required') && submitted">E-Mail-Adresse
-            ist
+          @if (email.hasError('required') && submitted) {
+            <small class="register-error">E-Mail-Adresse
+              ist
             erforderlich</small>
+          }
         </div>
       </div>
-
       <div class="mb-4 register-field">
         <label for="password" class="block text-900 font-medium mb-2">Passwort</label>
         <input id="password" formControlName="password" type="password" placeholder="Passwort" pInputText
           class="w-full mb-3">
-
         <div class="register-error-wrap">
-          <small class="register-error" *ngIf="password.hasError('required') && submitted">Passwort
+          @if (password.hasError('required') && submitted) {
+            <small class="register-error">Passwort
             ist erforderlich</small>
+          }
         </div>
       </div>
-
       <div class="name-row">
         <div class="mb-4 name-field register-field">
           <label for="firstName" class="block text-900 font-medium mb-2">Vorname</label>
           <input id="firstName" formControlName="firstName" type="firstName" placeholder="Vorname" pInputText
             class="w-full mb-3">
-
           <div class="register-error-wrap">
-            <small class="register-error" *ngIf="firstName.hasError('required') && submitted">Vorname
+            @if (firstName.hasError('required') && submitted) {
+              <small class="register-error">Vorname
               ist erforderlich</small>
+            }
           </div>
         </div>
-
         <div class="mb-4 name-field register-field">
           <label for="lastName" class="block text-900 font-medium mb-2">Nachname</label>
           <input id="lastName" formControlName="lastName" type="lastName" placeholder="Nachname" pInputText
             class="w-full mb-3">
-
           <div class="register-error-wrap">
-            <small class="register-error" *ngIf="lastName.hasError('required') && submitted">Nachname
+            @if (lastName.hasError('required') && submitted) {
+              <small class="register-error">Nachname
               ist erforderlich</small>
+            }
           </div>
         </div>
       </div>
-
-
       <div class="mb-2 register-field register-phone-field">
         <label for="phone" class="block text-900 font-medium mb-2">Telefonnummer</label>
         <input id="phone" formControlName="phone" type="phone" placeholder="Telefonnummer" pInputText
           class="w-full mb-3">
-
         <div class="register-error-wrap">
-          <small class="register-error" *ngIf="phone.hasError('required') && submitted">Telefonnummer
-            ist
+          @if (phone.hasError('required') && submitted) {
+            <small class="register-error">Telefonnummer
+              ist
             erforderlich</small>
+          }
         </div>
       </div>
-
       <div class="register-terms-row mb-4">
         <label class="register-terms-check">
           <input type="checkbox" formControlName="acceptTerms">
@@ -80,11 +78,12 @@
             zu.
           </span>
         </label>
-        <small class="register-terms-error" *ngIf="acceptTerms.invalid && submitted">
-          Bitte stimme den AGB zu.
-        </small>
+        @if (acceptTerms.invalid && submitted) {
+          <small class="register-terms-error">
+            Bitte stimme den AGB zu.
+          </small>
+        }
       </div>
-
       <div class="card flex justify-content-center mb-4">
         <div class="flex gap-3 register-actions">
           <p-button
@@ -94,17 +93,16 @@
             icon="pi pi-sign-in"
             iconPos="left"
             [loading]="loading"
-            (click)="register()"></p-button>
+          (click)="register()"></p-button>
           <p-button
             styleClass="register-secondary-button"
-            [routerLink]="['/login']">Einloggen</p-button>
+          [routerLink]="['/login']">Einloggen</p-button>
         </div>
       </div>
     </form>
-  </ng-container>
-
-  <ng-template #loadingTemplate>
+  } @else {
     <app-loading-spinner></app-loading-spinner>
-  </ng-template>
+  }
+
 
 </app-auth-container>

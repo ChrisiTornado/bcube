@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../../services/auth/auth.service';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { Router } from '@angular/router';
-import { CommonModule } from '@angular/common';
+
 import { RouterModule } from '@angular/router';
 import { AuthContainerComponent } from '../auth-container/auth-container.component';
 import { ButtonModule } from "primeng/button";
@@ -20,7 +20,7 @@ import { extractErrorMessage } from '../../shared/error-message.util';
 
 @Component({
     selector: 'app-register',
-    imports: [InputTextModule, LoadingSpinnerComponent, CommonModule, RouterModule, AuthContainerComponent, ButtonModule, ReactiveFormsModule],
+    imports: [InputTextModule, LoadingSpinnerComponent, RouterModule, AuthContainerComponent, ButtonModule, ReactiveFormsModule],
     templateUrl: './register.component.html',
     styleUrl: './register.component.css'
 })

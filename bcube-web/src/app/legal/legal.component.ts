@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Router, RouterModule } from '@angular/router';
@@ -7,7 +7,7 @@ type LegalSection = 'impressum' | 'datenschutz' | 'agb';
 
 @Component({
     selector: 'app-legal',
-    imports: [CommonModule, RouterModule],
+    imports: [RouterModule],
     templateUrl: './legal.component.html',
     styleUrl: './legal.component.css'
 })

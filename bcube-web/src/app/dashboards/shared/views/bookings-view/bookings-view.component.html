@@ -1,54 +1,52 @@
 <div class="view-header">
   <h1 class="m-0">Buchungen</h1>
-  <button
-    *ngIf="showCalendarSwitch"
-    pButton
-    type="button"
-    label="Kalenderansicht"
-    class="calendar-switch-button"
-    (click)="navigateToCalendarView()">
-  </button>
+  @if (showCalendarSwitch) {
+    <button
+      pButton
+      type="button"
+      label="Kalenderansicht"
+      class="calendar-switch-button"
+      (click)="navigateToCalendarView()">
+    </button>
+  }
 </div>
 
-<app-loading-spinner *ngIf="loading$ | async"></app-loading-spinner>
+@if (loading$ | async) {
+  <app-loading-spinner></app-loading-spinner>
+}
 
 
-<ng-container *ngIf="!(loading$ | async) && (bookings$ | async) as bookings">
-
+@if (!(loading$ | async) && (bookings$ | async); as bookings) {
   <!-- Filter -->
   <div class="filters-shell my-4 flex gap-4">
-    <p-floatLabel *ngIf="isAdmin">
-      <p-select [(ngModel)]="userFilter" [options]="userFilters" optionLabel="label" dataKey="id"
-        placeholder="User auswählen" (onChange)="updateFilters()">
-
-        <!-- User Item -->
-        <ng-template let-user pTemplate="item">
-          <div>{{ user.lastName }}, {{ user.firstName }}</div>
-        </ng-template>
-
-        <!-- FOOTER MIT PLUS -->
-        <ng-template pTemplate="footer">
-          <div class="p-2 text-center">
-            <button pButton type="button" icon="pi pi-plus" label="Weitere laden" class="p-button-text"
-              (mousedown)="$event.preventDefault()" (click)="$event.stopPropagation(); loadMoreUsers()"
-              [disabled]="userFilterLoading || userFilterLastPage">
-            </button>
-          </div>
-        </ng-template>
-
-      </p-select>
-      <label for="userFilter">Benutzer</label>
-    </p-floatLabel>
-
+    @if (isAdmin) {
+      <p-floatLabel>
+        <p-select [(ngModel)]="userFilter" [options]="userFilters" optionLabel="label" dataKey="id"
+          placeholder="User auswählen" (onChange)="updateFilters()">
+          <!-- User Item -->
+          <ng-template let-user pTemplate="item">
+            <div>{{ user.lastName }}, {{ user.firstName }}</div>
+          </ng-template>
+          <!-- FOOTER MIT PLUS -->
+          <ng-template pTemplate="footer">
+            <div class="p-2 text-center">
+              <button pButton type="button" icon="pi pi-plus" label="Weitere laden" class="p-button-text"
+                (mousedown)="$event.preventDefault()" (click)="$event.stopPropagation(); loadMoreUsers()"
+                [disabled]="userFilterLoading || userFilterLastPage">
+              </button>
+            </div>
+          </ng-template>
+        </p-select>
+        <label for="userFilter">Benutzer</label>
+      </p-floatLabel>
+    }
     <p-floatLabel>
       <p-select [(ngModel)]="studioFilter" [options]="studioFilters" optionLabel="name" dataKey="id"
         placeholder="Cube auswählen" (onChange)="updateFilters()">
-
         <!-- Studio Item -->
         <ng-template let-studio pTemplate="item">
           <div>{{ studio.name }}</div>
         </ng-template>
-
         <!-- FOOTER MIT PLUS -->
         <ng-template pTemplate="footer">
           <div class="p-2 text-center">
@@ -58,77 +56,76 @@
             </button>
           </div>
         </ng-template>
-
       </p-select>
       <label for="studioFilter">Cube</label>
     </p-floatLabel>
-
     <p-button [outlined]="true" label="Filter zurücksetzen"
       [style]="darkButtonStyle"
       (click)="userFilter = null; studioFilter = null; updateFilters()">
     </p-button>
   </div>
-
-  <div *ngIf="bookings.length === 0" class="empty-shell text-center my-6">
-    <h3 class="mb-3">Keine Buchungen gefunden</h3>
-    <p-button (onClick)="navigateToBookingCreation()"
-      [style]="darkButtonStyle" *ngIf="!isAdmin">
-      Hier buchen
-    </p-button>
-  </div>
-
-  <div *ngIf="bookings.length > 0" class="table-shell" style="padding-bottom: 0.5rem;">
-
-    <p-table class="small-rows" [value]="bookings">
-      <ng-template pTemplate="header">
-        <tr>
-          <th>Buchungsnummer</th>
-          <th>Buchungsstatus</th>
-          <th>Tag</th>
-          <th>Uhrzeit</th>
-          <th>Ort</th>
-          <th>Stornieren</th>
-        </tr>
-      </ng-template>
-
-      <ng-template pTemplate="body" let-booking>
-        <tr (click)="navigateToDetails(booking)" style="cursor: pointer;">
-          <td>{{ booking.id }}</td>
-          <td>{{ getStatusLabel(booking.status) }}</td>
-          <td>{{ booking.date | date: 'dd. MMMM, yyyy' : undefined : 'de-AT' }}</td>
-          <td>{{ booking.startTime | date:'HH:mm' }}–{{ booking.endTime | date:'HH:mm' }}</td>
-          <td>
-  {{
-    booking.studio.name.length > 20
-      ? (booking.studio.name | slice:0:20) + '...'
-      : booking.studio.name
-  }}
-</td>
-          <td>
-            <app-storno-booking
-              *ngIf="booking.status === bookingStatus.CONFIRMED"
-              [booking]="booking"
-              (click)="$event.stopPropagation()">
-            </app-storno-booking>
-          </td>
-        </tr>
-      </ng-template>
-    </p-table>
-  </div>
-
+  @if (bookings.length === 0) {
+    <div class="empty-shell text-center my-6">
+      <h3 class="mb-3">Keine Buchungen gefunden</h3>
+      @if (!isAdmin) {
+        <p-button (onClick)="navigateToBookingCreation()"
+          [style]="darkButtonStyle">
+          Hier buchen
+        </p-button>
+      }
+    </div>
+  }
+  @if (bookings.length > 0) {
+    <div class="table-shell" style="padding-bottom: 0.5rem;">
+      <p-table class="small-rows" [value]="bookings">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Buchungsnummer</th>
+            <th>Buchungsstatus</th>
+            <th>Tag</th>
+            <th>Uhrzeit</th>
+            <th>Ort</th>
+            <th>Stornieren</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-booking>
+          <tr (click)="navigateToDetails(booking)" style="cursor: pointer;">
+            <td>{{ booking.id }}</td>
+            <td>{{ getStatusLabel(booking.status) }}</td>
+            <td>{{ booking.date | date: 'dd. MMMM, yyyy' : undefined : 'de-AT' }}</td>
+            <td>{{ booking.startTime | date:'HH:mm' }}–{{ booking.endTime | date:'HH:mm' }}</td>
+            <td>
+              {{
+              booking.studio.name.length > 20
+              ? (booking.studio.name | slice:0:20) + '...'
+              : booking.studio.name
+              }}
+            </td>
+            <td>
+              @if (booking.status === bookingStatus.CONFIRMED) {
+                <app-storno-booking
+                  [booking]="booking"
+                  (click)="$event.stopPropagation()">
+                </app-storno-booking>
+              }
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  }
   <!-- Pagination unten -->
-  <div class="pager-shell flex justify-content-center gap-4 mt-4" *ngIf="totalPages > 1">
-    <button pButton label="<- Zurück" [style]="lightButtonStyle"
-      (click)="isAdmin ? loadAdminPage(this.bookingService.page - 1) : loadUserPage(authService.getUser()?.id!, this.bookingService.page - 1)"
-      [disabled]="this.bookingService.page === 0">
-    </button>
-
-    <span class="mt-2 mx-3 font-bold">Seite {{ this.bookingService.page + 1 }} von {{ totalPages }}</span>
-
-    <button pButton label="Weiter ->" [style]="lightButtonStyle"
-      (click)="isAdmin ? loadAdminPage(this.bookingService.page + 1) : loadUserPage(authService.getUser()?.id!, this.bookingService.page + 1)"
-      [disabled]="this.bookingService.page >= totalPages - 1">
-    </button>
-  </div>
-
-</ng-container>
+  @if (totalPages > 1) {
+    <div class="pager-shell flex justify-content-center gap-4 mt-4">
+      <button pButton label="<- Zurück" [style]="lightButtonStyle"
+        (click)="isAdmin ? loadAdminPage(this.bookingService.page - 1) : loadUserPage(authService.getUser()?.id!, this.bookingService.page - 1)"
+        [disabled]="this.bookingService.page === 0">
+      </button>
+      <span class="mt-2 mx-3 font-bold">Seite {{ this.bookingService.page + 1 }} von {{ totalPages }}</span>
+      <button pButton label="Weiter ->" [style]="lightButtonStyle"
+        (click)="isAdmin ? loadAdminPage(this.bookingService.page + 1) : loadUserPage(authService.getUser()?.id!, this.bookingService.page + 1)"
+        [disabled]="this.bookingService.page >= totalPages - 1">
+      </button>
+    </div>
+  }
+}
