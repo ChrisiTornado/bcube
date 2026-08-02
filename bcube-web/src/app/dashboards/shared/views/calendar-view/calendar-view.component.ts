@@ -2,15 +2,18 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { CalendarModule } from 'primeng/calendar';
-import { DropdownModule } from 'primeng/dropdown';
 import { ButtonModule } from 'primeng/button';
 import { AuthService } from '../../../../services/auth/auth.service';
 import { BookingService } from '../../../../services/booking.service';
 import { Booking } from '../../../../models/Booking';
 import { FullCalendarModule } from '@fullcalendar/angular';
 import dayGridPlugin from '@fullcalendar/daygrid';
-import { CalendarOptions, DatesSetArg, EventInput } from '@fullcalendar/core';
+// @fullcalendar/core@7.x ships a broken (empty) index.d.ts upstream - confirmed across
+// every published 7.x release (7.0.0-7.1.0-alpha.0). Falling back to `any` for its types
+// here until that's fixed upstream; the runtime behavior is unaffected.
+type CalendarOptions = any;
+type DatesSetArg = any;
+type EventInput = any;
 import interactionPlugin from '@fullcalendar/interaction';
 import { User } from '../../../../models/User';
 import { LoadingSpinnerComponent } from '../../../../shared/loading-spinner/loading-spinner.component';
@@ -20,8 +23,6 @@ import { BookingStatus } from '../../../../models/BookingStatus';
     selector: 'app-calendar-view',
     imports: [CommonModule,
         FormsModule,
-        CalendarModule,
-        DropdownModule,
         ButtonModule,
         FullCalendarModule,
         LoadingSpinnerComponent
@@ -152,14 +153,14 @@ export class CalendarViewComponent implements OnInit {
         right: 'prev,next'
       },
       weekends: true,
-      dayCellClassNames: (arg) => this.selectedDate === this.toIsoDate(arg.date) ? ['fc-day-selected'] : [],
-      datesSet: (info) => this.handleMonthChange(info),
-      moreLinkContent: (arg) => ({ html: `+${arg.num} Mehr` }),
-      moreLinkClick: (info) => {
+      dayCellClassNames: (arg: any) => this.selectedDate === this.toIsoDate(arg.date) ? ['fc-day-selected'] : [],
+      datesSet: (info: any) => this.handleMonthChange(info),
+      moreLinkContent: (arg: any) => ({ html: `+${arg.num} Mehr` }),
+      moreLinkClick: (info: any) => {
         this.selectDate(this.toIsoDate(info.date));
         return 'popover';
       },
-      dateClick: (info) => this.selectDate(info.dateStr)
+      dateClick: (info: any) => this.selectDate(info.dateStr)
     };
   }
 

@@ -6,7 +6,7 @@ import { CommonModule } from '@angular/common';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
-import { DropdownModule } from 'primeng/dropdown';
+import { SelectModule } from 'primeng/select';
 import { UserService } from '../../../../../services/user.service';
 import { MessageService } from 'primeng/api';
 import { User } from '../../../../../models/User';
@@ -23,7 +23,7 @@ import { extractErrorMessage } from '../../../../../shared/error-message.util';
         DialogModule,
         ButtonModule,
         InputTextModule,
-        DropdownModule,
+        SelectModule,
         ReactiveFormsModule
     ],
     templateUrl: './update-user.component.html',

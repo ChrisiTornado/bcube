@@ -15,14 +15,14 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { DialogModule } from 'primeng/dialog';
 import { CommonModule } from '@angular/common';
 import { InputTextModule } from 'primeng/inputtext';
-import { InputTextarea } from 'primeng/inputtextarea';
+import { TextareaModule } from 'primeng/textarea';
 import { ToastModule } from 'primeng/toast';
 import { DARK_BUTTON_STYLE } from '../../../../../shared/button-style';
 import { extractErrorMessage } from '../../../../../shared/error-message.util';
 
 @Component({
     selector: 'app-update-studio',
-    imports: [ToastModule, InputTextModule, InputTextarea, CommonModule, DialogModule, TableModule, ButtonModule, FileUploadModule, ReactiveFormsModule],
+    imports: [ToastModule, InputTextModule, TextareaModule, CommonModule, DialogModule, TableModule, ButtonModule, FileUploadModule, ReactiveFormsModule],
     templateUrl: './update-studio.component.html',
     styleUrl: './update-studio.component.css'
 })

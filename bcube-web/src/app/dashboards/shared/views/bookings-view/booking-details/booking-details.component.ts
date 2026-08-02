@@ -2,8 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { CalendarModule } from 'primeng/calendar';
-import { DropdownModule } from 'primeng/dropdown';
 import { ButtonModule } from 'primeng/button';
 import { LoadingSpinnerComponent } from '../../../../../shared/loading-spinner/loading-spinner.component';
 import { AuthService } from '../../../../../services/auth/auth.service';
@@ -18,8 +16,6 @@ import { BookingDetailsResponse } from '../../../../../models/responses/booking/
     imports: [
         CommonModule,
         FormsModule,
-        CalendarModule,
-        DropdownModule,
         ButtonModule,
         LoadingSpinnerComponent,
         CardModule

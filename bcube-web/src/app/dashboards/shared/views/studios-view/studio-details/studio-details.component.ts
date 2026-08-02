@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { CalendarModule } from 'primeng/calendar';
+import { DatePickerModule } from 'primeng/datepicker';
 import { ButtonModule } from 'primeng/button';
 import { finalize } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -15,8 +15,12 @@ import { FullCalendarModule } from '@fullcalendar/angular';
 import { CardModule } from 'primeng/card';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
-import { DateClickArg } from '@fullcalendar/interaction';
-import { CalendarOptions, EventInput } from '@fullcalendar/core';
+// @fullcalendar/core@7.x ships a broken (empty) index.d.ts upstream - confirmed across
+// every published 7.x release (7.0.0-7.1.0-alpha.0), which also breaks @fullcalendar/interaction's
+// re-exported types. Falling back to `any` until that's fixed upstream; runtime is unaffected.
+type DateClickArg = any;
+type CalendarOptions = any;
+type EventInput = any;
 import { Studio } from '../../../../../models/Studio';
 import { Booking } from '../../../../../models/Booking';
 import { CreateBookingRequest } from '../../../../../models/requests/booking/CreateBookingRequest';
@@ -28,7 +32,7 @@ import { extractErrorMessage } from '../../../../../shared/error-message.util';
     imports: [
         CommonModule,
         FormsModule,
-        CalendarModule,
+        DatePickerModule,
         ButtonModule,
         LoadingSpinnerComponent,
         FullCalendarModule,
@@ -171,8 +175,8 @@ export class StudioDetailsComponent implements OnInit {
         right: 'prev,next'
       },
       weekends: true,
-      dayCellClassNames: (arg) => this.date && this.toIsoDate(this.date) === this.toIsoDate(arg.date) ? ['fc-day-selected'] : [],
-      moreLinkContent: (arg) => ({ html: `+${arg.num} Mehr` }),
+      dayCellClassNames: (arg: any) => this.date && this.toIsoDate(this.date) === this.toIsoDate(arg.date) ? ['fc-day-selected'] : [],
+      moreLinkContent: (arg: any) => ({ html: `+${arg.num} Mehr` }),
       moreLinkClick: 'popover',
       dateClick: this.handleDateClick.bind(this),
       ...(validRangeStart && { validRange: validRangeStart })
@@ -188,9 +192,9 @@ export class StudioDetailsComponent implements OnInit {
     this.calendarOptions = {
       ...this.calendarOptions,
       dayMaxEvents: 2,
-      moreLinkContent: (arg) => ({ html: `+${arg.num} Mehr` }),
+      moreLinkContent: (arg: any) => ({ html: `+${arg.num} Mehr` }),
       moreLinkClick: 'popover',
-      dayCellClassNames: (cellArg) => this.date && this.toIsoDate(this.date) === this.toIsoDate(cellArg.date) ? ['fc-day-selected'] : []
+      dayCellClassNames: (cellArg: any) => this.date && this.toIsoDate(this.date) === this.toIsoDate(cellArg.date) ? ['fc-day-selected'] : []
     };
   }
 

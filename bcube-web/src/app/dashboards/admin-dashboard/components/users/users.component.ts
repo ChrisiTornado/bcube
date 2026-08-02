@@ -10,7 +10,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { DialogModule } from 'primeng/dialog';
 import { CommonModule } from '@angular/common';
 import { InputTextModule } from 'primeng/inputtext';
-import { DropdownModule } from 'primeng/dropdown';
+import { SelectModule } from 'primeng/select';
 import { CreateUserRequest } from '../../../../models/requests/user/CreateUserRequest';
 import { ApiResponse } from '../../../../models/responses/ApiResponse';
 import { UserResponse } from '../../../../models/responses/user/UserResponse';
@@ -19,7 +19,7 @@ import { extractErrorMessage } from '../../../../shared/error-message.util';
 
 @Component({
     selector: 'app-users',
-    imports: [InputTextModule, DropdownModule, CommonModule, DialogModule, TableModule, ButtonModule, ReactiveFormsModule],
+    imports: [InputTextModule, SelectModule, CommonModule, DialogModule, TableModule, ButtonModule, ReactiveFormsModule],
     templateUrl: './users.component.html',
     styleUrl: './users.component.css'
 })

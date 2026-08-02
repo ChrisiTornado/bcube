@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
-import { DropdownModule } from 'primeng/dropdown';
+import { SelectModule } from 'primeng/select';
 import { FloatLabelModule } from 'primeng/floatlabel';
 
 import { AuthService } from '../../../../services/auth/auth.service';
@@ -26,7 +26,7 @@ import { DARK_BUTTON_STYLE, LIGHT_BUTTON_STYLE } from '../../../../shared/button
         CommonModule,
         TableModule,
         ButtonModule,
-        DropdownModule,
+        SelectModule,
         FloatLabelModule,
         LoadingSpinnerComponent,
         StornoBookingComponent,

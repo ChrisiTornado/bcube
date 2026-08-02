@@ -36,10 +36,10 @@
 
       <div class="mb-4">
         <label for="isAdmin" class="block text-900 font-medium mb-2">Rolle</label>
-        <p-dropdown id="isAdmin" formControlName="isAdmin"
+        <p-select id="isAdmin" formControlName="isAdmin"
                     [options]="[{ label: 'Benutzer', value: false }, { label: 'Administrator', value: true }]"
                     placeholder="Rolle auswählen" class="w-full">
-        </p-dropdown>
+        </p-select>
         <small style="color: red" *ngIf="isAdmin.hasError('required') && submitted">Rolle ist erforderlich</small>
       </div>
 

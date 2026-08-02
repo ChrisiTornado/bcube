@@ -14,14 +14,14 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { DialogModule } from 'primeng/dialog';
 import { CommonModule } from '@angular/common';
 import { InputTextModule } from 'primeng/inputtext';
-import { InputTextarea } from 'primeng/inputtextarea';
+import { TextareaModule } from 'primeng/textarea';
 import { AuthService } from '../../../../services/auth/auth.service';
 import { DARK_BUTTON_STYLE } from '../../../../shared/button-style';
 import { extractErrorMessage } from '../../../../shared/error-message.util';
 
 @Component({
     selector: 'app-studios',
-    imports: [InputTextModule, InputTextarea, CommonModule, DialogModule, FileUploadModule, TableModule, ButtonModule, ReactiveFormsModule],
+    imports: [InputTextModule, TextareaModule, CommonModule, DialogModule, FileUploadModule, TableModule, ButtonModule, ReactiveFormsModule],
     templateUrl: './studios.component.html',
     styleUrl: './studios.component.css'
 })

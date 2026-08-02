@@ -363,8 +363,10 @@
   background: transparent !important;
 }
 
-/* ===== PrimeNG time-picker (p-calendar) deep overrides ===== */
-:host ::ng-deep .booking-elements .time-field-input .p-calendar {
+/* ===== PrimeNG time-picker (p-datepicker, formerly p-calendar) deep overrides =====
+   PrimeNG 20 renamed the component's classes from .p-calendar/.p-datepicker to a
+   BEM-style p-datepicker-* scheme; selectors below were remapped accordingly. */
+:host ::ng-deep .booking-elements .time-field-input .p-datepicker {
   width: 100%;
 }
 
@@ -372,32 +374,32 @@
   width: 100%;
 }
 
-:host ::ng-deep .p-calendar .p-datepicker-trigger {
+:host ::ng-deep .p-datepicker .p-datepicker-dropdown {
   background-color: black !important;
   border: 1px solid black !important;
   color: white !important;
 }
 
-:host ::ng-deep .p-datepicker {
+:host ::ng-deep .p-datepicker-panel {
   background: #171717 !important;
   border: 1px solid rgba(255, 167, 34, 0.18) !important;
   color: #ffffff !important;
   box-shadow: 0 24px 48px rgba(0, 0, 0, 0.28) !important;
 }
 
-:host ::ng-deep .p-datepicker .p-timepicker,
-:host ::ng-deep .p-datepicker .p-timepicker span,
-:host ::ng-deep .p-datepicker .p-timepicker button {
+:host ::ng-deep .p-datepicker-panel .p-datepicker-time-picker,
+:host ::ng-deep .p-datepicker-panel .p-datepicker-time-picker span,
+:host ::ng-deep .p-datepicker-panel .p-datepicker-time-picker button {
   background: transparent !important;
   color: #ffffff !important;
 }
 
-:host ::ng-deep .p-datepicker .p-timepicker button:hover {
+:host ::ng-deep .p-datepicker-panel .p-datepicker-time-picker button:hover {
   background: rgba(255, 255, 255, 0.08) !important;
 }
 
-:host ::ng-deep .p-datepicker .p-timepicker-separator,
-:host ::ng-deep .p-datepicker .p-timepicker span {
+:host ::ng-deep .p-datepicker-panel .p-datepicker-separator,
+:host ::ng-deep .p-datepicker-panel .p-datepicker-time-picker span {
   color: #ffffff !important;
 }
 

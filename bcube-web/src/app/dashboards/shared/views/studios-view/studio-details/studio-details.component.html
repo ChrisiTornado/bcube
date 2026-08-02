@@ -77,19 +77,19 @@
           <div class="booking-elements" *ngIf="isUser">
             <div class="time-field-row">
               <label for="startTime" class="time-field-label">Startzeitpunkt</label>
-              <p-calendar class="time-field-input" id="startTime" [(ngModel)]="startTime" [timeOnly]="true"
+              <p-datepicker class="time-field-input" id="startTime" [(ngModel)]="startTime" [timeOnly]="true"
                 hourFormat="24" [stepMinute]="15" placeholder="Startzeit wählen" [showIcon]="true"
                 (onFocus)="setDefaultTime('start')"
                 (ngModelChange)="startTime = normalizeToQuarterHour($event); checkTimeConflict();">
-              </p-calendar>
+              </p-datepicker>
             </div>
 
             <div class="time-field-row">
               <label for="endTime" class="time-field-label">Endzeitpunkt</label>
-              <p-calendar class="time-field-input" id="endTime" [(ngModel)]="endTime" [timeOnly]="true" hourFormat="24"
+              <p-datepicker class="time-field-input" id="endTime" [(ngModel)]="endTime" [timeOnly]="true" hourFormat="24"
                 [stepMinute]="15" placeholder="Endzeit wählen" [showIcon]="true" (onFocus)="setDefaultTime('end')"
                 (ngModelChange)="endTime = normalizeToQuarterHour($event); checkTimeConflict();">
-              </p-calendar>
+              </p-datepicker>
             </div>
 
             <div class="booking-error-wrap">

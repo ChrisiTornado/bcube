@@ -18,7 +18,7 @@
   <!-- Filter -->
   <div class="filters-shell my-4 flex gap-4">
     <p-floatLabel *ngIf="isAdmin">
-      <p-dropdown [(ngModel)]="userFilter" [options]="userFilters" optionLabel="label" dataKey="id"
+      <p-select [(ngModel)]="userFilter" [options]="userFilters" optionLabel="label" dataKey="id"
         placeholder="User auswählen" (onChange)="updateFilters()">
 
         <!-- User Item -->
@@ -36,12 +36,12 @@
           </div>
         </ng-template>
 
-      </p-dropdown>
+      </p-select>
       <label for="userFilter">Benutzer</label>
     </p-floatLabel>
 
     <p-floatLabel>
-      <p-dropdown [(ngModel)]="studioFilter" [options]="studioFilters" optionLabel="name" dataKey="id"
+      <p-select [(ngModel)]="studioFilter" [options]="studioFilters" optionLabel="name" dataKey="id"
         placeholder="Cube auswählen" (onChange)="updateFilters()">
 
         <!-- Studio Item -->
@@ -59,7 +59,7 @@
           </div>
         </ng-template>
 
-      </p-dropdown>
+      </p-select>
       <label for="studioFilter">Cube</label>
     </p-floatLabel>
 
