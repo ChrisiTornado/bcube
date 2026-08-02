@@ -14,10 +14,27 @@
   --bcube-shadow: 0 22px 60px rgba(0, 0, 0, 0.28);
 }
 
+// PrimeNG 18's base theme injects legacy-named "surface" utility classes with
+// !important, pointing at its own (light-by-default) design tokens. This app
+// reused those same class names (.surface-ground/.surface-card/.text-900) for
+// its own dark palette before that existed, so force them back; per-component
+// ::ng-deep rules still layer their gradients/shadows on top via `background`.
+body .surface-ground {
+  background-color: var(--bcube-black) !important;
+}
+
+body .surface-card {
+  background-color: rgba(9, 9, 9, 0.88) !important;
+}
+
+body .text-900 {
+  color: var(--bcube-text) !important;
+}
+
 body {
   margin: 0;
   min-height: 100vh;
-  
+
   color: var(--bcube-text);
   font-family: "Avenir Next", "Montserrat", "Segoe UI", sans-serif;
   background:

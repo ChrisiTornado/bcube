@@ -15,7 +15,7 @@ import { DialogModule } from 'primeng/dialog';
 import { CommonModule } from '@angular/common';
 import { LoadingSpinnerComponent } from '../../../../shared/loading-spinner/loading-spinner.component';
 import { InputTextModule } from 'primeng/inputtext';
-import { InputTextareaModule } from 'primeng/inputtextarea';
+import { InputTextarea } from 'primeng/inputtextarea';
 import { AuthService } from '../../../../services/auth/auth.service';
 import { DARK_BUTTON_STYLE } from '../../../../shared/button-style';
 import { extractErrorMessage } from '../../../../shared/error-message.util';
@@ -23,7 +23,7 @@ import { extractErrorMessage } from '../../../../shared/error-message.util';
 @Component({
   selector: 'app-studios',
   standalone: true,
-  imports: [InputTextModule, InputTextareaModule, LoadingSpinnerComponent, CommonModule, DialogModule, FileUploadModule, TableModule, ButtonModule, ReactiveFormsModule],
+  imports: [InputTextModule, InputTextarea, LoadingSpinnerComponent, CommonModule, DialogModule, FileUploadModule, TableModule, ButtonModule, ReactiveFormsModule],
   templateUrl: './studios.component.html',
   styleUrl: './studios.component.css'
 })

@@ -16,7 +16,7 @@ import { DialogModule } from 'primeng/dialog';
 import { CommonModule } from '@angular/common';
 import { LoadingSpinnerComponent } from '../../../../../shared/loading-spinner/loading-spinner.component';
 import { InputTextModule } from 'primeng/inputtext';
-import { InputTextareaModule } from 'primeng/inputtextarea';
+import { InputTextarea } from 'primeng/inputtextarea';
 import { ToastModule } from 'primeng/toast';
 import { DARK_BUTTON_STYLE } from '../../../../../shared/button-style';
 import { extractErrorMessage } from '../../../../../shared/error-message.util';
@@ -24,7 +24,7 @@ import { extractErrorMessage } from '../../../../../shared/error-message.util';
 @Component({
   selector: 'app-update-studio',
   standalone: true,
-  imports: [ToastModule, InputTextModule, InputTextareaModule, LoadingSpinnerComponent, CommonModule, DialogModule, TableModule, ButtonModule, FileUploadModule, ReactiveFormsModule],
+  imports: [ToastModule, InputTextModule, InputTextarea, LoadingSpinnerComponent, CommonModule, DialogModule, TableModule, ButtonModule, FileUploadModule, ReactiveFormsModule],
   templateUrl: './update-studio.component.html',
   styleUrl: './update-studio.component.css'
 })

@@ -5,7 +5,7 @@ import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
 import { AuthService } from '../../services/auth/auth.service';
 import { MegaMenuModule } from 'primeng/megamenu';
-import { Router, NavigationEnd } from '@angular/router';
+import { Router, RouterModule, NavigationEnd } from '@angular/router';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { ConfirmationService } from 'primeng/api';
 import { filter } from 'rxjs/operators';
@@ -13,7 +13,7 @@ import { filter } from 'rxjs/operators';
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [CommonModule, ToastModule, MegaMenuModule, ConfirmDialogModule],
+  imports: [CommonModule, RouterModule, ToastModule, MegaMenuModule, ConfirmDialogModule],
   templateUrl: './admin-dashboard.component.html',
   styleUrl: './admin-dashboard.component.css'
 })
