@@ -18,6 +18,17 @@
   min-height: 0;
 }
 
+.empty-shell {
+  padding: 2rem;
+  border-radius: 24px;
+  border: 1px solid rgba(255, 167, 34, 0.14);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.empty-shell h3 {
+  color: #ffffff;
+}
+
 .pager-shell {
   align-items: center;
   flex-shrink: 0;

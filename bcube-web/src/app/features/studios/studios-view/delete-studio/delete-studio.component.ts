@@ -7,7 +7,7 @@ import { StudioActionService } from '@features/studios/studio-action.service';
     selector: 'app-delete-studio',
     imports: [ButtonModule],
     template: `
-  <p-button icon="pi pi-trash" styleClass="p-button-danger" [loading]="loading" (click)="confirmDelete()"></p-button>
+  <p-button icon="pi pi-trash" styleClass="p-button-danger" [loading]="loading" ariaLabel="Cube löschen" (click)="confirmDelete()"></p-button>
 `
 })
 export class DeleteStudioComponent {

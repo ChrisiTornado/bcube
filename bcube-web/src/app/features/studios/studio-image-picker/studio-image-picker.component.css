@@ -98,6 +98,41 @@
   background: rgba(0, 0, 0, 0.85);
 }
 
+.image-picker-reorder {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: space-between;
+  padding: 0.25rem;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.75), transparent);
+}
+
+.image-picker-reorder button {
+  width: 1.5rem;
+  height: 1.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.65);
+  color: #ffffff;
+  cursor: pointer;
+  font-size: 0.7rem;
+  padding: 0;
+}
+
+.image-picker-reorder button:hover:not(:disabled) {
+  background: rgba(0, 0, 0, 0.85);
+}
+
+.image-picker-reorder button:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
 .image-picker-hint {
   color: var(--bcube-orange);
 }

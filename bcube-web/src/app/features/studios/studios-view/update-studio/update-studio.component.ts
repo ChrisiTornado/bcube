@@ -4,26 +4,24 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Studio } from '@models/studio.model';
 import { StudioService } from '@features/studios/studio.service';
 import { MessageService } from 'primeng/api';
-import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { FormBuilder, FormGroup, ReactiveFormsModule } from "@angular/forms";
 import { UpdateStudioRequest } from '@models/requests/studio/update-studio-request';
 import { ApiResponse } from '@models/responses/api-response';
 import { StudioResponse } from '@models/responses/studio/studio-response';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
-import { ReactiveFormsModule } from '@angular/forms';
 import { DialogModule } from 'primeng/dialog';
 
-import { InputTextModule } from 'primeng/inputtext';
-import { TextareaModule } from 'primeng/textarea';
 import { ToastModule } from 'primeng/toast';
 import { DARK_BUTTON_STYLE } from '@shared/util/button-style';
 import { extractErrorMessage } from '@shared/util/error-message.util';
 import { PickedImage, pickedImagesToByteArrays } from '@shared/util/image-file.util';
-import { StudioImagePickerComponent } from '@features/studios/studio-image-picker/studio-image-picker.component';
+import { buildStudioForm } from '@features/studios/shared/studio-form.util';
+import { StudioFormFieldsComponent } from '@features/studios/shared/studio-form-fields/studio-form-fields.component';
 
 @Component({
     selector: 'app-update-studio',
-    imports: [ToastModule, InputTextModule, TextareaModule, DialogModule, TableModule, ButtonModule, ReactiveFormsModule, StudioImagePickerComponent],
+    imports: [ToastModule, DialogModule, TableModule, ButtonModule, ReactiveFormsModule, StudioFormFieldsComponent],
     templateUrl: './update-studio.component.html',
     styleUrl: './update-studio.component.css'
 })
@@ -41,17 +39,7 @@ export class UpdateStudioComponent implements OnInit {
   constructor(private studioService: StudioService, private messageService: MessageService, private fb: FormBuilder) {}
 
 ngOnInit(): void {
-  this.createForm = this.fb.group({
-    smartlockId: [this.studio.smartlockId, Validators.required],
-    name: [this.studio.name, Validators.required],
-    description: [this.studio.description, Validators.required],
-    city: [this.studio.city, Validators.required],
-    country: [this.studio.country, Validators.required],
-    plz: [this.studio.plz, [Validators.required, Validators.minLength(4)]],
-    street: [this.studio.street, Validators.required],
-    images: [this.studio.imageGalleryBase64 ?? [this.studio.imageBase64]]
-  });
-
+  this.createForm = buildStudioForm(this.fb, this.studio);
   this.pickedImages = this.getExistingGallery().map(preview => ({ preview }));
 }
 

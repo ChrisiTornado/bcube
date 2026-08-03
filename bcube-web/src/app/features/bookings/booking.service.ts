@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { environment } from '@environments/environment.local';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { environment } from '@environments/environment';
 import { EMPTY, expand, map, Observable, reduce } from 'rxjs';
 import { ApiResponse } from '@models/responses/api-response';
 import { finalize } from 'rxjs/operators';
@@ -9,21 +9,49 @@ import { CreateBookingRequest } from '@models/requests/booking/create-booking-re
 import { PageResponse } from '@models/responses/page-response';
 import { BookingDetailsResponse } from '@models/responses/booking/booking-details-response';
 import { CollectionStore } from '@core/services/collection-store';
+import { MessageService } from 'primeng/api';
+import { extractErrorMessage } from '@shared/util/error-message.util';
 
 @Injectable({
   providedIn: 'root'
 })
 export class BookingService extends CollectionStore<Booking> {
   public readonly bookings$ = this.items$;
-  viewMode: 'ADMIN' | 'USER' = 'ADMIN';
-  page = 0;
-  size = 10;
-  userId?: number;
-  activeUserFilterId?: number;
-  activeStudioFilterId?: number;
+  public readonly size = 10;
 
-  constructor(private http: HttpClient) {
+  private viewModeValue: 'ADMIN' | 'USER' = 'ADMIN';
+  private pageValue = 0;
+  private userIdValue?: number;
+  private activeUserFilterIdValue?: number;
+  private activeStudioFilterIdValue?: number;
+
+  get viewMode(): 'ADMIN' | 'USER' { return this.viewModeValue; }
+  get page(): number { return this.pageValue; }
+  get userId(): number | undefined { return this.userIdValue; }
+  get activeUserFilterId(): number | undefined { return this.activeUserFilterIdValue; }
+  get activeStudioFilterId(): number | undefined { return this.activeStudioFilterIdValue; }
+
+  constructor(private http: HttpClient, private messageService: MessageService) {
     super();
+  }
+
+  setPage(page: number): void {
+    this.pageValue = page;
+  }
+
+  setAdminView(page: number, userFilterId?: number, studioFilterId?: number): void {
+    this.viewModeValue = 'ADMIN';
+    this.pageValue = page;
+    this.activeUserFilterIdValue = userFilterId;
+    this.activeStudioFilterIdValue = studioFilterId;
+  }
+
+  setUserView(userId: number, page: number, studioFilterId?: number): void {
+    this.viewModeValue = 'USER';
+    this.userIdValue = userId;
+    this.pageValue = page;
+    this.activeUserFilterIdValue = userId;
+    this.activeStudioFilterIdValue = studioFilterId;
   }
 
   getBookings(
@@ -133,16 +161,24 @@ export class BookingService extends CollectionStore<Booking> {
     studioId?: number): void {
     const resolvedUserId = userId ?? this.activeUserFilterId;
     const resolvedStudioId = studioId ?? this.activeStudioFilterId;
+    const onError = (err: HttpErrorResponse) => {
+      this.messageService.add({
+        key: 'main',
+        severity: 'error',
+        summary: 'Fehler',
+        detail: extractErrorMessage(err, 'Buchungen konnten nicht aktualisiert werden.')
+      });
+    };
 
     if (this.viewMode === 'ADMIN') {
       this.getBookings(this.page, this.size, resolvedUserId, resolvedStudioId)
-        .subscribe(res => this.setItems(res.content));
+        .subscribe({ next: res => this.setItems(res.content), error: onError });
       return;
     }
 
     if (this.viewMode === 'USER' && this.userId != null) {
       this.getBookingsByUserId(this.userId, this.page, this.size, resolvedStudioId)
-        .subscribe(res => this.setItems(res.content));
+        .subscribe({ next: res => this.setItems(res.content), error: onError });
     }
   }
 

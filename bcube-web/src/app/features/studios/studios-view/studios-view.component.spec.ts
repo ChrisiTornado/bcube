@@ -3,7 +3,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideRouter } from '@angular/router';
 import { MessageService } from 'primeng/api';
-import * as mapboxgl from 'mapbox-gl';
+import { StudioMapComponent } from '@features/studios/studios-view/studio-map/studio-map.component';
 
 import {StudiosViewComponent} from '@features/studios/studios-view/studios-view.component';
 
@@ -12,14 +12,9 @@ describe('StudiosViewComponent', () => {
     let fixture: ComponentFixture<StudiosViewComponent>;
 
     beforeEach(async () => {
-        // Headless test Chrome has no WebGL, so mapbox-gl.Map() throws; stub it out.
-        spyOn(mapboxgl, 'Map').and.returnValue({
-            addControl: () => {},
-            on: () => {},
-            remove: () => {},
-            resize: () => {},
-            scrollZoom: { enable: () => {} }
-        } as unknown as mapboxgl.Map);
+        // mapbox-gl is loaded via dynamic import() at runtime and headless test Chrome has no
+        // WebGL, so prevent the map from ever initializing rather than stubbing mapbox-gl itself.
+        spyOn(StudioMapComponent.prototype, 'ensureMapInitialized');
 
         await TestBed.configureTestingModule({
             imports: [StudiosViewComponent],

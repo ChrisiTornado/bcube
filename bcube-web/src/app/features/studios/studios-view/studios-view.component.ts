@@ -17,10 +17,12 @@ import { StudioService } from '@features/studios/studio.service';
 import { Studio } from '@models/studio.model';
 import { LoadingSpinnerComponent } from '@shared/ui/loading-spinner/loading-spinner.component';
 import { AuthService } from '@core/services/auth.service';
-import { StudiosComponent } from '@features/studios/create-studio/studios.component';
+import { CreateStudioComponent } from '@features/studios/create-studio/create-studio.component';
 import { UpdateStudioComponent } from '@features/studios/studios-view/update-studio/update-studio.component';
 import { DeleteStudioComponent } from '@features/studios/studios-view/delete-studio/delete-studio.component';
 import { StudioMapComponent } from '@features/studios/studios-view/studio-map/studio-map.component';
+import { environment } from '@environments/environment';
+import { getDashboardBasePath } from '@shared/util/dashboard-path.util';
 
 type StudioViewModel = Studio & { gallery: string[] };
 
@@ -29,7 +31,7 @@ type StudioViewModel = Studio & { gallery: string[] };
     imports: [
     ButtonModule,
     LoadingSpinnerComponent,
-    StudiosComponent,
+    CreateStudioComponent,
     UpdateStudioComponent,
     DeleteStudioComponent,
     StudioMapComponent
@@ -63,8 +65,6 @@ export class StudiosViewComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @ViewChildren('studioCard', { read: ElementRef })
   private studioCards!: QueryList<ElementRef<HTMLElement>>;
-  @ViewChild('resultsPanel', { read: ElementRef })
-  private resultsPanel?: ElementRef<HTMLElement>;
   @ViewChild(StudioMapComponent)
   private studioMap?: StudioMapComponent;
 
@@ -75,7 +75,7 @@ export class StudiosViewComponent implements OnInit, AfterViewInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.isAdmin = this.authService.getRole() === 'ADMIN';
+    this.isAdmin = this.authService.isAdmin();
     this.loadStudiosPage(0, false);
   }
 
@@ -104,7 +104,7 @@ export class StudiosViewComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   navigateToDetails(studio: StudioViewModel): void {
-    const basePath = this.isAdmin ? '/admin-dashboard' : '/user-dashboard';
+    const basePath = getDashboardBasePath(this.isAdmin);
     const navigationUrl = [basePath, 'studio-details', studio.id];
 
     this.router.navigate(navigationUrl, {
@@ -118,7 +118,6 @@ export class StudiosViewComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     this.selectedStudio = studio;
-    this.ensureStudioVisibleInResults(studio.id);
     this.studioMap?.updateMarkerStyles(studio.id);
 
     if (centerMap) {
@@ -307,7 +306,9 @@ export class StudiosViewComponent implements OnInit, AfterViewInit, OnDestroy {
           }
         },
         error: err => {
-          console.error('Fehler beim Laden der Studios', err);
+          if (!environment.production) {
+            console.error('Fehler beim Laden der Studios', err);
+          }
           this.isInitialLoading = false;
           this.loadingMore = false;
 
@@ -332,10 +333,6 @@ export class StudiosViewComponent implements OnInit, AfterViewInit, OnDestroy {
         inline: 'nearest'
       });
     });
-  }
-
-  private ensureStudioVisibleInResults(studioId: number): void {
-    return;
   }
 
   private toStudioViewModel(studio: Studio): StudioViewModel {

@@ -3,20 +3,20 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { MessageService } from 'primeng/api';
 
-import { UsersComponent } from '@features/users/create-user/users.component';
+import { CreateStudioComponent } from '@features/studios/create-studio/create-studio.component';
 
-describe('UsersComponent', () => {
-  let component: UsersComponent;
-  let fixture: ComponentFixture<UsersComponent>;
+describe('CreateStudioComponent', () => {
+  let component: CreateStudioComponent;
+  let fixture: ComponentFixture<CreateStudioComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [UsersComponent],
+      imports: [CreateStudioComponent],
       providers: [provideHttpClient(), provideHttpClientTesting(), MessageService]
     })
     .compileComponents();
-    
-    fixture = TestBed.createComponent(UsersComponent);
+
+    fixture = TestBed.createComponent(CreateStudioComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

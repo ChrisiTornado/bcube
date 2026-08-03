@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MessageService } from "primeng/api";
 import { finalize } from "rxjs";
 import { HttpErrorResponse } from '@angular/common/http';
@@ -9,24 +9,22 @@ import { ApiResponse } from '@models/responses/api-response';
 import { StudioResponse } from '@models/responses/studio/studio-response';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
-import { ReactiveFormsModule } from '@angular/forms';
 import { DialogModule } from 'primeng/dialog';
 
-import { InputTextModule } from 'primeng/inputtext';
-import { TextareaModule } from 'primeng/textarea';
 import { AuthService } from '@core/services/auth.service';
 import { DARK_BUTTON_STYLE } from '@shared/util/button-style';
 import { extractErrorMessage } from '@shared/util/error-message.util';
 import { PickedImage, pickedImagesToByteArrays } from '@shared/util/image-file.util';
-import { StudioImagePickerComponent } from '@features/studios/studio-image-picker/studio-image-picker.component';
+import { buildStudioForm } from '@features/studios/shared/studio-form.util';
+import { StudioFormFieldsComponent } from '@features/studios/shared/studio-form-fields/studio-form-fields.component';
 
 @Component({
-    selector: 'app-studios',
-    imports: [InputTextModule, TextareaModule, DialogModule, TableModule, ButtonModule, ReactiveFormsModule, StudioImagePickerComponent],
-    templateUrl: './studios.component.html',
-    styleUrl: './studios.component.css'
+    selector: 'app-create-studio',
+    imports: [DialogModule, TableModule, ButtonModule, ReactiveFormsModule, StudioFormFieldsComponent],
+    templateUrl: './create-studio.component.html',
+    styleUrl: './create-studio.component.css'
 })
-export class StudiosComponent implements OnInit{
+export class CreateStudioComponent implements OnInit{
   readonly darkButtonStyle = DARK_BUTTON_STYLE;
 
   createForm!: FormGroup;
@@ -43,17 +41,8 @@ export class StudiosComponent implements OnInit{
               private authService: AuthService) { }
 
    ngOnInit(): void {
-    this.createForm = this.fb.group({
-      smartlockId: [null, Validators.required],
-      name: [null, Validators.required],
-      description: [null, Validators.required],
-      city: [null, Validators.required],
-      country: [null, Validators.required],
-      plz: [null, Validators.required],
-      street: [null, Validators.required],
-      images: [null, Validators.required]
-    });
-    this.isAdmin = this.authService.getRole() === "ADMIN"
+    this.createForm = buildStudioForm(this.fb);
+    this.isAdmin = this.authService.isAdmin()
   }
 
   onImagesChanged(images: PickedImage[]): void {

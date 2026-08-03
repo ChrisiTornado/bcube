@@ -12,16 +12,6 @@
   margin-top: 25px;
 }
 
-/* ===== Field validation messages (previously inline styles) ===== */
-.field-error-wrap {
-  position: relative;
-}
-
-.field-error {
-  position: absolute;
-  color: red;
-}
-
 :host ::ng-deep .studio-create-form .mb-4:first-child {
   margin-top: 0.85rem;
 }

@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { finalize, map } from 'rxjs/operators';
 
-import { environment } from '@environments/environment.local';
+import { environment } from '@environments/environment';
 import { Studio } from '@models/studio.model';
 import { CreateStudioRequest } from '@models/requests/studio/create-studio-request';
 import { UpdateStudioRequest } from '@models/requests/studio/update-studio-request';
@@ -12,6 +12,8 @@ import { StudioResponse } from '@models/responses/studio/studio-response';
 import { PageResponse } from '@models/responses/page-response';
 import { StudioNameResponse } from '@models/responses/studio/studio-name-response';
 import { CollectionStore } from '@core/services/collection-store';
+import { MessageService } from 'primeng/api';
+import { extractErrorMessage } from '@shared/util/error-message.util';
 
 @Injectable({
   providedIn: 'root'
@@ -19,10 +21,7 @@ import { CollectionStore } from '@core/services/collection-store';
 export class StudioService extends CollectionStore<Studio> {
   public readonly studios$ = this.items$;
 
-  public page = 0;
-  public size = 10;
-
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private messageService: MessageService) {
     super();
     this.reloadStudios();
   }
@@ -61,14 +60,25 @@ export class StudioService extends CollectionStore<Studio> {
   }
 
   reloadStudios(page: number = 0, size: number = 10): void {
-    this.getStudiosPagination(page, size).subscribe(pageResponse => {
-      this.setItems(pageResponse.content);
+    this.getStudiosPagination(page, size).subscribe({
+      next: pageResponse => this.setItems(pageResponse.content),
+      error: (err: HttpErrorResponse) => this.notifyReloadError(err)
     });
   }
 
   reloadAllStudios(): void {
-    this.getAllStudios().subscribe(studios => {
-      this.setItems(studios);
+    this.getAllStudios().subscribe({
+      next: studios => this.setItems(studios),
+      error: (err: HttpErrorResponse) => this.notifyReloadError(err)
+    });
+  }
+
+  private notifyReloadError(err: HttpErrorResponse): void {
+    this.messageService.add({
+      key: 'main',
+      severity: 'error',
+      summary: 'Fehler',
+      detail: extractErrorMessage(err, 'Cubes konnten nicht aktualisiert werden.')
     });
   }
 

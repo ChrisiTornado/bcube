@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, DestroyRef, OnInit } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
@@ -26,7 +27,8 @@ export class UserShellComponent implements OnInit {
   constructor(
     private router: Router,
     private messageService: MessageService,
-    private authService: AuthService
+    private authService: AuthService,
+    private destroyRef: DestroyRef
   ) {}
 
   ngOnInit(): void {
@@ -47,7 +49,10 @@ export class UserShellComponent implements OnInit {
     this.buildMenu();
 
     // Menü bei Navigation aktualisieren
-    this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(() => {
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd),
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe(() => {
       this.buildMenu();
     });
   }
@@ -63,13 +68,13 @@ export class UserShellComponent implements OnInit {
         label: 'Cubes',
         icon: 'pi pi-fw pi-building',
         routerLink: 'studios',
-        styleClass: this.isRouteActive(['studios', 'studio-details', 'map']) ? 'p-menuitem-link-active' : ''
+        styleClass: this.isRouteActive(['studios', 'studio-details']) ? 'p-menuitem-link-active' : ''
       },
       {
         label: 'Buchungen',
         icon: 'pi pi-fw pi-folder-open',
-        routerLink: 'bookings',
-        styleClass: this.isRouteActive(['bookings', 'all-bookings', 'calendar', 'booking-details', 'booking-confirmation']) ? 'p-menuitem-link-active' : ''
+        routerLink: 'calendar',
+        styleClass: this.isRouteActive(['bookings', 'calendar', 'booking-details', 'booking-confirmation']) ? 'p-menuitem-link-active' : ''
       }
     ];
   }

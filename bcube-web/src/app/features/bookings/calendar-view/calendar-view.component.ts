@@ -3,6 +3,8 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
+import { MessageService } from 'primeng/api';
+import { HttpErrorResponse } from '@angular/common/http';
 import { AuthService } from '@core/services/auth.service';
 import { BookingService } from '@features/bookings/booking.service';
 import { Booking } from '@models/booking.model';
@@ -18,7 +20,10 @@ import interactionPlugin from '@fullcalendar/interaction';
 import { User } from '@models/user.model';
 import { LoadingSpinnerComponent } from '@shared/ui/loading-spinner/loading-spinner.component';
 import { BookingStatus } from '@models/booking-status.model';
+import { getBookingStatusLabel } from '@shared/util/booking-status.util';
 import { toIsoDate, formatBookingTimeRange as formatBookingTimeRangeUtil } from '@shared/util/booking-time.util';
+import { extractErrorMessage } from '@shared/util/error-message.util';
+import { buildBaseCalendarOptions } from '@shared/util/calendar-options.util';
 
 @Component({
     selector: 'app-calendar-view',
@@ -43,7 +48,8 @@ export class CalendarViewComponent implements OnInit {
   constructor(
     private router: Router,
     private authService: AuthService,
-    private bookingService: BookingService
+    private bookingService: BookingService,
+    private messageService: MessageService
   ) { }
 
   calendarPlugins = [dayGridPlugin, interactionPlugin];
@@ -66,13 +72,19 @@ export class CalendarViewComponent implements OnInit {
       this.refreshCalendarOptions();
 
       this.isLoading = false;
-    }, () => {
+    }, (err: HttpErrorResponse) => {
       this.isLoading = false;
+      this.messageService.add({
+        key: 'main',
+        severity: 'error',
+        summary: 'Fehler',
+        detail: extractErrorMessage(err, 'Buchungen konnten nicht geladen werden.')
+      });
     });
   }
 
   navigateToAllBookings(): void {
-    this.router.navigate(['/user-dashboard', 'all-bookings'], {
+    this.router.navigate(['/user-dashboard', 'bookings'], {
       state: { returnUrl: this.router.url }
     });
   }
@@ -108,20 +120,7 @@ export class CalendarViewComponent implements OnInit {
   }
 
   getStatusLabel(status: BookingStatus): string {
-    switch (status) {
-      case BookingStatus.CONFIRMED:
-        return 'Bestätigt';
-      case BookingStatus.DONE:
-        return 'Abgeschlossen';
-      case BookingStatus.CANCELLED:
-        return 'Storniert';
-      case BookingStatus.PENDING:
-        return 'Ausstehend';
-      case BookingStatus.FAILED:
-        return 'Fehlgeschlagen';
-      default:
-        return status;
-    }
+    return getBookingStatusLabel(status);
   }
 
   isDoneBooking(booking: Booking): boolean {
@@ -141,22 +140,9 @@ export class CalendarViewComponent implements OnInit {
   /** Shared FullCalendar config for both the initial field value and every re-render after a data/month change. */
   private buildCalendarOptions(events: EventInput[]): CalendarOptions {
     return {
-      plugins: this.calendarPlugins,
-      initialView: 'dayGridMonth',
-      events,
-      locale: 'de',
-      dayMaxEvents: 2,
-      fixedWeekCount: false,
-      showNonCurrentDates: true,
-      headerToolbar: {
-        left: 'title',
-        center: '',
-        right: 'prev,next'
-      },
-      weekends: true,
+      ...buildBaseCalendarOptions(this.calendarPlugins, events),
       dayCellClassNames: (arg: any) => this.selectedDate === toIsoDate(arg.date) ? ['fc-day-selected'] : [],
       datesSet: (info: any) => this.handleMonthChange(info),
-      moreLinkContent: (arg: any) => ({ html: `+${arg.num} Mehr` }),
       moreLinkClick: (info: any) => {
         this.selectDate(toIsoDate(info.date));
         return 'popover';

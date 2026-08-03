@@ -4,17 +4,20 @@ import { UserService } from '@features/users/user.service';
 import { User } from '@models/user.model';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
+import { MessageService } from 'primeng/api';
+import { HttpErrorResponse } from '@angular/common/http';
 import { UpdateUserComponent } from '@features/users/users-view/update-user/update-user.component';
 import { DeleteUserComponent } from '@features/users/users-view/delete-user/delete-user.component';
 import { LoadingSpinnerComponent } from '@shared/ui/loading-spinner/loading-spinner.component';
 import { CommonModule } from '@angular/common';
-import { UsersComponent } from '@features/users/create-user/users.component';
+import { CreateUserComponent } from '@features/users/create-user/create-user.component';
 import { LIGHT_BUTTON_STYLE } from '@shared/util/button-style';
+import { extractErrorMessage } from '@shared/util/error-message.util';
 
 @Component({
     selector: 'app-users-view',
     imports: [
-        UsersComponent,
+        CreateUserComponent,
         CommonModule,
         LoadingSpinnerComponent,
         TableModule,
@@ -32,7 +35,7 @@ export class UsersViewComponent implements OnInit {
   loading$ = this.userService.loading$;
   totalPages = 0;
 
-  constructor(public userService: UserService) { }
+  constructor(public userService: UserService, private messageService: MessageService) { }
 
   ngOnInit(): void {
     this.users$ = this.userService.users$;
@@ -40,11 +43,21 @@ export class UsersViewComponent implements OnInit {
   }
 
   loadPage(page: number) {
-    this.userService.page = page;
+    this.userService.setPage(page);
     this.userService.getAll(page, this.userService.size)
-    .subscribe(res => {
+    .subscribe({
+      next: (res) => {
         this.totalPages = res.totalPages;
         this.userService.setUsers(res.content);
-    })
+      },
+      error: (err: HttpErrorResponse) => {
+        this.messageService.add({
+          key: 'main',
+          severity: 'error',
+          summary: 'Fehler',
+          detail: extractErrorMessage(err, 'User konnten nicht geladen werden.')
+        });
+      }
+    });
   }
 }

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { User } from '@models/user.model';
-import { environment } from '@environments/environment.local';
+import { environment } from '@environments/environment';
 import { Observable } from 'rxjs';
 import { ApiResponse } from '@models/responses/api-response';
 import { finalize } from 'rxjs/operators';
@@ -12,18 +12,26 @@ import { UpdateUserRequest } from '@models/requests/user/update-user-request';
 import { PageResponse } from '@models/responses/page-response';
 import { UserNameResponse } from '@models/responses/user/user-name-response';
 import { CollectionStore } from '@core/services/collection-store';
+import { MessageService } from 'primeng/api';
+import { extractErrorMessage } from '@shared/util/error-message.util';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserService extends CollectionStore<User> {
   public readonly users$ = this.items$;
+  public readonly size = 10;
 
-  public page = 0;
-  public size = 10;
+  private pageValue = 0;
 
-  constructor(private http: HttpClient) {
+  get page(): number { return this.pageValue; }
+
+  constructor(private http: HttpClient, private messageService: MessageService) {
     super();
+  }
+
+  setPage(page: number): void {
+    this.pageValue = page;
   }
 
   getAll(page: number = 0, size: number = 10): Observable<PageResponse<User>> {
@@ -37,7 +45,17 @@ export class UserService extends CollectionStore<User> {
   }
 
   reloadUsers(): void {
-    this.getAll().subscribe(users => this.setItems(users.content));
+    this.getAll().subscribe({
+      next: users => this.setItems(users.content),
+      error: (err: HttpErrorResponse) => {
+        this.messageService.add({
+          key: 'main',
+          severity: 'error',
+          summary: 'Fehler',
+          detail: extractErrorMessage(err, 'User konnten nicht aktualisiert werden.')
+        });
+      }
+    });
   }
 
   setUsers(users: User[]): void {
@@ -71,14 +89,10 @@ export class UserService extends CollectionStore<User> {
     );
   }
 
-  updateUser(token: string, payload: UpdateUserRequest): Observable<ApiResponse<UserResponse>> {
-    const header = {
-      Authorization: 'Bearer ' + token
-    }
+  updateUser(payload: UpdateUserRequest): Observable<ApiResponse<UserResponse>> {
     return this.http.put<ApiResponse<UserResponse>>(
       environment.userApiUrl + '/me',
-      payload,
-      { headers: header }
+      payload
     );
   }
 

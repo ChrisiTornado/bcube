@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { User } from '@models/user.model';
 import { LoginRequest } from '@models/requests/user/login-request';
 import { RegisterRequest } from '@models/requests/user/register-request';
-import { environment } from '@environments/environment.local';
+import { environment } from '@environments/environment';
 import { ApiResponse } from '@models/responses/api-response';
 import { JwtResponse } from '@models/responses/user/jwt-response';
 import { Observable } from 'rxjs';
@@ -13,6 +13,7 @@ import { ResetPasswordResponse } from '@models/responses/user/reset-password-res
 import { VerifyCodeResponse } from '@models/responses/user/verify-code-response';
 import { ChangePasswordResponse } from '@models/responses/user/change-password-response';
 import { ChangePasswordRequest } from '@models/requests/user/change-password-request';
+import { isJwtExpired } from '@shared/util/jwt.util';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -53,7 +54,8 @@ export class AuthService {
   }
 
   isAuthenticated(): boolean {
-    return !!localStorage.getItem(this.tokenKey);
+    const token = localStorage.getItem(this.tokenKey);
+    return !!token && !isJwtExpired(token);
   }
 
   getUser(): User | null {
@@ -65,11 +67,58 @@ export class AuthService {
     return this.getUser()?.role ?? null;
   }
 
-  isLoggedIn(): boolean {
-    return !!localStorage.getItem(this.tokenKey);
+  /** Single source of truth for "is this user an admin" - derives from `role`, not a separately-tracked flag. */
+  isAdmin(user?: User | null): boolean {
+    return (user !== undefined ? user : this.getUser())?.role === 'ADMIN';
+  }
+
+  isUser(user?: User | null): boolean {
+    return (user !== undefined ? user : this.getUser())?.role === 'USER';
   }
 
   getToken(): string | null {
     return localStorage.getItem(this.tokenKey);
+  }
+
+  /**
+   * Resolves the current user, tolerating older/alternate field-name casings that may still be
+   * present in a stored `auth_user` entry (e.g. from before the User model was normalized).
+   */
+  resolveStoredUser(): User | null {
+    const baseUser = this.getUser();
+
+    try {
+      const raw = localStorage.getItem(this.userKey);
+      const parsed = raw ? JSON.parse(raw) : null;
+
+      if (!parsed && !baseUser) {
+        return null;
+      }
+
+      return {
+        ...(baseUser || {}),
+        id: parsed?.id ?? baseUser?.id ?? 0,
+        email: parsed?.email ?? baseUser?.email ?? '',
+        role: parsed?.role ?? baseUser?.role ?? 'USER',
+        firstName: parsed?.firstName ?? parsed?.firstname ?? parsed?.first_name ?? baseUser?.firstName ?? '',
+        lastName: parsed?.lastName ?? parsed?.lastname ?? parsed?.last_name ?? baseUser?.lastName ?? '',
+        phone: parsed?.phone ?? parsed?.phoneNumber ?? parsed?.phone_number ?? parsed?.telephone ?? baseUser?.phone ?? '',
+        isAdmin: parsed?.isAdmin ?? parsed?.admin ?? baseUser?.isAdmin ?? (parsed?.role ?? baseUser?.role) === 'ADMIN'
+      };
+    } catch {
+      return baseUser ? { ...baseUser } : null;
+    }
+  }
+
+  /** Merges a partial update into the currently stored user and persists it. */
+  persistUserUpdate(patch: Partial<User>): User | null {
+    const current = this.resolveStoredUser();
+    if (!current) {
+      return null;
+    }
+
+    const updated = { ...current, ...patch };
+    localStorage.setItem(this.userKey, JSON.stringify(updated));
+    return updated;
   }
 }

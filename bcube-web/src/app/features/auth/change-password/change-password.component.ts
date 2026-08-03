@@ -19,6 +19,7 @@ import { ButtonModule } from 'primeng/button';
 
 import { AuthContainerComponent } from '@features/auth/auth-container/auth-container.component';
 import { AuthService } from '@core/services/auth.service';
+import { PasswordResetService } from '@core/services/password-reset.service';
 import { ChangePasswordRequest } from '@models/requests/user/change-password-request';
 import { DARK_BUTTON_STYLE } from '@shared/util/button-style';
 import { extractErrorMessage } from '@shared/util/error-message.util';
@@ -38,9 +39,6 @@ import { extractErrorMessage } from '@shared/util/error-message.util';
     providers: [MessageService]
 })
 export class ChangePasswordComponent implements OnInit {
-  /** Persisted across the multi-step (email → code → password) reset flow since each step is its own route/page load. */
-  private readonly returnUrlKey = 'passwordResetReturnUrl';
-
   readonly darkButtonStyle = DARK_BUTTON_STYLE;
 
   formGroup!: FormGroup;
@@ -52,12 +50,13 @@ export class ChangePasswordComponent implements OnInit {
     private messageService: MessageService,
     private formBuilder: FormBuilder,
     private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
+    private passwordResetService: PasswordResetService
   ) {}
 
   ngOnInit(): void {
-    const message = localStorage.getItem('successMessage');
-    this.email = localStorage.getItem('resetEmail');
+    const message = this.passwordResetService.consumeSuccessMessage();
+    this.email = this.passwordResetService.getEmail();
 
     if (message) {
       setTimeout(() => {
@@ -67,7 +66,6 @@ export class ChangePasswordComponent implements OnInit {
           detail: message
         });
       });
-      localStorage.removeItem('successMessage');
     }
 
     this.formGroup = this.formBuilder.group({
@@ -94,9 +92,9 @@ export class ChangePasswordComponent implements OnInit {
       .pipe(finalize(() => this.loading = false))
       .subscribe({
         next: (res) => {
-          localStorage.setItem('successMessage', res.message);
-          localStorage.removeItem('resetEmail');
-          localStorage.removeItem(this.returnUrlKey);
+          this.passwordResetService.setSuccessMessage(res.message);
+          this.passwordResetService.clearEmail();
+          this.passwordResetService.clearReturnUrl();
           this.router.navigate(['/auth/login']);
         },
         error: (err: HttpErrorResponse) => {
@@ -112,7 +110,7 @@ export class ChangePasswordComponent implements OnInit {
   /** Returns to enter-code, carrying forward the original entry point of the reset flow. */
   goBack(): void {
     this.router.navigate(['/auth/enter-code'], {
-      state: { returnUrl: this.getReturnUrl() }
+      state: { returnUrl: this.passwordResetService.getReturnUrl() }
     });
   }
 
@@ -133,9 +131,5 @@ export class ChangePasswordComponent implements OnInit {
       !!this.confirmPassword.value &&
       this.password.value !== this.confirmPassword.value
     );
-  }
-
-  private getReturnUrl(): string {
-    return localStorage.getItem(this.returnUrlKey) || '/login';
   }
 }

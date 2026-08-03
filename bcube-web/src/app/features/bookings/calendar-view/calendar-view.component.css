@@ -158,7 +158,7 @@
   padding: 0.28rem 0.85rem;
   border-radius: 999px;
   background: rgba(255, 167, 34, 0.18);
-  color: #ffa722;
+  color: var(--bcube-orange);
   font-size: 0.78rem;
   font-weight: 800;
   white-space: nowrap;
@@ -189,70 +189,70 @@
 }
 
 /* ===== FullCalendar (fc) deep overrides ===== */
-::ng-deep .fc {
+:host ::ng-deep .fc {
   max-width: 100%;
   font-size: 0.88rem;
   border-radius: 28px;
 }
 
-::ng-deep .fc .fc-scroller,
-::ng-deep .fc .fc-scroller-harness {
+:host ::ng-deep .fc .fc-scroller,
+:host ::ng-deep .fc .fc-scroller-harness {
   overflow: hidden !important;
 }
 
-::ng-deep .fc .fc-scrollgrid-sync-table {
+:host ::ng-deep .fc .fc-scrollgrid-sync-table {
   table-layout: fixed !important;
 }
 
-::ng-deep .fc .fc-toolbar.fc-header-toolbar {
+:host ::ng-deep .fc .fc-toolbar.fc-header-toolbar {
   margin-bottom: 0.8rem;
 }
 
-::ng-deep .fc .fc-toolbar-title {
+:host ::ng-deep .fc .fc-toolbar-title {
   font-size: 1.9rem !important;
 }
 
-::ng-deep .fc .fc-daygrid-day-frame {
+:host ::ng-deep .fc .fc-daygrid-day-frame {
   min-height: 5rem;
   height: 100%;
   display: flex;
   flex-direction: column;
 }
 
-::ng-deep .fc .fc-day-other .fc-daygrid-day-number {
+:host ::ng-deep .fc .fc-day-other .fc-daygrid-day-number {
   color: rgba(255, 255, 255, 0.38) !important;
 }
 
-::ng-deep .fc .fc-daygrid-day-events {
+:host ::ng-deep .fc .fc-daygrid-day-events {
   min-height: 0;
 }
 
-::ng-deep .fc .fc-daygrid-day.fc-day-selected {
+:host ::ng-deep .fc .fc-daygrid-day.fc-day-selected {
   background: rgba(255, 167, 34, 0.22) !important;
 }
 
-::ng-deep .fc .fc-daygrid-day.fc-day-selected .fc-daygrid-day-frame {
+:host ::ng-deep .fc .fc-daygrid-day.fc-day-selected .fc-daygrid-day-frame {
   background:
     linear-gradient(180deg, rgba(255, 167, 34, 0.18), rgba(255, 167, 34, 0.08)) !important;
   box-shadow: inset 0 0 0 2px rgba(255, 167, 34, 0.72) !important;
   border-radius: 0 !important;
 }
 
-::ng-deep .fc .fc-daygrid-day.fc-day-selected .fc-daygrid-day-number {
+:host ::ng-deep .fc .fc-daygrid-day.fc-day-selected .fc-daygrid-day-number {
   color: #ffffff !important;
   font-weight: 800;
   text-shadow: 0 0 14px rgba(255, 167, 34, 0.32);
 }
 
-::ng-deep .fc .fc-daygrid-day.fc-day-selected .fc-daygrid-event {
+:host ::ng-deep .fc .fc-daygrid-day.fc-day-selected .fc-daygrid-event {
   box-shadow: 0 0 0 1px rgba(255, 167, 34, 0.4), 0 6px 16px rgba(0, 0, 0, 0.24) !important;
 }
 
-::ng-deep .fc .fc-daygrid-event-harness {
+:host ::ng-deep .fc .fc-daygrid-event-harness {
   margin-top: 0.18rem !important;
 }
 
-::ng-deep .fc .fc-daygrid-event {
+:host ::ng-deep .fc .fc-daygrid-event {
   border-radius: 8px !important;
   padding: 0.08rem 0.35rem !important;
   font-size: 0.76rem !important;
@@ -260,24 +260,24 @@
   box-shadow: none !important;
 }
 
-::ng-deep .fc .calendar-event-done {
+:host ::ng-deep .fc .calendar-event-done {
   background: #6f7785 !important;
   border-color: #6f7785 !important;
   color: #f5f7fb !important;
 }
 
-::ng-deep .fc .calendar-event-confirmed {
-  background: #ffa722 !important;
-  border-color: #ffa722 !important;
+:host ::ng-deep .fc .calendar-event-confirmed {
+  background: var(--bcube-orange) !important;
+  border-color: var(--bcube-orange) !important;
   color: #111111 !important;
 }
 
-::ng-deep .fc .fc-daygrid-more-link {
-  color: #ffa722 !important;
+:host ::ng-deep .fc .fc-daygrid-more-link {
+  color: var(--bcube-orange) !important;
   font-weight: 700;
 }
 
-::ng-deep .fc .fc-popover {
+:host ::ng-deep .fc .fc-popover {
   border-radius: 16px !important;
   border: 1px solid rgba(255, 167, 34, 0.18) !important;
   background:
@@ -287,7 +287,7 @@
   box-shadow: 0 22px 48px rgba(0, 0, 0, 0.32) !important;
 }
 
-::ng-deep .fc .fc-popover-header {
+:host ::ng-deep .fc .fc-popover-header {
   background: transparent !important;
   color: #f5f5f5 !important;
   position: relative;
@@ -300,11 +300,11 @@
   font-weight: 700;
 }
 
-::ng-deep .fc .fc-popover .fc-daygrid-event {
+:host ::ng-deep .fc .fc-popover .fc-daygrid-event {
   margin-bottom: 0.42rem;
 }
 
-::ng-deep .fc .fc-popover-title {
+:host ::ng-deep .fc .fc-popover-title {
   width: 100%;
   text-align: center;
   display: flex;
@@ -315,7 +315,7 @@
   color: #ffffff !important;
 }
 
-::ng-deep .fc .fc-popover-close {
+:host ::ng-deep .fc .fc-popover-close {
   color: rgba(255, 255, 255, 0.78) !important;
   position: absolute;
   right: 0.8rem;
@@ -323,26 +323,26 @@
   transform: translateY(-50%);
 }
 
-::ng-deep .fc .fc-popover .fc-daygrid-event .fc-event-main {
+:host ::ng-deep .fc .fc-popover .fc-daygrid-event .fc-event-main {
   font-weight: 500 !important;
   letter-spacing: 0;
 }
 
-::ng-deep .fc .fc-popover .calendar-event-confirmed,
-::ng-deep .fc .fc-popover .calendar-event-confirmed .fc-event-main {
+:host ::ng-deep .fc .fc-popover .calendar-event-confirmed,
+:host ::ng-deep .fc .fc-popover .calendar-event-confirmed .fc-event-main {
   color: #111111 !important;
 }
 
-::ng-deep .fc .fc-popover .calendar-event-done,
-::ng-deep .fc .fc-popover .calendar-event-done .fc-event-main {
+:host ::ng-deep .fc .fc-popover .calendar-event-done,
+:host ::ng-deep .fc .fc-popover .calendar-event-done .fc-event-main {
   color: #f5f7fb !important;
 }
 
-::ng-deep .fc .fc-daygrid-day.fc-day-today {
+:host ::ng-deep .fc .fc-daygrid-day.fc-day-today {
   background: rgba(171, 145, 38, 0.35) !important;
 }
 
-::ng-deep .fc .fc-daygrid-day.fc-day-today .fc-daygrid-day-frame {
+:host ::ng-deep .fc .fc-daygrid-day.fc-day-today .fc-daygrid-day-frame {
   background: transparent !important;
 }
 

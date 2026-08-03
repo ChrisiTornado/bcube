@@ -28,7 +28,7 @@
   height: 56px;
   border-radius: 50%;
   border: 3px solid rgba(255, 167, 34, 0.15);
-  border-top-color: #ffa722;
+  border-top-color: var(--bcube-orange);
   animation: profile-spin 0.85s linear infinite;
 }
 
@@ -171,8 +171,8 @@
   min-height: 52px;
   border-radius: 18px;
   padding: 0 1.2rem;
-  background: #ffa722 !important;
-  border-color: #ffa722 !important;
+  background: var(--bcube-orange) !important;
+  border-color: var(--bcube-orange) !important;
   color: #111111 !important;
 }
 
@@ -202,7 +202,7 @@
 
 .settings-item-icon {
   font-size: 1.15rem;
-  color: #ffa722;
+  color: var(--bcube-orange);
   justify-self: center;
 }
 

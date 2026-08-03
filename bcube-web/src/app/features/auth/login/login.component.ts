@@ -37,6 +37,19 @@ export class LoginComponent implements OnInit {
       email: [null, [Validators.required, Validators.email]],
       password: [null, Validators.required]
     });
+
+    const sessionExpiredMessage = sessionStorage.getItem('sessionExpiredMessage');
+    if (sessionExpiredMessage) {
+      setTimeout(() => {
+        this.messageService.add({
+          key: 'main',
+          severity: 'warn',
+          summary: 'Sitzung abgelaufen',
+          detail: sessionExpiredMessage
+        });
+      });
+      sessionStorage.removeItem('sessionExpiredMessage');
+    }
   }
 
   login(): void {

@@ -12,7 +12,7 @@
   }
   
   .code-input:focus {
-    border-color: #ffa722;
+    border-color: var(--bcube-orange);
     box-shadow: 0 0 0 4px rgba(255, 167, 34, 0.16);
     outline: none;
   }

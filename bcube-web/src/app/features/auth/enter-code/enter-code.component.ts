@@ -5,6 +5,7 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angula
 
 import { HttpErrorResponse } from '@angular/common/http';
 import { AuthService } from '@core/services/auth.service';
+import { PasswordResetService } from '@core/services/password-reset.service';
 import { MessageService } from 'primeng/api';
 import { finalize } from 'rxjs';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
@@ -29,9 +30,6 @@ import { extractErrorMessage } from '@shared/util/error-message.util';
     styleUrls: ['./enter-code.component.css']
 })
 export class EnterCodeComponent implements OnInit {
-  /** Persisted across the multi-step (email → code → password) reset flow since each step is its own route/page load. */
-  private readonly returnUrlKey = 'passwordResetReturnUrl';
-
   readonly darkButtonStyle = DARK_BUTTON_STYLE;
 
   formGroup!: FormGroup;
@@ -44,11 +42,12 @@ export class EnterCodeComponent implements OnInit {
     private fb: FormBuilder,
     private router: Router,
     private authService: AuthService,
+    private passwordResetService: PasswordResetService,
     private messageService: MessageService
   ) { }
 
   ngOnInit(): void {
-    const message = localStorage.getItem('successMessage')
+    const message = this.passwordResetService.consumeSuccessMessage();
 
     if (message) {
       setTimeout(() => {
@@ -60,7 +59,7 @@ export class EnterCodeComponent implements OnInit {
       }, 0)
     }
 
-    this.email = localStorage.getItem('resetEmail')
+    this.email = this.passwordResetService.getEmail();
     this.formGroup = this.fb.group({
       digit1: [{ value: '', disabled: this.loading }, [Validators.required, Validators.pattern('^[0-9]$')]],
       digit2: [{ value: '', disabled: this.loading }, [Validators.required, Validators.pattern('^[0-9]$')]],
@@ -95,7 +94,7 @@ export class EnterCodeComponent implements OnInit {
       .pipe(finalize(() => this.loading = false))
       .subscribe({
         next: (res: ApiResponse<VerifyCodeResponse>) => {
-          localStorage.setItem('successMessage', res.message)
+          this.passwordResetService.setSuccessMessage(res.message);
           this.router.navigate(['/auth/change-password'])
         },
         error: (err: HttpErrorResponse) => {
@@ -144,7 +143,7 @@ export class EnterCodeComponent implements OnInit {
   /** Returns to email-reset, carrying forward the original entry point of the reset flow. */
   goBack(): void {
     this.router.navigate(['/auth/email-reset'], {
-      state: { returnUrl: this.getReturnUrl() }
+      state: { returnUrl: this.passwordResetService.getReturnUrl() }
     });
   }
 
@@ -157,9 +156,5 @@ export class EnterCodeComponent implements OnInit {
       digit5: '',
       digit6: '',
     });
-  }
-
-  private getReturnUrl(): string {
-    return localStorage.getItem(this.returnUrlKey) || '/login';
   }
 }

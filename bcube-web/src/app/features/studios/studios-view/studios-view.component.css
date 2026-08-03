@@ -296,7 +296,7 @@
   border: 0;
   padding: 0;
   background: transparent;
-  color: #ffa722;
+  color: var(--bcube-orange);
   font-size: 0.88rem;
   font-weight: 700;
   cursor: pointer;

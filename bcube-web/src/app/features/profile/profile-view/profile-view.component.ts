@@ -47,7 +47,7 @@ export class ProfileViewComponent implements OnInit {
     private readonly messageService: MessageService,
     private readonly confirmationService: ConfirmationService
   ) {
-    this.user = this.resolveStoredUser();
+    this.user = this.authService.resolveStoredUser();
     this.displayName = this.buildDisplayName(this.user);
     this.initials = this.buildInitials(this.user);
 
@@ -90,16 +90,29 @@ export class ProfileViewComponent implements OnInit {
       firstName: this.profileForm.value.firstName,
       lastName: this.profileForm.value.lastName,
       phone: this.profileForm.value.phone,
-      isAdmin: this.user.role === 'USER'
+      isAdmin: this.authService.isAdmin(this.user)
     };
 
-    const token: string | null = localStorage.getItem('auth_token');
+    if (!this.authService.isAuthenticated()) {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Fehler',
+        detail: 'Deine Sitzung ist abgelaufen. Bitte melde dich erneut an.'
+      });
+      return;
+    }
+
     this.saving = true;
-    this.userService.updateUser(token!, payload)
+    this.userService.updateUser(payload)
       .pipe(finalize(() => this.saving = false))
       .subscribe({
         next: () => {
-          this.persistLocalUser(payload);
+          this.applyUserPatch({
+            firstName: payload.firstName,
+            lastName: payload.lastName,
+            email: payload.email,
+            phone: payload.phone
+          });
           this.messageService.add({
             severity: 'success',
             summary: 'Gespeichert',
@@ -200,13 +213,11 @@ export class ProfileViewComponent implements OnInit {
             email: this.user.email || '',
             phone: this.user.phone || ''
           });
-          this.persistLocalUser({
-            id: this.user.id,
+          this.applyUserPatch({
             email: this.user.email,
             firstName: this.user.firstName || '',
             lastName: this.user.lastName || '',
-            phone: this.user.phone || '',
-            isAdmin: this.user.role === 'ADMIN'
+            phone: this.user.phone || ''
           });
         },
         error: () => {
@@ -219,49 +230,16 @@ export class ProfileViewComponent implements OnInit {
       });
   }
 
-  private resolveStoredUser(): User | null {
-    const baseUser = this.authService.getUser();
-
-    try {
-      const raw = localStorage.getItem('auth_user');
-      const parsed = raw ? JSON.parse(raw) : null;
-
-      if (!parsed && !baseUser) {
-        return null;
-      }
-
-      return {
-        ...(baseUser || {}),
-        id: parsed?.id ?? baseUser?.id ?? 0,
-        email: parsed?.email ?? baseUser?.email ?? '',
-        role: parsed?.role ?? baseUser?.role ?? 'USER',
-        firstName: parsed?.firstName ?? parsed?.firstname ?? parsed?.first_name ?? baseUser?.firstName ?? '',
-        lastName: parsed?.lastName ?? parsed?.lastname ?? parsed?.last_name ?? baseUser?.lastName ?? '',
-        phone: parsed?.phone ?? parsed?.phoneNumber ?? parsed?.phone_number ?? parsed?.telephone ?? baseUser?.phone ?? '',
-        isAdmin: parsed?.isAdmin ?? parsed?.admin ?? baseUser?.isAdmin ?? (parsed?.role ?? baseUser?.role) === 'ADMIN'
-      };
-    } catch {
-      return baseUser ? { ...baseUser } : null;
-    }
-  }
-
-  private persistLocalUser(payload: UpdateUserRequest): void {
-    if (!this.user) {
+  /** Applies a partial profile update to both component state and persisted storage. */
+  private applyUserPatch(patch: Partial<User>): void {
+    const updatedUser = this.authService.persistUserUpdate(patch);
+    if (!updatedUser) {
       return;
     }
-
-    const updatedUser = {
-      ...this.user,
-      firstName: payload.firstName,
-      lastName: payload.lastName,
-      email: payload.email,
-      phone: payload.phone
-    };
 
     this.user = updatedUser;
     this.displayName = this.buildDisplayName(updatedUser);
     this.initials = this.buildInitials(updatedUser);
-    localStorage.setItem('auth_user', JSON.stringify(updatedUser));
   }
 
   private buildDisplayName(user: User | null): string {

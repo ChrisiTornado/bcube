@@ -20,5 +20,5 @@ export function handleAuthSuccess(res: ApiResponse<JwtResponse>, auth: AuthServi
 
   auth.storeAuth(jwt.token, user);
   sessionStorage.setItem('loginSuccessMessage', res.message);
-  router.navigate([jwt.role === 'ADMIN' ? '/admin-dashboard/studios' : '/user-dashboard/studios']);
+  router.navigate([auth.isAdmin(user) ? '/admin-dashboard/studios' : '/user-dashboard/studios']);
 }

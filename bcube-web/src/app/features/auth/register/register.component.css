@@ -208,13 +208,13 @@
 .register-terms-check input {
   width: 18px;
   height: 18px;
-  accent-color: #ffa722;
+  accent-color: var(--bcube-orange);
   cursor: pointer;
   flex: 0 0 auto;
 }
 
 .register-terms-check a {
-  color: #ffa722;
+  color: var(--bcube-orange);
   text-decoration: none;
   font-weight: 700;
 }

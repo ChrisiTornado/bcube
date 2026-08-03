@@ -1,12 +1,10 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { finalize } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
-import { InputTextModule } from 'primeng/inputtext';
-import { SelectModule } from 'primeng/select';
 import { UserService } from '@features/users/user.service';
 import { MessageService } from 'primeng/api';
 import { User } from '@models/user.model';
@@ -15,15 +13,16 @@ import { ApiResponse } from '@models/responses/api-response';
 import { UserResponse } from '@models/responses/user/user-response';
 import { DARK_BUTTON_STYLE } from '@shared/util/button-style';
 import { extractErrorMessage } from '@shared/util/error-message.util';
+import { buildUserForm } from '@features/users/shared/user-form.util';
+import { UserFormFieldsComponent } from '@features/users/shared/user-form-fields/user-form-fields.component';
 
 @Component({
     selector: 'app-update-user',
     imports: [
     DialogModule,
     ButtonModule,
-    InputTextModule,
-    SelectModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    UserFormFieldsComponent
 ],
     templateUrl: './update-user.component.html',
     styleUrl: './update-user.component.css'
@@ -45,13 +44,7 @@ export class UpdateUserComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.updateForm = this.fb.group({
-      firstName: [this.user.firstName, Validators.required],
-      lastName: [this.user.lastName, Validators.required],
-      email: [this.user.email, [Validators.required, Validators.email]],
-      phone: [this.user.phone, Validators.required],
-      isAdmin: [this.user.isAdmin, Validators.required]
-    });
+    this.updateForm = buildUserForm(this.fb, this.user);
   }
 
   openDialog(): void {

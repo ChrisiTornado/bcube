@@ -5,6 +5,16 @@
   padding: 0 0.35rem 2rem;
 }
 
+.studio-load-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 4rem 1rem;
+  text-align: center;
+  color: var(--bcube-text-soft, rgba(255, 255, 255, 0.72));
+}
+
 .studio-details-page {
   display: flex;
   flex-direction: column;
@@ -178,13 +188,13 @@
 }
 
 :host ::ng-deep .fc .calendar-event-confirmed {
-  background: #ffa722 !important;
-  border-color: #ffa722 !important;
+  background: var(--bcube-orange) !important;
+  border-color: var(--bcube-orange) !important;
   color: #111111 !important;
 }
 
 :host ::ng-deep .fc .fc-daygrid-more-link {
-  color: #ffa722 !important;
+  color: var(--bcube-orange) !important;
   font-weight: 700;
 }
 

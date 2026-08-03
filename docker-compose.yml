@@ -1,13 +1,26 @@
 services:
   frontend:
-    build: ./bcube-frontend
+    build: ./bcube-web
     container_name: frontend
     ports:
       - "4200:80"
     depends_on:
+      - api-gateway
+    networks:
+      - bcube-network
+
+  api-gateway:
+    build: ./bcube-services/api-gateway
+    container_name: api-gateway
+    environment:
+      JWT.SECRET: ${JWT_SECRET}
+    ports:
+      - "8080:8080"
+    depends_on:
       - user-service
       - studio-service
       - booking-service
+      - access-service
     networks:
       - bcube-network
 

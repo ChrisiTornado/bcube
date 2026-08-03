@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, DestroyRef, OnInit } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { MegaMenuItem } from 'primeng/api';
 import { MessageService } from 'primeng/api';
@@ -23,7 +24,8 @@ export class AdminShellComponent implements OnInit {
     private router: Router,
     private messageService: MessageService,
     private authService: AuthService,
-    private confirmationService: ConfirmationService
+    private confirmationService: ConfirmationService,
+    private destroyRef: DestroyRef
   ) {}
 
   ngOnInit(): void {
@@ -45,7 +47,10 @@ export class AdminShellComponent implements OnInit {
 
     // Rebuild on every navigation so the active-menu highlight (isRouteActive) tracks the current route.
     this.router.events
-      .pipe(filter(event => event instanceof NavigationEnd))
+      .pipe(
+        filter(event => event instanceof NavigationEnd),
+        takeUntilDestroyed(this.destroyRef)
+      )
       .subscribe(() => {
         this.buildMenu();
       });
@@ -62,7 +67,7 @@ export class AdminShellComponent implements OnInit {
         label: 'Cubes',
         icon: 'pi pi-fw pi-building',
         routerLink: 'studios',
-        styleClass: this.isRouteActive(['studios', 'studio-details', 'map']) ? 'p-menuitem-link-active' : ''
+        styleClass: this.isRouteActive(['studios', 'studio-details']) ? 'p-menuitem-link-active' : ''
       },
       {
         label: 'Users',

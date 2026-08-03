@@ -1,6 +1,6 @@
 import { Component, ElementRef, EventEmitter, NgZone, OnDestroy, Output, ViewChild } from '@angular/core';
-import * as mapboxgl from 'mapbox-gl';
-import { environment } from '@environments/environment.local';
+import type * as MapboxGl from 'mapbox-gl';
+import { environment } from '@environments/environment';
 import { Studio } from '@models/studio.model';
 
 @Component({
@@ -15,11 +15,14 @@ export class StudioMapComponent implements OnDestroy {
   @Output() mapReady = new EventEmitter<void>();
 
   private readonly defaultCenter: [number, number] = [16.3738, 48.2082];
-  private map: mapboxgl.Map | null = null;
+  // mapbox-gl is loaded via dynamic import() so it lands in its own chunk instead of
+  // bloating the studios-view bundle with a library most visits never render on-screen.
+  private mapboxgl: typeof MapboxGl | null = null;
+  private map: MapboxGl.Map | null = null;
   private mapLoaded = false;
   private markers: Array<{
     studioId: number;
-    marker: mapboxgl.Marker;
+    marker: MapboxGl.Marker;
     element: HTMLElement;
   }> = [];
 
@@ -39,8 +42,16 @@ export class StudioMapComponent implements OnDestroy {
       return;
     }
 
-    this.ngZone.runOutsideAngular(() => {
-      this.initMap(this.mapSurface!.nativeElement);
+    const surface = this.mapSurface.nativeElement;
+    import('mapbox-gl').then(module => {
+      // Guard against the component being destroyed while the chunk was loading.
+      if (!this.mapSurface) {
+        return;
+      }
+      this.mapboxgl = module;
+      this.ngZone.runOutsideAngular(() => {
+        this.initMap(surface);
+      });
     });
   }
 
@@ -54,8 +65,9 @@ export class StudioMapComponent implements OnDestroy {
 
   renderMarkers(studios: Studio[], selectedStudioId: number | null): void {
     const map = this.map;
+    const mapboxgl = this.mapboxgl;
 
-    if (!this.mapLoaded || !map) {
+    if (!this.mapLoaded || !map || !mapboxgl) {
       return;
     }
 
@@ -109,7 +121,7 @@ export class StudioMapComponent implements OnDestroy {
   }
 
   fitToStudios(studios: Studio[]): void {
-    if (!this.map) {
+    if (!this.map || !this.mapboxgl) {
       return;
     }
 
@@ -127,7 +139,7 @@ export class StudioMapComponent implements OnDestroy {
       return;
     }
 
-    const bounds = new mapboxgl.LngLatBounds();
+    const bounds = new this.mapboxgl.LngLatBounds();
     locatedStudios.forEach(studio => {
       bounds.extend([studio.longitude as number, studio.latitude as number]);
     });
@@ -144,8 +156,12 @@ export class StudioMapComponent implements OnDestroy {
     this.markers.forEach(({ studioId, marker, element }) => {
       const isSelected = studioId === selectedStudioId;
       marker.setOffset(isSelected ? [0, -6] : [0, 0]);
+      // drop-shadow() only accepts offset-x/offset-y/blur-radius/color - unlike box-shadow it has
+      // no spread-radius. A 4-value form here is invalid CSS, which makes browsers silently drop
+      // the *entire* filter (all functions in the list, not just the offending one), so the
+      // selected-marker halo below never actually rendered before this was caught by a real test.
       element.style.filter = isSelected
-        ? 'drop-shadow(0 0 0 3px rgba(255,255,255,0.96)) drop-shadow(0 12px 24px rgba(0,0,0,0.24))'
+        ? 'drop-shadow(0 0 6px rgba(255,255,255,0.96)) drop-shadow(0 12px 24px rgba(0,0,0,0.24))'
         : 'drop-shadow(0 10px 18px rgba(0,0,0,0.16))';
     });
   }
@@ -156,6 +172,8 @@ export class StudioMapComponent implements OnDestroy {
   }
 
   private initMap(container: HTMLDivElement): void {
+    const mapboxgl = this.mapboxgl!;
+
     this.map = new mapboxgl.Map({
       container,
       style: 'mapbox://styles/mapbox/streets-v12',

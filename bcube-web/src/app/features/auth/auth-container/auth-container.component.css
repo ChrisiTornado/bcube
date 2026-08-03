@@ -62,7 +62,7 @@
   height: 4px;
   border-radius: 999px;
   transform: translateX(-50%);
-  background: #ffa722;
+  background: var(--bcube-orange);
 }
 
 :host ::ng-deep .text-900 {

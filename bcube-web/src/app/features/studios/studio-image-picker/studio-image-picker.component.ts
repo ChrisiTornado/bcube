@@ -48,4 +48,16 @@ export class StudioImagePickerComponent {
     moveItemInArray(next, event.previousIndex, event.currentIndex);
     this.imagesChange.emit(next);
   }
+
+  /** Keyboard-operable equivalent of dragging an image left/right, for users who can't use drag-and-drop. */
+  moveImage(index: number, direction: -1 | 1): void {
+    const targetIndex = index + direction;
+    if (targetIndex < 0 || targetIndex >= this.images.length) {
+      return;
+    }
+
+    const next = this.images.slice();
+    moveItemInArray(next, index, targetIndex);
+    this.imagesChange.emit(next);
+  }
 }

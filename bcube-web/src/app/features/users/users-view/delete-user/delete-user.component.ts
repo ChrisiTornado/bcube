@@ -11,6 +11,7 @@ import { UserActionService } from '@features/users/user-action.service';
               styleClass="p-button-danger"
               severity="danger"
               [loading]="loading"
+              ariaLabel="User löschen"
               (click)="confirmDelete()">
     </p-button>
   `

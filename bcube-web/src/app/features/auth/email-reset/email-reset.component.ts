@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { finalize } from 'rxjs';
 import { AuthService } from '@core/services/auth.service';
+import { PasswordResetService } from '@core/services/password-reset.service';
 import { MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { ToastModule } from 'primeng/toast';
@@ -32,9 +33,6 @@ import { extractErrorMessage } from '@shared/util/error-message.util';
     styleUrl: './email-reset.component.css'
 })
 export class EmailResetComponent implements OnInit {
-  /** Persisted across the multi-step (email → code → password) reset flow since each step is its own route/page load. */
-  private readonly returnUrlKey = 'passwordResetReturnUrl';
-
   readonly darkButtonStyle = DARK_BUTTON_STYLE;
 
   formGroup!: FormGroup;
@@ -43,6 +41,7 @@ export class EmailResetComponent implements OnInit {
 
   constructor(private formBuilder: FormBuilder,
     private authService: AuthService,
+    private passwordResetService: PasswordResetService,
     private messageService: MessageService,
     private router: Router,) {
   }
@@ -50,7 +49,7 @@ export class EmailResetComponent implements OnInit {
   ngOnInit(): void {
     // Captures where this flow was entered from (e.g. login) so "Zurück" can restore it later.
     const returnUrl = history.state?.returnUrl as string | undefined;
-    localStorage.setItem(this.returnUrlKey, returnUrl || '/login');
+    this.passwordResetService.setReturnUrl(returnUrl);
 
     this.formGroup = this.formBuilder.group({
       email: [null, [Validators.required, Validators.email]]
@@ -71,8 +70,8 @@ export class EmailResetComponent implements OnInit {
       }))
       .subscribe({
         next: (response: ApiResponse<ResetPasswordResponse>) => {
-          localStorage.setItem('resetEmail', this.email.value);
-          localStorage.setItem('successMessage', response.message)
+          this.passwordResetService.setEmail(this.email.value);
+          this.passwordResetService.setSuccessMessage(response.message);
           this.router.navigate(['/auth/enter-code'])
         },
         error: (err: HttpErrorResponse) => {
@@ -86,17 +85,13 @@ export class EmailResetComponent implements OnInit {
   }
 
   goBack(): void {
-    localStorage.removeItem('resetEmail');
-    const returnUrl = this.getReturnUrl();
-    localStorage.removeItem(this.returnUrlKey);
+    this.passwordResetService.clearEmail();
+    const returnUrl = this.passwordResetService.getReturnUrl();
+    this.passwordResetService.clearReturnUrl();
     this.router.navigate([returnUrl]);
   }
 
   get email(): AbstractControl {
     return this.formGroup.get('email')!;
-  }
-
-  private getReturnUrl(): string {
-    return localStorage.getItem(this.returnUrlKey) || '/login';
   }
 }

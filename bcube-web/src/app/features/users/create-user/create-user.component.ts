@@ -1,40 +1,31 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MessageService } from 'primeng/api';
 import { finalize } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 import { UserService } from '@features/users/user.service';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
-import { ReactiveFormsModule } from '@angular/forms';
 import { DialogModule } from 'primeng/dialog';
 
-import { InputTextModule } from 'primeng/inputtext';
-import { SelectModule } from 'primeng/select';
 import { CreateUserRequest } from '@models/requests/user/create-user-request';
-import { ApiResponse } from '@models/responses/api-response';
-import { UserResponse } from '@models/responses/user/user-response';
 import { DARK_BUTTON_STYLE } from '@shared/util/button-style';
 import { extractErrorMessage } from '@shared/util/error-message.util';
+import { buildUserForm } from '@features/users/shared/user-form.util';
+import { UserFormFieldsComponent } from '@features/users/shared/user-form-fields/user-form-fields.component';
 
 @Component({
-    selector: 'app-users',
-    imports: [InputTextModule, SelectModule, DialogModule, TableModule, ButtonModule, ReactiveFormsModule],
-    templateUrl: './users.component.html',
-    styleUrl: './users.component.css'
+    selector: 'app-create-user',
+    imports: [DialogModule, TableModule, ButtonModule, ReactiveFormsModule, UserFormFieldsComponent],
+    templateUrl: './create-user.component.html'
 })
-export class UsersComponent implements OnInit {
+export class CreateUserComponent implements OnInit {
   readonly darkButtonStyle = DARK_BUTTON_STYLE;
 
   createForm!: FormGroup;
   visible: boolean = false;
   submitted: boolean = false;
   loading: boolean = false;
-
-  roleOptions = [
-    { label: 'Benutzer', value: 'USER' },
-    { label: 'Administrator', value: 'ADMIN' }
-  ];
 
   constructor(
     private fb: FormBuilder,
@@ -43,13 +34,7 @@ export class UsersComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-      this.createForm = this.fb.group({
-      firstName: [null, Validators.required],
-      lastName: [null, Validators.required],
-      email: [null, [Validators.required, Validators.email]],
-      phone: [null, Validators.required],
-      isAdmin: [false, Validators.required]
-    });
+    this.createForm = buildUserForm(this.fb);
   }
 
   get firstName() { return this.createForm.get('firstName')!; }
@@ -85,7 +70,7 @@ export class UsersComponent implements OnInit {
     this.userService.createUser(payload)
       .pipe(finalize(() => this.loading = false))
       .subscribe({
-        next: (res: ApiResponse<UserResponse>) => {
+        next: () => {
           this.userService.reloadUsers();
           this.closeDialog();
           this.messageService.add({

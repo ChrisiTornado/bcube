@@ -120,7 +120,7 @@
 :host ::ng-deep .admin-menu .p-megamenu-item.p-menuitem-link-active > .p-megamenu-item-content > .p-megamenu-item-link:hover,
 :host ::ng-deep .admin-menu .p-megamenu-item.p-menuitem-link-active > .p-megamenu-item-content > .p-megamenu-item-link:focus,
 :host ::ng-deep .admin-menu .p-megamenu-item.p-menuitem-link-active > .p-megamenu-item-content > .p-megamenu-item-link.p-focus {
-  background: #ffa722 !important;
+  background: var(--bcube-orange) !important;
   color: #111111 !important;
 }
 

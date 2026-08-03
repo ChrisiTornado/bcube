@@ -1,12 +1,12 @@
 <div class="explore-shell" [class.admin-mode]="isAdmin">
-  <section class="results-panel" #resultsPanel>
+  <section class="results-panel">
     <div class="results-toolbar">
       <div class="results-copy">
         <p class="eyebrow">Over {{ totalStudios || studios.length }} Bcube spots in Vienna</p>
         <h1>Cubes in Wien entdecken</h1>
       </div>
       @if (isAdmin) {
-        <app-studios></app-studios>
+        <app-create-studio></app-create-studio>
       }
     </div>
 

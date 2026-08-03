@@ -1,6 +1,6 @@
 <div class="view-header flex align-items-center flex-wrap gap-4 mb-4">
   <h1 class="m-0">Benutzer</h1>
-  <app-users></app-users>
+  <app-create-user></app-create-user>
 </div>
 
 @if (loading$ | async) {
@@ -8,53 +8,59 @@
 }
 
 @if (!(loading$ | async) && (users$ | async); as users) {
-  <div class="table-shell" style="padding-bottom: 0.5rem;">
-    <p-table [value]="users">
-      <ng-template pTemplate="header">
-        <tr>
-          <th pSortableColumn="firstName">Vorname <p-sortIcon field="firstName"></p-sortIcon></th>
-          <th pSortableColumn="lastName">Nachname <p-sortIcon field="lastName"></p-sortIcon></th>
-          <th pSortableColumn="email">E-Mail <p-sortIcon field="email"></p-sortIcon></th>
-          <th pSortableColumn="phone">Telefon <p-sortIcon field="phone"></p-sortIcon></th>
-          <th pSortableColumn="role">Rolle <p-sortIcon field="role"></p-sortIcon></th>
-          <th>Bearbeiten</th>
-          <th>Löschen</th>
-        </tr>
-      </ng-template>
-      <ng-template pTemplate="body" let-user>
-        <tr>
-          <td>{{ user.firstName }}</td>
-          <td>{{ user.lastName }}</td>
-          <td>{{ user.email }}</td>
-          <td>{{ user.phone }}</td>
-          <td>{{ user.isAdmin ? 'Administrator' : 'Benutzer' }}</td>
-          <td>
-            <div class="user-action-cell">
-              <app-update-user [user]="user" (click)="$event.stopPropagation()"></app-update-user>
-            </div>
-          </td>
-          <td>
-            <div class="user-action-cell">
-              <app-delete-user [user]="user" (click)="$event.stopPropagation()"></app-delete-user>
-            </div>
-          </td>
-        </tr>
-      </ng-template>
-    </p-table>
-  </div>
-  <div class="pager-shell flex justify-content-center gap-3 mt-3">
-    <button pButton label="<- Zurück"
-      [style]="lightButtonStyle"
-      (click)="loadPage(this.userService.page - 1)"
-      [disabled]="this.userService.page === 0">
-    </button>
-    <span class="mt-2 mx-3 font-bold">
-      Seite {{ this.userService.page + 1 }} von {{ totalPages }}
-    </span>
-    <button pButton label="Weiter ->"
-      [style]="lightButtonStyle"
-      (click)="loadPage(this.userService.page + 1)"
-      [disabled]="this.userService.page >= totalPages - 1">
-    </button>
-  </div>
+  @if (users.length === 0) {
+    <div class="empty-shell text-center my-6">
+      <h3 class="mb-3">Keine Benutzer gefunden</h3>
+    </div>
+  } @else {
+    <div class="table-shell" style="padding-bottom: 0.5rem;">
+      <p-table [value]="users">
+        <ng-template pTemplate="header">
+          <tr>
+            <th pSortableColumn="firstName">Vorname <p-sortIcon field="firstName"></p-sortIcon></th>
+            <th pSortableColumn="lastName">Nachname <p-sortIcon field="lastName"></p-sortIcon></th>
+            <th pSortableColumn="email">E-Mail <p-sortIcon field="email"></p-sortIcon></th>
+            <th pSortableColumn="phone">Telefon <p-sortIcon field="phone"></p-sortIcon></th>
+            <th pSortableColumn="role">Rolle <p-sortIcon field="role"></p-sortIcon></th>
+            <th>Bearbeiten</th>
+            <th>Löschen</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-user>
+          <tr>
+            <td>{{ user.firstName }}</td>
+            <td>{{ user.lastName }}</td>
+            <td>{{ user.email }}</td>
+            <td>{{ user.phone }}</td>
+            <td>{{ user.isAdmin ? 'Administrator' : 'Benutzer' }}</td>
+            <td>
+              <div class="user-action-cell">
+                <app-update-user [user]="user" (click)="$event.stopPropagation()"></app-update-user>
+              </div>
+            </td>
+            <td>
+              <div class="user-action-cell">
+                <app-delete-user [user]="user" (click)="$event.stopPropagation()"></app-delete-user>
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+    <div class="pager-shell flex justify-content-center gap-3 mt-3">
+      <button pButton label="<- Zurück"
+        [style]="lightButtonStyle"
+        (click)="loadPage(this.userService.page - 1)"
+        [disabled]="this.userService.page === 0">
+      </button>
+      <span class="mt-2 mx-3 font-bold">
+        Seite {{ this.userService.page + 1 }} von {{ totalPages }}
+      </span>
+      <button pButton label="Weiter ->"
+        [style]="lightButtonStyle"
+        (click)="loadPage(this.userService.page + 1)"
+        [disabled]="this.userService.page >= totalPages - 1">
+      </button>
+    </div>
+  }
 }

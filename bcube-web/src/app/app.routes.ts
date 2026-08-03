@@ -49,7 +49,6 @@ export const routes: Routes = [
                 path: 'users',
                 loadComponent: () => import('@features/users/users-view/users-view.component').then(m => m.UsersViewComponent)
             },
-            { path: 'map', redirectTo: 'studios', pathMatch: 'full' },
             {
                 path: 'bookings',
                 loadComponent: () => import('@features/bookings/bookings-view/bookings-view.component').then(m => m.BookingsViewComponent)
@@ -83,16 +82,14 @@ export const routes: Routes = [
                 path: 'studios',
                 loadComponent: () => import('@features/studios/studios-view/studios-view.component').then(m => m.StudiosViewComponent)
             },
-            { path: 'map', redirectTo: 'studios', pathMatch: 'full' },
             {
-                path: 'bookings',
+                path: 'calendar',
                 loadComponent: () => import('@features/bookings/calendar-view/calendar-view.component').then(m => m.CalendarViewComponent)
             },
             {
-                path: 'all-bookings',
+                path: 'bookings',
                 loadComponent: () => import('@features/bookings/bookings-view/bookings-view.component').then(m => m.BookingsViewComponent)
             },
-            { path: 'calendar', redirectTo: 'bookings', pathMatch: 'full' },
             {
                 path: 'profile',
                 loadComponent: () => import('@features/profile/profile-view/profile-view.component').then(m => m.ProfileViewComponent)

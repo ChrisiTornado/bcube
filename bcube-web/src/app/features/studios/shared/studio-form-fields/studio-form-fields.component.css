@@ -1,0 +1,8 @@
+.field-error-wrap {
+  position: relative;
+}
+
+.field-error {
+  position: absolute;
+  color: var(--bcube-orange);
+}

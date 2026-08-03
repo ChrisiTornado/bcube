@@ -136,8 +136,8 @@
 }
 
 .legal-tab-active {
-  background: #ffa722;
-  border-color: #ffa722;
+  background: var(--bcube-orange);
+  border-color: var(--bcube-orange);
   color: #111111;
 }
 
@@ -145,8 +145,8 @@
 .legal-tab-active:focus,
 .legal-tab-active:focus-visible,
 .legal-tab-active:active {
-  background: #ffa722;
-  border-color: #ffa722;
+  background: var(--bcube-orange);
+  border-color: var(--bcube-orange);
   color: #111111;
   box-shadow: none;
 }

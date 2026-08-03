@@ -16,6 +16,14 @@
           <button type="button" class="image-picker-remove" (click)="removeImage(i)" aria-label="Bild entfernen">
             <span class="pi pi-times"></span>
           </button>
+          <div class="image-picker-reorder">
+            <button type="button" (click)="moveImage(i, -1)" [disabled]="i === 0" aria-label="Bild nach vorne verschieben">
+              <span class="pi pi-arrow-left"></span>
+            </button>
+            <button type="button" (click)="moveImage(i, 1)" [disabled]="i === images.length - 1" aria-label="Bild nach hinten verschieben">
+              <span class="pi pi-arrow-right"></span>
+            </button>
+          </div>
         </div>
       }
     </div>

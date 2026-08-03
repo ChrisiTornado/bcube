@@ -5,6 +5,8 @@ import { CommonModule } from '@angular/common';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { SelectModule } from 'primeng/select';
+import { MessageService } from 'primeng/api';
+import { HttpErrorResponse } from '@angular/common/http';
 
 import { AuthService } from '@core/services/auth.service';
 import { BookingService } from '@features/bookings/booking.service';
@@ -18,6 +20,9 @@ import { StudioService } from '@features/studios/studio.service';
 import { UserNameResponse } from '@models/responses/user/user-name-response';
 import { UserService } from '@features/users/user.service';
 import { DARK_BUTTON_STYLE, LIGHT_BUTTON_STYLE } from '@shared/util/button-style';
+import { getBookingStatusLabel } from '@shared/util/booking-status.util';
+import { extractErrorMessage } from '@shared/util/error-message.util';
+import { getDashboardBasePath } from '@shared/util/dashboard-path.util';
 
 @Component({
     selector: 'app-bookings-view',
@@ -63,11 +68,12 @@ export class BookingsViewComponent implements OnInit {
     private studioService: StudioService,
     private userService: UserService,
     private router: Router,
-    public authService: AuthService
+    public authService: AuthService,
+    private messageService: MessageService
   ) { }
 
   ngOnInit(): void {
-    this.isAdmin = this.authService.getRole() === 'ADMIN';
+    this.isAdmin = this.authService.isAdmin();
     this.bookings$ = this.bookingService.bookings$;
     this.loadMoreStudios();
 
@@ -83,11 +89,11 @@ export class BookingsViewComponent implements OnInit {
   }
 
   get showCalendarSwitch(): boolean {
-    return !this.isAdmin && this.router.url.includes('/user-dashboard/all-bookings');
+    return !this.isAdmin && this.router.url.includes('/user-dashboard/bookings');
   }
 
   updateFilters(): void {
-    this.bookingService.page = 0;
+    this.bookingService.setPage(0);
 
     if (this.isAdmin) {
       this.loadAdminPage(0);
@@ -108,11 +114,22 @@ export class BookingsViewComponent implements OnInit {
 
     this.studioService
       .getStudioFilter(this.studioFilterPage, this.studioFilterSize)
-      .subscribe(page => {
-        this.studioFilters = [...this.studioFilters, ...page.content];
-        this.studioFilterLastPage = page.last;
-        this.studioFilterPage++;
-        this.studioFilterLoading = false;
+      .subscribe({
+        next: (page) => {
+          this.studioFilters = [...this.studioFilters, ...page.content];
+          this.studioFilterLastPage = page.last;
+          this.studioFilterPage++;
+          this.studioFilterLoading = false;
+        },
+        error: (err: HttpErrorResponse) => {
+          this.studioFilterLoading = false;
+          this.messageService.add({
+            key: 'main',
+            severity: 'error',
+            summary: 'Fehler',
+            detail: extractErrorMessage(err, 'Cube-Filter konnten nicht geladen werden.')
+          });
+        }
       });
   }
 
@@ -125,26 +142,36 @@ export class BookingsViewComponent implements OnInit {
 
     this.userService
       .getUserFilter(this.userFilterPage, this.userFilterSize)
-      .subscribe(page => {
+      .subscribe({
+        next: (page) => {
+          const mappedUsers = page.content.map(u => ({
+            ...u,
+            label: `${u.lastName}, ${u.firstName}`
+          }));
 
-        const mappedUsers = page.content.map(u => ({
-          ...u,
-          label: `${u.lastName}, ${u.firstName}`
-        }));
+          this.userFilters = [
+            ...this.userFilters,
+            ...mappedUsers
+          ];
 
-        this.userFilters = [
-          ...this.userFilters,
-          ...mappedUsers
-        ];
-
-        this.userFilterLastPage = page.last;
-        this.userFilterPage++;
-        this.userFilterLoading = false;
+          this.userFilterLastPage = page.last;
+          this.userFilterPage++;
+          this.userFilterLoading = false;
+        },
+        error: (err: HttpErrorResponse) => {
+          this.userFilterLoading = false;
+          this.messageService.add({
+            key: 'main',
+            severity: 'error',
+            summary: 'Fehler',
+            detail: extractErrorMessage(err, 'User-Filter konnten nicht geladen werden.')
+          });
+        }
       });
   }
 
   navigateToDetails(booking: Booking): void {
-    const basePath = this.isAdmin ? '/admin-dashboard' : '/user-dashboard';
+    const basePath = getDashboardBasePath(this.isAdmin);
     const navigationUrl = [basePath, 'booking-details', booking.id];
     this.router.navigate(navigationUrl, {
       state: { returnUrl: this.router.url }
@@ -152,30 +179,20 @@ export class BookingsViewComponent implements OnInit {
   }
 
   navigateToBookingCreation(): void {
-    const basePath = this.isAdmin ? '/admin-dashboard' : '/user-dashboard';
+    const basePath = getDashboardBasePath(this.isAdmin);
     this.router.navigate([basePath, 'studios']);
   }
 
   navigateToCalendarView(): void {
-    this.router.navigate(['/user-dashboard', 'bookings']);
+    this.router.navigate(['/user-dashboard', 'calendar']);
   }
 
   getStatusLabel(status: string): string {
-    switch (status) {
-      case 'CONFIRMED': return 'Bestätigt';
-      case 'CANCELLED': return 'Storniert';
-      case 'DONE': return 'Abgeschlossen';
-      case 'PENDING': return 'Ausstehend';
-      default: return status;
-    }
+    return getBookingStatusLabel(status);
   }
 
   loadUserPage(userId: number, page: number) {
-    this.bookingService.viewMode = 'USER';
-    this.bookingService.userId = userId;
-    this.bookingService.page = page;
-    this.bookingService.activeUserFilterId = userId;
-    this.bookingService.activeStudioFilterId = this.studioFilter?.id;
+    this.bookingService.setUserView(userId, page, this.studioFilter?.id);
 
     this.bookingService
       .getBookingsByUserId(
@@ -184,23 +201,40 @@ export class BookingsViewComponent implements OnInit {
         this.bookingService.size,
         this.studioFilter?.id
       )
-      .subscribe(res => {
-        this.totalPages = res.totalPages;
-        this.bookingService.setBookings(res.content);
+      .subscribe({
+        next: (res) => {
+          this.totalPages = res.totalPages;
+          this.bookingService.setBookings(res.content);
+        },
+        error: (err: HttpErrorResponse) => {
+          this.messageService.add({
+            key: 'main',
+            severity: 'error',
+            summary: 'Fehler',
+            detail: extractErrorMessage(err, 'Buchungen konnten nicht geladen werden.')
+          });
+        }
       });
   }
 
 
   loadAdminPage(page: number) {
-    this.bookingService.viewMode = 'ADMIN';
-    this.bookingService.page = page;
-    this.bookingService.activeUserFilterId = this.userFilter?.id;
-    this.bookingService.activeStudioFilterId = this.studioFilter?.id;
+    this.bookingService.setAdminView(page, this.userFilter?.id, this.studioFilter?.id);
 
     this.bookingService.getBookings(page, this.bookingService.size, this.userFilter?.id,
-      this.studioFilter?.id).subscribe(res => {
-        this.totalPages = res.totalPages;
-        this.bookingService.setBookings(res.content);
+      this.studioFilter?.id).subscribe({
+        next: (res) => {
+          this.totalPages = res.totalPages;
+          this.bookingService.setBookings(res.content);
+        },
+        error: (err: HttpErrorResponse) => {
+          this.messageService.add({
+            key: 'main',
+            severity: 'error',
+            summary: 'Fehler',
+            detail: extractErrorMessage(err, 'Buchungen konnten nicht geladen werden.')
+          });
+        }
       });
   }
 }

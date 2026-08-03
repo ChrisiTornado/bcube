@@ -2,6 +2,13 @@
   <app-loading-spinner></app-loading-spinner>
 }
 
+@if (!(loading$ | async) && loadError) {
+  <div class="studio-load-error">
+    <p>Der Cube konnte nicht geladen werden.</p>
+    <button pButton type="button" label="Erneut versuchen" icon="pi pi-refresh" (click)="retryLoadStudio()"></button>
+  </div>
+}
+
 @if (!(loading$ | async) && studio) {
   <div class="studio-details-page">
     <div class="top-actions">
