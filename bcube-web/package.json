@@ -24,7 +24,7 @@
     "@fullcalendar/daygrid": "7.0.0-rc.0",
     "@fullcalendar/interaction": "7.0.0-rc.0",
     "@primeng/themes": "^21.0.4",
-    "mapbox-gl": "^3.14.0",
+    "mapbox-gl": "^3.27.0",
     "primeflex": "^4.0.0",
     "primeicons": "^7.0.0",
     "primeng": "^21.1.9",

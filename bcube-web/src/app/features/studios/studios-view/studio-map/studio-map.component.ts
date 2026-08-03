@@ -20,6 +20,12 @@ export class StudioMapComponent implements OnDestroy {
   private mapboxgl: typeof MapboxGl | null = null;
   private map: MapboxGl.Map | null = null;
   private mapLoaded = false;
+  // Angular's CSS Grid layout can still be settling the container's final size at the exact
+  // moment the map is constructed, leaving mapbox-gl's internal transform stuck at a stale
+  // size - it then never requests a repaint for the actual viewport, so the map renders
+  // nothing (grey) even though tiles load fine in the background. Watching the container
+  // and calling resize() on every real size change is the standard fix for this class of bug.
+  private resizeObserver: ResizeObserver | null = null;
   private markers: Array<{
     studioId: number;
     marker: MapboxGl.Marker;
@@ -32,6 +38,8 @@ export class StudioMapComponent implements OnDestroy {
   constructor(private ngZone: NgZone) {}
 
   ngOnDestroy(): void {
+    this.resizeObserver?.disconnect();
+    this.resizeObserver = null;
     this.clearMarkerLayers();
     this.map?.remove();
     this.map = null;
@@ -173,6 +181,9 @@ export class StudioMapComponent implements OnDestroy {
 
   private initMap(container: HTMLDivElement): void {
     const mapboxgl = this.mapboxgl!;
+
+    this.resizeObserver = new ResizeObserver(() => this.map?.resize());
+    this.resizeObserver.observe(container);
 
     this.map = new mapboxgl.Map({
       container,
