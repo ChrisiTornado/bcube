@@ -55,6 +55,14 @@ public class BookingServiceImpl implements BookingService {
             BookingStatus.DONE
     );
 
+    // Deliberately narrower than BLOCKING_STATUSES (which also includes DONE, for the unrelated
+    // time-slot-overlap check in bookTimeSlot). DONE means the session already happened - that's
+    // a closed, historical record, not "still open" from an account-deletion point of view.
+    private static final Set<BookingStatus> OPEN_STATUSES = Set.of(
+            BookingStatus.CONFIRMED,
+            BookingStatus.PENDING
+    );
+
     private static final DateTimeFormatter ISO_UTC_FMT = DateTimeFormatter
             .ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
             .withZone(ZoneOffset.UTC);
@@ -272,6 +280,45 @@ public class BookingServiceImpl implements BookingService {
         } catch (Exception e) {
             log.error("Rückerstattung für Buchung {} fehlgeschlagen: {}", booking.getId(), e.getMessage(), e);
         }
+    }
+
+    /**
+     * Runs the same cleanup stornoBooking does (Nuki revoke + refund where money was actually
+     * captured) for every non-terminal booking on a studio, then hard-deletes all its bookings -
+     * used when an admin deletes the studio itself. Unlike stornoBooking, this does NOT refuse
+     * to touch already-started/finished bookings (isFinished/hasStarted guard rails exist only
+     * to stop a *user* from cancelling a booking that's already happening - an admin deleting the
+     * studio has to clean up regardless of timing), and DONE bookings are left un-refunded on
+     * purpose (the session already happened; only their booking row gets removed). A single
+     * booking's cleanup failing doesn't block the rest - the studio is being deleted either way,
+     * so best-effort cleanup plus a hard delete beats leaving some bookings behind entirely.
+     */
+    @Override
+    @Transactional
+    public void deleteAllBookingsForStudio(Long studioId, String token) {
+        List<Booking> bookings = bookingRepository.findAllByStudioId(studioId);
+
+        for (Booking booking : bookings) {
+            if (booking.getStatus() == BookingStatus.CONFIRMED || booking.getStatus() == BookingStatus.PENDING) {
+                try {
+                    accessCodeClient.deleteAccessCode(booking.getId(), token);
+                } catch (Exception e) {
+                    log.error("Zutrittscode-Löschung für Buchung {} (Cube-Löschung) fehlgeschlagen: {}",
+                            booking.getId(), e.getMessage(), e);
+                }
+
+                if (booking.getStatus() == BookingStatus.CONFIRMED) {
+                    refundIfPaid(booking, token);
+                }
+            }
+        }
+
+        bookingRepository.deleteAll(bookings);
+    }
+
+    @Override
+    public boolean hasOpenBookings(Long userId) {
+        return bookingRepository.existsByUserIdAndStatusIn(userId, OPEN_STATUSES);
     }
 
     @Transactional

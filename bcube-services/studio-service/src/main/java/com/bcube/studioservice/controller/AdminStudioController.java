@@ -23,8 +23,11 @@ public class AdminStudioController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> deleteStudio(@PathVariable long id) {
-        adminStudioService.deleteStudio(id);
+    public ResponseEntity<ApiResponse<Void>> deleteStudio(
+            @PathVariable long id,
+            @RequestHeader("Authorization") String authorizationHeader
+    ) {
+        adminStudioService.deleteStudio(id, authorizationHeader.replace("Bearer ", ""));
         return ResponseEntity.ok(new ApiResponse<>("Studio erfolgreich gelöscht", null));
     }
 

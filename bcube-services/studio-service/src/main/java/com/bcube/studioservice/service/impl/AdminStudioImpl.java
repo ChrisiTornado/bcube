@@ -1,5 +1,6 @@
 package com.bcube.studioservice.service.impl;
 
+import com.bcube.studioservice.client.BookingClient;
 import com.bcube.studioservice.exception.GeocodingException;
 import com.bcube.studioservice.persistance.entity.Studio;
 import com.bcube.studioservice.persistance.repository.StudioRepository;
@@ -13,6 +14,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.net.URI;
@@ -28,6 +30,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class AdminStudioImpl implements AdminStudioService {
     private final StudioRepository studioRepository;
+    private final BookingClient bookingClient;
 
     @Override
     public StudioResponse createStudio(CreateStudioRequest createStudioRequest) {
@@ -88,11 +91,18 @@ public class AdminStudioImpl implements AdminStudioService {
     }
 
     @Override
-    public DeleteResponse deleteStudio(long id) {
+    @Transactional
+    public DeleteResponse deleteStudio(long id, String token) {
         Optional<Studio> deletingStudio = studioRepository.findById(id);
         if (deletingStudio.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Studio nicht gefunden");
         }
+
+        // Bookings are cleaned up (Nuki revoke + refund where paid) before the studio itself is
+        // removed - if this fails, the exception propagates and the studio is NOT deleted, rather
+        // than silently leaving its bookings orphaned (pointing at a studio that no longer exists).
+        bookingClient.deleteBookingsForStudio(id, token);
+
         studioRepository.delete(deletingStudio.get());
         return new DeleteResponse(true);
     }

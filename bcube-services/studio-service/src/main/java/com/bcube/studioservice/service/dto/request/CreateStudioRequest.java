@@ -2,6 +2,7 @@ package com.bcube.studioservice.service.dto.request;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -17,6 +18,7 @@ public class CreateStudioRequest {
     private String city;
     private String country;
     private byte[] image;
+    @Size(min = 5, max = 5, message = "Es müssen genau 5 Cubebilder hochgeladen werden")
     private List<byte[]> images;
     private String name;
     private String description;

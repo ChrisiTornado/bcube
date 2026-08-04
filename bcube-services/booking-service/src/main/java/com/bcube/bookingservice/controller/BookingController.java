@@ -65,6 +65,16 @@ public class BookingController {
         return  ResponseEntity.ok(new ApiResponse<>("Buchungen erfolgreich geladen", bookings));
     }
 
+    /**
+     * Called by user-service before deleting an account - authenticated like every other route
+     * here (no ADMIN role required), since the calling admin's own JWT already satisfies it.
+     */
+    @GetMapping("/user/{userId}/has-open")
+    public ResponseEntity<ApiResponse<Boolean>> hasOpenBookings(@PathVariable Long userId) {
+        boolean hasOpen = bookingService.hasOpenBookings(userId);
+        return ResponseEntity.ok(new ApiResponse<>("Offene Buchungen geprüft", hasOpen));
+    }
+
     @GetMapping("/{bookingId}")
     public ResponseEntity<ApiResponse<BookingDetailsResponse>> getBookingById(
             @PathVariable Long bookingId,
@@ -90,6 +100,21 @@ public class BookingController {
     ) {
         BookingResponse[] bookings = bookingService.getBookingsByStudioId(studioId, extractToken(authorizationHeader));
         return ResponseEntity.ok(new ApiResponse<>("Buchungen erfolgreich geladen", bookings));
+    }
+
+    /**
+     * Called by studio-service right before it deletes a studio, forwarding the same admin JWT
+     * that authorized the studio deletion itself (studio-service's delete endpoint is already
+     * hasRole("ADMIN")-gated, so this route mirrors that here rather than introducing a separate
+     * internal-key secret for an action that always does have a real admin token available).
+     */
+    @DeleteMapping("/studio/{studioId}")
+    public ResponseEntity<ApiResponse<Void>> deleteBookingsByStudio(
+            @PathVariable Long studioId,
+            @RequestHeader("Authorization") String authorizationHeader
+    ) {
+        bookingService.deleteAllBookingsForStudio(studioId, extractToken(authorizationHeader));
+        return ResponseEntity.ok(new ApiResponse<>("Buchungen erfolgreich gelöscht", null));
     }
 
     /**

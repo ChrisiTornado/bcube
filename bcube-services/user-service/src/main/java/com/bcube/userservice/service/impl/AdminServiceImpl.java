@@ -1,5 +1,7 @@
 package com.bcube.userservice.service.impl;
 
+import com.bcube.userservice.client.BookingClient;
+import com.bcube.userservice.exception.UserHasOpenBookingsException;
 import com.bcube.userservice.persistance.entity.Role;
 import com.bcube.userservice.persistance.entity.User;
 import com.bcube.userservice.persistance.repository.UserRepository;
@@ -21,6 +23,7 @@ import org.springframework.web.server.ResponseStatusException;
 @RequiredArgsConstructor
 public class AdminServiceImpl implements AdminService {
     private final UserRepository userRepository;
+    private final BookingClient bookingClient;
 
     @Override
     public Page<UserResponse> getAllUsers(int page, int size) {
@@ -65,9 +68,16 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public void deleteUser(long id) {
+    public void deleteUser(long id, String token) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User nicht gefunden"));
+
+        if (bookingClient.hasOpenBookings(id, token)) {
+            throw new UserHasOpenBookingsException(
+                    "User hat noch offene Buchungen und kann nicht gelöscht werden. Bitte zuerst alle aktiven Buchungen stornieren."
+            );
+        }
+
         userRepository.delete(user);
     }
 

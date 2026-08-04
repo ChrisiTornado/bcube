@@ -34,4 +34,6 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             Collection<BookingStatus> statuses,
             LocalDate date
     );
+
+    boolean existsByUserIdAndStatusIn(Long userId, Collection<BookingStatus> statuses);
 }

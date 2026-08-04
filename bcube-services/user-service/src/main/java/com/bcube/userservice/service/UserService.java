@@ -6,4 +6,5 @@ import com.bcube.userservice.service.dto.response.UserResponse;
 public interface UserService {
     UserResponse getUserById(long id);
     UserResponse updateUserById(String email, UpdateOwnUserRequest updateOwnUserRequest);
+    void deleteOwnAccount(String email, String token);
 }

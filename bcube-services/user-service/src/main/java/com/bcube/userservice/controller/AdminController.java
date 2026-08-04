@@ -31,8 +31,11 @@ public class AdminController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> deleteUser(@PathVariable long id) {
-        adminService.deleteUser(id);
+    public ResponseEntity<ApiResponse<Void>> deleteUser(
+            @PathVariable long id,
+            @RequestHeader("Authorization") String authorizationHeader
+    ) {
+        adminService.deleteUser(id, authorizationHeader.replace("Bearer ", ""));
         return ResponseEntity.ok(new ApiResponse<>("User erfolgreich gelöscht", null));
     }
 

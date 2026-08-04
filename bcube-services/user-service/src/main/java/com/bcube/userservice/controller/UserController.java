@@ -30,4 +30,13 @@ public class UserController {
         UserResponse user = userService.updateUserById(email, updateOwnUserRequest);
         return ResponseEntity.ok(new ApiResponse<>("User erfolgreich aktualisiert", user));
     }
+
+    @DeleteMapping("/me")
+    public ResponseEntity<ApiResponse<Void>> deleteOwnAccount(
+            Authentication authentication,
+            @RequestHeader("Authorization") String authorizationHeader
+    ) {
+        userService.deleteOwnAccount(authentication.getName(), authorizationHeader.replace("Bearer ", ""));
+        return ResponseEntity.ok(new ApiResponse<>("Account erfolgreich gelöscht", null));
+    }
 }

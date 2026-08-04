@@ -18,4 +18,19 @@ public interface BookingService {
     BookingResponse[] getBookingsByStudioId(long studioId, String token);
 
     void updatePaymentStatus(Long bookingId, String status);
+
+    /**
+     * Called when an admin deletes a studio - cleans up every booking for it (Nuki access
+     * revocation + refund where money was actually captured, same as a normal storno) before
+     * removing the booking rows entirely, so a deleted studio never leaves orphaned bookings
+     * pointing at nothing.
+     */
+    void deleteAllBookingsForStudio(Long studioId, String token);
+
+    /**
+     * Called by user-service before deleting an account - a user with a still-active booking
+     * (CONFIRMED/PENDING) must cancel it first rather than have it silently disappear along with
+     * their account. DONE/CANCELLED/FAILED are terminal and don't block deletion.
+     */
+    boolean hasOpenBookings(Long userId);
 }
