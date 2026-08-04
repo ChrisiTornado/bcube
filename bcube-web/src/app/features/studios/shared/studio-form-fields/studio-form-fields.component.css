@@ -16,3 +16,13 @@
   position: absolute;
   color: var(--bcube-orange);
 }
+
+.image-count {
+  font-weight: 400;
+  font-size: 0.85em;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.image-count-complete {
+  color: var(--bcube-orange);
+}

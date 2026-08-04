@@ -8,20 +8,14 @@ import { Studio } from '@models/studio.model';
     styleUrl: './studio-gallery.component.css'
 })
 export class StudioGalleryComponent {
-  private readonly previewImages = [
-    'assets/images/inside 1.png',
-    'assets/images/interior_2.jpg',
-    'assets/images/new_render_3.jpg',
-    'assets/images/new_render_6.jpg',
-    'assets/images/new_render_7.jpg',
-    'assets/images/nice.jpg'
-  ];
-
   @Input() studio: Studio | null = null;
 
   overlayVisible = false;
   overlayImage: string | null = null;
 
+  // Every studio is required to have exactly 5 real images (enforced at create/update time -
+  // see studio-form.util.ts), so this is exactly what the admin uploaded, never padded with
+  // generic stock photos to reach a target count.
   get galleryImages(): string[] {
     if (!this.studio) {
       return [];
@@ -29,14 +23,10 @@ export class StudioGalleryComponent {
 
     const gallery = this.studio.imageGalleryBase64?.filter(Boolean) ?? [];
     if (gallery.length > 0) {
-      return this.withDefaultGallery(this.studio.id, gallery.map(image => this.normalizeImage(image)));
+      return gallery.map(image => this.normalizeImage(image));
     }
 
-    if (this.studio.imageBase64) {
-      return this.withDefaultGallery(this.studio.id, [this.normalizeImage(this.studio.imageBase64)]);
-    }
-
-    return this.withDefaultGallery(this.studio.id, []);
+    return this.studio.imageBase64 ? [this.normalizeImage(this.studio.imageBase64)] : [];
   }
 
   get featuredGalleryImage(): string | null {
@@ -59,15 +49,5 @@ export class StudioGalleryComponent {
 
   private normalizeImage(value: string): string {
     return value.startsWith('data:image') ? value : `data:image/jpeg;base64,${value}`;
-  }
-
-  private withDefaultGallery(studioId: number, images: string[]): string[] {
-    const gallery = [...images];
-
-    for (let offset = 0; gallery.length < 5; offset++) {
-      gallery.push(this.previewImages[(studioId + offset) % this.previewImages.length]);
-    }
-
-    return gallery.slice(0, 5);
   }
 }

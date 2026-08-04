@@ -56,12 +56,18 @@ export class BookingsViewComponent implements OnInit {
   studioFilterSize = 10;
   studioFilterLoading = false;
   studioFilterLastPage = false;
+  studioFilterTotal = 0;
 
   userFilterPage = 0;
   userFilterSize = 10;
   userFilterLoading = false;
   userFilterLastPage = false;
+  userFilterTotal = 0;
   totalPages = 0;
+
+  // "Weitere laden" only makes sense once there's actually more than a single page's worth to
+  // load - with a handful of items it's just visual noise sitting under an already-complete list.
+  readonly loadMoreThreshold = 10;
 
   constructor(
     public bookingService: BookingService,
@@ -118,6 +124,7 @@ export class BookingsViewComponent implements OnInit {
         next: (page) => {
           this.studioFilters = [...this.studioFilters, ...page.content];
           this.studioFilterLastPage = page.last;
+          this.studioFilterTotal = page.totalElements;
           this.studioFilterPage++;
           this.studioFilterLoading = false;
         },
@@ -155,6 +162,7 @@ export class BookingsViewComponent implements OnInit {
           ];
 
           this.userFilterLastPage = page.last;
+          this.userFilterTotal = page.totalElements;
           this.userFilterPage++;
           this.userFilterLoading = false;
         },

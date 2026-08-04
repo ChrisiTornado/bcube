@@ -49,6 +49,7 @@ export class StudiosViewComponent implements OnInit, AfterViewInit, OnDestroy {
   loadingMore = false;
   isInitialLoading = true;
   mapPreviewImageIndex = 0;
+  placeholderImageIndex = 0;
 
   readonly previewImages = [
     'assets/images/inside 1.png',
@@ -226,6 +227,20 @@ export class StudiosViewComponent implements OnInit, AfterViewInit, OnDestroy {
     this.studioGalleryIndices.set(studio.id, nextIndex);
   }
 
+  getPlaceholderTranslate(): string {
+    return `translate3d(-${this.placeholderImageIndex * 100}%, 0, 0)`;
+  }
+
+  showPreviousPlaceholderImage(event: Event): void {
+    event.stopPropagation();
+    this.placeholderImageIndex = (this.placeholderImageIndex - 1 + this.previewImages.length) % this.previewImages.length;
+  }
+
+  showNextPlaceholderImage(event: Event): void {
+    event.stopPropagation();
+    this.placeholderImageIndex = (this.placeholderImageIndex + 1) % this.previewImages.length;
+  }
+
   showPreviousMapPreviewImage(studio: StudioViewModel, event: Event): void {
     event.stopPropagation();
 
@@ -342,21 +357,20 @@ export class StudiosViewComponent implements OnInit, AfterViewInit, OnDestroy {
     };
   }
 
+  // Every studio is required to have exactly STUDIO_IMAGE_COUNT real images (enforced at
+  // create/update time - see studio-form.util.ts), so the gallery is exactly what the admin
+  // uploaded, never padded with generic stock photos to reach a target count.
   private buildGallery(studio: Studio): string[] {
     const gallery = (studio.imageGalleryBase64?.filter(Boolean) ?? []).map(image =>
       this.resolveStudioImage(studio.id, image)
     );
 
     if (gallery.length > 0) {
-      return this.withDefaultGallery(studio.id, gallery);
+      return gallery;
     }
 
     const value = studio.imageBase64?.trim();
-    if (value) {
-      return this.withDefaultGallery(studio.id, [this.resolveStudioImage(studio.id, value)]);
-    }
-
-    return this.withDefaultGallery(studio.id, []);
+    return value ? [this.resolveStudioImage(studio.id, value)] : [];
   }
 
   private resolveStudioImage(studioId: number, value: string): string {
@@ -370,16 +384,6 @@ export class StudiosViewComponent implements OnInit, AfterViewInit, OnDestroy {
     const resolvedImage = value.startsWith('data:image') ? value : this.toDataImage(value);
     this.studioImageCache.set(cacheKey, resolvedImage);
     return resolvedImage;
-  }
-
-  private withDefaultGallery(studioId: number, images: string[]): string[] {
-    const gallery = [...images];
-
-    for (let offset = 0; gallery.length < 5; offset++) {
-      gallery.push(this.previewImages[(studioId + offset) % this.previewImages.length]);
-    }
-
-    return gallery.slice(0, 5);
   }
 
   private toDataImage(value: string): string {

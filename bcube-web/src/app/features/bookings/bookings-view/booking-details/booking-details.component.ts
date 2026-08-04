@@ -48,7 +48,7 @@ export class BookingDetailsComponent implements OnInit {
   /** Base price at the studio's current rate - the historical, possibly voucher-discounted
    * amount actually charged lives in the dedicated payment history view, not here. */
   formatPrice(): string {
-    if (!this.booking) return '–';
+    if (!this.booking || !this.booking.studio) return '–';
 
     const durationHours = (new Date(this.booking.endTime).getTime() - new Date(this.booking.startTime).getTime()) / 3_600_000;
     const priceCents = Math.round((this.booking.studio.hourlyRateCents ?? 0) * durationHours);

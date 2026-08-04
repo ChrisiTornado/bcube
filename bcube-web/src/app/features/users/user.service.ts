@@ -101,4 +101,10 @@ export class UserService extends CollectionStore<User> {
       environment.adminApiUrl + '/' + id
     );
   }
+
+  deleteOwnAccount(): Observable<ApiResponse<void>> {
+    return this.http.delete<ApiResponse<void>>(
+      environment.userApiUrl + '/me'
+    );
+  }
 }

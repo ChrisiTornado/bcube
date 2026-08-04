@@ -466,6 +466,35 @@
   padding: 2rem 0.25rem;
 }
 
+.studio-card-placeholder {
+  cursor: default;
+}
+
+.studio-card-placeholder:hover {
+  transform: none;
+}
+
+.studio-card-placeholder .media-track img {
+  filter: grayscale(1);
+  opacity: 0.4;
+}
+
+.placeholder-icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 3rem;
+  color: rgba(255, 255, 255, 0.88);
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.55);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.studio-card-placeholder .studio-description {
+  color: rgba(255, 255, 255, 0.5);
+}
+
 .empty-state p {
   color: rgba(255, 255, 255, 0.7);
 }

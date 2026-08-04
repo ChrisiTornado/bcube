@@ -24,7 +24,7 @@ export class BookingActionService {
     setLoading?: (loading: boolean) => void
   ): void {
     this.confirmationService.confirm({
-      message: `Möchten Sie die Buchung "${booking.id}" für den Kube "${booking.studio.name}" wirklich stornieren?`,
+      message: `Möchten Sie die Buchung "${booking.id}" für den Kube "${booking.studio?.name ?? 'gelöschter Cube'}" wirklich stornieren?`,
       header: 'Stornieren bestätigen',
       icon: 'pi pi-exclamation-triangle',
       acceptLabel: 'Ja',

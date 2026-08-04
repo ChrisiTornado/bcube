@@ -9,6 +9,7 @@ import { MegaMenuModule } from 'primeng/megamenu';
 import { RouterModule, Router, NavigationEnd } from '@angular/router';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { filter } from 'rxjs/operators';
+import { StudioService } from '@features/studios/studio.service';
 
 @Component({
     selector: 'app-user-shell',
@@ -23,11 +24,15 @@ import { filter } from 'rxjs/operators';
 })
 export class UserShellComponent implements OnInit {
   items: MegaMenuItem[] = [];
+  // "Mein Cube" only makes sense while there's exactly one studio to refer to - with several
+  // studios "my cube" would be ambiguous, so the tab just doesn't appear.
+  private showMyCubeTab = false;
 
   constructor(
     private router: Router,
     private messageService: MessageService,
     private authService: AuthService,
+    private studioService: StudioService,
     private destroyRef: DestroyRef
   ) {}
 
@@ -44,6 +49,11 @@ export class UserShellComponent implements OnInit {
       }, 0);
       sessionStorage.removeItem('loginSuccessMessage');
     }
+
+    this.studioService.getStudiosPagination(0, 1).subscribe(response => {
+      this.showMyCubeTab = response.totalElements === 1;
+      this.buildMenu();
+    });
 
     // initialer Menüaufbau
     this.buildMenu();
@@ -68,8 +78,16 @@ export class UserShellComponent implements OnInit {
         label: 'Cubes',
         icon: 'pi pi-fw pi-building',
         routerLink: 'studios',
-        styleClass: this.isRouteActive(['studios', 'studio-details']) ? 'p-menuitem-link-active' : ''
+        styleClass: this.isRouteActive(['studios']) ? 'p-menuitem-link-active' : ''
       },
+      ...(this.showMyCubeTab
+        ? [{
+            label: 'Mein Cube',
+            icon: 'pi pi-fw pi-star',
+            routerLink: 'my-cube',
+            styleClass: this.isRouteActive(['my-cube']) ? 'p-menuitem-link-active' : ''
+          }]
+        : []),
       {
         label: 'Buchungen',
         icon: 'pi pi-fw pi-folder-open',

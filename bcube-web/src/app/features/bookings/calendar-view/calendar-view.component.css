@@ -11,9 +11,13 @@
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  margin-bottom: 1rem;
+  margin-bottom: 0.8rem;
   flex-shrink: 0;
-  padding-left: 1rem;
+  padding-left: 30px;
+}
+
+.view-header h1 {
+  padding-top: 1rem;
 }
 
 .all-bookings-button {

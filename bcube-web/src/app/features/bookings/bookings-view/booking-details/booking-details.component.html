@@ -16,14 +16,16 @@
   @if (booking) {
     <div class="booking-header flex mb-4">
       <h2 class="text-2xl font-semibold mb-2">
-        Auftrag {{ booking.id }} - {{ booking.studio.name }}
+        Auftrag {{ booking.id }} - {{ booking.studio?.name ?? 'Cube gelöscht' }}
       </h2>
-      <img
-        [src]="booking.studio.imageBase64"
-        alt="Studiobild"
-        class="booking-studio-image"
-        (click)="showOverlay(booking.studio.imageBase64)"
-        >
+      @if (booking.studio) {
+        <img
+          [src]="booking.studio.imageBase64"
+          alt="Studiobild"
+          class="booking-studio-image"
+          (click)="showOverlay(booking.studio.imageBase64)"
+          >
+      }
     </div>
     @if (overlayVisible) {
       <div class="overlay" (click)="hideOverlay()">
@@ -38,10 +40,10 @@
         <p><strong>Datum:</strong> {{ booking.date | date: 'dd. MMMM, yyyy' : undefined : 'de-AT' }}</p>
         <p><strong>Zeit:</strong> {{ booking.startTime | date: 'HH:mm' }} - {{ booking.endTime | date: 'HH:mm' }} Uhr
       </p>
-      <p><strong>Straße:</strong> {{ booking.studio.street }}</p>
-      <p><strong>Stadt:</strong> {{ booking.studio.city }}</p>
-      <p><strong>PLZ:</strong> {{ booking.studio.plz }}</p>
-      <p><strong>Land:</strong> {{ booking.studio.country }}</p>
+      <p><strong>Straße:</strong> {{ booking.studio?.street ?? '–' }}</p>
+      <p><strong>Stadt:</strong> {{ booking.studio?.city ?? '–' }}</p>
+      <p><strong>PLZ:</strong> {{ booking.studio?.plz ?? '–' }}</p>
+      <p><strong>Land:</strong> {{ booking.studio?.country ?? '–' }}</p>
       <p><strong>Preis:</strong> {{ formatPrice() }}</p>
       <p><strong>Zutrittscode:</strong> {{ booking.accessCode }}</p>
     </p-card>

@@ -28,17 +28,19 @@
             <article class="day-booking-card" [class.day-booking-card-done]="isDoneBooking(booking)">
               <div class="booking-card-top">
                 <div class="booking-image-wrap">
-                  <img [src]="booking.studio.imageBase64" [alt]="booking.studio.name" class="booking-studio-thumb">
+                  @if (booking.studio) {
+                    <img [src]="booking.studio.imageBase64" [alt]="booking.studio.name" class="booking-studio-thumb">
+                  }
                 </div>
                 <div class="booking-card-copy">
                   <div class="booking-card-title-row">
-                    <h3 class="m-0">{{ booking.studio.name }}</h3>
+                    <h3 class="m-0">{{ booking.studio?.name ?? 'Cube gelöscht' }}</h3>
                     <span class="booking-status-badge" [class.booking-status-badge-done]="isDoneBooking(booking)">
                       {{ getStatusLabel(booking.status) }}
                     </span>
                   </div>
                   <p class="booking-location m-0">
-                    {{ booking.studio.street }}, {{ booking.studio.plz }} {{ booking.studio.city }}
+                    {{ booking.studio?.street ?? '–' }}, {{ booking.studio?.plz }} {{ booking.studio?.city }}
                   </p>
                   <p class="booking-time m-0">
                     {{ booking.date | date: 'dd. MMMM, yyyy' : undefined : 'de-AT' }} · {{ formatBookingTimeRange(booking) }}

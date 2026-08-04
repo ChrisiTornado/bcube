@@ -1,0 +1,24 @@
+.my-cube-empty {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: var(--bcube-text-soft);
+}
+
+.my-cube-icon {
+  font-size: 2.5rem;
+  color: var(--bcube-orange);
+  margin-bottom: 1rem;
+}
+
+.my-cube-empty h1 {
+  margin: 0 0 0.4rem;
+  color: var(--bcube-text);
+}
+
+.my-cube-empty p {
+  margin: 0;
+}

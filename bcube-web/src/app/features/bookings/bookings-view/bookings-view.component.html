@@ -28,12 +28,14 @@
         </ng-template>
         <!-- FOOTER MIT PLUS -->
         <ng-template pTemplate="footer">
-          <div class="p-2 text-center">
-            <button pButton type="button" icon="pi pi-plus" label="Weitere laden" class="p-button-text"
-              (mousedown)="$event.preventDefault()" (click)="$event.stopPropagation(); loadMoreUsers()"
-              [disabled]="userFilterLoading || userFilterLastPage">
-            </button>
-          </div>
+          @if (userFilterTotal > loadMoreThreshold) {
+            <div class="p-2 text-center">
+              <button pButton type="button" icon="pi pi-plus" label="Weitere laden" class="p-button-text"
+                (mousedown)="$event.preventDefault()" (click)="$event.stopPropagation(); loadMoreUsers()"
+                [disabled]="userFilterLoading || userFilterLastPage">
+              </button>
+            </div>
+          }
         </ng-template>
       </p-select>
     }
@@ -45,12 +47,14 @@
       </ng-template>
       <!-- FOOTER MIT PLUS -->
       <ng-template pTemplate="footer">
-        <div class="p-2 text-center">
-          <button pButton type="button" icon="pi pi-plus" label="Weitere laden" class="p-button-text"
-            (mousedown)="$event.preventDefault()" (click)="$event.stopPropagation(); loadMoreStudios()"
-            [disabled]="studioFilterLoading || studioFilterLastPage">
-          </button>
-        </div>
+        @if (studioFilterTotal > loadMoreThreshold) {
+          <div class="p-2 text-center">
+            <button pButton type="button" icon="pi pi-plus" label="Weitere laden" class="p-button-text"
+              (mousedown)="$event.preventDefault()" (click)="$event.stopPropagation(); loadMoreStudios()"
+              [disabled]="studioFilterLoading || studioFilterLastPage">
+            </button>
+          </div>
+        }
       </ng-template>
     </p-select>
     <p-button [outlined]="true" label="Filter zurücksetzen"
@@ -89,11 +93,15 @@
             <td>{{ booking.date | date: 'dd. MMMM, yyyy' : undefined : 'de-AT' }}</td>
             <td>{{ booking.startTime | date:'HH:mm' }}–{{ booking.endTime | date:'HH:mm' }}</td>
             <td>
-              {{
-              booking.studio.name.length > 20
-              ? (booking.studio.name | slice:0:20) + '...'
-              : booking.studio.name
-              }}
+              @if (booking.studio) {
+                {{
+                booking.studio.name.length > 20
+                ? (booking.studio.name | slice:0:20) + '...'
+                : booking.studio.name
+                }}
+              } @else {
+                <span>Cube gelöscht</span>
+              }
             </td>
             <td>
               @if (booking.status === bookingStatus.CONFIRMED) {

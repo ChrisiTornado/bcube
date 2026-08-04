@@ -166,7 +166,7 @@ export class ProfileViewComponent implements OnInit {
     }
 
     this.deleting = true;
-    this.userService.deleteUser(this.user.id)
+    this.userService.deleteOwnAccount()
       .pipe(finalize(() => this.deleting = false))
       .subscribe({
         next: () => {

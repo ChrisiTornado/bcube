@@ -87,6 +87,10 @@ export const routes: Routes = [
                 loadComponent: () => import('@features/studios/studios-view/studios-view.component').then(m => m.StudiosViewComponent)
             },
             {
+                path: 'my-cube',
+                loadComponent: () => import('@features/studios/my-cube-view/my-cube-view.component').then(m => m.MyCubeViewComponent)
+            },
+            {
                 path: 'calendar',
                 loadComponent: () => import('@features/bookings/calendar-view/calendar-view.component').then(m => m.CalendarViewComponent)
             },

@@ -86,12 +86,17 @@
   </div>
 </div>
 <div class="mb-4">
-  <label class="block text-900 font-medium mb-2">Cubebilder</label>
+  <label class="block text-900 font-medium mb-2">
+    Cubebilder
+    <span class="image-count" [class.image-count-complete]="pickedImages.length === requiredImageCount">
+      ({{ pickedImages.length }} von {{ requiredImageCount }})
+    </span>
+  </label>
   <app-studio-image-picker [images]="pickedImages" (imagesChange)="imagesChange.emit($event)"></app-studio-image-picker>
   @if (showImageError) {
     <div class="field-error-wrap">
-      @if (images.hasError('required') && submitted) {
-        <small class="field-error">Mindestens ein Cubebild ist erforderlich</small>
+      @if (images.hasError('exactImageCount') && submitted) {
+        <small class="field-error">Es müssen genau {{ requiredImageCount }} Cubebilder ausgewählt werden</small>
       }
     </div>
   }

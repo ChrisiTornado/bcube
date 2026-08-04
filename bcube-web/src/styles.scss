@@ -300,6 +300,21 @@ select:-webkit-autofill:focus {
   box-shadow: var(--bcube-shadow) !important;
 }
 
+// PrimeNG is configured with darkModeSelector: false (see app.config.ts), so its option/list
+// tokens always resolve to their LIGHT-scheme defaults (a mid-gray text color meant for a white
+// background) regardless of our dark theme - against our near-black overlay that reads as
+// low-contrast/washed-out. Overriding the actual CSS custom properties Select reads from (rather
+// than just the class selectors below) fixes this at the source for every nested part at once.
+.p-select-overlay {
+  --p-select-option-color: var(--bcube-text);
+  --p-select-option-focus-color: var(--bcube-text);
+  --p-select-option-selected-color: var(--bcube-text);
+  --p-select-option-selected-focus-color: var(--bcube-text);
+  --p-select-option-focus-background: rgba(255, 167, 34, 0.12);
+  --p-select-option-selected-background: rgba(255, 167, 34, 0.08);
+  --p-select-option-selected-focus-background: rgba(255, 167, 34, 0.14);
+}
+
 .p-toast-message {
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.02)),
@@ -309,6 +324,7 @@ select:-webkit-autofill:focus {
 }
 
 .p-select-option,
+.p-select-option-label,
 .p-dialog .p-dialog-title,
 .p-dialog .p-dialog-content,
 .p-card .p-card-title,

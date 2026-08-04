@@ -5,6 +5,7 @@ import { TextareaModule } from 'primeng/textarea';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { PickedImage } from '@shared/util/image-file.util';
 import { StudioImagePickerComponent } from '@features/studios/studio-image-picker/studio-image-picker.component';
+import { STUDIO_IMAGE_COUNT } from '@features/studios/shared/studio-form.util';
 
 @Component({
   selector: 'app-studio-form-fields',
@@ -13,6 +14,8 @@ import { StudioImagePickerComponent } from '@features/studios/studio-image-picke
   styleUrl: './studio-form-fields.component.css'
 })
 export class StudioFormFieldsComponent {
+  readonly requiredImageCount = STUDIO_IMAGE_COUNT;
+
   @Input() form!: FormGroup;
   @Input() submitted = false;
   @Input() pickedImages: PickedImage[] = [];

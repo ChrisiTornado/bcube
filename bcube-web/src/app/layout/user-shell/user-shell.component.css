@@ -112,6 +112,10 @@
 }
 
 :host ::ng-deep .user-top-menu .p-megamenu-root-list {
+  /* The root list otherwise shrinks to its own content width (PrimeNG's default), leaving
+     justify-content with no extra space to redistribute - it needs to actually fill the pill
+     first before "center" can move the items away from the left edge. */
+  width: 100%;
   justify-content: center;
   gap: 0.35rem;
 }

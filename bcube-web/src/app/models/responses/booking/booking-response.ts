@@ -5,7 +5,8 @@ import { User } from "@models/user.model";
 export interface BookingResponse {
     id: number;
     user: User;
-    studio: Studio;
+    // Nullable defensively - see booking.model.ts.
+    studio: Studio | null;
     date: string;
     startTime: string;
     endTime: string;

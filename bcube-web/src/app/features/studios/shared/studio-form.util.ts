@@ -1,5 +1,19 @@
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { Studio } from '@models/studio.model';
+
+export const STUDIO_IMAGE_COUNT = 5;
+
+/** Every studio must show exactly STUDIO_IMAGE_COUNT images everywhere (list, map preview, detail
+ * gallery) - enforcing an exact count here at the source (instead of padding a shorter gallery
+ * with generic stock photos at display time, which is what used to happen) means what the admin
+ * uploaded is always exactly what a visitor sees. */
+function exactImageCountValidator(count: number): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    const value = control.value;
+    const actual = Array.isArray(value) ? value.length : 0;
+    return actual === count ? null : { exactImageCount: { required: count, actual } };
+  };
+}
 
 export function buildStudioForm(fb: FormBuilder, studio?: Studio): FormGroup {
   return fb.group({
@@ -15,7 +29,7 @@ export function buildStudioForm(fb: FormBuilder, studio?: Studio): FormGroup {
     hourlyRate: [studio ? studio.hourlyRateCents / 100 : null, [Validators.required, Validators.min(0.01)]],
     images: [
       studio ? (studio.imageGalleryBase64 ?? [studio.imageBase64]) : null,
-      studio ? [] : Validators.required
+      exactImageCountValidator(STUDIO_IMAGE_COUNT)
     ]
   });
 }

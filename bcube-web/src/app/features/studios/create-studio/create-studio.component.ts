@@ -15,7 +15,7 @@ import { AuthService } from '@core/services/auth.service';
 import { DARK_BUTTON_STYLE } from '@shared/util/button-style';
 import { extractErrorMessage } from '@shared/util/error-message.util';
 import { PickedImage, pickedImagesToByteArrays } from '@shared/util/image-file.util';
-import { buildStudioForm } from '@features/studios/shared/studio-form.util';
+import { buildStudioForm, STUDIO_IMAGE_COUNT } from '@features/studios/shared/studio-form.util';
 import { StudioFormFieldsComponent } from '@features/studios/shared/studio-form-fields/studio-form-fields.component';
 
 @Component({
@@ -74,7 +74,7 @@ export class CreateStudioComponent implements OnInit{
 
   async submit(): Promise<void> {
       this.submitted = true;
-      if (this.createForm.invalid || this.pickedImages.length === 0) return;
+      if (this.createForm.invalid || this.pickedImages.length !== STUDIO_IMAGE_COUNT) return;
 
       this.loading = true;
 
