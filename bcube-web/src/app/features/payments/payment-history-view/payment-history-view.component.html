@@ -1,5 +1,8 @@
 <div class="view-header">
-  <h1 class="m-0">Zahlungen</h1>
+  <button pButton type="button" class="p-button-outlined back-button" icon="pi pi-arrow-left" label="Zurück"
+    [style]="darkButtonStyle" (click)="goBack()">
+  </button>
+  <h1 class="m-0 view-title">Zahlungen</h1>
 </div>
 
 @if (loading) {
@@ -21,7 +24,6 @@
             <th>Datum</th>
             <th>Cube</th>
             <th>Betrag</th>
-            <th>Rabatt</th>
             <th>Status</th>
           </tr>
         </ng-template>
@@ -30,13 +32,6 @@
             <td>{{ payment.bookingDate | date: 'dd. MMMM, yyyy' : undefined : 'de-AT' }}</td>
             <td>{{ payment.studioName }}</td>
             <td>{{ formatAmount(payment.finalAmountCents) }}</td>
-            <td>
-              @if (payment.discountAmountCents > 0) {
-                -{{ formatAmount(payment.discountAmountCents) }}
-              } @else {
-                –
-              }
-            </td>
             <td>{{ getStatusLabel(payment.status) }}</td>
           </tr>
         </ng-template>

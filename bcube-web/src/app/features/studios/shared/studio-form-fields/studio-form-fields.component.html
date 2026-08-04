@@ -13,7 +13,7 @@
     [formControl]="description"
     placeholder="Beschreibung"
     pInputTextarea
-    rows="6"
+    rows="3"
   class="w-full studio-description-field"></textarea>
   <div class="field-error-wrap">
     @if (description.hasError('required') && submitted) {
@@ -21,62 +21,68 @@
     }
   </div>
 </div>
-<div class="mb-4">
-  <label for="city" class="block text-900 font-medium mb-2">Stadt</label>
-  <input id="city" [formControl]="city" type="text" placeholder="Stadt" pInputText pAutoFocus [autofocus]="true" class="w-full">
-  <div class="field-error-wrap">
-    @if (city.hasError('required') && submitted) {
-      <small class="field-error">Stadt ist erforderlich</small>
-    }
+<div class="field-row mb-4">
+  <div class="field-col">
+    <label for="city" class="block text-900 font-medium mb-2">Stadt</label>
+    <input id="city" [formControl]="city" type="text" placeholder="Stadt" pInputText pAutoFocus [autofocus]="true" class="w-full">
+    <div class="field-error-wrap">
+      @if (city.hasError('required') && submitted) {
+        <small class="field-error">Stadt ist erforderlich</small>
+      }
+    </div>
+  </div>
+  <div class="field-col">
+    <label for="country" class="block text-900 font-medium mb-2">Land</label>
+    <input id="country" [formControl]="country" type="text" placeholder="Land" pInputText pAutoFocus [autofocus]="true" class="w-full">
+    <div class="field-error-wrap">
+      @if (country.hasError('required') && submitted) {
+        <small class="field-error">Land ist erforderlich</small>
+      }
+    </div>
   </div>
 </div>
-<div class="mb-4">
-  <label for="country" class="block text-900 font-medium mb-2">Land</label>
-  <input id="country" [formControl]="country" type="text" placeholder="Land" pInputText pAutoFocus [autofocus]="true" class="w-full">
-  <div class="field-error-wrap">
-    @if (country.hasError('required') && submitted) {
-      <small class="field-error">Land ist erforderlich</small>
-    }
+<div class="field-row mb-4">
+  <div class="field-col">
+    <label for="plz" class="block text-900 font-medium mb-2">Postleitzahl</label>
+    <input id="plz" [formControl]="plz" type="plz" placeholder="Postleitzahl" pInputText pAutoFocus [autofocus]="true" class="w-full">
+    <div class="field-error-wrap">
+      @if (plz.hasError('required') && submitted) {
+        <small class="field-error">Postleitzahl ist erforderlich</small>
+      }
+    </div>
+  </div>
+  <div class="field-col">
+    <label for="street" class="block text-900 font-medium mb-2">Straße</label>
+    <input id="street" [formControl]="street" type="text" placeholder="Straße" pInputText pAutoFocus [autofocus]="true" class="w-full">
+    <div class="field-error-wrap">
+      @if (street.hasError('required') && submitted) {
+        <small class="field-error">Stadtname ist erforderlich</small>
+      }
+    </div>
   </div>
 </div>
-<div class="mb-4">
-  <label for="plz" class="block text-900 font-medium mb-2">Postleitzahl</label>
-  <input id="plz" [formControl]="plz" type="plz" placeholder="Postleitzahl" pInputText pAutoFocus [autofocus]="true" class="w-full">
-  <div class="field-error-wrap">
-    @if (plz.hasError('required') && submitted) {
-      <small class="field-error">Postleitzahl ist erforderlich</small>
-    }
+<div class="field-row mb-4">
+  <div class="field-col">
+    <label for="smartlockId" class="block text-900 font-medium mb-2">Smartlock ID</label>
+    <input id="smartlockId" [formControl]="smartlockId" type="number" placeholder="Smartlock ID" pInputText pAutoFocus [autofocus]="true" class="w-full">
+    <div class="field-error-wrap">
+      @if (smartlockId.hasError('required') && submitted) {
+        <small class="field-error">Smartlock ID ist erforderlich</small>
+      }
+    </div>
   </div>
-</div>
-<div class="mb-4">
-  <label for="street" class="block text-900 font-medium mb-2">Straße</label>
-  <input id="street" [formControl]="street" type="text" placeholder="Straße" pInputText pAutoFocus [autofocus]="true" class="w-full">
-  <div class="field-error-wrap">
-    @if (street.hasError('required') && submitted) {
-      <small class="field-error">Stadtname ist erforderlich</small>
-    }
-  </div>
-</div>
-<div class="mb-4">
-  <label for="smartlockId" class="block text-900 font-medium mb-2">Smartlock ID</label>
-  <input id="smartlockId" [formControl]="smartlockId" type="number" placeholder="Smartlock ID" pInputText pAutoFocus [autofocus]="true" class="w-full">
-  <div class="field-error-wrap">
-    @if (smartlockId.hasError('required') && submitted) {
-      <small class="field-error">Smartlock ID ist erforderlich</small>
-    }
-  </div>
-</div>
-<div class="mb-4">
-  <label for="hourlyRate" class="block text-900 font-medium mb-2">Preis pro Stunde</label>
-  <p-inputNumber inputId="hourlyRate" [formControl]="hourlyRate" mode="currency" currency="EUR" locale="de-AT"
-    [minFractionDigits]="2" [maxFractionDigits]="2" class="w-full" styleClass="w-full"></p-inputNumber>
-  <div class="field-error-wrap">
-    @if (hourlyRate.hasError('required') && submitted) {
-      <small class="field-error">Preis pro Stunde ist erforderlich</small>
-    }
-    @if (hourlyRate.hasError('min') && submitted) {
-      <small class="field-error">Preis muss größer als 0 sein</small>
-    }
+  <div class="field-col">
+    <label for="hourlyRate" class="block text-900 font-medium mb-2">Preis pro Stunde</label>
+    <p-inputNumber inputId="hourlyRate" [formControl]="hourlyRate" mode="currency" currency="EUR" locale="de-AT"
+      [minFractionDigits]="2" [maxFractionDigits]="2" class="w-full" styleClass="w-full"></p-inputNumber>
+    <div class="field-error-wrap">
+      @if (hourlyRate.hasError('required') && submitted) {
+        <small class="field-error">Preis pro Stunde ist erforderlich</small>
+      }
+      @if (hourlyRate.hasError('min') && submitted) {
+        <small class="field-error">Preis muss größer als 0 sein</small>
+      }
+    </div>
   </div>
 </div>
 <div class="mb-4">

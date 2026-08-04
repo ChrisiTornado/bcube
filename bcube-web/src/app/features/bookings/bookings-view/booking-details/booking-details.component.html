@@ -42,11 +42,12 @@
       <p><strong>Stadt:</strong> {{ booking.studio.city }}</p>
       <p><strong>PLZ:</strong> {{ booking.studio.plz }}</p>
       <p><strong>Land:</strong> {{ booking.studio.country }}</p>
+      <p><strong>Preis:</strong> {{ formatPrice() }}</p>
       <p><strong>Zutrittscode:</strong> {{ booking.accessCode }}</p>
     </p-card>
     @if (!isUser) {
       <p-card [style]="{ width: '25rem', overflow: 'hidden' }"
-        class="bg-gray-100 rounded-lg shadow-sm">
+        class="rounded-lg shadow-sm">
         <ng-template pTemplate="title">Kundendaten</ng-template>
         <p><strong>Kunden ID:</strong> {{ booking.user.id }}</p>
         <p><strong>Name:</strong> {{ booking.user.firstName }} {{ booking.user.lastName }}</p>

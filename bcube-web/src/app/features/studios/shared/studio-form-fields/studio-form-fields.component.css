@@ -1,3 +1,13 @@
+.field-row {
+  display: flex;
+  gap: 1rem;
+}
+
+.field-col {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
 .field-error-wrap {
   position: relative;
 }

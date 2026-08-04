@@ -115,6 +115,24 @@ export class BookingPaymentStepComponent implements OnInit, OnChanges {
     this.confirmClicked.emit(this.voucherPreview ? this.voucherCode.trim() : undefined);
   }
 
+  /**
+   * Once createPendingBooking() has run, a real PENDING booking row (blocking the time slot)
+   * already exists server-side - abandoning the payment step client-side without cancelling it
+   * would leave that slot stuck blocked until the maintenance job eventually expires it. Storno
+   * frees it immediately; before a booking exists there's nothing to cancel server-side.
+   */
+  cancel(): void {
+    if (!this.booking) {
+      this.cancelled.emit();
+      return;
+    }
+
+    this.bookingService.storno(this.booking.id).subscribe({
+      next: () => this.cancelled.emit(),
+      error: () => this.cancelled.emit()
+    });
+  }
+
   onCardSucceeded(): void {
     if (!this.isSetupVerification) {
       this.state = 'polling';

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { MessageService } from 'primeng/api';
@@ -12,6 +13,7 @@ import { PaymentResponse } from '@models/responses/payment/payment-response';
 import { LoadingSpinnerComponent } from '@shared/ui/loading-spinner/loading-spinner.component';
 import { DARK_BUTTON_STYLE, LIGHT_BUTTON_STYLE } from '@shared/util/button-style';
 import { getPaymentStatusLabel } from '@shared/util/payment-status.util';
+import { getDashboardBasePath } from '@shared/util/dashboard-path.util';
 import { extractErrorMessage } from '@shared/util/error-message.util';
 
 @Component({
@@ -33,11 +35,17 @@ export class PaymentHistoryViewComponent implements OnInit {
   constructor(
     private paymentService: PaymentService,
     private authService: AuthService,
-    private messageService: MessageService
+    private messageService: MessageService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
     this.loadPage(0);
+  }
+
+  goBack(): void {
+    const basePath = getDashboardBasePath(this.authService.isAdmin());
+    this.router.navigate([`${basePath}/profile`]);
   }
 
   loadPage(page: number): void {

@@ -45,6 +45,16 @@ export class BookingDetailsComponent implements OnInit {
     return getBookingStatusLabel(status);
   }
 
+  /** Base price at the studio's current rate - the historical, possibly voucher-discounted
+   * amount actually charged lives in the dedicated payment history view, not here. */
+  formatPrice(): string {
+    if (!this.booking) return '–';
+
+    const durationHours = (new Date(this.booking.endTime).getTime() - new Date(this.booking.startTime).getTime()) / 3_600_000;
+    const priceCents = Math.round((this.booking.studio.hourlyRateCents ?? 0) * durationHours);
+    return new Intl.NumberFormat('de-AT', { style: 'currency', currency: 'EUR' }).format(priceCents / 100);
+  }
+
   constructor(
     private router: Router,
     private route: ActivatedRoute,

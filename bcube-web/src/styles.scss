@@ -474,6 +474,14 @@ select:-webkit-autofill:focus {
   }
 }
 
+// Equal width for both buttons regardless of label length ("Ja" vs "Abbrechen" etc.) - fits
+// every label actually used across the app's confirm dialogs without stretching edge-to-edge.
+.p-confirmdialog-accept-button,
+.p-confirmdialog-reject-button {
+  min-width: 8rem !important;
+  justify-content: center !important;
+}
+
 .p-confirmdialog-accept-button {
   background: var(--bcube-orange) !important;
   border-color: var(--bcube-orange) !important;
