@@ -1,0 +1,60 @@
+<div class="view-header">
+  <h1 class="m-0">Zahlungen</h1>
+</div>
+
+@if (loading) {
+  <app-loading-spinner></app-loading-spinner>
+}
+
+@if (!loading) {
+  @if (payments.length === 0) {
+    <div class="empty-shell text-center my-6">
+      <h3 class="mb-3">Noch keine Zahlungen vorhanden</h3>
+    </div>
+  }
+
+  @if (payments.length > 0) {
+    <div class="table-shell" style="padding-bottom: 0.5rem;">
+      <p-table class="small-rows" [value]="payments">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Datum</th>
+            <th>Cube</th>
+            <th>Betrag</th>
+            <th>Rabatt</th>
+            <th>Status</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-payment>
+          <tr>
+            <td>{{ payment.bookingDate | date: 'dd. MMMM, yyyy' : undefined : 'de-AT' }}</td>
+            <td>{{ payment.studioName }}</td>
+            <td>{{ formatAmount(payment.finalAmountCents) }}</td>
+            <td>
+              @if (payment.discountAmountCents > 0) {
+                -{{ formatAmount(payment.discountAmountCents) }}
+              } @else {
+                –
+              }
+            </td>
+            <td>{{ getStatusLabel(payment.status) }}</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  }
+
+  @if (totalPages > 1) {
+    <div class="pager-shell flex justify-content-center gap-4 mt-4">
+      <button pButton label="<- Zurück" [style]="lightButtonStyle"
+        (click)="loadPage(page - 1)"
+        [disabled]="page === 0">
+      </button>
+      <span class="mt-2 mx-3 font-bold">Seite {{ page + 1 }} von {{ totalPages }}</span>
+      <button pButton label="Weiter ->" [style]="lightButtonStyle"
+        (click)="loadPage(page + 1)"
+        [disabled]="page >= totalPages - 1">
+      </button>
+    </div>
+  }
+}

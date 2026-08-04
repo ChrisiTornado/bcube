@@ -16,4 +16,6 @@ public interface BookingService {
     BookingResponse stornoBooking(Long bookingId, String token);
 
     BookingResponse[] getBookingsByStudioId(long studioId, String token);
+
+    void updatePaymentStatus(Long bookingId, String status);
 }

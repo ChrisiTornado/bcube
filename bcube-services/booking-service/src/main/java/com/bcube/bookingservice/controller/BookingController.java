@@ -3,15 +3,22 @@ package com.bcube.bookingservice.controller;
 import com.bcube.bookingservice.service.BookingService;
 import com.bcube.bookingservice.service.dto.request.BookStudioRequest;
 import com.bcube.bookingservice.service.dto.request.AdminBookingQueryRequest;
+import com.bcube.bookingservice.service.dto.request.BookingPaymentStatusRequest;
 import com.bcube.bookingservice.service.dto.request.UserBookingQueryRequest;
 import com.bcube.bookingservice.service.dto.response.ApiResponse;
 import com.bcube.bookingservice.service.dto.response.BookingDetailsResponse;
 import com.bcube.bookingservice.service.dto.response.BookingResponse;
 import com.bcube.bookingservice.service.impl.BookingServiceImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 
 @RestController
 @RequiredArgsConstructor
@@ -19,6 +26,9 @@ import org.springframework.web.bind.annotation.*;
 public class BookingController {
 
     private final BookingService bookingService;
+
+    @Value("${internal.service-key}")
+    private String internalServiceKey;
 
     private String extractToken(String authorizationHeader) {
         return authorizationHeader.replace("Bearer ", "");
@@ -80,5 +90,27 @@ public class BookingController {
     ) {
         BookingResponse[] bookings = bookingService.getBookingsByStudioId(studioId, extractToken(authorizationHeader));
         return ResponseEntity.ok(new ApiResponse<>("Buchungen erfolgreich geladen", bookings));
+    }
+
+    /**
+     * Called by payment-service's Stripe webhook handler, which has no user JWT to forward.
+     * Authenticated via the shared X-Internal-Key secret instead of the usual JWT filter chain
+     * (exempted in WebSecurityConfig) - checked here with a constant-time comparison.
+     */
+    @PatchMapping("/{bookingId}/payment-status")
+    public ResponseEntity<ApiResponse<Void>> updatePaymentStatus(
+            @PathVariable Long bookingId,
+            @RequestHeader("X-Internal-Key") String providedKey,
+            @RequestBody BookingPaymentStatusRequest request
+    ) {
+        if (!MessageDigest.isEqual(
+                providedKey.getBytes(StandardCharsets.UTF_8),
+                internalServiceKey.getBytes(StandardCharsets.UTF_8)
+        )) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Ungültiger interner Schlüssel");
+        }
+
+        bookingService.updatePaymentStatus(bookingId, request.getStatus());
+        return ResponseEntity.ok(new ApiResponse<>("Zahlungsstatus aktualisiert", null));
     }
 }

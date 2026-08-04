@@ -21,4 +21,9 @@ public class BookingDetailsResponse {
     private BookingStatus status;
 
     private String accessCode;
+
+    // Both null/0 once the booking is already CONFIRMED (FREE path); populated when money is
+    // still owed so the frontend can mount Stripe Elements against this PaymentIntent.
+    private String clientSecret;
+    private Integer amountDueCents;
 }

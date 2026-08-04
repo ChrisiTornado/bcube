@@ -62,12 +62,26 @@
           <h2>Buchungsdetails</h2>
           <p class="sidebar-note">Wähle Datum und Zeit direkt hier aus und prüfe freie Slots im Kalender.</p>
           @if (isUser) {
-            <app-booking-time-picker
-              [date]="date"
-              [bookings]="bookings"
-              [disabledDates]="disabledDates"
-              (bookRequested)="confirmBooking($event)">
-            </app-booking-time-picker>
+            @if (!pendingBookingTimes) {
+              <app-booking-time-picker
+                [date]="date"
+                [bookings]="bookings"
+                [disabledDates]="disabledDates"
+                (bookRequested)="startPaymentFlow($event)">
+              </app-booking-time-picker>
+            } @else {
+              <app-booking-payment-step
+                [studio]="studio"
+                [times]="pendingBookingTimes"
+                [userId]="currentUserId"
+                [booking]="pendingBooking"
+                [creating]="creatingBooking"
+                (confirmClicked)="createPendingBooking($event)"
+                (paymentConfirmed)="onPaymentConfirmed($event)"
+                (paymentFailed)="onPaymentFailed($event)"
+                (cancelled)="cancelPaymentFlow()">
+              </app-booking-payment-step>
+            }
           }
           @if (isAdmin) {
             <div class="admin-hint">

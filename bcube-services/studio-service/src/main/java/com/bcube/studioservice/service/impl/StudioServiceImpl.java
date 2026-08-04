@@ -53,7 +53,8 @@ public class StudioServiceImpl implements StudioService {
                         StudioImageMapper.toDataImage(studio.getImage()),
                         StudioImageMapper.toImageGalleryBase64(studio),
                         true,
-                        studio.getCreatedAt()
+                        studio.getCreatedAt(),
+                        studio.getHourlyRateCents()
                 ));
     }
 
@@ -76,7 +77,8 @@ public class StudioServiceImpl implements StudioService {
                 StudioImageMapper.toDataImage(studio.getImage()),
                 StudioImageMapper.toImageGalleryBase64(studio),
                 studio.isActive(),
-                studio.getCreatedAt()
+                studio.getCreatedAt(),
+                studio.getHourlyRateCents()
         );
     }
 
@@ -110,7 +112,8 @@ public class StudioServiceImpl implements StudioService {
                         StudioImageMapper.toDataImage(studio.getImage()),
                         StudioImageMapper.toImageGalleryBase64(studio),
                         studio.isActive(),
-                        studio.getCreatedAt()
+                        studio.getCreatedAt(),
+                        studio.getHourlyRateCents()
                 )).toList();
 
         return response.toArray(new StudioResponse[0]);

@@ -12,4 +12,5 @@ public class BookStudioRequest {
     private String date;
     private String startTime;
     private String endTime;
+    private String voucherCode;
 }

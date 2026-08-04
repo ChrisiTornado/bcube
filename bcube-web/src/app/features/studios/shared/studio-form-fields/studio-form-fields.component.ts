@@ -2,12 +2,13 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
+import { InputNumberModule } from 'primeng/inputnumber';
 import { PickedImage } from '@shared/util/image-file.util';
 import { StudioImagePickerComponent } from '@features/studios/studio-image-picker/studio-image-picker.component';
 
 @Component({
   selector: 'app-studio-form-fields',
-  imports: [ReactiveFormsModule, InputTextModule, TextareaModule, StudioImagePickerComponent],
+  imports: [ReactiveFormsModule, InputTextModule, TextareaModule, InputNumberModule, StudioImagePickerComponent],
   templateUrl: './studio-form-fields.component.html',
   styleUrl: './studio-form-fields.component.css'
 })
@@ -25,5 +26,6 @@ export class StudioFormFieldsComponent {
   get plz() { return this.form.get('plz') as FormControl; }
   get street() { return this.form.get('street') as FormControl; }
   get smartlockId() { return this.form.get('smartlockId') as FormControl; }
+  get hourlyRate() { return this.form.get('hourlyRate') as FormControl; }
   get images() { return this.form.get('images')!; }
 }

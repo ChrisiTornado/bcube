@@ -8,4 +8,5 @@ export interface CreateStudioRequest {
     country: string;
     image: number[];
     images: number[][];
+    hourlyRateCents: number;
 }

@@ -13,4 +13,5 @@ export interface Studio {
     image: number[];
     imageBase64: string;
     imageGalleryBase64?: string[];
-} 
+    hourlyRateCents: number;
+}

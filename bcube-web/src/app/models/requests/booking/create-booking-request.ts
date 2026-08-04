@@ -4,5 +4,6 @@ export interface CreateBookingRequest {
     smartlockID: number,
     date: string,
     startTime: string,
-    endTime: string
+    endTime: string,
+    voucherCode?: string
 }

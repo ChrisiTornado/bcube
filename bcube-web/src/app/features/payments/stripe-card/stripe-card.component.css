@@ -1,0 +1,22 @@
+.stripe-card-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.stripe-card-element {
+  padding: 0.85rem 0.9rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.card-error {
+  color: #f38b8b;
+}
+
+.pay-button {
+  background-color: black;
+  border-color: black;
+  color: white;
+}

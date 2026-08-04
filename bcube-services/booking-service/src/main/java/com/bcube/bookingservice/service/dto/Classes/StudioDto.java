@@ -20,4 +20,5 @@ public class StudioDto {
     private String imageBase64;
     private boolean isActive;
     private Instant createdAt;
+    private Integer hourlyRateCents;
 }

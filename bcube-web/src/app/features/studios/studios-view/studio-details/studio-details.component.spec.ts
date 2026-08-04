@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideRouter, ActivatedRoute, convertToParamMap } from '@angular/router';
-import { MessageService, ConfirmationService } from 'primeng/api';
+import { MessageService } from 'primeng/api';
 
 import { StudioDetailsComponent } from '@features/studios/studios-view/studio-details/studio-details.component';
 
@@ -18,7 +18,6 @@ describe('StudioDetailsComponent', () => {
         provideHttpClientTesting(),
         provideRouter([]),
         MessageService,
-        ConfirmationService,
         { provide: ActivatedRoute, useValue: { snapshot: { paramMap: convertToParamMap({}) } } }
       ]
     })

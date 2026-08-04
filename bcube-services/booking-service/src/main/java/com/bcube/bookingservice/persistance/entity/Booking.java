@@ -26,6 +26,11 @@ public class Booking {
     @Column(name = "studio_id", nullable = false)
     private Long studioId;
 
+    // Nullable at the DB level on purpose: ddl-auto=update would fail booting against the
+    // existing non-empty bookings table if this were added NOT NULL. Every new booking sets it.
+    @Column(name = "smartlock_id")
+    private Long smartlockId;
+
     @Column(nullable = false)
     private LocalDate date;
 

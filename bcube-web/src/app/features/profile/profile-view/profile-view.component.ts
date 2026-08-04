@@ -14,6 +14,7 @@ import { UserService } from '@features/users/user.service';
 import { User } from '@models/user.model';
 import { UpdateUserRequest } from '@models/requests/user/update-user-request';
 import { extractErrorMessage } from '@shared/util/error-message.util';
+import { getDashboardBasePath } from '@shared/util/dashboard-path.util';
 
 @Component({
     selector: 'app-profile-view',
@@ -145,11 +146,7 @@ export class ProfileViewComponent implements OnInit {
   }
 
   openPaymentInfo(): void {
-    this.messageService.add({
-      severity: 'info',
-      summary: 'Bald verfügbar',
-      detail: 'Die Zahlungsinformationen werden als nächster Frontend-Baustein vorbereitet.'
-    });
+    this.router.navigate([getDashboardBasePath(this.authService.isAdmin(this.user)), 'payment-history']);
   }
 
   openLogoutDialog(): void {

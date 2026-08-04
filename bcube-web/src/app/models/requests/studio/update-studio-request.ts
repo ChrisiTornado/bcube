@@ -9,4 +9,5 @@ export interface UpdateStudioRequest {
     country: string;
     image: number[];
     images: number[][];
+    hourlyRateCents: number;
 }

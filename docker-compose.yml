@@ -21,6 +21,7 @@ services:
       - studio-service
       - booking-service
       - access-service
+      - payment-service
     networks:
       - bcube-network
 
@@ -136,11 +137,41 @@ services:
     networks:
       - bcube-network
 
+  payment-service:
+    build: ./bcube-services/payment-service
+    container_name: payment-service
+    env_file:
+      - ./bcube-services/payment-service/.env
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://payment-db:5432/bcube_payment_service
+      SPRING_DATASOURCE_USERNAME: ${DB_USER}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      SPRING_PROFILES_ACTIVE: docker
+    ports:
+      - "8085:8085"
+    depends_on:
+      - payment-db
+    networks:
+      - bcube-network
+
+  payment-db:
+    image: postgres:17
+    container_name: payment-db
+    env_file:
+      - ./bcube-services/payment-service/.env
+    ports:
+      - "5437:5432"
+    volumes:
+      - payment-data:/var/lib/postgresql/data
+    networks:
+      - bcube-network
+
 volumes:
   user-data:
   studio-data:
   access-data:
   booking-data:
+  payment-data:
 
 networks:
   bcube-network:

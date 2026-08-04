@@ -1,6 +1,7 @@
 package com.bcube.bookingservice.service.impl;
 
 import com.bcube.bookingservice.client.AccessCodeClient;
+import com.bcube.bookingservice.client.PaymentClient;
 import com.bcube.bookingservice.client.StudioClient;
 import com.bcube.bookingservice.client.UserClient;
 import com.bcube.bookingservice.exception.AccessCodeNotReceivedException;
@@ -11,15 +12,19 @@ import com.bcube.bookingservice.exception.UserNotFoundException;
 import com.bcube.bookingservice.persistance.entity.Booking;
 import com.bcube.bookingservice.persistance.entity.BookingStatus;
 import com.bcube.bookingservice.persistance.repository.BookingRepository;
+import com.bcube.bookingservice.security.InternalTokenProvider;
 import com.bcube.bookingservice.service.BookingService;
+import com.bcube.bookingservice.service.dto.Classes.PaymentIntentDto;
 import com.bcube.bookingservice.service.dto.Classes.StudioDto;
 import com.bcube.bookingservice.service.dto.Classes.UserDto;
 import com.bcube.bookingservice.service.dto.request.AccessRequest;
 import com.bcube.bookingservice.service.dto.request.BookStudioRequest;
+import com.bcube.bookingservice.service.dto.request.CreatePaymentIntentRequest;
 import com.bcube.bookingservice.service.dto.response.BookingDetailsResponse;
 import com.bcube.bookingservice.service.dto.response.AccessCodeResponse;
 import com.bcube.bookingservice.service.dto.response.BookingResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -27,6 +32,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -36,6 +44,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Set;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class BookingServiceImpl implements BookingService {
@@ -46,10 +55,16 @@ public class BookingServiceImpl implements BookingService {
             BookingStatus.DONE
     );
 
+    private static final DateTimeFormatter ISO_UTC_FMT = DateTimeFormatter
+            .ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+            .withZone(ZoneOffset.UTC);
+
     private final BookingRepository bookingRepository;
     private final UserClient userClient;
     private final StudioClient studioClient;
     private final AccessCodeClient accessCodeClient;
+    private final PaymentClient paymentClient;
+    private final InternalTokenProvider internalTokenProvider;
 
     @Transactional(readOnly = true)
     @Override
@@ -174,10 +189,15 @@ public class BookingServiceImpl implements BookingService {
         UserDto user = userClient.getUserById(booking.getUserId(), token);
         StudioDto studio = studioClient.getStudioById(booking.getStudioId());
 
-        AccessCodeResponse accessCodeResponse = accessCodeClient.getAccessCode(bookingId, token);
-
-        if (accessCodeResponse == null) {
-            throw new AccessCodeNotReceivedException("Zutrittscode konnte nicht erstellt werden");
+        // A PENDING (awaiting payment) or FAILED booking has no access code yet - only
+        // CONFIRMED/DONE bookings actually had Nuki access granted.
+        String accessCode = null;
+        if (booking.getStatus() == BookingStatus.CONFIRMED || booking.getStatus() == BookingStatus.DONE) {
+            AccessCodeResponse accessCodeResponse = accessCodeClient.getAccessCode(bookingId, token);
+            if (accessCodeResponse == null) {
+                throw new AccessCodeNotReceivedException("Zutrittscode konnte nicht erstellt werden");
+            }
+            accessCode = accessCodeResponse.getAccessCode();
         }
 
         return new BookingDetailsResponse(
@@ -188,7 +208,9 @@ public class BookingServiceImpl implements BookingService {
                 booking.getStartTime(),
                 booking.getEndTime(),
                 booking.getStatus(),
-                accessCodeResponse.getAccessCode()
+                accessCode,
+                null,
+                null
         );
     }
 
@@ -211,9 +233,16 @@ public class BookingServiceImpl implements BookingService {
             );
         }
 
+        BookingStatus previousStatus = booking.getStatus();
+
         booking.setStatus(BookingStatus.CANCELLED);
         bookingRepository.save(booking);
         accessCodeClient.deleteAccessCode(bookingId, token);
+
+        if (previousStatus == BookingStatus.CONFIRMED) {
+            refundIfPaid(booking, token);
+        }
+
         UserDto user = userClient.getUserById(booking.getUserId(), token);
         StudioDto studio = studioClient.getStudioById(booking.getStudioId());
 
@@ -228,31 +257,53 @@ public class BookingServiceImpl implements BookingService {
         );
     }
 
+    /**
+     * >24h before the booking's start time -> 100% refund, otherwise 50%. A no-op server-side
+     * for FREE (voucher-covered) payments. Refund failures are logged but never block the
+     * storno itself - the booking is cancelled and access revoked either way, same tradeoff
+     * already accepted for accessCodeClient.deleteAccessCode failures.
+     */
+    private void refundIfPaid(Booking booking, String token) {
+        boolean moreThan24hOut = Duration.between(Instant.now(), booking.getStartTime()).toHours() >= 24;
+        int refundPercentage = moreThan24hOut ? 100 : 50;
+
+        try {
+            paymentClient.refund(booking.getId(), refundPercentage, token);
+        } catch (Exception e) {
+            log.error("Rückerstattung für Buchung {} fehlgeschlagen: {}", booking.getId(), e.getMessage(), e);
+        }
+    }
+
     @Transactional
     @Override
     public BookingDetailsResponse bookTimeSlot(BookStudioRequest bookStudioRequest, String token) {
-        // ToDo : Facade Pattern?
         Booking booking = createBookingEntity(bookStudioRequest);
-        DateTimeFormatter isoUtcFmt = DateTimeFormatter
-                .ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
-                .withZone(ZoneOffset.UTC);
-        AccessRequest request = new AccessRequest(
+
+        StudioDto studio = studioClient.getStudioById(booking.getStudioId());
+        BigDecimal durationHours = BigDecimal.valueOf(Duration.between(booking.getStartTime(), booking.getEndTime()).toMinutes())
+                .divide(BigDecimal.valueOf(60), 2, RoundingMode.HALF_UP);
+
+        CreatePaymentIntentRequest paymentRequest = new CreatePaymentIntentRequest(
                 booking.getId(),
-                bookStudioRequest.getSmartlockID(),
-                isoUtcFmt.format(booking.getStartTime()),
-                isoUtcFmt.format(booking.getEndTime())
+                booking.getUserId(),
+                booking.getStudioId(),
+                studio.getHourlyRateCents(),
+                durationHours,
+                "eur",
+                studio.getName(),
+                booking.getDate(),
+                bookStudioRequest.getVoucherCode()
         );
-            AccessCodeResponse accessCodeResponse = accessCodeClient.generateAccessCode(request, token);
-            if (accessCodeResponse == null) {
-                throw new AccessCodeNotReceivedException("Zutrittscode konnte nicht erstellt werden");
-            }
 
-            booking.setStatus(BookingStatus.CONFIRMED);
+        // If payment-service itself is unreachable, this throws and the @Transactional method
+        // rolls back the whole booking - the slot becomes free again rather than staying stuck
+        // as an unpayable PENDING row. No silent fallback to granting access either way.
+        PaymentIntentDto paymentIntent = paymentClient.createPaymentIntent(paymentRequest, token);
 
-            UserDto user = userClient.getUserById(booking.getUserId(), token);
-            StudioDto studio = studioClient.getStudioById(booking.getStudioId());
+        UserDto user = userClient.getUserById(booking.getUserId(), token);
 
-            //get temp code
+        if ("FREE".equals(paymentIntent.getStatus())) {
+            String accessCode = grantAccessAndConfirm(booking, token);
             return new BookingDetailsResponse(
                     booking.getId(),
                     user,
@@ -261,8 +312,70 @@ public class BookingServiceImpl implements BookingService {
                     booking.getStartTime(),
                     booking.getEndTime(),
                     booking.getStatus(),
-                    accessCodeResponse.getAccessCode()
+                    accessCode,
+                    null,
+                    0
             );
+        }
+
+        return new BookingDetailsResponse(
+                booking.getId(),
+                user,
+                studio,
+                booking.getDate(),
+                booking.getStartTime(),
+                booking.getEndTime(),
+                booking.getStatus(),
+                null,
+                paymentIntent.getClientSecret(),
+                paymentIntent.getFinalAmountCents()
+        );
+    }
+
+    /**
+     * Grants Nuki access and moves the booking to CONFIRMED - shared by the synchronous
+     * FREE (voucher-covered) path and the async webhook-driven SUCCEEDED path. Fixes the
+     * previous bug where the status change was set but never persisted.
+     */
+    private String grantAccessAndConfirm(Booking booking, String token) {
+        AccessRequest request = new AccessRequest(
+                booking.getId(),
+                booking.getSmartlockId(),
+                ISO_UTC_FMT.format(booking.getStartTime()),
+                ISO_UTC_FMT.format(booking.getEndTime())
+        );
+
+        AccessCodeResponse accessCodeResponse = accessCodeClient.generateAccessCode(request, token);
+        if (accessCodeResponse == null) {
+            throw new AccessCodeNotReceivedException("Zutrittscode konnte nicht erstellt werden");
+        }
+
+        booking.setStatus(BookingStatus.CONFIRMED);
+        bookingRepository.save(booking);
+
+        return accessCodeResponse.getAccessCode();
+    }
+
+    @Override
+    @Transactional
+    public void updatePaymentStatus(Long bookingId, String status) {
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new BookingNotFoundException("Buchung mit ID " + bookingId + " nicht gefunden"));
+
+        if (booking.getStatus() != BookingStatus.PENDING) {
+            // Already finalized - Stripe may redeliver the same webhook event, or the
+            // BookingStatusMaintenanceService already flipped this to FAILED. No-op either way.
+            log.debug("Ignoring payment-status callback for booking {} already in status {}", bookingId, booking.getStatus());
+            return;
+        }
+
+        if ("SUCCEEDED".equals(status)) {
+            String systemToken = internalTokenProvider.generateSystemToken();
+            grantAccessAndConfirm(booking, systemToken);
+        } else {
+            booking.setStatus(BookingStatus.FAILED);
+            bookingRepository.save(booking);
+        }
     }
 
     public Booking createBookingEntity(BookStudioRequest bookStudioRequest) {
@@ -308,6 +421,7 @@ public class BookingServiceImpl implements BookingService {
         Booking booking = Booking.builder()
                 .userId(bookStudioRequest.getUserID())
                 .studioId(bookStudioRequest.getStudioID())
+                .smartlockId(bookStudioRequest.getSmartlockID())
                 .date(date)
                 .startTime(startTime)
                 .endTime(endTime)

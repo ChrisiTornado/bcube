@@ -32,6 +32,7 @@ describe('StudioFormFieldsComponent', () => {
     expect(component.plz).toBe(component.form.get('plz') as FormControl);
     expect(component.street).toBe(component.form.get('street') as FormControl);
     expect(component.smartlockId).toBe(component.form.get('smartlockId') as FormControl);
+    expect(component.hourlyRate).toBe(component.form.get('hourlyRate') as FormControl);
     expect(component.images).toBe(component.form.get('images')!);
   });
 

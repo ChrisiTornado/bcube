@@ -1,0 +1,16 @@
+<div class="stripe-card-wrap">
+  <div #cardElement class="stripe-card-element"></div>
+
+  @if (cardError) {
+    <small class="card-error">{{ cardError }}</small>
+  }
+
+  <button
+    pButton
+    type="button"
+    class="w-full pay-button"
+    [label]="submitting ? 'Wird verarbeitet…' : submitLabel"
+    [disabled]="submitting"
+    (click)="confirmPayment()">
+  </button>
+</div>

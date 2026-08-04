@@ -68,6 +68,10 @@ export const routes: Routes = [
             {
                 path: 'booking-details/:id',
                 loadComponent: () => import('@features/bookings/bookings-view/booking-details/booking-details.component').then(m => m.BookingDetailsComponent)
+            },
+            {
+                path: 'payment-history',
+                loadComponent: () => import('@features/payments/payment-history-view/payment-history-view.component').then(m => m.PaymentHistoryViewComponent)
             }
         ]
     },
@@ -101,6 +105,10 @@ export const routes: Routes = [
             {
                 path: 'booking-details/:id',
                 loadComponent: () => import('@features/bookings/bookings-view/booking-details/booking-details.component').then(m => m.BookingDetailsComponent)
+            },
+            {
+                path: 'payment-history',
+                loadComponent: () => import('@features/payments/payment-history-view/payment-history-view.component').then(m => m.PaymentHistoryViewComponent)
             }
         ]
     },

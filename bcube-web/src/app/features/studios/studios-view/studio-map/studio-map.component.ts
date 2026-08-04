@@ -38,6 +38,7 @@ export class StudioMapComponent implements OnDestroy {
   constructor(private ngZone: NgZone) {}
 
   ngOnDestroy(): void {
+    document.removeEventListener('visibilitychange', this.handleVisibilityChange);
     this.resizeObserver?.disconnect();
     this.resizeObserver = null;
     this.clearMarkerLayers();
@@ -211,5 +212,27 @@ export class StudioMapComponent implements OnDestroy {
       this.map?.resize();
       this.mapReady.emit();
     });
+
+    // mapbox-gl's own render loop runs on requestAnimationFrame, which browsers freeze for
+    // hidden/background tabs - a map opened or left in a background tab can get stuck mid-load
+    // with no error at all. Nudging resize() once the tab is visible again is enough to unstick it.
+    document.addEventListener('visibilitychange', this.handleVisibilityChange);
+
+    // No listener means mapbox-gl silently no-ops instead of surfacing the error - log it and
+    // retry once, since transient failures (e.g. a rate-limited style request) are recoverable.
+    let retried = false;
+    this.map.on('error', event => {
+      console.error('Mapbox error:', event.error?.message ?? event);
+      if (!retried && !this.mapLoaded) {
+        retried = true;
+        setTimeout(() => this.map?.setStyle('mapbox://styles/mapbox/streets-v12'), 1500);
+      }
+    });
   }
+
+  private readonly handleVisibilityChange = (): void => {
+    if (!document.hidden) {
+      this.map?.resize();
+    }
+  };
 }

@@ -58,6 +58,12 @@ public class Studio {
     @Column(name = "is_active", nullable = false)
     private boolean isActive;
 
+    // Nullable at the DB level on purpose: ddl-auto=update would fail booting against the existing
+    // non-empty studios table if this were added NOT NULL. Required-ness is enforced at the request-DTO
+    // validation layer instead (@NotNull @Positive on CreateStudioRequest/UpdateStudioRequest).
+    @Column(name = "hourly_rate_cents")
+    private Integer hourlyRateCents;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 

@@ -61,6 +61,7 @@ public class AdminStudioImpl implements AdminStudioService {
                 .isActive(true)
                 .latitude(latitude)
                 .longitude(longitude)
+                .hourlyRateCents(createStudioRequest.getHourlyRateCents())
                 .build();
 
         // 4. speichern
@@ -81,7 +82,8 @@ public class AdminStudioImpl implements AdminStudioService {
                 StudioImageMapper.toDataImage(saved.getImage()),
                 StudioImageMapper.toImageGalleryBase64(saved),
                 saved.isActive(),
-                saved.getCreatedAt()
+                saved.getCreatedAt(),
+                saved.getHourlyRateCents()
         );
     }
 
@@ -122,6 +124,7 @@ public class AdminStudioImpl implements AdminStudioService {
         studio.setCountry(request.getCountry());
         studio.setLatitude(latitude);
         studio.setLongitude(longitude);
+        studio.setHourlyRateCents(request.getHourlyRateCents());
 
         List<byte[]> images = StudioImageMapper.normalizeImages(request.getImages(), request.getImage());
         if (!images.isEmpty()) {
@@ -147,7 +150,8 @@ public class AdminStudioImpl implements AdminStudioService {
                 StudioImageMapper.toDataImage(updated.getImage()),
                 StudioImageMapper.toImageGalleryBase64(updated),
                 updated.isActive(),
-                updated.getCreatedAt()
+                updated.getCreatedAt(),
+                updated.getHourlyRateCents()
         );
     }
 

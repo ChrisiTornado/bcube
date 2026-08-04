@@ -7,7 +7,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { AuthService } from '@core/services/auth.service';
 import { StudioService } from '@features/studios/studio.service';
 import { BookingService } from '@features/bookings/booking.service';
-import { MessageService, ConfirmationService } from 'primeng/api';
+import { MessageService } from 'primeng/api';
 import { LoadingSpinnerComponent } from '@shared/ui/loading-spinner/loading-spinner.component';
 import { FullCalendarModule } from '@fullcalendar/angular';
 import dayGridPlugin from '@fullcalendar/daygrid';
@@ -29,6 +29,8 @@ import { buildBaseCalendarOptions } from '@shared/util/calendar-options.util';
 import { MarkdownPipe } from '@shared/util/markdown.pipe';
 import { StudioGalleryComponent } from '@features/studios/studios-view/studio-details/studio-gallery/studio-gallery.component';
 import { BookingTimePickerComponent } from '@features/studios/studios-view/studio-details/booking-time-picker/booking-time-picker.component';
+import { BookingPaymentStepComponent } from '@features/payments/booking-payment-step/booking-payment-step.component';
+import { BookingDetailsResponse } from '@models/responses/booking/booking-details-response';
 import { getDashboardBasePath } from '@shared/util/dashboard-path.util';
 
 @Component({
@@ -41,7 +43,8 @@ import { getDashboardBasePath } from '@shared/util/dashboard-path.util';
         UpdateStudioComponent,
         MarkdownPipe,
         StudioGalleryComponent,
-        BookingTimePickerComponent
+        BookingTimePickerComponent,
+        BookingPaymentStepComponent
     ],
     templateUrl: './studio-details.component.html',
     styleUrl: './studio-details.component.css'
@@ -56,9 +59,14 @@ export class StudioDetailsComponent implements OnInit {
   isUser = false;
   isAdmin = false;
   private returnUrl?: string;
-  loading!: boolean;
   loadError = false;
   date: Date | null = null;
+
+  // Payment step state - replaces the old Ja/Abbrechen confirm dialog. Non-null pendingBookingTimes
+  // swaps the time picker for <app-booking-payment-step> in the template.
+  pendingBookingTimes: { startTime: Date; endTime: Date } | null = null;
+  pendingBooking: BookingDetailsResponse | null = null;
+  creatingBooking = false;
 
   bookings: Booking[] = [];
   disabledDates: Date[] = [];
@@ -76,9 +84,12 @@ export class StudioDetailsComponent implements OnInit {
     private studioService: StudioService,
     private authService: AuthService,
     private bookingService: BookingService,
-    private confirmationService: ConfirmationService,
     private messageService: MessageService
   ) { }
+
+  get currentUserId(): number {
+    return this.authService.getUser()!.id;
+  }
 
   // === Lifecycle ===
 
@@ -235,22 +246,18 @@ export class StudioDetailsComponent implements OnInit {
 
   // === Booking actions ===
 
-  /** Öffnet Bestätigungsdialog vor dem Buchen */
-  confirmBooking(times: { startTime: Date; endTime: Date }): void {
-    this.confirmationService.confirm({
-      message: `Möchten Sie den Cube "${this.studio!.name}" wirklich buchen?`,
-      header: 'Buchung bestätigen',
-      icon: 'pi pi-exclamation-triangle',
-      acceptLabel: 'Ja',
-      rejectLabel: 'Abbrechen',
-      accept: () => this.book(times)
-    });
+  /** Zeigt den Zahlungsschritt anstelle des Zeit-Pickers - der Zahlungsschritt selbst ist die Bestätigung */
+  startPaymentFlow(times: { startTime: Date; endTime: Date }): void {
+    this.pendingBookingTimes = times;
+    this.pendingBooking = null;
   }
 
-  /** Sendet Buchung an Backend */
-  private book(times: { startTime: Date; endTime: Date }): void {
-    if (!this.date) return;
-    this.loading = true;
+  /** Erstellt die Buchung; bei sofortiger Bestätigung (kein clientSecret) direkt abschließen, sonst Kartenschritt zeigen */
+  createPendingBooking(voucherCode?: string): void {
+    if (!this.date || !this.pendingBookingTimes) return;
+
+    const times = this.pendingBookingTimes;
+    this.creatingBooking = true;
 
     const payload: CreateBookingRequest = {
       userID: this.authService.getUser()!.id,
@@ -258,27 +265,19 @@ export class StudioDetailsComponent implements OnInit {
       smartlockID: this.studio!.smartlockId,
       date: this.formatDateVienna(this.date),
       startTime: this.formatTimeVienna(times.startTime),
-      endTime: this.formatTimeVienna(times.endTime)
+      endTime: this.formatTimeVienna(times.endTime),
+      ...(voucherCode ? { voucherCode } : {})
     };
 
     this.bookingService.create(payload)
-      .pipe(finalize(() => this.loading = false))
+      .pipe(finalize(() => this.creatingBooking = false))
       .subscribe({
         next: (res) => {
-          this.refreshCalendar();
-          this.picker?.reset();
-          this.date = null;
-
-          this.messageService.add({
-            key: 'main',
-            severity: 'success',
-            summary: 'Erfolg',
-            detail: res.message
-          });
-          this.router.navigate(
-            [`/user-dashboard/booking-details/${res.data.id}`],
-            { state: { returnUrl: this.router.url } }
-          );
+          if (res.data.clientSecret) {
+            this.pendingBooking = res.data;
+            return;
+          }
+          this.finishBooking(res.data.id, res.message);
         },
         error: (err: HttpErrorResponse) => {
           this.messageService.add({
@@ -289,6 +288,47 @@ export class StudioDetailsComponent implements OnInit {
           });
         }
       });
+  }
+
+  /** Zahlung von Stripe bestätigt und per Poll als CONFIRMED erkannt */
+  onPaymentConfirmed(bookingId: number): void {
+    this.finishBooking(bookingId, 'Buchung erfolgreich bestätigt');
+  }
+
+  /** Zahlung abgelehnt oder Bestätigung fehlgeschlagen - Kartenschritt bleibt sichtbar, damit der Nutzer erneut versuchen kann */
+  onPaymentFailed(message: string): void {
+    this.messageService.add({
+      key: 'main',
+      severity: 'error',
+      summary: 'Fehler',
+      detail: message
+    });
+  }
+
+  /** Bricht den Zahlungsschritt ab und kehrt zum Zeit-Picker zurück */
+  cancelPaymentFlow(): void {
+    this.pendingBookingTimes = null;
+    this.pendingBooking = null;
+  }
+
+  /** Gemeinsamer Abschluss für den sofortigen und den kartenbasierten Buchungspfad */
+  private finishBooking(bookingId: number, message: string): void {
+    this.refreshCalendar();
+    this.picker?.reset();
+    this.date = null;
+    this.pendingBookingTimes = null;
+    this.pendingBooking = null;
+
+    this.messageService.add({
+      key: 'main',
+      severity: 'success',
+      summary: 'Erfolg',
+      detail: message
+    });
+    this.router.navigate(
+      [`/user-dashboard/booking-details/${bookingId}`],
+      { state: { returnUrl: this.router.url } }
+    );
   }
 
   /** Lädt den Kalender nach erfolgreicher Buchung neu */

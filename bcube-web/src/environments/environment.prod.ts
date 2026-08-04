@@ -9,5 +9,7 @@ export const environment = {
   studioApiUrl: '/api/studios',
   adminStudioApiUrl: '/api/admin/studios',
   accessApiUrl: '/api/access',
+  paymentApiUrl: '/api/payments',
+  stripePublishableKey: 'pk_test_51TC7bzINqnYv2UrCde3ZXJ03gGvLTBhcCNieTaMbj8LONkj6RZEpKPcnp19jr3rwJHmFDP7Y1FpwUsiiEedCBigg00Db7iPe7B',
   token: 'YOUR_MAPBOX_TOKEN'
 };

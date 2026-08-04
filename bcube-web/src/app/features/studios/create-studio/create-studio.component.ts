@@ -58,6 +58,7 @@ export class CreateStudioComponent implements OnInit{
   get country() { return this.createForm.get('country')!; }
   get plz() { return this.createForm.get('plz')!; }
   get street() { return this.createForm.get('street')!; }
+  get hourlyRate() { return this.createForm.get('hourlyRate')!; }
   get images() { return this.createForm.get('images')!; }
 
   openDialog(): void {
@@ -89,7 +90,8 @@ export class CreateStudioComponent implements OnInit{
         plz: this.plz.value,
         street: this.street.value,
         image: imageBytes[0] ?? [],
-        images: imageBytes
+        images: imageBytes,
+        hourlyRateCents: Math.round(this.hourlyRate.value * 100)
       };
 
       this.studioService.create(payload)

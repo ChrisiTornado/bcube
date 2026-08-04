@@ -22,7 +22,7 @@ class BookingStatusMaintenanceServiceTest {
     private static final Instant NOW = Instant.parse("2026-04-21T15:00:00Z");
 
     @Test
-    void marksOnlyExpiredOpenBookingsAsDone() {
+    void marksExpiredConfirmedAsDoneAndExpiredPendingAsFailed() {
         Booking expiredConfirmed = booking(1L, BookingStatus.CONFIRMED, Instant.parse("2026-04-21T13:00:00Z"));
         Booking expiredPending = booking(2L, BookingStatus.PENDING, Instant.parse("2026-04-21T14:59:00Z"));
         Booking futureConfirmed = booking(3L, BookingStatus.CONFIRMED, Instant.parse("2026-04-21T16:30:00Z"));
@@ -44,7 +44,7 @@ class BookingStatusMaintenanceServiceTest {
         service.markFinishedBookingsAsDone();
 
         assertThat(expiredConfirmed.getStatus()).isEqualTo(BookingStatus.DONE);
-        assertThat(expiredPending.getStatus()).isEqualTo(BookingStatus.DONE);
+        assertThat(expiredPending.getStatus()).isEqualTo(BookingStatus.FAILED);
         assertThat(futureConfirmed.getStatus()).isEqualTo(BookingStatus.CONFIRMED);
         assertThat(requestedStatuses.get()).containsExactlyInAnyOrder(
                 BookingStatus.CONFIRMED,

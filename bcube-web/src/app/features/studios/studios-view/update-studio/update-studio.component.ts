@@ -59,6 +59,7 @@ openDialog() {
     country: this.studio.country,
     plz: this.studio.plz,
     street: this.studio.street,
+    hourlyRate: this.studio.hourlyRateCents / 100,
     images: this.getExistingGallery()
   });
 }
@@ -84,7 +85,8 @@ submit() {
       plz: this.plz.value,
       street: this.street.value,
       image: galleryBytes[0] ?? [],
-      images: galleryBytes
+      images: galleryBytes,
+      hourlyRateCents: Math.round(this.hourlyRate.value * 100)
     };
 
     this.studioService.update(payload)
@@ -124,6 +126,7 @@ submit() {
   get country() { return this.createForm.get('country')!; }
   get plz() { return this.createForm.get('plz')!; }
   get street() { return this.createForm.get('street')!; }
+  get hourlyRate() { return this.createForm.get('hourlyRate')!; }
   get images() { return this.createForm.get('images')!; }
   get smartlockId() { return this.createForm.get('smartlockId')!; }
 }

@@ -1,0 +1,123 @@
+<div class="payment-step">
+  <div class="price-summary">
+    <span class="price-label">Gesamtpreis</span>
+    <span class="price-value">
+      @if (voucherPreview) {
+        <span class="price-original">{{ formatAmount(baseAmountCents) }}</span>
+      }
+      {{ formatAmount(amountCents) }}
+    </span>
+  </div>
+
+  @if (state === 'confirm') {
+    <p class="step-note">Cube "{{ studio.name }}" für {{ durationHours }} Stunde(n) buchen.</p>
+
+    @if (!voucherPreview && availableVouchers.length > 0) {
+      <div class="voucher-chips">
+        @for (voucher of availableVouchers; track voucher.id) {
+          <button
+            type="button"
+            class="voucher-chip"
+            [disabled]="validatingVoucher || creating"
+            (click)="applyVoucherChip(voucher)">
+            <i class="pi pi-gift"></i>
+            {{ voucher.name }}
+          </button>
+        }
+      </div>
+    }
+
+    <div class="voucher-row">
+      @if (!voucherPreview) {
+        <input
+          pInputText
+          type="text"
+          class="voucher-input"
+          placeholder="Gutscheincode"
+          [(ngModel)]="voucherCode"
+          [disabled]="validatingVoucher || creating"
+          (keydown.enter)="applyVoucher()">
+        <button
+          pButton
+          type="button"
+          class="p-button-outlined"
+          [label]="validatingVoucher ? '…' : 'Anwenden'"
+          [disabled]="!voucherCode.trim() || validatingVoucher || creating"
+          (click)="applyVoucher()">
+        </button>
+      } @else {
+        <span class="voucher-applied">
+          <i class="pi pi-check-circle"></i>
+          Gutschein "{{ voucherPreview.code }}" angewendet (-{{ formatAmount(voucherPreview.discountAmountCents) }})
+        </span>
+        <button
+          pButton
+          type="button"
+          class="p-button-text"
+          label="Entfernen"
+          [disabled]="creating"
+          (click)="removeVoucher()">
+        </button>
+      }
+    </div>
+    @if (voucherError) {
+      <small class="voucher-error">{{ voucherError }}</small>
+    }
+
+    <div class="step-actions">
+      <button
+        pButton
+        type="button"
+        class="p-button-outlined"
+        label="Abbrechen"
+        [disabled]="creating"
+        (click)="cancelled.emit()">
+      </button>
+      <button
+        pButton
+        type="button"
+        class="confirm-button"
+        [label]="creating ? 'Wird vorbereitet…' : 'Jetzt buchen'"
+        [disabled]="creating"
+        (click)="confirmBooking()">
+      </button>
+    </div>
+  }
+
+  @if (state === 'card') {
+    @if (isSetupVerification) {
+      <p class="step-note">Dein Gutschein deckt die Buchung vollständig ab - zur Missbrauchsprävention prüfen wir trotzdem eine Karte, ohne sie zu belasten.</p>
+      <app-stripe-card
+        [clientSecret]="booking!.clientSecret!"
+        mode="setup"
+        submitLabel="Karte prüfen"
+        (paymentSucceeded)="onCardSucceeded()"
+        (paymentFailed)="onCardFailed($event)">
+      </app-stripe-card>
+    } @else {
+      <p class="step-note">Bitte Kartendaten eingeben, um die Buchung abzuschließen.</p>
+      <app-stripe-card
+        [clientSecret]="booking!.clientSecret!"
+        (paymentSucceeded)="onCardSucceeded()"
+        (paymentFailed)="onCardFailed($event)">
+      </app-stripe-card>
+    }
+    <button
+      pButton
+      type="button"
+      class="p-button-text cancel-link"
+      label="Abbrechen"
+      (click)="cancelled.emit()">
+    </button>
+  }
+
+  @if (state === 'polling') {
+    <div class="polling-state">
+      <i class="pi pi-spin pi-spinner"></i>
+      <p>Zahlung wird bestätigt…</p>
+      @if (pollError) {
+        <small class="poll-error">{{ pollError }}</small>
+      }
+    </div>
+  }
+</div>

@@ -10,6 +10,9 @@ export function buildStudioForm(fb: FormBuilder, studio?: Studio): FormGroup {
     country: [studio?.country ?? null, Validators.required],
     plz: [studio?.plz ?? null, studio ? [Validators.required, Validators.minLength(4)] : Validators.required],
     street: [studio?.street ?? null, Validators.required],
+    // Held in euros (not cents) since that's what the admin sees/enters via p-inputNumber's
+    // currency mode - converted to hourlyRateCents only at submit time.
+    hourlyRate: [studio ? studio.hourlyRateCents / 100 : null, [Validators.required, Validators.min(0.01)]],
     images: [
       studio ? (studio.imageGalleryBase64 ?? [studio.imageBase64]) : null,
       studio ? [] : Validators.required

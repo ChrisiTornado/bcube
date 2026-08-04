@@ -1,5 +1,6 @@
 package com.bcube.userservice.service.impl;
 
+import com.bcube.userservice.client.PaymentClient;
 import com.bcube.userservice.exception.*;
 import com.bcube.userservice.persistance.entity.Role;
 import com.bcube.userservice.persistance.entity.User;
@@ -38,6 +39,7 @@ public class AuthServiceImpl implements AuthService {
     private final JwtTokenProvider jwtTokenProvider;
     private final PasswordEncoder passwordEncoder;
     private final MailService mailSender;
+    private final PaymentClient paymentClient;
 
     @Override
     public JwtResponse register(RegisterRequest registerRequest) {
@@ -56,7 +58,10 @@ public class AuthServiceImpl implements AuthService {
 
         userRepository.save(user);
 
-        return authenticateAndCreateJwt(registerRequest.getEmail(), registerRequest.getPassword());
+        JwtResponse jwtResponse = authenticateAndCreateJwt(registerRequest.getEmail(), registerRequest.getPassword());
+        paymentClient.grantWelcomeVoucher(jwtResponse.getId(), registerRequest.getPhone(), jwtResponse.getToken());
+
+        return jwtResponse;
     }
 
     @Override

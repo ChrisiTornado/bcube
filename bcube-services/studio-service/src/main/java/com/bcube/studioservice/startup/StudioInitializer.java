@@ -47,7 +47,7 @@ public class StudioInitializer implements CommandLineRunner {
                             .latitude(48.1851).longitude(16.3795)
                             .image(render1)
                             .imageGalleryJson(galleryJson(render1, interior1, interior2))
-                            .isActive(true).build(),
+                            .isActive(true).hourlyRateCents(1500).build(),
 
                     Studio.builder()
                             .smartlockId(defaultSmartlockId)
@@ -57,7 +57,7 @@ public class StudioInitializer implements CommandLineRunner {
                             .latitude(48.2163).longitude(16.3908)
                             .image(render2)
                             .imageGalleryJson(galleryJson(render2, inside1, inside2))
-                            .isActive(true).build(),
+                            .isActive(true).hourlyRateCents(1500).build(),
 
                     Studio.builder()
                             .smartlockId(defaultSmartlockId)
@@ -67,7 +67,7 @@ public class StudioInitializer implements CommandLineRunner {
                             .latitude(48.2017).longitude(16.3583)
                             .image(render3)
                             .imageGalleryJson(galleryJson(render3, render3b, interior1))
-                            .isActive(true).build(),
+                            .isActive(true).hourlyRateCents(1500).build(),
 
                     Studio.builder()
                             .smartlockId(defaultSmartlockId)
@@ -77,7 +77,7 @@ public class StudioInitializer implements CommandLineRunner {
                             .latitude(48.2139).longitude(16.4003)
                             .image(render4)
                             .imageGalleryJson(galleryJson(render4, oldRender, interior2))
-                            .isActive(true).build(),
+                            .isActive(true).hourlyRateCents(1500).build(),
 
                     Studio.builder()
                             .smartlockId(defaultSmartlockId)
@@ -87,7 +87,7 @@ public class StudioInitializer implements CommandLineRunner {
                             .latitude(48.1848).longitude(16.3123)
                             .image(render5)
                             .imageGalleryJson(galleryJson(render5, interior1, inside2))
-                            .isActive(true).build(),
+                            .isActive(true).hourlyRateCents(1500).build(),
 
                     Studio.builder()
                             .smartlockId(defaultSmartlockId)
@@ -97,7 +97,7 @@ public class StudioInitializer implements CommandLineRunner {
                             .latitude(48.2566).longitude(16.4010)
                             .image(render6)
                             .imageGalleryJson(galleryJson(render6, inside1, interior2))
-                            .isActive(true).build(),
+                            .isActive(true).hourlyRateCents(1500).build(),
 
                     Studio.builder()
                             .smartlockId(defaultSmartlockId)
@@ -107,7 +107,7 @@ public class StudioInitializer implements CommandLineRunner {
                             .latitude(48.1988).longitude(16.3638)
                             .image(render7)
                             .imageGalleryJson(galleryJson(render7, interior1, inside1))
-                            .isActive(true).build(),
+                            .isActive(true).hourlyRateCents(1500).build(),
 
                     Studio.builder()
                             .smartlockId(defaultSmartlockId)
@@ -117,7 +117,7 @@ public class StudioInitializer implements CommandLineRunner {
                             .latitude(48.1633).longitude(16.3693)
                             .image(oldRender)
                             .imageGalleryJson(galleryJson(oldRender, render3b, interior2))
-                            .isActive(true).build()
+                            .isActive(true).hourlyRateCents(1500).build()
             );
 
             studioRepository.saveAll(studios);

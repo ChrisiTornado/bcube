@@ -23,6 +23,7 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/error").permitAll()
+                        .requestMatchers(HttpMethod.PATCH, "/api/bookings/*/payment-status").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/bookings").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )

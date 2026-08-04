@@ -21,7 +21,8 @@ describe('UpdateStudioComponent', () => {
     component = fixture.componentInstance;
     component.studio = {
       id: 1, smartlockId: 1, name: 'Test Cube', description: 'Test', street: 'Teststraße 1',
-      plz: 1010, isActive: true, city: 'Wien', country: 'Österreich', image: [], imageBase64: ''
+      plz: 1010, isActive: true, city: 'Wien', country: 'Österreich', image: [], imageBase64: '',
+      hourlyRateCents: 1500
     } as Studio;
     fixture.detectChanges();
   });

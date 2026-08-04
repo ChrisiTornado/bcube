@@ -23,4 +23,5 @@ public class StudioResponse {
     private List<String> imageGalleryBase64;
     private boolean isActive;
     private Instant createdAt;
+    private Integer hourlyRateCents;
 }

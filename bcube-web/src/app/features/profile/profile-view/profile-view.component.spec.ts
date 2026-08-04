@@ -197,14 +197,13 @@ describe('ProfileViewComponent', () => {
   });
 
   describe('openPaymentInfo', () => {
-    it('shows an informational toast', () => {
+    it('navigates to the payment history view', () => {
       setup();
       fixture.detectChanges();
-      const addSpy = spyOn(messageService, 'add');
 
       component.openPaymentInfo();
 
-      expect(addSpy).toHaveBeenCalledWith(jasmine.objectContaining({ severity: 'info' }));
+      expect(router.navigate).toHaveBeenCalledWith(['/user-dashboard', 'payment-history']);
     });
   });
 });
