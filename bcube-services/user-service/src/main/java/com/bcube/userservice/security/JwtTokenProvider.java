@@ -26,10 +26,16 @@ public class JwtTokenProvider {
         this.key = Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
     }
 
-    // Generate JWT token
-    public String generateToken(String email, List<String> roles) {
+    /**
+     * userId is included so every downstream service can check "does this resource belong to
+     * the caller" locally (Payment.userId, Booking.userId, etc. are all numeric, not email) -
+     * without it, per-resource ownership checks are impossible without an extra round-trip to
+     * user-service for every request.
+     */
+    public String generateToken(String email, Long userId, List<String> roles) {
         return Jwts.builder()
                 .setSubject(email)
+                .claim("userId", userId)
                 .claim("roles", roles)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date((new Date()).getTime() + jwtExpiration))

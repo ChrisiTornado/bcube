@@ -48,10 +48,10 @@ spring:
           predicates:
             - Path=/api/bookings/**
 
-        - id: access-service
-          uri: http://localhost:8084
-          predicates:
-            - Path=/api/access/**
+        # access-service has no user-facing endpoints (see its WebSecurityConfig) - every call
+        # to it is server-to-server from booking-service, authenticated via X-Internal-Key, so
+        # it deliberately has no public gateway route. In AWS this stays reachable only over the
+        # private network between services, never through the internet-facing ALB.
 
         - id: payment-service
           uri: http://localhost:8085

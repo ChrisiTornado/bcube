@@ -2,6 +2,7 @@ package com.bcube.studioservice.startup;
 
 import com.bcube.studioservice.persistance.entity.Studio;
 import com.bcube.studioservice.persistance.repository.StudioRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.util.Base64;
 
+@Slf4j
 @Component
 public class StudioInitializer implements CommandLineRunner {
 
@@ -43,9 +45,9 @@ public class StudioInitializer implements CommandLineRunner {
                     .isActive(true).hourlyRateCents(1500).build();
 
             studioRepository.save(studio);
-            System.out.println("✅ Studio erfolgreich erstellt.");
+            log.info("Studio erfolgreich erstellt.");
         } else {
-            System.out.println("ℹ️ Studios bereits vorhanden – Initialisierung übersprungen.");
+            log.info("Studios bereits vorhanden - Initialisierung übersprungen.");
         }
     }
 

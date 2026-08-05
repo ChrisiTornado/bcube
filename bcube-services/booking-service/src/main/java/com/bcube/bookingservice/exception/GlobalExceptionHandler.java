@@ -3,12 +3,44 @@ package com.bcube.bookingservice.exception;
 import com.bcube.bookingservice.service.dto.response.AccessCodeResponse;
 import com.bcube.bookingservice.service.dto.response.ApiResponse;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.server.ResponseStatusException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
+
+    /** Covers RequestingUser's ownership checks (401/403) and the internal-key check in
+     * BookingController - without this, both fell through to Spring Boot's default error body
+     * instead of this API's normal ApiResponse envelope. */
+    @ExceptionHandler(ResponseStatusException.class)
+    public ResponseEntity<ApiResponse<Void>> responseStatusException(ResponseStatusException ex) {
+        HttpStatusCode status = ex.getStatusCode();
+        String message = ex.getReason() != null ? ex.getReason() : "Ein Fehler ist aufgetreten";
+        return new ResponseEntity<>(new ApiResponse<>(message, null), status);
+    }
+
+    /** MethodArgumentNotValidException (@Valid @RequestBody) extends BindException, so this also
+     * covers the @Valid query-param binding on AdminBookingQueryRequest/UserBookingQueryRequest -
+     * without it, a validation failure (e.g. an oversized page size) fell through to the generic
+     * 500 handler below instead of a proper 400 naming the actual problem. */
+    @ExceptionHandler(BindException.class)
+    public ResponseEntity<ApiResponse<Void>> bindException(BindException ex) {
+        String message = ex.getBindingResult().getFieldErrors().stream()
+                .findFirst()
+                .map(fieldError -> fieldError.getDefaultMessage())
+                .orElse("Ungültige Eingabe - bitte überprüfe deine Angaben");
+        return new ResponseEntity<>(new ApiResponse<>(message, null), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ApiResponse<Void>> otherExceptions(Exception ex) {
+        return new ResponseEntity<>(new ApiResponse<>("Ein unerwarteter Fehler ist aufgetreten", null), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
     @ExceptionHandler(BookingDoneException.class)
     public ResponseEntity<ApiResponse<BookingDoneException>> bookingDoneException(BookingDoneException ex) {
         return new ResponseEntity<>(new ApiResponse<>(ex.getMessage(), null), HttpStatus.BAD_REQUEST);

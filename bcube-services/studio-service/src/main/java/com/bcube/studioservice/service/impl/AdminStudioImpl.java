@@ -10,6 +10,7 @@ import com.bcube.studioservice.service.dto.request.UpdateStudioRequest;
 import com.bcube.studioservice.service.dto.response.DeleteResponse;
 import com.bcube.studioservice.service.dto.response.StudioResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
@@ -23,9 +24,11 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AdminStudioImpl implements AdminStudioService {
@@ -173,23 +176,27 @@ public class AdminStudioImpl implements AdminStudioService {
         return geocodeCoordinates(address)[1];
     }
 
+    private static final HttpClient GEOCODING_HTTP_CLIENT = HttpClient.newBuilder()
+            .connectTimeout(Duration.ofSeconds(3))
+            .build();
+
     private double[] geocodeCoordinates(String address) {
         try {
             String encodedAddress = URLEncoder.encode(address, StandardCharsets.UTF_8)
                     .replace("+", "%20");
 
             String url = "https://nominatim.openstreetmap.org/search?q=" + encodedAddress + "&format=json&limit=1";
-            System.out.println("Request URL: " + url);
+            log.debug("Geocoding request URL: {}", url);
 
-            HttpClient client = HttpClient.newHttpClient();
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(url))
                     .header("User-Agent", "bcube (christophe.andunda@gmail.com)")
                     .header("Accept", "application/json")
+                    .timeout(Duration.ofSeconds(5))
                     .build();
 
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            System.out.println("Response Body: " + response.body());
+            HttpResponse<String> response = GEOCODING_HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+            log.debug("Geocoding response body: {}", response.body());
 
             JSONArray results = new JSONArray(response.body());
 

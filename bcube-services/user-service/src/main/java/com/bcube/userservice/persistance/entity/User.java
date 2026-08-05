@@ -50,6 +50,12 @@ public class User {
     @Column
     private Instant resetVerifiedAt;
 
+    /** Failed verify-code attempts against the current resetCode - reset to 0 whenever a fresh
+     * code is issued, invalidated once it reaches the lockout threshold (see AuthServiceImpl). */
+    @Column
+    @Builder.Default
+    private int resetCodeAttempts = 0;
+
     @Enumerated(EnumType.STRING)
     @Column
     @Builder.Default

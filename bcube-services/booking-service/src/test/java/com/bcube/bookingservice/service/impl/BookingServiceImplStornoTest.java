@@ -9,6 +9,7 @@ import com.bcube.bookingservice.persistance.entity.Booking;
 import com.bcube.bookingservice.persistance.entity.BookingStatus;
 import com.bcube.bookingservice.persistance.repository.BookingRepository;
 import com.bcube.bookingservice.security.InternalTokenProvider;
+import com.bcube.bookingservice.security.RequestingUser;
 import com.bcube.bookingservice.service.IpAbuseGuardService;
 import com.bcube.bookingservice.service.dto.Classes.StudioDto;
 import com.bcube.bookingservice.service.dto.Classes.UserDto;
@@ -36,6 +37,8 @@ class BookingServiceImplStornoTest {
             bookingRepository, userClient, studioClient, accessCodeClient, paymentClient, internalTokenProvider, notificationClient, ipAbuseGuardService
     );
 
+    private static final RequestingUser OWNER = new RequestingUser(2L, false);
+
     private Booking confirmedBooking(Instant startTime) {
         Booking booking = Booking.builder()
                 .id(1L)
@@ -58,7 +61,7 @@ class BookingServiceImplStornoTest {
     void refundsFullyWhenCancelledMoreThan24hBeforeStart() {
         confirmedBooking(Instant.now().plusSeconds(48 * 3600));
 
-        bookingService.stornoBooking(1L, "127.0.0.1", "token");
+        bookingService.stornoBooking(1L, "127.0.0.1", "token", OWNER);
 
         verify(paymentClient).refund(1L, 100, "token");
     }
@@ -67,7 +70,7 @@ class BookingServiceImplStornoTest {
     void refundsHalfWhenCancelledWithin24hOfStart() {
         confirmedBooking(Instant.now().plusSeconds(12 * 3600));
 
-        bookingService.stornoBooking(1L, "127.0.0.1", "token");
+        bookingService.stornoBooking(1L, "127.0.0.1", "token", OWNER);
 
         verify(paymentClient).refund(1L, 50, "token");
     }
@@ -88,7 +91,7 @@ class BookingServiceImplStornoTest {
         when(userClient.getUserById(anyLong(), anyString())).thenReturn(mock(UserDto.class));
         when(studioClient.getStudioById(anyLong())).thenReturn(mock(StudioDto.class));
 
-        bookingService.stornoBooking(1L, "127.0.0.1", "token");
+        bookingService.stornoBooking(1L, "127.0.0.1", "token", OWNER);
 
         verify(paymentClient, never()).refund(anyLong(), anyInt(), anyString());
     }
@@ -98,7 +101,7 @@ class BookingServiceImplStornoTest {
         confirmedBooking(Instant.now().plusSeconds(48 * 3600));
         doThrow(new RuntimeException("payment-service down")).when(paymentClient).refund(anyLong(), anyInt(), anyString());
 
-        bookingService.stornoBooking(1L, "127.0.0.1", "token");
+        bookingService.stornoBooking(1L, "127.0.0.1", "token", OWNER);
 
         verify(bookingRepository).save(argThat(b -> b.getStatus() == BookingStatus.CANCELLED));
     }

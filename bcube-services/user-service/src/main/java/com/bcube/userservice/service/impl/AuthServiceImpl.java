@@ -34,6 +34,8 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
+    private static final int MAX_RESET_CODE_ATTEMPTS = 5;
+
     private final UserRepository userRepository;
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider jwtTokenProvider;
@@ -79,6 +81,7 @@ public class AuthServiceImpl implements AuthService {
             String code = CodeGenerator.generateCode();
             user.setResetCode(passwordEncoder.encode(code));
             user.setResetCodeExpiresAt(Instant.now().plus(15, ChronoUnit.MINUTES));
+            user.setResetCodeAttempts(0);
             userRepository.save(user);
             mailSender.sendPasswordResetCode(resetPasswordRequest.getEmail(), user.getFirstName(), code);
         });
@@ -105,11 +108,21 @@ public class AuthServiceImpl implements AuthService {
                 verifyCodeRequest.getCode(),
                 user.getResetCode()
         )) {
+            user.setResetCodeAttempts(user.getResetCodeAttempts() + 1);
+            if (user.getResetCodeAttempts() >= MAX_RESET_CODE_ATTEMPTS) {
+                user.setResetCode(null);
+                user.setResetCodeExpiresAt(null);
+                user.setResetCodeAttempts(0);
+                userRepository.save(user);
+                throw new InvalidResetTokenException("Zu viele Fehlversuche. Bitte fordere einen neuen Code an.");
+            }
+            userRepository.save(user);
             throw new InvalidResetTokenException("Der eingegebene Code ist ungültig.");
         }
 
         user.setResetCode(null);
         user.setResetCodeExpiresAt(null);
+        user.setResetCodeAttempts(0);
         user.setResetVerifiedAt(Instant.now());
         userRepository.save(user);
         return new VerifyCodeResponse(true);
@@ -170,7 +183,7 @@ public class AuthServiceImpl implements AuthService {
                 .map(GrantedAuthority::getAuthority)
                 .toList();
 
-        String jwt = jwtTokenProvider.generateToken(userDetails.getUsername(), roles);
+        String jwt = jwtTokenProvider.generateToken(userDetails.getUsername(), userDetails.getId(), roles);
 
         return new JwtResponse(jwt,
                 "Bearer",

@@ -1,5 +1,6 @@
 package com.bcube.bookingservice.service;
 
+import com.bcube.bookingservice.security.RequestingUser;
 import com.bcube.bookingservice.service.dto.request.BookStudioRequest;
 import com.bcube.bookingservice.service.dto.response.BookingDetailsResponse;
 import com.bcube.bookingservice.service.dto.response.BookingResponse;
@@ -7,15 +8,15 @@ import org.springframework.data.domain.Page;
 
 public interface BookingService {
     Page<BookingResponse> getBookings(int page, int size, Long userId, Long studioId, String sortBy, String sortDirection, String token);
-    BookingDetailsResponse bookTimeSlot(BookStudioRequest bookStudioRequest, String ipAddress, String token);
+    BookingDetailsResponse bookTimeSlot(BookStudioRequest bookStudioRequest, String ipAddress, String token, RequestingUser requester);
 
-    Page<BookingResponse> getBookingsByUserId(Long userId, int page, int size, Long studioId, String sortBy, String sortDirection, String token);
+    Page<BookingResponse> getBookingsByUserId(Long userId, int page, int size, Long studioId, String sortBy, String sortDirection, String token, RequestingUser requester);
 
-    BookingDetailsResponse getBookingById(Long bookingId, String token);
+    BookingDetailsResponse getBookingById(Long bookingId, String token, RequestingUser requester);
 
-    BookingResponse stornoBooking(Long bookingId, String ipAddress, String token);
+    BookingResponse stornoBooking(Long bookingId, String ipAddress, String token, RequestingUser requester);
 
-    BookingResponse[] getBookingsByStudioId(long studioId, String token);
+    BookingResponse[] getBookingsByStudioId(long studioId);
 
     void updatePaymentStatus(Long bookingId, String status);
 
@@ -32,5 +33,5 @@ public interface BookingService {
      * (CONFIRMED/PENDING) must cancel it first rather than have it silently disappear along with
      * their account. DONE/CANCELLED/FAILED are terminal and don't block deletion.
      */
-    boolean hasOpenBookings(Long userId);
+    boolean hasOpenBookings(Long userId, RequestingUser requester);
 }

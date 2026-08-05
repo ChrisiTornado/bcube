@@ -3,10 +3,12 @@ package com.bcube.userservice.exception;
 import com.bcube.userservice.service.dto.response.ApiResponse;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.server.ResponseStatusException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -14,6 +16,19 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InvalidCredentialsException.class)
     public ResponseEntity<ApiResponse<Void>> handleInvalidCredentials(InvalidCredentialsException ex) {
         return new ResponseEntity<>(new ApiResponse<>("Die Anmeldedaten sind nicht korrekt", null), HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+
+    /**
+     * Without this, ResponseStatusException (thrown directly in AdminServiceImpl/UserServiceImpl
+     * for e.g. NOT_FOUND/CONFLICT/FORBIDDEN) was silently caught by the generic Exception handler
+     * below instead - since it's a RuntimeException and no more specific handler existed for it,
+     * every intended status/message got flattened into a plain 500.
+     */
+    @ExceptionHandler(ResponseStatusException.class)
+    public ResponseEntity<ApiResponse<Void>> handleResponseStatusException(ResponseStatusException ex) {
+        HttpStatusCode status = ex.getStatusCode();
+        String message = ex.getReason() != null ? ex.getReason() : "Ein Fehler ist aufgetreten";
+        return new ResponseEntity<>(new ApiResponse<>(message, null), status);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

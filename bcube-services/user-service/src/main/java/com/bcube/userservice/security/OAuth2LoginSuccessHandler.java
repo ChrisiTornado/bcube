@@ -81,7 +81,7 @@ public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
         UserDetailsImpl userDetails = UserDetailsImpl.build(user);
         List<String> roles = userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
-        String jwt = jwtTokenProvider.generateToken(userDetails.getUsername(), roles);
+        String jwt = jwtTokenProvider.generateToken(userDetails.getUsername(), userDetails.getId(), roles);
 
         boolean profileComplete = isNotBlank(user.getPhone()) && isNotBlank(user.getFirstName()) && isNotBlank(user.getLastName());
 

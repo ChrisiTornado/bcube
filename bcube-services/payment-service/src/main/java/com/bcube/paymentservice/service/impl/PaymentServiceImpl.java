@@ -8,6 +8,7 @@ import com.bcube.paymentservice.persistance.entity.PaymentStatus;
 import com.bcube.paymentservice.persistance.entity.Voucher;
 import com.bcube.paymentservice.persistance.repository.PaymentRepository;
 import com.bcube.paymentservice.persistance.repository.VoucherRedemptionRepository;
+import com.bcube.paymentservice.security.RequestingUser;
 import com.bcube.paymentservice.service.PaymentService;
 import com.bcube.paymentservice.service.dto.request.CreatePaymentIntentRequest;
 import com.bcube.paymentservice.service.dto.request.RefundRequest;
@@ -132,30 +133,34 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public PaymentResponse getById(Long id) {
+    public PaymentResponse getById(Long id, RequestingUser requester) {
         Payment payment = paymentRepository.findById(id)
                 .orElseThrow(() -> new PaymentNotFoundException("Zahlung nicht gefunden"));
+        requester.requireSelfOrAdmin(payment.getUserId());
         return toResponse(payment, null);
     }
 
     @Override
-    public PaymentResponse getByBookingId(Long bookingId) {
+    public PaymentResponse getByBookingId(Long bookingId, RequestingUser requester) {
         Payment payment = paymentRepository.findFirstByBookingIdOrderByIdDesc(bookingId)
                 .orElseThrow(() -> new PaymentNotFoundException("Zahlung nicht gefunden"));
+        requester.requireSelfOrAdmin(payment.getUserId());
         return toResponse(payment, null);
     }
 
     @Override
-    public Page<PaymentResponse> getByUserId(Long userId, Pageable pageable) {
+    public Page<PaymentResponse> getByUserId(Long userId, Pageable pageable, RequestingUser requester) {
+        requester.requireSelfOrAdmin(userId);
         return paymentRepository.findAllByUserIdOrderByCreatedAtDesc(userId, pageable)
                 .map(payment -> toResponse(payment, null));
     }
 
     @Override
     @Transactional
-    public PaymentResponse refund(Long bookingId, RefundRequest request) {
+    public PaymentResponse refund(Long bookingId, RefundRequest request, RequestingUser requester) {
         Payment payment = paymentRepository.findFirstByBookingIdOrderByIdDesc(bookingId)
                 .orElseThrow(() -> new PaymentNotFoundException("Zahlung nicht gefunden"));
+        requester.requireSelfOrAdmin(payment.getUserId());
 
         if (payment.getStatus() == PaymentStatus.FREE) {
             return toResponse(payment, null);
@@ -181,9 +186,10 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     @Transactional
-    public void confirmCardVerification(Long bookingId) {
+    public void confirmCardVerification(Long bookingId, RequestingUser requester) {
         Payment payment = paymentRepository.findFirstByBookingIdOrderByIdDesc(bookingId)
                 .orElseThrow(() -> new PaymentNotFoundException("Zahlung nicht gefunden"));
+        requester.requireSelfOrAdmin(payment.getUserId());
 
         if (payment.getStatus() != PaymentStatus.REQUIRES_CARD_VERIFICATION) {
             // Already finalized (duplicate confirm call) - avoid double-processing.

@@ -36,6 +36,26 @@ public class WebSecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+    /**
+     * Without this bean, .cors(cors -> {}) below is a no-op - Spring Security finds no
+     * CorsConfigurationSource and adds no Access-Control-Allow-Origin header at all. That's been
+     * masked so far because the custom api-gateway (which does configure CORS) sits in front of
+     * every browser request; it stops being masked the moment this service is reachable directly
+     * behind an ALB with no such middleman.
+     */
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOrigins(List.of(frontendUrl));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of("*"));
+        config.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
+    }
+
     @Bean
     @Order(2)
     public SecurityFilterChain securityFilterChain(

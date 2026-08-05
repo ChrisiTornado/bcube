@@ -1,6 +1,7 @@
 package com.bcube.paymentservice.controller;
 
 import com.bcube.paymentservice.persistance.entity.Voucher;
+import com.bcube.paymentservice.security.RequestingUser;
 import com.bcube.paymentservice.service.PaymentService;
 import com.bcube.paymentservice.service.dto.request.CreatePaymentIntentRequest;
 import com.bcube.paymentservice.service.dto.request.RefundRequest;
@@ -16,6 +17,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -30,32 +33,33 @@ public class PaymentController {
     private final VoucherService voucherService;
 
     @PostMapping("/intents")
-    public ResponseEntity<ApiResponse<PaymentResponse>> createIntent(@Valid @RequestBody CreatePaymentIntentRequest request) {
+    public ResponseEntity<ApiResponse<PaymentResponse>> createIntent(@Valid @RequestBody CreatePaymentIntentRequest request, @AuthenticationPrincipal Jwt jwt) {
+        RequestingUser.from(jwt).requireSelfOrAdmin(request.getUserId());
         PaymentResponse response = paymentService.createPaymentIntent(request);
         return ResponseEntity.ok(new ApiResponse<>("Zahlung erfolgreich erstellt", response));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<PaymentResponse>> getById(@PathVariable Long id) {
-        PaymentResponse response = paymentService.getById(id);
+    public ResponseEntity<ApiResponse<PaymentResponse>> getById(@PathVariable Long id, @AuthenticationPrincipal Jwt jwt) {
+        PaymentResponse response = paymentService.getById(id, RequestingUser.from(jwt));
         return ResponseEntity.ok(new ApiResponse<>("Zahlung erfolgreich geladen", response));
     }
 
     @GetMapping("/booking/{bookingId}")
-    public ResponseEntity<ApiResponse<PaymentResponse>> getByBooking(@PathVariable Long bookingId) {
-        PaymentResponse response = paymentService.getByBookingId(bookingId);
+    public ResponseEntity<ApiResponse<PaymentResponse>> getByBooking(@PathVariable Long bookingId, @AuthenticationPrincipal Jwt jwt) {
+        PaymentResponse response = paymentService.getByBookingId(bookingId, RequestingUser.from(jwt));
         return ResponseEntity.ok(new ApiResponse<>("Zahlung erfolgreich geladen", response));
     }
 
     @GetMapping("/user/{userId}")
-    public ResponseEntity<ApiResponse<Page<PaymentResponse>>> getByUser(@PathVariable Long userId, Pageable pageable) {
-        Page<PaymentResponse> response = paymentService.getByUserId(userId, pageable);
+    public ResponseEntity<ApiResponse<Page<PaymentResponse>>> getByUser(@PathVariable Long userId, Pageable pageable, @AuthenticationPrincipal Jwt jwt) {
+        Page<PaymentResponse> response = paymentService.getByUserId(userId, pageable, RequestingUser.from(jwt));
         return ResponseEntity.ok(new ApiResponse<>("Zahlungen erfolgreich geladen", response));
     }
 
     @PostMapping("/{bookingId}/refund")
-    public ResponseEntity<ApiResponse<PaymentResponse>> refund(@PathVariable Long bookingId, @Valid @RequestBody RefundRequest request) {
-        PaymentResponse response = paymentService.refund(bookingId, request);
+    public ResponseEntity<ApiResponse<PaymentResponse>> refund(@PathVariable Long bookingId, @Valid @RequestBody RefundRequest request, @AuthenticationPrincipal Jwt jwt) {
+        PaymentResponse response = paymentService.refund(bookingId, request, RequestingUser.from(jwt));
         return ResponseEntity.ok(new ApiResponse<>("Rückerstattung erfolgreich verarbeitet", response));
     }
 
@@ -67,19 +71,21 @@ public class PaymentController {
     }
 
     @PostMapping("/{bookingId}/confirm-card-verification")
-    public ResponseEntity<ApiResponse<Void>> confirmCardVerification(@PathVariable Long bookingId) {
-        paymentService.confirmCardVerification(bookingId);
+    public ResponseEntity<ApiResponse<Void>> confirmCardVerification(@PathVariable Long bookingId, @AuthenticationPrincipal Jwt jwt) {
+        paymentService.confirmCardVerification(bookingId, RequestingUser.from(jwt));
         return ResponseEntity.ok(new ApiResponse<>("Kartenprüfung abgeschlossen", null));
     }
 
     @PostMapping("/vouchers/welcome-grant")
-    public ResponseEntity<ApiResponse<Void>> welcomeGrant(@Valid @RequestBody WelcomeGrantRequest request) {
+    public ResponseEntity<ApiResponse<Void>> welcomeGrant(@Valid @RequestBody WelcomeGrantRequest request, @AuthenticationPrincipal Jwt jwt) {
+        RequestingUser.from(jwt).requireSelfOrAdmin(request.getUserId());
         voucherService.grantWelcomeVoucher(request.getUserId(), request.getPhone());
         return ResponseEntity.ok(new ApiResponse<>("Willkommensgutschein verarbeitet", null));
     }
 
     @GetMapping("/vouchers/my-available")
-    public ResponseEntity<ApiResponse<List<VoucherResponse>>> myAvailableVouchers(@RequestParam Long userId) {
+    public ResponseEntity<ApiResponse<List<VoucherResponse>>> myAvailableVouchers(@RequestParam Long userId, @AuthenticationPrincipal Jwt jwt) {
+        RequestingUser.from(jwt).requireSelfOrAdmin(userId);
         List<VoucherResponse> vouchers = voucherService.getAvailableVouchers(userId).stream()
                 .map(this::toVoucherResponse)
                 .toList();
@@ -105,7 +111,9 @@ public class PaymentController {
     }
 
     @PostMapping("/vouchers/validate")
-    public ResponseEntity<ApiResponse<VoucherPreviewResponse>> validateVoucher(@Valid @RequestBody ValidateVoucherRequest request) {
+    public ResponseEntity<ApiResponse<VoucherPreviewResponse>> validateVoucher(@Valid @RequestBody ValidateVoucherRequest request, @AuthenticationPrincipal Jwt jwt) {
+        RequestingUser.from(jwt).requireSelfOrAdmin(request.getUserId());
+
         int baseAmountCents = BigDecimal.valueOf(request.getHourlyRateCents())
                 .multiply(request.getDurationHours())
                 .setScale(0, RoundingMode.HALF_UP)

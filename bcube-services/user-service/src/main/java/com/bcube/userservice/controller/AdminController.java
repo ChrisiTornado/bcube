@@ -1,7 +1,6 @@
 package com.bcube.userservice.controller;
 
 import com.bcube.userservice.service.AdminService;
-import com.bcube.userservice.service.dto.request.CreateUserRequest;
 import com.bcube.userservice.service.dto.request.AdminUpdateUserRequest;
 import com.bcube.userservice.service.dto.response.ApiResponse;
 import com.bcube.userservice.service.dto.response.UserNameResponse;
@@ -22,12 +21,6 @@ public class AdminController {
     public ResponseEntity<ApiResponse<Page<UserResponse>>> getAllUsers(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
         Page<UserResponse> response = adminService.getAllUsers(page, size);
         return ResponseEntity.ok(new ApiResponse<>("Users erfolgreich gesendet", response));
-    }
-
-    @PostMapping
-    public ResponseEntity<ApiResponse<UserResponse>> createUser(@Valid @RequestBody CreateUserRequest createUserRequest) {
-        UserResponse response = adminService.createUser(createUserRequest);
-        return ResponseEntity.ok(new ApiResponse<>("User erfolgreich erstellt", response));
     }
 
     @DeleteMapping("/{id}")

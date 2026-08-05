@@ -53,18 +53,6 @@ describe('UserService', () => {
     });
   });
 
-  describe('createUser', () => {
-    it('posts the new user to the admin endpoint', () => {
-      const payload = { email: 'new@example.com', firstName: 'A', lastName: 'B', phone: '123', isAdmin: false };
-      service.createUser(payload).subscribe();
-
-      const req = httpMock.expectOne(environment.adminApiUrl);
-      expect(req.request.method).toBe('POST');
-      expect(req.request.body).toEqual(payload);
-      req.flush({ message: 'ok', data: user(1) });
-    });
-  });
-
   describe('getUserFilter', () => {
     it('requests the filters endpoint with page/size params', () => {
       service.getUserFilter(0, 10).subscribe();

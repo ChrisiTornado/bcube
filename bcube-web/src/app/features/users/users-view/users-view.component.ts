@@ -10,14 +10,12 @@ import { UpdateUserComponent } from '@features/users/users-view/update-user/upda
 import { DeleteUserComponent } from '@features/users/users-view/delete-user/delete-user.component';
 import { LoadingSpinnerComponent } from '@shared/ui/loading-spinner/loading-spinner.component';
 import { CommonModule } from '@angular/common';
-import { CreateUserComponent } from '@features/users/create-user/create-user.component';
 import { LIGHT_BUTTON_STYLE } from '@shared/util/button-style';
 import { extractErrorMessage } from '@shared/util/error-message.util';
 
 @Component({
     selector: 'app-users-view',
     imports: [
-        CreateUserComponent,
         CommonModule,
         LoadingSpinnerComponent,
         TableModule,

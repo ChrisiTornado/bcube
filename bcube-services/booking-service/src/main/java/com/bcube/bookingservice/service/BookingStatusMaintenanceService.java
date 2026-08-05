@@ -42,15 +42,17 @@ public class BookingStatusMaintenanceService {
 
         // A PENDING booking whose slot has passed was never actually paid/occupied - FAILED,
         // not DONE. Only a CONFIRMED booking (paid or voucher-covered) genuinely happened.
-        long updatedCount = candidateBookings.stream()
-                .filter(booking -> !booking.getEndTime().isAfter(now))
-                .peek(booking -> booking.setStatus(
-                        booking.getStatus() == BookingStatus.PENDING ? BookingStatus.FAILED : BookingStatus.DONE
-                ))
-                .count();
+        int updatedCount = 0;
+        for (Booking booking : candidateBookings) {
+            if (booking.getEndTime().isAfter(now)) {
+                continue;
+            }
+            booking.setStatus(booking.getStatus() == BookingStatus.PENDING ? BookingStatus.FAILED : BookingStatus.DONE);
+            updatedCount++;
+        }
 
         if (updatedCount > 0) {
-            log.info("Set {} bookings to DONE", updatedCount);
+            log.info("Updated status on {} finished bookings", updatedCount);
         }
     }
 }

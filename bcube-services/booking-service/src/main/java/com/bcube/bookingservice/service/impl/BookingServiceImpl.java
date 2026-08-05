@@ -14,6 +14,7 @@ import com.bcube.bookingservice.persistance.entity.Booking;
 import com.bcube.bookingservice.persistance.entity.BookingStatus;
 import com.bcube.bookingservice.persistance.repository.BookingRepository;
 import com.bcube.bookingservice.security.InternalTokenProvider;
+import com.bcube.bookingservice.security.RequestingUser;
 import com.bcube.bookingservice.service.BookingService;
 import com.bcube.bookingservice.service.IpAbuseGuardService;
 import com.bcube.bookingservice.service.dto.Classes.PaymentIntentDto;
@@ -43,6 +44,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -164,7 +166,9 @@ public class BookingServiceImpl implements BookingService {
 
     @Transactional(readOnly = true)
     @Override
-    public Page<BookingResponse> getBookingsByUserId(Long userId, int page, int size, Long studioId, String sortBy, String sortDirection, String token) {
+    public Page<BookingResponse> getBookingsByUserId(Long userId, int page, int size, Long studioId, String sortBy, String sortDirection, String token, RequestingUser requester) {
+        requester.requireSelfOrAdmin(userId);
+
         if (!userClient.userExists(userId, token)) {
             throw new UserNotFoundException("User mit ID " + userId + " nicht gefunden");
         }
@@ -196,44 +200,48 @@ public class BookingServiceImpl implements BookingService {
         });
     }
 
-    private BookingResponse[] getBookingResponses(List<Booking> bookings, String token) {
+    /**
+     * Deliberately leaves user/studio null - this backs the public/customer-facing availability
+     * calendar (any authenticated user, not just admins, can call this for a studio they're
+     * looking to book), which only ever renders status/startTime/endTime/date. It used to also
+     * fetch and return every OTHER booking's owner's name/email/phone here - a PII leak to every
+     * caller, not just admins, and an N+1 call to user-service (plus a redundant, identical
+     * studio-service call) per booking for data nothing consumed.
+     */
+    private BookingResponse[] getBookingResponses(List<Booking> bookings) {
         List<BookingResponse> responses = bookings.stream()
-                .map(booking -> {
-                    UserDto user = userClient.getUserById(booking.getUserId(), token);
-                    StudioDto studio = studioClient.getStudioById(booking.getStudioId());
-
-                    return new BookingResponse(
-                            booking.getId(),
-                            user,
-                            studio,
-                            booking.getDate(),
-                            booking.getStartTime(),
-                            booking.getEndTime(),
-                            booking.getStatus(),
-                            booking.getCreatedAt(),
-                            null
-                    );
-                })
+                .map(booking -> new BookingResponse(
+                        booking.getId(),
+                        null,
+                        null,
+                        booking.getDate(),
+                        booking.getStartTime(),
+                        booking.getEndTime(),
+                        booking.getStatus(),
+                        booking.getCreatedAt(),
+                        null
+                ))
                 .toList();
 
         return responses.toArray(new BookingResponse[0]);
     }
 
     @Override
-    public BookingResponse[] getBookingsByStudioId(long studioId, String token) {
+    public BookingResponse[] getBookingsByStudioId(long studioId) {
         if (!studioClient.studioExists(studioId)) {
             throw new StudioNotFoundException("Studio mit ID " + studioId + " nicht gefunden");
         }
 
         List<Booking> bookings = bookingRepository.findAllByStudioId(studioId);
 
-        return getBookingResponses(bookings, token);
+        return getBookingResponses(bookings);
     }
 
     @Override
-    public BookingDetailsResponse getBookingById(Long bookingId, String token) {
+    public BookingDetailsResponse getBookingById(Long bookingId, String token, RequestingUser requester) {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new BookingNotFoundException("Buchung mit ID " + bookingId + " nicht gefunden"));
+        requester.requireSelfOrAdmin(booking.getUserId());
 
         UserDto user = userClient.getUserById(booking.getUserId(), token);
         StudioDto studio = studioClient.getStudioById(booking.getStudioId());
@@ -242,7 +250,7 @@ public class BookingServiceImpl implements BookingService {
         // CONFIRMED/DONE bookings actually had Nuki access granted.
         String accessCode = null;
         if (booking.getStatus() == BookingStatus.CONFIRMED || booking.getStatus() == BookingStatus.DONE) {
-            AccessCodeResponse accessCodeResponse = accessCodeClient.getAccessCode(bookingId, token);
+            AccessCodeResponse accessCodeResponse = accessCodeClient.getAccessCode(bookingId);
             if (accessCodeResponse == null) {
                 throw new AccessCodeNotReceivedException("Zutrittscode konnte nicht erstellt werden");
             }
@@ -265,9 +273,10 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public BookingResponse stornoBooking(Long bookingId, String ipAddress, String token) {
+    public BookingResponse stornoBooking(Long bookingId, String ipAddress, String token, RequestingUser requester) {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new BookingNotFoundException("Buchung mit ID " + bookingId + " nicht gefunden"));
+        requester.requireSelfOrAdmin(booking.getUserId());
 
         if (isFinished(booking, Instant.now())) {
             booking.setStatus(BookingStatus.DONE);
@@ -288,7 +297,7 @@ public class BookingServiceImpl implements BookingService {
         booking.setStatus(BookingStatus.CANCELLED);
         bookingRepository.save(booking);
         String abuseWarning = ipAbuseGuardService.recordCancellationAndEvaluate(ipAddress);
-        accessCodeClient.deleteAccessCode(bookingId, token);
+        accessCodeClient.deleteAccessCode(bookingId);
 
         if (previousStatus == BookingStatus.CONFIRMED) {
             refundIfPaid(booking, token);
@@ -354,7 +363,7 @@ public class BookingServiceImpl implements BookingService {
         for (Booking booking : bookings) {
             if (booking.getStatus() == BookingStatus.CONFIRMED || booking.getStatus() == BookingStatus.PENDING) {
                 try {
-                    accessCodeClient.deleteAccessCode(booking.getId(), token);
+                    accessCodeClient.deleteAccessCode(booking.getId());
                 } catch (Exception e) {
                     log.error("Zutrittscode-Löschung für Buchung {} (Cube-Löschung) fehlgeschlagen: {}",
                             booking.getId(), e.getMessage(), e);
@@ -370,13 +379,15 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public boolean hasOpenBookings(Long userId) {
+    public boolean hasOpenBookings(Long userId, RequestingUser requester) {
+        requester.requireSelfOrAdmin(userId);
         return bookingRepository.existsByUserIdAndStatusIn(userId, OPEN_STATUSES);
     }
 
     @Transactional
     @Override
-    public BookingDetailsResponse bookTimeSlot(BookStudioRequest bookStudioRequest, String ipAddress, String token) {
+    public BookingDetailsResponse bookTimeSlot(BookStudioRequest bookStudioRequest, String ipAddress, String token, RequestingUser requester) {
+        requester.requireSelfOrAdmin(bookStudioRequest.getUserID());
         ipAbuseGuardService.assertNotBanned(ipAddress);
 
         Booking booking = createBookingEntity(bookStudioRequest);
@@ -450,7 +461,7 @@ public class BookingServiceImpl implements BookingService {
                 ISO_UTC_FMT.format(booking.getEndTime())
         );
 
-        AccessCodeResponse accessCodeResponse = accessCodeClient.generateAccessCode(request, token);
+        AccessCodeResponse accessCodeResponse = accessCodeClient.generateAccessCode(request);
         if (accessCodeResponse == null) {
             throw new AccessCodeNotReceivedException("Zutrittscode konnte nicht erstellt werden");
         }
@@ -491,16 +502,24 @@ public class BookingServiceImpl implements BookingService {
     }
 
     public Booking createBookingEntity(BookStudioRequest bookStudioRequest) {
+        LocalDate date;
+        LocalDateTime start;
+        LocalDateTime end;
+
+        try {
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-        LocalDate date = LocalDate.parse(bookStudioRequest.getDate(), dateFormatter);
+        date = LocalDate.parse(bookStudioRequest.getDate(), dateFormatter);
 
         String dateWithDashes = date.format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
         String startDateTimeString = dateWithDashes + "T" + bookStudioRequest.getStartTime() + ":00.000Z";// z. B. "07-07-2025T13:15:00.000Z"
         String endDateTimeString = dateWithDashes + "T" + bookStudioRequest.getEndTime() + ":00.000Z";
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy'T'HH:mm:ss.SSS'Z'");
-        LocalDateTime start = LocalDateTime.parse(startDateTimeString, formatter);
-        LocalDateTime end = LocalDateTime.parse(endDateTimeString, formatter);
+        start = LocalDateTime.parse(startDateTimeString, formatter);
+        end = LocalDateTime.parse(endDateTimeString, formatter);
+        } catch (DateTimeParseException e) {
+            throw new IllegalArgumentException("Datum oder Uhrzeit ist ungültig formatiert");
+        }
 
         Instant startTime = start.atZone(ZoneId.of("Europe/Vienna")).toInstant();
         Instant endTime = end.atZone(ZoneId.of("Europe/Vienna")).toInstant();

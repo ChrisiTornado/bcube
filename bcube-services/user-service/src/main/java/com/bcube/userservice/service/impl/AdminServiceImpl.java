@@ -6,7 +6,6 @@ import com.bcube.userservice.persistance.entity.Role;
 import com.bcube.userservice.persistance.entity.User;
 import com.bcube.userservice.persistance.repository.UserRepository;
 import com.bcube.userservice.service.AdminService;
-import com.bcube.userservice.service.dto.request.CreateUserRequest;
 import com.bcube.userservice.service.dto.request.AdminUpdateUserRequest;
 import com.bcube.userservice.service.dto.response.UserNameResponse;
 import com.bcube.userservice.service.dto.response.UserResponse;
@@ -40,34 +39,6 @@ public class AdminServiceImpl implements AdminService {
                         user.getLastName(),
                         user.getAuthProvider()
                 ));
-    }
-
-    @Override
-    public UserResponse createUser(CreateUserRequest createUserRequest) {
-        if (userRepository.existsByEmail(createUserRequest.getEmail())) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "E-Mail bereits vergeben.");
-        }
-
-        User user = User.builder()
-                .email(createUserRequest.getEmail())
-                .password("default-password") // TODO: Generiere sicheres Passwort oder Registrierung mit Passwort
-                .firstName(createUserRequest.getFirstName())
-                .lastName(createUserRequest.getLastName())
-                .phone(createUserRequest.getPhone())
-                .role(createUserRequest.isAdmin() ? Role.ADMIN : Role.USER)
-                .build();
-
-        User saved = userRepository.save(user);
-
-        return new UserResponse(
-                saved.getId(),
-                saved.getRole() == Role.ADMIN,
-                saved.getEmail(),
-                saved.getPhone(),
-                saved.getFirstName(),
-                saved.getLastName(),
-                saved.getAuthProvider()
-        );
     }
 
     @Override

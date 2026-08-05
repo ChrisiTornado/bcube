@@ -1,6 +1,7 @@
 package com.bcube.bookingservice.controller;
 
 import com.bcube.bookingservice.security.ClientIpResolver;
+import com.bcube.bookingservice.security.RequestingUser;
 import com.bcube.bookingservice.service.BookingService;
 import com.bcube.bookingservice.service.dto.request.BookStudioRequest;
 import com.bcube.bookingservice.service.dto.request.AdminBookingQueryRequest;
@@ -10,11 +11,14 @@ import com.bcube.bookingservice.service.dto.response.ApiResponse;
 import com.bcube.bookingservice.service.dto.response.BookingDetailsResponse;
 import com.bcube.bookingservice.service.dto.response.BookingResponse;
 import com.bcube.bookingservice.service.impl.BookingServiceImpl;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -39,7 +43,7 @@ public class BookingController {
 
     @GetMapping
     public ResponseEntity<ApiResponse<Page<BookingResponse>>> getBookings(
-            AdminBookingQueryRequest request,
+            @Valid AdminBookingQueryRequest request,
             @RequestHeader("Authorization") String authorizationHeader
     ) {
         Page<BookingResponse> bookings = bookingService.getBookings(
@@ -56,38 +60,40 @@ public class BookingController {
 
     @PostMapping
     public ResponseEntity<ApiResponse<BookingDetailsResponse>> bookStudio(
-            @RequestBody BookStudioRequest bookStudioRequest,
+            @Valid @RequestBody BookStudioRequest bookStudioRequest,
             @RequestHeader("Authorization") String authorizationHeader,
-            HttpServletRequest httpRequest
+            HttpServletRequest httpRequest,
+            @AuthenticationPrincipal Jwt jwt
     ) {
         String ipAddress = clientIpResolver.resolve(httpRequest);
-        BookingDetailsResponse booking = bookingService.bookTimeSlot(bookStudioRequest, ipAddress, extractToken(authorizationHeader));
+        BookingDetailsResponse booking = bookingService.bookTimeSlot(bookStudioRequest, ipAddress, extractToken(authorizationHeader), RequestingUser.from(jwt));
         return ResponseEntity.ok(new ApiResponse<>(booking.getStudio().getName()+" erfolgreich gebucht", booking));
     }
 
     @GetMapping("/user/{userId}")
-    public ResponseEntity<ApiResponse<Page<BookingResponse>>> getBookingsByUserId(UserBookingQueryRequest request, @RequestHeader("Authorization") String authorizationHeader) {
+    public ResponseEntity<ApiResponse<Page<BookingResponse>>> getBookingsByUserId(@Valid UserBookingQueryRequest request, @RequestHeader("Authorization") String authorizationHeader, @AuthenticationPrincipal Jwt jwt) {
         String token = extractToken(authorizationHeader);
-        Page<BookingResponse> bookings = bookingService.getBookingsByUserId(request.getUserId(), request.getPage(), request.getSize(), request.getStudioId(), request.getSortBy(), request.getSortDirection(), token);
+        Page<BookingResponse> bookings = bookingService.getBookingsByUserId(request.getUserId(), request.getPage(), request.getSize(), request.getStudioId(), request.getSortBy(), request.getSortDirection(), token, RequestingUser.from(jwt));
         return  ResponseEntity.ok(new ApiResponse<>("Buchungen erfolgreich geladen", bookings));
     }
 
     /**
-     * Called by user-service before deleting an account - authenticated like every other route
-     * here (no ADMIN role required), since the calling admin's own JWT already satisfies it.
+     * Called by user-service before deleting an account - either the account owner deleting
+     * their own account, or an admin deleting someone else's, both forwarding their own JWT.
      */
     @GetMapping("/user/{userId}/has-open")
-    public ResponseEntity<ApiResponse<Boolean>> hasOpenBookings(@PathVariable Long userId) {
-        boolean hasOpen = bookingService.hasOpenBookings(userId);
+    public ResponseEntity<ApiResponse<Boolean>> hasOpenBookings(@PathVariable Long userId, @AuthenticationPrincipal Jwt jwt) {
+        boolean hasOpen = bookingService.hasOpenBookings(userId, RequestingUser.from(jwt));
         return ResponseEntity.ok(new ApiResponse<>("Offene Buchungen geprüft", hasOpen));
     }
 
     @GetMapping("/{bookingId}")
     public ResponseEntity<ApiResponse<BookingDetailsResponse>> getBookingById(
             @PathVariable Long bookingId,
-            @RequestHeader("Authorization") String authorizationHeader
+            @RequestHeader("Authorization") String authorizationHeader,
+            @AuthenticationPrincipal Jwt jwt
     ) {
-        BookingDetailsResponse booking = bookingService.getBookingById(bookingId, extractToken(authorizationHeader));
+        BookingDetailsResponse booking = bookingService.getBookingById(bookingId, extractToken(authorizationHeader), RequestingUser.from(jwt));
         return ResponseEntity.ok(new ApiResponse<>("Buchung erfolgreich gesendet", booking));
     }
 
@@ -95,21 +101,19 @@ public class BookingController {
     public ResponseEntity<ApiResponse<BookingResponse>> stornoBookingById(
             @PathVariable Long bookingId,
             @RequestHeader("Authorization") String authorizationHeader,
-            HttpServletRequest httpRequest
+            HttpServletRequest httpRequest,
+            @AuthenticationPrincipal Jwt jwt
     ) {
         String ipAddress = clientIpResolver.resolve(httpRequest);
-        BookingResponse booking = bookingService.stornoBooking(bookingId, ipAddress, extractToken(authorizationHeader));
+        BookingResponse booking = bookingService.stornoBooking(bookingId, ipAddress, extractToken(authorizationHeader), RequestingUser.from(jwt));
         String message = "Buchung: " + bookingId + " erfolgreich storniert"
                 + (booking.getWarning() != null ? " " + booking.getWarning() : "");
         return ResponseEntity.ok(new ApiResponse<>(message, booking));
     }
 
     @GetMapping("/studio/{studioId}")
-    public ResponseEntity<ApiResponse<BookingResponse[]>> getBookingsByStudio(
-            @PathVariable Long studioId,
-            @RequestHeader("Authorization") String authorizationHeader
-    ) {
-        BookingResponse[] bookings = bookingService.getBookingsByStudioId(studioId, extractToken(authorizationHeader));
+    public ResponseEntity<ApiResponse<BookingResponse[]>> getBookingsByStudio(@PathVariable Long studioId) {
+        BookingResponse[] bookings = bookingService.getBookingsByStudioId(studioId);
         return ResponseEntity.ok(new ApiResponse<>("Buchungen erfolgreich geladen", bookings));
     }
 

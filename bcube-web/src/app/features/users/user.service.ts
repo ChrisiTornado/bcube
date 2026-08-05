@@ -7,7 +7,6 @@ import { ApiResponse } from '@models/responses/api-response';
 import { finalize } from 'rxjs/operators';
 import { map } from 'rxjs/operators';
 import { UserResponse } from '@models/responses/user/user-response';
-import { CreateUserRequest } from '@models/requests/user/create-user-request';
 import { UpdateUserRequest } from '@models/requests/user/update-user-request';
 import { PageResponse } from '@models/responses/page-response';
 import { UserNameResponse } from '@models/responses/user/user-name-response';
@@ -60,13 +59,6 @@ export class UserService extends CollectionStore<User> {
 
   setUsers(users: User[]): void {
     this.setItems(users);
-  }
-
-  createUser(payload: CreateUserRequest): Observable<ApiResponse<UserResponse>> {
-    return this.http.post<ApiResponse<UserResponse>>(
-      environment.adminApiUrl,
-      payload
-    );
   }
 
   getUserFilter(page: number, size: number): Observable<PageResponse<UserNameResponse>> {
