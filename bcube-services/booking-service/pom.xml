@@ -96,7 +96,46 @@
 			<version>0.11.5</version>
 			<scope>runtime</scope>
 		</dependency>
+
 	</dependencies>
+
+	<!-- Native DNS resolver Netty (via reactor-netty/webflux) looks for on macOS; without it, it falls back to the JDK resolver with a warning. Version is managed by the netty-bom imported through spring-boot-dependencies. -->
+	<profiles>
+		<profile>
+			<id>macos-aarch64</id>
+			<activation>
+				<os>
+					<family>mac</family>
+					<arch>aarch64</arch>
+				</os>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>io.netty</groupId>
+					<artifactId>netty-resolver-dns-native-macos</artifactId>
+					<classifier>osx-aarch_64</classifier>
+					<scope>runtime</scope>
+				</dependency>
+			</dependencies>
+		</profile>
+		<profile>
+			<id>macos-x86_64</id>
+			<activation>
+				<os>
+					<family>mac</family>
+					<arch>x86_64</arch>
+				</os>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>io.netty</groupId>
+					<artifactId>netty-resolver-dns-native-macos</artifactId>
+					<classifier>osx-x86_64</classifier>
+					<scope>runtime</scope>
+				</dependency>
+			</dependencies>
+		</profile>
+	</profiles>
 
 	<build>
 		<plugins>

@@ -8,6 +8,8 @@
       type="email"
       placeholder="deine@email.at"
       pInputText
+      [readonly]="emailLocked"
+      [class.email-locked]="emailLocked"
       class="w-full mb-3"
       />
       @if (submitted && email.errors) {

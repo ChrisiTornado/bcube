@@ -47,7 +47,7 @@ public class StudioClient {
 
             return response.getData();
         } catch (WebClientResponseException.NotFound e) {
-            return null;
+            throw new StudioNotFoundException("Studio nicht gefunden");
         } catch (WebClientResponseException e) {
             throw new RuntimeException("Fehler beim Abrufen des Studios: " + e.getMessage(), e);
         }

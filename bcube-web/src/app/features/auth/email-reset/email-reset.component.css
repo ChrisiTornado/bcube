@@ -29,6 +29,12 @@
   box-shadow: 0 0 0 4px rgba(255, 167, 34, 0.16) !important;
 }
 
+:host ::ng-deep .email-reset-form .p-inputtext.email-locked {
+  background: rgba(255, 255, 255, 0.06) !important;
+  color: rgba(255, 255, 255, 0.62) !important;
+  cursor: default;
+}
+
 .email-reset-actions {
   gap: 1rem;
 }

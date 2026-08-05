@@ -38,6 +38,7 @@ export class EmailResetComponent implements OnInit {
   formGroup!: FormGroup;
   loading = false;
   submitted = false;
+  emailLocked = false;
 
   constructor(private formBuilder: FormBuilder,
     private authService: AuthService,
@@ -51,8 +52,13 @@ export class EmailResetComponent implements OnInit {
     const returnUrl = history.state?.returnUrl as string | undefined;
     this.passwordResetService.setReturnUrl(returnUrl);
 
+    const loggedInEmail = this.authService.isAuthenticated()
+      ? this.authService.resolveStoredUser()?.email ?? null
+      : null;
+    this.emailLocked = !!loggedInEmail;
+
     this.formGroup = this.formBuilder.group({
-      email: [null, [Validators.required, Validators.email]]
+      email: [loggedInEmail, [Validators.required, Validators.email]]
     })
   }
 
@@ -63,7 +69,7 @@ export class EmailResetComponent implements OnInit {
     this.loading = true;
     this.formGroup.disable();
 
-    this.authService.resetPassword({ email: this.formGroup.value.email })
+    this.authService.resetPassword({ email: this.email.value })
       .pipe(finalize(() => {
         this.loading = false;
         this.formGroup.enable();
