@@ -1,0 +1,15 @@
+.complete-profile-subtitle {
+  color: var(--bcube-text-soft);
+  font-size: 0.92rem;
+  margin: 0 0 1.25rem;
+}
+
+.complete-profile-field label {
+  color: var(--bcube-text) !important;
+}
+
+:host ::ng-deep .complete-profile-form .p-inputtext.field-locked {
+  background: rgba(255, 255, 255, 0.06) !important;
+  color: rgba(255, 255, 255, 0.62) !important;
+  cursor: default;
+}

@@ -6,4 +6,5 @@ export interface UserResponse {
     phone: string;
     firstName: string;
     lastName: string;
+    authProvider: 'LOCAL' | 'GOOGLE';
 }

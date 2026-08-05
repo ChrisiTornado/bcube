@@ -25,18 +25,26 @@
             <h2>Persönliche Daten</h2>
             <span>Profil</span>
           </div>
+          @if (isGoogleAccount) {
+            <p class="profile-google-hint">
+              Vorname, Nachname und E-Mail stammen von deinem Google-Konto und können hier nicht geändert werden.
+            </p>
+          }
           <form [formGroup]="profileForm" class="profile-fields">
             <div class="profile-field">
               <label>Vorname</label>
-              <input pInputText formControlName="firstName" class="profile-input" />
+              <input pInputText formControlName="firstName" [readonly]="isGoogleAccount"
+                [class.field-locked]="isGoogleAccount" class="profile-input" />
             </div>
             <div class="profile-field">
               <label>Nachname</label>
-              <input pInputText formControlName="lastName" class="profile-input" />
+              <input pInputText formControlName="lastName" [readonly]="isGoogleAccount"
+                [class.field-locked]="isGoogleAccount" class="profile-input" />
             </div>
             <div class="profile-field profile-field-wide">
               <label>E-Mail</label>
-              <input pInputText formControlName="email" class="profile-input" />
+              <input pInputText formControlName="email" [readonly]="isGoogleAccount"
+                [class.field-locked]="isGoogleAccount" class="profile-input" />
             </div>
             <div class="profile-field profile-field-wide">
               <label>Telefonnummer</label>

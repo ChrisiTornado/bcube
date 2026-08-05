@@ -29,6 +29,7 @@ public class SecurityConfig {
                         .pathMatchers("/actuator/health").permitAll()
                         .pathMatchers("/api/auth/**").permitAll()
                         .pathMatchers("/api/payments/webhook").permitAll()
+                        .pathMatchers("/oauth2/**", "/login/**").permitAll()
                         .pathMatchers("/api/admin/**").hasRole("ADMIN")
                         .anyExchange().authenticated()
                 )

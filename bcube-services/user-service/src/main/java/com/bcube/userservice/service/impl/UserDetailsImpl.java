@@ -1,5 +1,6 @@
 package com.bcube.userservice.service.impl;
 
+import com.bcube.userservice.persistance.entity.AuthProvider;
 import com.bcube.userservice.persistance.entity.Role;
 import com.bcube.userservice.persistance.entity.User;
 import lombok.AllArgsConstructor;
@@ -19,6 +20,9 @@ public class UserDetailsImpl implements UserDetails {
     private String password;
     private Role role;
     private String firstName;
+    private String lastName;
+    private String phone;
+    private AuthProvider authProvider;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -36,7 +40,10 @@ public class UserDetailsImpl implements UserDetails {
                 user.getEmail(),
                 user.getPassword(),
                 user.getRole(),
-                user.getFirstName()
+                user.getFirstName(),
+                user.getLastName(),
+                user.getPhone(),
+                user.getAuthProvider()
         );
     }
 }

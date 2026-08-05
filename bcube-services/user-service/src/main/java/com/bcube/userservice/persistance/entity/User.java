@@ -25,13 +25,13 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false)
+    @Column
     private String firstName;
 
-    @Column(nullable = false)
+    @Column
     private String lastName;
 
-    @Column(nullable = false)
+    @Column
     private String phone;
 
     @Enumerated(EnumType.STRING)
@@ -49,6 +49,14 @@ public class User {
 
     @Column
     private Instant resetVerifiedAt;
+
+    @Enumerated(EnumType.STRING)
+    @Column
+    @Builder.Default
+    private AuthProvider authProvider = AuthProvider.LOCAL;
+
+    @Column
+    private String providerId;
 
     @PrePersist
     public void prePersist() {

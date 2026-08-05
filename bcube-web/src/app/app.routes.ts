@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { authGuard } from '@core/guards/auth.guard';
 import { roleGuard } from '@core/guards/role.guard';
+import { profileCompleteGuard } from '@core/guards/profile-complete.guard';
 
 export const routes: Routes = [
     {
@@ -31,13 +32,21 @@ export const routes: Routes = [
                 path: 'enter-code',
                 loadComponent: () => import('@features/auth/enter-code/enter-code.component').then(m => m.EnterCodeComponent)
             },
+            {
+                path: 'oauth-callback',
+                loadComponent: () => import('@features/auth/oauth-callback/oauth-callback.component').then(m => m.OauthCallbackComponent)
+            },
+            {
+                path: 'complete-profile',
+                loadComponent: () => import('@features/auth/complete-profile-page/complete-profile-page.component').then(m => m.CompleteProfilePageComponent)
+            },
         ]
     },
 
     {
         path: 'admin-dashboard',
         loadComponent: () => import('@app/layout/admin-shell/admin-shell.component').then(m => m.AdminShellComponent),
-        canActivate: [authGuard, roleGuard],
+        canActivate: [authGuard, profileCompleteGuard, roleGuard],
         data: { expectedRole: 'ADMIN' },
         children: [
             { path: '', redirectTo: 'studios', pathMatch: 'full' },
@@ -78,7 +87,7 @@ export const routes: Routes = [
     {
         path: 'user-dashboard',
         loadComponent: () => import('@app/layout/user-shell/user-shell.component').then(m => m.UserShellComponent),
-        canActivate: [authGuard, roleGuard],
+        canActivate: [authGuard, profileCompleteGuard, roleGuard],
         data: { expectedRole: 'USER' },
         children: [
             { path: '', redirectTo: 'studios', pathMatch: 'full' },

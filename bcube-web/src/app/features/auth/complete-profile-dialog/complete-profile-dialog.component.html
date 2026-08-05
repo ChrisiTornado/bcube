@@ -1,0 +1,44 @@
+<p-dialog header="Profil vervollständigen" [visible]="true" [modal]="true" [closable]="false" [draggable]="false"
+  [resizable]="false" appendTo="body" [style]="{ width: '440px' }" styleClass="complete-profile-dialog">
+  <p class="complete-profile-subtitle">
+    Fast geschafft! Diese Angaben stammen von deinem Google-Konto und können hier nicht geändert werden - bitte ergänze nur die fehlenden Felder.
+  </p>
+  <form [formGroup]="form" class="complete-profile-form">
+    <div class="mb-3 complete-profile-field">
+      <label for="cp-email" class="block text-900 font-medium mb-2">E-Mail-Adresse</label>
+      <input id="cp-email" formControlName="email" type="text" pInputText readonly class="w-full field-locked" />
+    </div>
+
+    <div class="mb-3 complete-profile-field">
+      <label for="cp-firstName" class="block text-900 font-medium mb-2">Vorname</label>
+      <input id="cp-firstName" formControlName="firstName" type="text" pInputText
+        [readonly]="!needsFirstName" [class.field-locked]="!needsFirstName" class="w-full" />
+      @if (submitted && firstName.hasError('required')) {
+        <small class="p-error">Vorname ist erforderlich</small>
+      }
+    </div>
+
+    <div class="mb-3 complete-profile-field">
+      <label for="cp-lastName" class="block text-900 font-medium mb-2">Nachname</label>
+      <input id="cp-lastName" formControlName="lastName" type="text" pInputText
+        [readonly]="!needsLastName" [class.field-locked]="!needsLastName" class="w-full" />
+      @if (submitted && lastName.hasError('required')) {
+        <small class="p-error">Nachname ist erforderlich</small>
+      }
+    </div>
+
+    <div class="mb-3 complete-profile-field">
+      <label for="cp-phone" class="block text-900 font-medium mb-2">Telefonnummer</label>
+      <input id="cp-phone" formControlName="phone" type="text" pInputText
+        [readonly]="!needsPhone" [class.field-locked]="!needsPhone" class="w-full" />
+      @if (submitted && phone.hasError('required')) {
+        <small class="p-error">Telefonnummer ist erforderlich</small>
+      }
+    </div>
+
+    <div class="flex justify-content-end mt-3">
+      <p-button pRipple label="Profil vervollständigen" icon="pi pi-check" [loading]="loading"
+        [style]="darkButtonStyle" (click)="submit()"></p-button>
+    </div>
+  </form>
+</p-dialog>

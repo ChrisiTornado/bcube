@@ -120,6 +120,13 @@
   text-transform: uppercase;
 }
 
+.profile-google-hint {
+  margin: -0.5rem 0 1rem;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
 .profile-fields {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -153,6 +160,13 @@
   background: rgba(41, 41, 41, 0.88) !important;
   color: #ffffff !important;
   font-size: 1rem;
+}
+
+:host ::ng-deep .profile-input.p-inputtext.field-locked {
+  background: rgba(255, 255, 255, 0.04) !important;
+  color: rgba(255, 255, 255, 0.55) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  cursor: default;
 }
 
 .profile-save-row {

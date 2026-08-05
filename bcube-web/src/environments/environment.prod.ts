@@ -5,6 +5,7 @@ export const environment = {
   adminApiUrl: '/api/admin/users',
   userApiUrl: '/api/users',
   authUrl: '/api/auth',
+  oauthGoogleUrl: '/oauth2/authorization/google',
   bookingApiUrl: '/api/bookings',
   studioApiUrl: '/api/studios',
   adminStudioApiUrl: '/api/admin/studios',

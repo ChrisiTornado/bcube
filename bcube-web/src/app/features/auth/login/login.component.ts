@@ -18,6 +18,7 @@ import { MessageService } from 'primeng/api';
 import { InputTextModule } from 'primeng/inputtext';
 import { handleAuthSuccess } from '@features/auth/shared/auth-success.util';
 import { extractErrorMessage } from '@shared/util/error-message.util';
+import { environment } from '@environments/environment';
 
 @Component({
     selector: 'app-login',
@@ -86,6 +87,10 @@ export class LoginComponent implements OnInit {
   resetPasswort() {
     this.router.navigate(['/auth/email-reset']).then(() => {
     });
+  }
+
+  loginWithGoogle(): void {
+    window.location.href = environment.oauthGoogleUrl;
   }
 
   get email(): AbstractControl {

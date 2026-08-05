@@ -37,7 +37,8 @@ public class AdminServiceImpl implements AdminService {
                         user.getEmail(),
                         user.getPhone(),
                         user.getFirstName(),
-                        user.getLastName()
+                        user.getLastName(),
+                        user.getAuthProvider()
                 ));
     }
 
@@ -64,7 +65,8 @@ public class AdminServiceImpl implements AdminService {
                 saved.getEmail(),
                 saved.getPhone(),
                 saved.getFirstName(),
-                saved.getLastName()
+                saved.getLastName(),
+                saved.getAuthProvider()
         );
     }
 
@@ -102,7 +104,8 @@ public class AdminServiceImpl implements AdminService {
                 updated.getEmail(),
                 updated.getPhone(),
                 updated.getFirstName(),
-                updated.getLastName()
+                updated.getLastName(),
+                updated.getAuthProvider()
         );
     }
 

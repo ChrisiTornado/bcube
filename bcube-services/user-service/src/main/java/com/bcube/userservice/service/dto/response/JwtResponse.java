@@ -1,5 +1,6 @@
 package com.bcube.userservice.service.dto.response;
 
+import com.bcube.userservice.persistance.entity.AuthProvider;
 import com.bcube.userservice.persistance.entity.Role;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -16,4 +17,7 @@ public class JwtResponse {
     private String email;
     private Role role;
     private String firstName;
+    private String lastName;
+    private String phone;
+    private AuthProvider authProvider;
 }

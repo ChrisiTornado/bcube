@@ -15,7 +15,11 @@ export function handleAuthSuccess(res: ApiResponse<JwtResponse>, auth: AuthServi
   const user: User = {
     id: jwt.id,
     email: jwt.email,
-    role: jwt.role
+    role: jwt.role,
+    firstName: jwt.firstName,
+    lastName: jwt.lastName,
+    phone: jwt.phone,
+    authProvider: jwt.authProvider
   };
 
   auth.storeAuth(jwt.token, user);

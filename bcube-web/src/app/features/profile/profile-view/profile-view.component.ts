@@ -40,6 +40,11 @@ export class ProfileViewComponent implements OnInit {
   deleting = false;
   loading = true;
 
+  /** Google-supplied fields (name, email) aren't user-editable here - only phone always is. */
+  get isGoogleAccount(): boolean {
+    return this.user?.authProvider === 'GOOGLE';
+  }
+
   constructor(
     private readonly authService: AuthService,
     private readonly userService: UserService,
@@ -214,7 +219,8 @@ export class ProfileViewComponent implements OnInit {
             email: this.user.email,
             firstName: this.user.firstName || '',
             lastName: this.user.lastName || '',
-            phone: this.user.phone || ''
+            phone: this.user.phone || '',
+            authProvider: this.user.authProvider
           });
         },
         error: () => {

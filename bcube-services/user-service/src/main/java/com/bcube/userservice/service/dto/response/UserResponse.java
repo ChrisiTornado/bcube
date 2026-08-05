@@ -1,5 +1,6 @@
 package com.bcube.userservice.service.dto.response;
 
+import com.bcube.userservice.persistance.entity.AuthProvider;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -14,4 +15,5 @@ public class UserResponse {
     private String phone;
     private String firstName;
     private String lastName;
+    private AuthProvider authProvider;
 }

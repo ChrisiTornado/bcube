@@ -3,6 +3,7 @@ package com.bcube.userservice.service.impl;
 import com.bcube.userservice.client.BookingClient;
 import com.bcube.userservice.exception.UserHasOpenBookingsException;
 import com.bcube.userservice.exception.UserNotFoundException;
+import com.bcube.userservice.persistance.entity.AuthProvider;
 import com.bcube.userservice.persistance.entity.Role;
 import com.bcube.userservice.persistance.entity.User;
 import com.bcube.userservice.persistance.repository.UserRepository;
@@ -11,6 +12,7 @@ import com.bcube.userservice.service.dto.request.UpdateOwnUserRequest;
 import com.bcube.userservice.service.dto.response.UserResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 @Service
 @RequiredArgsConstructor
@@ -30,7 +32,8 @@ public class UserServiceImpl implements UserService {
                 user.getEmail(),
                 user.getPhone(),
                 user.getFirstName(),
-                user.getLastName()
+                user.getLastName(),
+                user.getAuthProvider()
         );
     }
 
@@ -39,18 +42,32 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException("User nicht gefunden:  " + email));
 
-        user.setFirstName(request.getFirstName());
-        user.setLastName(request.getLastName());
+        // Google-supplied fields (name, email) aren't user-editable once Google has actually
+        // provided them - only ever accept a change here for whichever of them is still blank
+        // (i.e. genuinely missing, being filled in for the first time via the complete-profile
+        // flow). Phone always comes from the user directly, regardless of auth provider.
+        if (user.getAuthProvider() == AuthProvider.GOOGLE) {
+            if (!StringUtils.hasText(user.getFirstName())) {
+                user.setFirstName(request.getFirstName());
+            }
+            if (!StringUtils.hasText(user.getLastName())) {
+                user.setLastName(request.getLastName());
+            }
+        } else {
+            user.setFirstName(request.getFirstName());
+            user.setLastName(request.getLastName());
+            user.setEmail(request.getEmail());
+        }
         user.setPhone(request.getPhone());
-        user.setEmail(request.getEmail());
         userRepository.save(user);
         return new UserResponse(
                 user.getId(),
-                false,
+                user.getRole() == Role.ADMIN,
                 user.getEmail(),
                 user.getPhone(),
                 user.getFirstName(),
-                user.getLastName()
+                user.getLastName(),
+                user.getAuthProvider()
         );
     }
 

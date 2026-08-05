@@ -13,6 +13,16 @@ spring:
           predicates:
             - Path=/api/auth/**
 
+        - id: oauth2-authorization
+          uri: http://localhost:8081
+          predicates:
+            - Path=/oauth2/**
+
+        - id: oauth2-login-callback
+          uri: http://localhost:8081
+          predicates:
+            - Path=/login/**
+
         - id: admin-service
           uri: http://localhost:8081
           predicates:
