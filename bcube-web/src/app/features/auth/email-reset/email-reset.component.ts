@@ -51,8 +51,13 @@ export class EmailResetComponent implements OnInit {
     const returnUrl = history.state?.returnUrl as string | undefined;
     this.passwordResetService.setReturnUrl(returnUrl);
 
+    // Logged-in users (e.g. coming from the profile page) already have a known email.
+    const knownEmail = this.authService.isAuthenticated()
+      ? this.authService.resolveStoredUser()?.email ?? null
+      : null;
+
     this.formGroup = this.formBuilder.group({
-      email: [null, [Validators.required, Validators.email]]
+      email: [knownEmail, [Validators.required, Validators.email]]
     })
   }
 
