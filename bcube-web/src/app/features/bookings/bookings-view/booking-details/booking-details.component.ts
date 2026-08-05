@@ -9,12 +9,12 @@ import { LoadingSpinnerComponent } from '@shared/ui/loading-spinner/loading-spin
 import { AuthService } from '@core/services/auth.service';
 import { BookingService } from '@features/bookings/booking.service';
 import { BookingActionService } from '@features/bookings/booking-action.service';
-import { CardModule } from 'primeng/card';
 import { BookingDetailsResponse } from '@models/responses/booking/booking-details-response';
 import { BookingStatus } from '@models/booking-status.model';
 import { getBookingStatusLabel } from '@shared/util/booking-status.util';
 import { extractErrorMessage } from '@shared/util/error-message.util';
 import { getDashboardBasePath } from '@shared/util/dashboard-path.util';
+import { DARK_BUTTON_STYLE } from '@shared/util/button-style';
 
 @Component({
     selector: 'app-booking-details',
@@ -22,14 +22,14 @@ import { getDashboardBasePath } from '@shared/util/dashboard-path.util';
         CommonModule,
         FormsModule,
         ButtonModule,
-        LoadingSpinnerComponent,
-        CardModule
+        LoadingSpinnerComponent
     ],
     templateUrl: './booking-details.component.html',
     styleUrl: './booking-details.component.css'
 })
 export class BookingDetailsComponent implements OnInit {
   readonly bookingStatus = BookingStatus;
+  readonly darkButtonStyle = DARK_BUTTON_STYLE;
   isUser = false;
   booking: BookingDetailsResponse | null = null;
   loading!: boolean;

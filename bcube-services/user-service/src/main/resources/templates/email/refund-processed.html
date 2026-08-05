@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="de">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Rückerstattung</title>
+</head>
+<body style="margin:0;padding:0;background-color:#f4f4f5;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#f4f4f5;padding:32px 16px;">
+  <tr>
+    <td align="center">
+      <table role="presentation" width="560" cellpadding="0" cellspacing="0" style="max-width:560px;width:100%;background-color:#ffffff;border-radius:16px;overflow:hidden;border:1px solid #ececec;">
+        <tr>
+          <td style="padding:32px 40px 24px;border-bottom:1px solid #f0f0f0;">
+            <span style="font-family:Arial,Helvetica,sans-serif;font-size:20px;font-weight:800;letter-spacing:1px;color:#111111;">CUBE</span>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:40px;font-family:Arial,Helvetica,sans-serif;color:#1f1f1f;">
+            <span style="display:inline-block;padding:4px 12px;border-radius:999px;background-color:#e8f0fd;color:#2f6fe0;font-size:12px;font-weight:700;letter-spacing:0.02em;margin-bottom:16px;">RÜCKERSTATTUNG</span>
+            <h1 style="margin:0 0 16px;font-size:22px;line-height:1.3;color:#111111;">Deine Rückerstattung wurde veranlasst</h1>
+            <p style="margin:0 0 24px;font-size:15px;line-height:1.6;color:#3f3f3f;">
+              Hallo <span th:text="${firstName}">Christophe</span>, für deine Buchung bei <span th:text="${studioName}">bcube Studio Hauptbahnhof</span> wurde folgender Betrag rückerstattet:
+            </p>
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #f0f0f0;border-radius:12px;margin-bottom:24px;">
+              <tr>
+                <td style="padding:16px 20px;font-size:14px;color:#8a8a8a;">Rückerstatteter Betrag</td>
+                <td style="padding:16px 20px;font-size:16px;font-weight:800;color:#111111;text-align:right;" th:text="${amount}">€ 36,00</td>
+              </tr>
+            </table>
+            <p style="margin:0;font-size:14px;line-height:1.6;color:#6b6b6b;">
+              Die Gutschrift erscheint je nach Bank innerhalb weniger Werktage auf deinem Zahlungsmittel.
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:24px 40px 32px;border-top:1px solid #f0f0f0;">
+            <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:12px;color:#9a9a9a;">bcube · Wien · Diese E-Mail wurde automatisch generiert.</p>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+</body>
+</html>

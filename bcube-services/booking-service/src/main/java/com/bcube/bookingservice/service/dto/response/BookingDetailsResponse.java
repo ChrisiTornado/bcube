@@ -19,6 +19,7 @@ public class BookingDetailsResponse {
     private Instant startTime;
     private Instant endTime;
     private BookingStatus status;
+    private Instant createdAt;
 
     private String accessCode;
 

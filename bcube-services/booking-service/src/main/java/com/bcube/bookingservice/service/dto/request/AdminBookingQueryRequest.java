@@ -10,4 +10,6 @@ public class AdminBookingQueryRequest {
     private int size = 10;
     private Long userId;
     private Long studioId;
+    private String sortBy;
+    private String sortDirection;
 }

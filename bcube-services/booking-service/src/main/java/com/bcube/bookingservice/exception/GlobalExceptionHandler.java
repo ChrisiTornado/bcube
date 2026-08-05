@@ -38,4 +38,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Void>> illegalArgumentException(IllegalArgumentException ex) {
         return new ResponseEntity<>(new ApiResponse<>(ex.getMessage(), null), HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(IpBannedException.class)
+    public ResponseEntity<ApiResponse<Void>> ipBannedException(IpBannedException ex) {
+        return new ResponseEntity<>(new ApiResponse<>(ex.getMessage(), null), HttpStatus.FORBIDDEN);
+    }
 }

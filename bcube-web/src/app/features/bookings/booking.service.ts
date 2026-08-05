@@ -24,12 +24,16 @@ export class BookingService extends CollectionStore<Booking> {
   private userIdValue?: number;
   private activeUserFilterIdValue?: number;
   private activeStudioFilterIdValue?: number;
+  private sortByValue = 'id';
+  private sortDirectionValue: 'asc' | 'desc' = 'desc';
 
   get viewMode(): 'ADMIN' | 'USER' { return this.viewModeValue; }
   get page(): number { return this.pageValue; }
   get userId(): number | undefined { return this.userIdValue; }
   get activeUserFilterId(): number | undefined { return this.activeUserFilterIdValue; }
   get activeStudioFilterId(): number | undefined { return this.activeStudioFilterIdValue; }
+  get sortBy(): string { return this.sortByValue; }
+  get sortDirection(): 'asc' | 'desc' { return this.sortDirectionValue; }
 
   constructor(private http: HttpClient, private messageService: MessageService) {
     super();
@@ -37,6 +41,11 @@ export class BookingService extends CollectionStore<Booking> {
 
   setPage(page: number): void {
     this.pageValue = page;
+  }
+
+  setSort(sortBy: string, sortDirection: 'asc' | 'desc'): void {
+    this.sortByValue = sortBy;
+    this.sortDirectionValue = sortDirection;
   }
 
   setAdminView(page: number, userFilterId?: number, studioFilterId?: number): void {
@@ -58,14 +67,18 @@ export class BookingService extends CollectionStore<Booking> {
     page: number = 0,
     size: number = 10,
     userId?: number,
-    studioId?: number
+    studioId?: number,
+    sortBy: string = 'id',
+    sortDirection: 'asc' | 'desc' = 'desc'
   ): Observable<PageResponse<Booking>> {
 
     this.setLoading(true);
 
-    const params: Record<string, number> = {
+    const params: Record<string, string | number> = {
       page,
-      size
+      size,
+      sortBy,
+      sortDirection
     };
 
     if (userId != null) {
@@ -91,14 +104,18 @@ export class BookingService extends CollectionStore<Booking> {
     userId: number,
     page: number = 0,
     size: number = 10,
-    studioId?: number
+    studioId?: number,
+    sortBy: string = 'id',
+    sortDirection: 'asc' | 'desc' = 'desc'
   ): Observable<PageResponse<Booking>> {
     this.setLoading(true);
 
-    const params: Record<string, number> = {
+    const params: Record<string, string | number> = {
       userId,
       page,
-      size
+      size,
+      sortBy,
+      sortDirection
     };
 
     if (studioId != null) {
@@ -171,13 +188,13 @@ export class BookingService extends CollectionStore<Booking> {
     };
 
     if (this.viewMode === 'ADMIN') {
-      this.getBookings(this.page, this.size, resolvedUserId, resolvedStudioId)
+      this.getBookings(this.page, this.size, resolvedUserId, resolvedStudioId, this.sortBy, this.sortDirection)
         .subscribe({ next: res => this.setItems(res.content), error: onError });
       return;
     }
 
     if (this.viewMode === 'USER' && this.userId != null) {
-      this.getBookingsByUserId(this.userId, this.page, this.size, resolvedStudioId)
+      this.getBookingsByUserId(this.userId, this.page, this.size, resolvedStudioId, this.sortBy, this.sortDirection)
         .subscribe({ next: res => this.setItems(res.content), error: onError });
     }
   }

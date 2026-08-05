@@ -14,7 +14,7 @@ import { ButtonModule } from 'primeng/button';
 import { ApiResponse } from '@models/responses/api-response';
 import { ResetPasswordResponse } from '@models/responses/user/reset-password-response';
 import { VerifyCodeResponse } from '@models/responses/user/verify-code-response';
-import { DARK_BUTTON_STYLE } from '@shared/util/button-style';
+import { DARK_BUTTON_STYLE, LIGHT_BUTTON_STYLE } from '@shared/util/button-style';
 import { extractErrorMessage } from '@shared/util/error-message.util';
 
 @Component({
@@ -31,6 +31,7 @@ import { extractErrorMessage } from '@shared/util/error-message.util';
 })
 export class EnterCodeComponent implements OnInit {
   readonly darkButtonStyle = DARK_BUTTON_STYLE;
+  readonly lightButtonStyle = LIGHT_BUTTON_STYLE;
 
   formGroup!: FormGroup;
   submitted = false;
@@ -81,6 +82,37 @@ export class EnterCodeComponent implements OnInit {
       const nextField = document.getElementById(nextFieldId) as HTMLElement;
       if (nextField) nextField.focus();
     }
+  }
+
+  /** Jumps back to the previous box on Backspace once the current one is already empty. */
+  handleBackspace(event: KeyboardEvent, previousFieldId: string | null): void {
+    if (event.key !== 'Backspace' || !previousFieldId) {
+      return;
+    }
+
+    const input = event.target as HTMLInputElement;
+    if (input.value.length === 0) {
+      const previousField = document.getElementById(previousFieldId) as HTMLInputElement | null;
+      previousField?.focus();
+    }
+  }
+
+  /** Lets the whole 6-digit code be pasted into any box instead of typed one field at a time. */
+  handlePaste(event: ClipboardEvent): void {
+    const pasted = event.clipboardData?.getData('text').replace(/\D/g, '').slice(0, 6);
+    if (!pasted) {
+      return;
+    }
+
+    event.preventDefault();
+    const digitFields = ['digit1', 'digit2', 'digit3', 'digit4', 'digit5', 'digit6'];
+
+    pasted.split('').forEach((digit, index) => {
+      this.formGroup.get(digitFields[index])?.setValue(digit);
+    });
+
+    const lastFilledId = digitFields[Math.min(pasted.length, 6) - 1];
+    (document.getElementById(lastFilledId) as HTMLInputElement | null)?.focus();
   }
 
   submit(): void {

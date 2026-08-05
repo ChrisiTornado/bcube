@@ -10,4 +10,6 @@ public class UserBookingQueryRequest {
     private int page = 0;
     private int size = 10;
     private Long studioId;
+    private String sortBy;
+    private String sortDirection;
 }

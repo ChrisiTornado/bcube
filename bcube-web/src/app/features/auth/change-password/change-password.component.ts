@@ -69,7 +69,7 @@ export class ChangePasswordComponent implements OnInit {
     }
 
     this.formGroup = this.formBuilder.group({
-      password: [null, Validators.required],
+      password: [null, [Validators.required, Validators.minLength(8)]],
       confirmPassword: [null, Validators.required]
     });
   }
@@ -92,10 +92,14 @@ export class ChangePasswordComponent implements OnInit {
       .pipe(finalize(() => this.loading = false))
       .subscribe({
         next: (res) => {
-          this.passwordResetService.setSuccessMessage(res.message);
           this.passwordResetService.clearEmail();
           this.passwordResetService.clearReturnUrl();
-          this.router.navigate(['/auth/login']);
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Erfolgreich',
+            detail: res.message
+          });
+          setTimeout(() => this.router.navigate(['/login']), 1200);
         },
         error: (err: HttpErrorResponse) => {
           this.messageService.add({

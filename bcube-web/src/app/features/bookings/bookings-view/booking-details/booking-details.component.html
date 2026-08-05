@@ -3,65 +3,124 @@
 }
 
 @if (!(loading$ | async)) {
-  <div class="mb-4">
-    <button pButton type="button" icon="pi pi-arrow-left" label="Zurück" (click)="goBack()" [style]="{'border-color': 'black', 'color': 'black'}"
-    class="p-button-outlined"></button>
+  <div class="top-actions">
+    <button pButton type="button" class="p-button-outlined back-button" icon="pi pi-arrow-left" label="Zurück"
+      [style]="darkButtonStyle" (click)="goBack()"></button>
   </div>
+
   @if (loadError) {
     <div class="booking-load-error">
       <p>Der Auftrag konnte nicht geladen werden.</p>
       <button pButton type="button" label="Erneut versuchen" icon="pi pi-refresh" (click)="retryLoadBooking()"></button>
     </div>
   }
+
   @if (booking) {
-    <div class="booking-header flex mb-4">
-      <h2 class="text-2xl font-semibold mb-2">
-        Auftrag {{ booking.id }} - {{ booking.studio?.name ?? 'Cube gelöscht' }}
-      </h2>
-      @if (booking.studio) {
-        <img
-          [src]="booking.studio.imageBase64"
-          alt="Studiobild"
-          class="booking-studio-image"
-          (click)="showOverlay(booking.studio.imageBase64)"
-          >
+    <div class="booking-detail-shell">
+      <header class="booking-hero">
+        <div class="booking-hero-media">
+          @if (booking.studio) {
+            <img
+              [src]="booking.studio.imageBase64"
+              alt="Studiobild"
+              class="booking-hero-image"
+              (click)="showOverlay(booking.studio.imageBase64)">
+          } @else {
+            <div class="booking-hero-placeholder">
+              <i class="pi pi-question-circle"></i>
+            </div>
+          }
+        </div>
+        <div class="booking-hero-copy">
+          <span class="booking-eyebrow">Auftrag #{{ booking.id }}</span>
+          <h1 class="booking-title">{{ booking.studio?.name ?? 'Cube gelöscht' }}</h1>
+          <span class="status-pill" [class]="'status-pill-' + booking.status.toLowerCase()">
+            {{ getStatusLabel(booking.status) }}
+          </span>
+        </div>
+      </header>
+
+      @if (overlayVisible) {
+        <div class="overlay" (click)="hideOverlay()">
+          <img [src]="overlayImage" alt="Großes Bild" class="overlay-img" (click)="$event.stopPropagation()">
+          <button class="close-btn" (click)="hideOverlay()">✖</button>
+        </div>
+      }
+
+      <div class="booking-detail-grid">
+        <section class="detail-card">
+          <h2>Auftragsinformationen</h2>
+          <dl class="detail-list">
+            <div class="detail-row">
+              <dt>Datum</dt>
+              <dd>{{ booking.date | date: 'dd. MMMM, yyyy' : undefined : 'de-AT' }}</dd>
+            </div>
+            <div class="detail-row">
+              <dt>Zeit</dt>
+              <dd>{{ booking.startTime | date: 'HH:mm' }} – {{ booking.endTime | date: 'HH:mm' }} Uhr</dd>
+            </div>
+            <div class="detail-row">
+              <dt>Buchungsdatum</dt>
+              <dd>{{ booking.createdAt | date: 'dd. MMMM, yyyy, HH:mm' : undefined : 'de-AT' }} Uhr</dd>
+            </div>
+            <div class="detail-row">
+              <dt>Adresse</dt>
+              <dd>
+                @if (booking.studio) {
+                  {{ booking.studio.street }}, {{ booking.studio.plz }} {{ booking.studio.city }}
+                } @else {
+                  –
+                }
+              </dd>
+            </div>
+            <div class="detail-row">
+              <dt>Land</dt>
+              <dd>{{ booking.studio?.country ?? '–' }}</dd>
+            </div>
+            <div class="detail-row detail-row-price">
+              <dt>Preis</dt>
+              <dd class="detail-price">{{ formatPrice() }}</dd>
+            </div>
+          </dl>
+
+          @if (booking.accessCode) {
+            <div class="access-code-block">
+              <span class="access-code-label"><i class="pi pi-lock-open"></i> Zutrittscode</span>
+              <span class="access-code-value">{{ booking.accessCode }}</span>
+            </div>
+          }
+        </section>
+
+        @if (!isUser) {
+          <section class="detail-card">
+            <h2>Kundendaten</h2>
+            <dl class="detail-list">
+              <div class="detail-row">
+                <dt>Kunden-ID</dt>
+                <dd>{{ booking.user.id }}</dd>
+              </div>
+              <div class="detail-row">
+                <dt>Name</dt>
+                <dd>{{ booking.user.firstName }} {{ booking.user.lastName }}</dd>
+              </div>
+              <div class="detail-row">
+                <dt>E-Mail</dt>
+                <dd>{{ booking.user.email }}</dd>
+              </div>
+              <div class="detail-row">
+                <dt>Telefon</dt>
+                <dd>{{ booking.user.phone }}</dd>
+              </div>
+            </dl>
+          </section>
+        }
+      </div>
+
+      @if (booking.status !== bookingStatus.CANCELLED) {
+        <div class="storno-actions">
+          <button pButton type="button" label="Stornieren" (click)="triggerStorno()" severity="danger"></button>
+        </div>
       }
     </div>
-    @if (overlayVisible) {
-      <div class="overlay" (click)="hideOverlay()">
-        <img [src]="overlayImage" alt="Großes Bild" class="overlay-img" (click)="$event.stopPropagation()">
-        <button class="close-btn" (click)="hideOverlay()">✖</button>
-      </div>
-    }
-    <p class="mb-4"><strong>Status:</strong> {{ getStatusLabel(booking.status) }}</p>
-    <div class="flex gap-4">
-      <p-card [style]="{ width: '25rem', overflow: 'hidden' }" class="rounded-lg shadow-sm">
-        <ng-template pTemplate="title">Auftragsinformationen</ng-template>
-        <p><strong>Datum:</strong> {{ booking.date | date: 'dd. MMMM, yyyy' : undefined : 'de-AT' }}</p>
-        <p><strong>Zeit:</strong> {{ booking.startTime | date: 'HH:mm' }} - {{ booking.endTime | date: 'HH:mm' }} Uhr
-      </p>
-      <p><strong>Straße:</strong> {{ booking.studio?.street ?? '–' }}</p>
-      <p><strong>Stadt:</strong> {{ booking.studio?.city ?? '–' }}</p>
-      <p><strong>PLZ:</strong> {{ booking.studio?.plz ?? '–' }}</p>
-      <p><strong>Land:</strong> {{ booking.studio?.country ?? '–' }}</p>
-      <p><strong>Preis:</strong> {{ formatPrice() }}</p>
-      <p><strong>Zutrittscode:</strong> {{ booking.accessCode }}</p>
-    </p-card>
-    @if (!isUser) {
-      <p-card [style]="{ width: '25rem', overflow: 'hidden' }"
-        class="rounded-lg shadow-sm">
-        <ng-template pTemplate="title">Kundendaten</ng-template>
-        <p><strong>Kunden ID:</strong> {{ booking.user.id }}</p>
-        <p><strong>Name:</strong> {{ booking.user.firstName }} {{ booking.user.lastName }}</p>
-        <p><strong>E-Mail:</strong> {{ booking.user.email }}</p>
-        <p><strong>Telefonnummer:</strong> {{ booking.user.phone }}</p>
-      </p-card>
-    }
-  </div>
-  @if (booking.status !== bookingStatus.CANCELLED) {
-    <div class="mt-6 flex justify-center">
-      <button pButton type="button" label="Stornieren" (click)="triggerStorno()" severity="danger"></button>
-    </div>
   }
-}
 }

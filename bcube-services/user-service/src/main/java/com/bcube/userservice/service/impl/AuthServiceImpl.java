@@ -60,6 +60,7 @@ public class AuthServiceImpl implements AuthService {
 
         JwtResponse jwtResponse = authenticateAndCreateJwt(registerRequest.getEmail(), registerRequest.getPassword());
         paymentClient.grantWelcomeVoucher(jwtResponse.getId(), registerRequest.getPhone(), jwtResponse.getToken());
+        mailSender.sendWelcomeEmail(user.getEmail(), user.getFirstName());
 
         return jwtResponse;
     }
@@ -71,14 +72,16 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public ResetPasswordResponse resetPassword(ResetPasswordRequest resetPasswordRequest) {
-        User user = userRepository.findByEmail(resetPasswordRequest.getEmail())
-                .orElseThrow(() -> new UserNotFoundException("Kein Benutzer mit der E-Mail-Adresse gefunden: " + resetPasswordRequest.getEmail()));
-
-        String code = CodeGenerator.generateCode();
-        user.setResetCode(passwordEncoder.encode(code));
-        user.setResetCodeExpiresAt(Instant.now().plus(15, ChronoUnit.MINUTES));
-        userRepository.save(user);
-        mailSender.sendPasswordResetCode(resetPasswordRequest.getEmail(), code);
+        // Deliberately doesn't throw/leak whether the email is registered - always returns the
+        // same success response, only actually sending a code when an account exists. Otherwise
+        // this endpoint would let anyone probe which emails have a bcube account.
+        userRepository.findByEmail(resetPasswordRequest.getEmail()).ifPresent(user -> {
+            String code = CodeGenerator.generateCode();
+            user.setResetCode(passwordEncoder.encode(code));
+            user.setResetCodeExpiresAt(Instant.now().plus(15, ChronoUnit.MINUTES));
+            userRepository.save(user);
+            mailSender.sendPasswordResetCode(resetPasswordRequest.getEmail(), user.getFirstName(), code);
+        });
         return new ResetPasswordResponse(true);
     }
 
@@ -130,6 +133,7 @@ public class AuthServiceImpl implements AuthService {
         user.setPassword(passwordEncoder.encode(changePasswordRequest.getPassword()));
         user.setResetVerifiedAt(null);
         userRepository.save(user);
+        mailSender.sendPasswordChangedConfirmation(user.getEmail(), user.getFirstName());
         return new ChangePasswordResponse(true);
     }
 

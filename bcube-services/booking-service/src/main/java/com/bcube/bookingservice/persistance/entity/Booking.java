@@ -47,6 +47,11 @@ public class Booking {
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 
+    // Nullable: null means "no reminder sent yet". Set once BookingReminderService has emailed
+    // the user, so the fixed-delay job never double-sends on its next run.
+    @Column(name = "reminder_sent_at")
+    private Instant reminderSentAt;
+
     @PrePersist
     public void prePersist() {
         this.createdAt = Instant.now();

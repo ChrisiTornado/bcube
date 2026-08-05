@@ -1,6 +1,7 @@
 package com.bcube.paymentservice.service.impl;
 
 import com.bcube.paymentservice.client.BookingClient;
+import com.bcube.paymentservice.client.NotificationClient;
 import com.bcube.paymentservice.exception.PaymentNotFoundException;
 import com.bcube.paymentservice.persistance.entity.Payment;
 import com.bcube.paymentservice.persistance.entity.PaymentStatus;
@@ -29,6 +30,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 import java.util.Map;
 
 @Slf4j
@@ -39,9 +42,16 @@ public class PaymentServiceImpl implements PaymentService {
     private final PaymentRepository paymentRepository;
     private final StripeService stripeService;
     private final BookingClient bookingClient;
+    private final NotificationClient notificationClient;
     private final VoucherService voucherService;
     private final VoucherRedemptionRepository voucherRedemptionRepository;
     private final ObjectMapper objectMapper;
+
+    private static final DateTimeFormatter EMAIL_DATE_FMT = DateTimeFormatter.ofPattern("dd. MMMM yyyy", Locale.GERMAN);
+
+    private String formatAmount(int cents) {
+        return String.format(Locale.GERMANY, "€ %,.2f", cents / 100.0);
+    }
 
     @Override
     @Transactional
@@ -165,6 +175,7 @@ public class PaymentServiceImpl implements PaymentService {
                 : PaymentStatus.PARTIALLY_REFUNDED);
 
         Payment saved = paymentRepository.save(payment);
+        notificationClient.sendRefundProcessed(saved.getUserId(), saved.getStudioName(), formatAmount(refundAmountCents));
         return toResponse(saved, null);
     }
 
@@ -232,6 +243,13 @@ public class PaymentServiceImpl implements PaymentService {
 
         payment.setStatus(newStatus);
         paymentRepository.save(payment);
+
+        String date = payment.getBookingDate() != null ? EMAIL_DATE_FMT.format(payment.getBookingDate()) : "";
+        if (newStatus == PaymentStatus.SUCCEEDED) {
+            notificationClient.sendPaymentSucceeded(payment.getUserId(), payment.getStudioName(), date, formatAmount(payment.getFinalAmountCents()));
+        } else {
+            notificationClient.sendPaymentFailed(payment.getUserId(), payment.getStudioName(), date);
+        }
 
         bookingClient.updatePaymentStatus(payment.getBookingId(), bookingCallbackStatus);
     }

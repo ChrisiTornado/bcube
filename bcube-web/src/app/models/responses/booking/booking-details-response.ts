@@ -11,6 +11,7 @@ export interface BookingDetailsResponse {
     startTime: string;
     endTime: string;
     status: BookingStatus;
+    createdAt: string;
     accessCode: string | null;
     clientSecret: string | null;
     amountDueCents: number | null;

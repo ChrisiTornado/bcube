@@ -77,6 +77,31 @@
   vertical-align: middle;
 }
 
+:host ::ng-deep .small-rows .p-datatable-thead > tr > th.sortable-th {
+  cursor: pointer;
+  user-select: none;
+  transition: color 0.15s ease;
+}
+
+:host ::ng-deep .small-rows .p-datatable-thead > tr > th.sortable-th:hover {
+  color: var(--bcube-orange);
+}
+
+:host ::ng-deep .small-rows .p-datatable-thead > tr > th.sortable-th .pi {
+  margin-left: 0.4rem;
+  font-size: 0.75rem;
+  vertical-align: middle;
+}
+
+:host ::ng-deep .small-rows .p-datatable-thead > tr > th.sortable-th .pi-sort {
+  color: rgba(255, 255, 255, 0.32);
+}
+
+:host ::ng-deep .small-rows .p-datatable-thead > tr > th.sortable-th .pi-sort-up,
+:host ::ng-deep .small-rows .p-datatable-thead > tr > th.sortable-th .pi-sort-down {
+  color: var(--bcube-orange);
+}
+
 :host ::ng-deep .small-rows .p-datatable-tbody > tr {
   height: 54px !important;
 }

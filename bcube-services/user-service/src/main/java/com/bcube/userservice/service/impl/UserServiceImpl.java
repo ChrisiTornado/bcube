@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final BookingClient bookingClient;
+    private final MailService mailService;
 
     @Override
     public UserResponse getUserById(long id) {
@@ -65,5 +66,6 @@ public class UserServiceImpl implements UserService {
         }
 
         userRepository.delete(user);
+        mailService.sendAccountDeletedEmail(user.getEmail(), user.getFirstName());
     }
 }

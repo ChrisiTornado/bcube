@@ -24,6 +24,7 @@ import org.springframework.web.server.ResponseStatusException;
 public class AdminServiceImpl implements AdminService {
     private final UserRepository userRepository;
     private final BookingClient bookingClient;
+    private final MailService mailService;
 
     @Override
     public Page<UserResponse> getAllUsers(int page, int size) {
@@ -79,6 +80,7 @@ public class AdminServiceImpl implements AdminService {
         }
 
         userRepository.delete(user);
+        mailService.sendAccountDeletedEmail(user.getEmail(), user.getFirstName());
     }
 
     @Override

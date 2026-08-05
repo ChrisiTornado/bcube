@@ -65,6 +65,9 @@ export class BookingsViewComponent implements OnInit {
   userFilterTotal = 0;
   totalPages = 0;
 
+  sortField = 'id';
+  sortDirection: 'asc' | 'desc' = 'desc';
+
   // "Weitere laden" only makes sense once there's actually more than a single page's worth to
   // load - with a handful of items it's just visual noise sitting under an already-complete list.
   readonly loadMoreThreshold = 10;
@@ -199,6 +202,33 @@ export class BookingsViewComponent implements OnInit {
     return getBookingStatusLabel(status);
   }
 
+  onSort(field: string): void {
+    if (this.sortField === field) {
+      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.sortField = field;
+      this.sortDirection = 'desc';
+    }
+
+    this.bookingService.setSort(this.sortField, this.sortDirection);
+
+    if (this.isAdmin) {
+      this.loadAdminPage(0);
+    } else {
+      const userId = this.authService.getUser()?.id;
+      if (userId) {
+        this.loadUserPage(userId, 0);
+      }
+    }
+  }
+
+  getSortIcon(field: string): string {
+    if (this.sortField !== field) {
+      return 'pi pi-sort';
+    }
+    return this.sortDirection === 'asc' ? 'pi pi-sort-up' : 'pi pi-sort-down';
+  }
+
   loadUserPage(userId: number, page: number) {
     this.bookingService.setUserView(userId, page, this.studioFilter?.id);
 
@@ -207,7 +237,9 @@ export class BookingsViewComponent implements OnInit {
         userId,
         page,
         this.bookingService.size,
-        this.studioFilter?.id
+        this.studioFilter?.id,
+        this.sortField,
+        this.sortDirection
       )
       .subscribe({
         next: (res) => {
@@ -230,7 +262,7 @@ export class BookingsViewComponent implements OnInit {
     this.bookingService.setAdminView(page, this.userFilter?.id, this.studioFilter?.id);
 
     this.bookingService.getBookings(page, this.bookingService.size, this.userFilter?.id,
-      this.studioFilter?.id).subscribe({
+      this.studioFilter?.id, this.sortField, this.sortDirection).subscribe({
         next: (res) => {
           this.totalPages = res.totalPages;
           this.bookingService.setBookings(res.content);

@@ -19,4 +19,9 @@ public class BookingResponse {
     private Instant startTime;
     private Instant endTime;
     private BookingStatus status;
+    private Instant createdAt;
+
+    // Only ever populated on the storno response, when IpAbuseGuardService flags the caller as
+    // approaching (or having just triggered) an abuse ban - null everywhere else.
+    private String warning;
 }

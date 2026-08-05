@@ -1,5 +1,6 @@
 package com.bcube.bookingservice.controller;
 
+import com.bcube.bookingservice.security.ClientIpResolver;
 import com.bcube.bookingservice.service.BookingService;
 import com.bcube.bookingservice.service.dto.request.BookStudioRequest;
 import com.bcube.bookingservice.service.dto.request.AdminBookingQueryRequest;
@@ -16,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import jakarta.servlet.http.HttpServletRequest;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -26,6 +28,7 @@ import java.security.MessageDigest;
 public class BookingController {
 
     private final BookingService bookingService;
+    private final ClientIpResolver clientIpResolver;
 
     @Value("${internal.service-key}")
     private String internalServiceKey;
@@ -44,6 +47,8 @@ public class BookingController {
                 request.getSize(),
                 request.getUserId(),
                 request.getStudioId(),
+                request.getSortBy(),
+                request.getSortDirection(),
                 extractToken(authorizationHeader)
         );
         return  ResponseEntity.ok(new ApiResponse<>("Freie Zeiten erfolgreich geladen", bookings));
@@ -52,16 +57,18 @@ public class BookingController {
     @PostMapping
     public ResponseEntity<ApiResponse<BookingDetailsResponse>> bookStudio(
             @RequestBody BookStudioRequest bookStudioRequest,
-            @RequestHeader("Authorization") String authorizationHeader
+            @RequestHeader("Authorization") String authorizationHeader,
+            HttpServletRequest httpRequest
     ) {
-        BookingDetailsResponse booking = bookingService.bookTimeSlot(bookStudioRequest, extractToken(authorizationHeader));
+        String ipAddress = clientIpResolver.resolve(httpRequest);
+        BookingDetailsResponse booking = bookingService.bookTimeSlot(bookStudioRequest, ipAddress, extractToken(authorizationHeader));
         return ResponseEntity.ok(new ApiResponse<>(booking.getStudio().getName()+" erfolgreich gebucht", booking));
     }
 
     @GetMapping("/user/{userId}")
     public ResponseEntity<ApiResponse<Page<BookingResponse>>> getBookingsByUserId(UserBookingQueryRequest request, @RequestHeader("Authorization") String authorizationHeader) {
         String token = extractToken(authorizationHeader);
-        Page<BookingResponse> bookings = bookingService.getBookingsByUserId(request.getUserId(), request.getPage(), request.getSize(), request.getStudioId(), token);
+        Page<BookingResponse> bookings = bookingService.getBookingsByUserId(request.getUserId(), request.getPage(), request.getSize(), request.getStudioId(), request.getSortBy(), request.getSortDirection(), token);
         return  ResponseEntity.ok(new ApiResponse<>("Buchungen erfolgreich geladen", bookings));
     }
 
@@ -87,10 +94,14 @@ public class BookingController {
     @DeleteMapping("/{bookingId}")
     public ResponseEntity<ApiResponse<BookingResponse>> stornoBookingById(
             @PathVariable Long bookingId,
-            @RequestHeader("Authorization") String authorizationHeader
+            @RequestHeader("Authorization") String authorizationHeader,
+            HttpServletRequest httpRequest
     ) {
-        BookingResponse booking = bookingService.stornoBooking(bookingId, extractToken(authorizationHeader));
-        return ResponseEntity.ok(new ApiResponse<>("Buchung: " + bookingId + " erfolgreich storniert", booking));
+        String ipAddress = clientIpResolver.resolve(httpRequest);
+        BookingResponse booking = bookingService.stornoBooking(bookingId, ipAddress, extractToken(authorizationHeader));
+        String message = "Buchung: " + bookingId + " erfolgreich storniert"
+                + (booking.getWarning() != null ? " " + booking.getWarning() : "");
+        return ResponseEntity.ok(new ApiResponse<>(message, booking));
     }
 
     @GetMapping("/studio/{studioId}")

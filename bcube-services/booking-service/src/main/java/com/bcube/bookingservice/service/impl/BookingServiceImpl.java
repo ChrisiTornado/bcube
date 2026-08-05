@@ -1,6 +1,7 @@
 package com.bcube.bookingservice.service.impl;
 
 import com.bcube.bookingservice.client.AccessCodeClient;
+import com.bcube.bookingservice.client.NotificationClient;
 import com.bcube.bookingservice.client.PaymentClient;
 import com.bcube.bookingservice.client.StudioClient;
 import com.bcube.bookingservice.client.UserClient;
@@ -14,6 +15,7 @@ import com.bcube.bookingservice.persistance.entity.BookingStatus;
 import com.bcube.bookingservice.persistance.repository.BookingRepository;
 import com.bcube.bookingservice.security.InternalTokenProvider;
 import com.bcube.bookingservice.service.BookingService;
+import com.bcube.bookingservice.service.IpAbuseGuardService;
 import com.bcube.bookingservice.service.dto.Classes.PaymentIntentDto;
 import com.bcube.bookingservice.service.dto.Classes.StudioDto;
 import com.bcube.bookingservice.service.dto.Classes.UserDto;
@@ -42,6 +44,7 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 @Slf4j
@@ -67,12 +70,42 @@ public class BookingServiceImpl implements BookingService {
             .ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
             .withZone(ZoneOffset.UTC);
 
+    private static final ZoneId DISPLAY_ZONE = ZoneId.of("Europe/Vienna");
+    private static final DateTimeFormatter EMAIL_DATE_FMT = DateTimeFormatter
+            .ofPattern("dd. MMMM yyyy", Locale.GERMAN)
+            .withZone(DISPLAY_ZONE);
+    private static final DateTimeFormatter EMAIL_TIME_FMT = DateTimeFormatter
+            .ofPattern("HH:mm")
+            .withZone(DISPLAY_ZONE);
+
+    // Whitelisted rather than passing the raw query param straight into Sort.by(...) - keeps an
+    // arbitrary/typo'd sortBy value from blowing up as a Spring Data PropertyReferenceException.
+    private static final Set<String> ALLOWED_SORT_FIELDS = Set.of("startTime", "createdAt", "id");
+
+    private Sort resolveSort(String sortBy, String sortDirection) {
+        String field = (sortBy != null && ALLOWED_SORT_FIELDS.contains(sortBy)) ? sortBy : "id";
+        Sort.Direction direction = "asc".equalsIgnoreCase(sortDirection)
+                ? Sort.Direction.ASC
+                : Sort.Direction.DESC;
+        return Sort.by(direction, field);
+    }
+
     private final BookingRepository bookingRepository;
     private final UserClient userClient;
     private final StudioClient studioClient;
     private final AccessCodeClient accessCodeClient;
     private final PaymentClient paymentClient;
     private final InternalTokenProvider internalTokenProvider;
+    private final NotificationClient notificationClient;
+    private final IpAbuseGuardService ipAbuseGuardService;
+
+    private String formatEmailDate(Booking booking) {
+        return EMAIL_DATE_FMT.format(booking.getStartTime());
+    }
+
+    private String formatEmailTime(Booking booking) {
+        return EMAIL_TIME_FMT.format(booking.getStartTime()) + "–" + EMAIL_TIME_FMT.format(booking.getEndTime()) + " Uhr";
+    }
 
     @Transactional(readOnly = true)
     @Override
@@ -81,12 +114,14 @@ public class BookingServiceImpl implements BookingService {
             int size,
             Long userId,
             Long studioId,
+            String sortBy,
+            String sortDirection,
             String token
     ) {
         Pageable pageable = PageRequest.of(
                 page,
                 size,
-                Sort.by("id").descending()
+                resolveSort(sortBy, sortDirection)
         );
 
         Page<Booking> bookings;
@@ -120,19 +155,21 @@ public class BookingServiceImpl implements BookingService {
                     booking.getDate(),
                     booking.getStartTime(),
                     booking.getEndTime(),
-                    booking.getStatus()
+                    booking.getStatus(),
+                    booking.getCreatedAt(),
+                    null
             );
         });
     }
 
     @Transactional(readOnly = true)
     @Override
-    public Page<BookingResponse> getBookingsByUserId(Long userId, int page, int size, Long studioId, String token) {
+    public Page<BookingResponse> getBookingsByUserId(Long userId, int page, int size, Long studioId, String sortBy, String sortDirection, String token) {
         if (!userClient.userExists(userId, token)) {
             throw new UserNotFoundException("User mit ID " + userId + " nicht gefunden");
         }
 
-        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+        Pageable pageable = PageRequest.of(page, size, resolveSort(sortBy, sortDirection));
         Page<Booking> bookings;
 
         if (studioId != null) {
@@ -152,7 +189,9 @@ public class BookingServiceImpl implements BookingService {
                     booking.getDate(),
                     booking.getStartTime(),
                     booking.getEndTime(),
-                    booking.getStatus()
+                    booking.getStatus(),
+                    booking.getCreatedAt(),
+                    null
             );
         });
     }
@@ -170,7 +209,9 @@ public class BookingServiceImpl implements BookingService {
                             booking.getDate(),
                             booking.getStartTime(),
                             booking.getEndTime(),
-                            booking.getStatus()
+                            booking.getStatus(),
+                            booking.getCreatedAt(),
+                            null
                     );
                 })
                 .toList();
@@ -216,6 +257,7 @@ public class BookingServiceImpl implements BookingService {
                 booking.getStartTime(),
                 booking.getEndTime(),
                 booking.getStatus(),
+                booking.getCreatedAt(),
                 accessCode,
                 null,
                 null
@@ -223,7 +265,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public BookingResponse stornoBooking(Long bookingId, String token) {
+    public BookingResponse stornoBooking(Long bookingId, String ipAddress, String token) {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new BookingNotFoundException("Buchung mit ID " + bookingId + " nicht gefunden"));
 
@@ -245,6 +287,7 @@ public class BookingServiceImpl implements BookingService {
 
         booking.setStatus(BookingStatus.CANCELLED);
         bookingRepository.save(booking);
+        String abuseWarning = ipAbuseGuardService.recordCancellationAndEvaluate(ipAddress);
         accessCodeClient.deleteAccessCode(bookingId, token);
 
         if (previousStatus == BookingStatus.CONFIRMED) {
@@ -254,6 +297,14 @@ public class BookingServiceImpl implements BookingService {
         UserDto user = userClient.getUserById(booking.getUserId(), token);
         StudioDto studio = studioClient.getStudioById(booking.getStudioId());
 
+        String refundNote = previousStatus == BookingStatus.CONFIRMED
+                ? "Eine bereits erfolgte Zahlung wird automatisch rückerstattet."
+                : null;
+        notificationClient.sendBookingCancelled(
+                user.getEmail(), user.getFirstName(), studio.getName(),
+                formatEmailDate(booking), formatEmailTime(booking), refundNote
+        );
+
         return new BookingResponse(
                 booking.getId(),
                 user,
@@ -261,7 +312,9 @@ public class BookingServiceImpl implements BookingService {
                 booking.getDate(),
                 booking.getStartTime(),
                 booking.getEndTime(),
-                booking.getStatus()
+                booking.getStatus(),
+                booking.getCreatedAt(),
+                abuseWarning
         );
     }
 
@@ -323,8 +376,11 @@ public class BookingServiceImpl implements BookingService {
 
     @Transactional
     @Override
-    public BookingDetailsResponse bookTimeSlot(BookStudioRequest bookStudioRequest, String token) {
+    public BookingDetailsResponse bookTimeSlot(BookStudioRequest bookStudioRequest, String ipAddress, String token) {
+        ipAbuseGuardService.assertNotBanned(ipAddress);
+
         Booking booking = createBookingEntity(bookStudioRequest);
+        ipAbuseGuardService.recordBooking(ipAddress);
 
         StudioDto studio = studioClient.getStudioById(booking.getStudioId());
         BigDecimal durationHours = BigDecimal.valueOf(Duration.between(booking.getStartTime(), booking.getEndTime()).toMinutes())
@@ -359,6 +415,7 @@ public class BookingServiceImpl implements BookingService {
                     booking.getStartTime(),
                     booking.getEndTime(),
                     booking.getStatus(),
+                    booking.getCreatedAt(),
                     accessCode,
                     null,
                     0
@@ -373,6 +430,7 @@ public class BookingServiceImpl implements BookingService {
                 booking.getStartTime(),
                 booking.getEndTime(),
                 booking.getStatus(),
+                booking.getCreatedAt(),
                 null,
                 paymentIntent.getClientSecret(),
                 paymentIntent.getFinalAmountCents()
@@ -399,6 +457,13 @@ public class BookingServiceImpl implements BookingService {
 
         booking.setStatus(BookingStatus.CONFIRMED);
         bookingRepository.save(booking);
+
+        UserDto user = userClient.getUserById(booking.getUserId(), token);
+        StudioDto studio = studioClient.getStudioById(booking.getStudioId());
+        notificationClient.sendBookingConfirmed(
+                user.getEmail(), user.getFirstName(), studio.getName(),
+                formatEmailDate(booking), formatEmailTime(booking)
+        );
 
         return accessCodeResponse.getAccessCode();
     }

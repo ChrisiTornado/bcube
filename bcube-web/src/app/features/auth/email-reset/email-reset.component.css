@@ -7,6 +7,28 @@
   margin: 0 auto;
 }
 
+.email-reset-subtitle {
+  text-align: center;
+  margin: -0.5rem 0 1.5rem;
+  color: rgba(255, 255, 255, 0.68);
+  font-size: 0.92rem;
+}
+
+:host ::ng-deep .email-reset-form .p-inputtext {
+  background: rgba(42, 42, 42, 0.92) !important;
+  border: 1px solid rgba(255, 167, 34, 0.18) !important;
+  color: #ffffff !important;
+}
+
+:host ::ng-deep .email-reset-form .p-inputtext::placeholder {
+  color: rgba(255, 255, 255, 0.42) !important;
+}
+
+:host ::ng-deep .email-reset-form .p-inputtext:focus {
+  border-color: var(--bcube-orange) !important;
+  box-shadow: 0 0 0 4px rgba(255, 167, 34, 0.16) !important;
+}
+
 .email-reset-actions {
   gap: 1rem;
 }

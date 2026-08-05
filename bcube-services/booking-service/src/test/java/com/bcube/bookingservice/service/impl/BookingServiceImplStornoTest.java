@@ -1,6 +1,7 @@
 package com.bcube.bookingservice.service.impl;
 
 import com.bcube.bookingservice.client.AccessCodeClient;
+import com.bcube.bookingservice.client.NotificationClient;
 import com.bcube.bookingservice.client.PaymentClient;
 import com.bcube.bookingservice.client.StudioClient;
 import com.bcube.bookingservice.client.UserClient;
@@ -8,6 +9,7 @@ import com.bcube.bookingservice.persistance.entity.Booking;
 import com.bcube.bookingservice.persistance.entity.BookingStatus;
 import com.bcube.bookingservice.persistance.repository.BookingRepository;
 import com.bcube.bookingservice.security.InternalTokenProvider;
+import com.bcube.bookingservice.service.IpAbuseGuardService;
 import com.bcube.bookingservice.service.dto.Classes.StudioDto;
 import com.bcube.bookingservice.service.dto.Classes.UserDto;
 import org.junit.jupiter.api.Test;
@@ -27,9 +29,11 @@ class BookingServiceImplStornoTest {
     private final AccessCodeClient accessCodeClient = mock(AccessCodeClient.class);
     private final PaymentClient paymentClient = mock(PaymentClient.class);
     private final InternalTokenProvider internalTokenProvider = mock(InternalTokenProvider.class);
+    private final NotificationClient notificationClient = mock(NotificationClient.class);
+    private final IpAbuseGuardService ipAbuseGuardService = mock(IpAbuseGuardService.class);
 
     private final BookingServiceImpl bookingService = new BookingServiceImpl(
-            bookingRepository, userClient, studioClient, accessCodeClient, paymentClient, internalTokenProvider
+            bookingRepository, userClient, studioClient, accessCodeClient, paymentClient, internalTokenProvider, notificationClient, ipAbuseGuardService
     );
 
     private Booking confirmedBooking(Instant startTime) {
@@ -54,7 +58,7 @@ class BookingServiceImplStornoTest {
     void refundsFullyWhenCancelledMoreThan24hBeforeStart() {
         confirmedBooking(Instant.now().plusSeconds(48 * 3600));
 
-        bookingService.stornoBooking(1L, "token");
+        bookingService.stornoBooking(1L, "127.0.0.1", "token");
 
         verify(paymentClient).refund(1L, 100, "token");
     }
@@ -63,7 +67,7 @@ class BookingServiceImplStornoTest {
     void refundsHalfWhenCancelledWithin24hOfStart() {
         confirmedBooking(Instant.now().plusSeconds(12 * 3600));
 
-        bookingService.stornoBooking(1L, "token");
+        bookingService.stornoBooking(1L, "127.0.0.1", "token");
 
         verify(paymentClient).refund(1L, 50, "token");
     }
@@ -84,7 +88,7 @@ class BookingServiceImplStornoTest {
         when(userClient.getUserById(anyLong(), anyString())).thenReturn(mock(UserDto.class));
         when(studioClient.getStudioById(anyLong())).thenReturn(mock(StudioDto.class));
 
-        bookingService.stornoBooking(1L, "token");
+        bookingService.stornoBooking(1L, "127.0.0.1", "token");
 
         verify(paymentClient, never()).refund(anyLong(), anyInt(), anyString());
     }
@@ -94,7 +98,7 @@ class BookingServiceImplStornoTest {
         confirmedBooking(Instant.now().plusSeconds(48 * 3600));
         doThrow(new RuntimeException("payment-service down")).when(paymentClient).refund(anyLong(), anyInt(), anyString());
 
-        bookingService.stornoBooking(1L, "token");
+        bookingService.stornoBooking(1L, "127.0.0.1", "token");
 
         verify(bookingRepository).save(argThat(b -> b.getStatus() == BookingStatus.CANCELLED));
     }

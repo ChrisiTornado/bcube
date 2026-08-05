@@ -26,6 +26,17 @@
   margin: 0 auto;
 }
 
+.enter-code-subtitle {
+  text-align: center;
+  margin: -0.5rem 0 1.5rem;
+  color: rgba(255, 255, 255, 0.68);
+  font-size: 0.92rem;
+}
+
+.enter-code-subtitle strong {
+  color: #ffffff;
+}
+
 .code-actions {
   gap: 1rem;
 }

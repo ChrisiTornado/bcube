@@ -80,8 +80,14 @@
           <tr>
             <th>Buchungsnummer</th>
             <th>Buchungsstatus</th>
-            <th>Tag</th>
-            <th>Uhrzeit</th>
+            <th class="sortable-th" (click)="onSort('startTime')">
+              Termin
+              <i [class]="getSortIcon('startTime')"></i>
+            </th>
+            <th class="sortable-th" (click)="onSort('createdAt')">
+              Buchungsdatum
+              <i [class]="getSortIcon('createdAt')"></i>
+            </th>
             <th>Ort</th>
             <th>Stornieren</th>
           </tr>
@@ -91,7 +97,7 @@
             <td>{{ booking.id }}</td>
             <td>{{ getStatusLabel(booking.status) }}</td>
             <td>{{ booking.date | date: 'dd. MMMM, yyyy' : undefined : 'de-AT' }}</td>
-            <td>{{ booking.startTime | date:'HH:mm' }}–{{ booking.endTime | date:'HH:mm' }}</td>
+            <td>{{ booking.createdAt | date: 'dd. MMMM, yyyy' : undefined : 'de-AT' }}</td>
             <td>
               @if (booking.studio) {
                 {{

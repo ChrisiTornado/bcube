@@ -10,7 +10,8 @@ function makeBooking(date: string, startTime: string, endTime: string): Booking 
     date,
     startTime,
     endTime,
-    status: BookingStatus.CONFIRMED
+    status: BookingStatus.CONFIRMED,
+    createdAt: startTime
   };
 }
 

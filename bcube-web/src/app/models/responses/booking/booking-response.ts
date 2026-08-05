@@ -11,4 +11,5 @@ export interface BookingResponse {
     startTime: string;
     endTime: string;
     status: BookingStatus;
+    createdAt: string;
 }
