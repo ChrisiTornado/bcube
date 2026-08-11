@@ -34,12 +34,15 @@ public class JwtTokenProvider {
      */
     public String generateToken(String email, Long userId, List<String> roles) {
         return Jwts.builder()
-                .setSubject(email)
+                .subject(email)
                 .claim("userId", userId)
                 .claim("roles", roles)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date((new Date()).getTime() + jwtExpiration))
-                .signWith(key, SignatureAlgorithm.HS256)
+                .issuedAt(new Date())
+                .expiration(new Date((new Date()).getTime() + jwtExpiration))
+                // Explicit HS256 - jjwt 0.12+'s single-arg signWith(key) picks the strongest
+                // algorithm the key size allows, which silently produced HS512 here (our shared
+                // secret is long) and broke every other service's HS256-only NimbusJwtDecoder.
+                .signWith(key, Jwts.SIG.HS256)
                 .compact();
     }
 }

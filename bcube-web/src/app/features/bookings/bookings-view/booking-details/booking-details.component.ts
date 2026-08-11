@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -15,6 +15,9 @@ import { getBookingStatusLabel } from '@shared/util/booking-status.util';
 import { extractErrorMessage } from '@shared/util/error-message.util';
 import { getDashboardBasePath } from '@shared/util/dashboard-path.util';
 import { DARK_BUTTON_STYLE } from '@shared/util/button-style';
+import { PaymentService } from '@features/payments/payment.service';
+import { PaymentResponse } from '@models/responses/payment/payment-response';
+import { finalize } from 'rxjs';
 
 @Component({
     selector: 'app-booking-details',
@@ -25,6 +28,7 @@ import { DARK_BUTTON_STYLE } from '@shared/util/button-style';
         LoadingSpinnerComponent
     ],
     templateUrl: './booking-details.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './booking-details.component.css'
 })
 export class BookingDetailsComponent implements OnInit {
@@ -40,6 +44,9 @@ export class BookingDetailsComponent implements OnInit {
 
   overlayVisible = false;
   overlayImage: string | null = null;
+
+  payment: PaymentResponse | null = null;
+  downloadingInvoice = false;
 
   getStatusLabel(status: string): string {
     return getBookingStatusLabel(status);
@@ -61,6 +68,7 @@ export class BookingDetailsComponent implements OnInit {
     private bookingActionService: BookingActionService,
     private authService: AuthService,
     private bookingService: BookingService,
+    private paymentService: PaymentService,
     private messageService: MessageService
   ) { }
 
@@ -71,7 +79,44 @@ export class BookingDetailsComponent implements OnInit {
     if (bookingId) {
       this.bookingId = +bookingId;
       this.loadBooking();
+      this.loadPayment();
     }
+  }
+
+  /** Loads the payment tied to this booking - drives the "Rechnung herunterladen" button.
+   *  Best-effort: no payment yet (e.g. still pending) just means the button stays hidden. */
+  private loadPayment(): void {
+    this.paymentService.getByBooking(this.bookingId!).subscribe({
+      next: payment => (this.payment = payment),
+      error: () => {}
+    });
+  }
+
+  downloadInvoice(): void {
+    if (!this.payment?.invoiceNumber || this.downloadingInvoice) return;
+
+    const payment = this.payment;
+    this.downloadingInvoice = true;
+    this.paymentService.downloadInvoice(payment.id)
+      .pipe(finalize(() => this.downloadingInvoice = false))
+      .subscribe({
+        next: blob => {
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = `${payment.invoiceNumber}.pdf`;
+          link.click();
+          URL.revokeObjectURL(url);
+        },
+        error: (err: HttpErrorResponse) => {
+          this.messageService.add({
+            key: 'main',
+            severity: 'error',
+            summary: 'Fehler',
+            detail: extractErrorMessage(err, 'Rechnung konnte nicht heruntergeladen werden.')
+          });
+        }
+      });
   }
 
   /** Lädt die Auftragsdetails; setzt bei Fehlschlag einen Fehlerzustand statt einer leeren Seite */

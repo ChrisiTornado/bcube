@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, NgZone, OnDestroy, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, NgZone, OnDestroy, Output, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import type * as MapboxGl from 'mapbox-gl';
 import { environment } from '@environments/environment';
 import { Studio } from '@models/studio.model';
@@ -7,6 +7,7 @@ import { Studio } from '@models/studio.model';
     selector: 'app-studio-map',
     imports: [],
     templateUrl: './studio-map.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './studio-map.component.css'
 })
 export class StudioMapComponent implements OnDestroy {

@@ -30,6 +30,11 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(new ApiResponse<>(ex.getMessage(), null), HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<ApiResponse<Void>> userNotFoundException(UserNotFoundException ex) {
+        return new ResponseEntity<>(new ApiResponse<>(ex.getMessage(), null), HttpStatus.NOT_FOUND);
+    }
+
     @ExceptionHandler(StripeOperationException.class)
     public ResponseEntity<ApiResponse<Void>> stripeOperationException(StripeOperationException ex) {
         return new ResponseEntity<>(new ApiResponse<>(ex.getMessage(), null), HttpStatus.BAD_GATEWAY);

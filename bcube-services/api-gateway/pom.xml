@@ -8,7 +8,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.4.6</version>
+        <version>4.0.7</version>
         <relativePath/>
     </parent>
 
@@ -18,8 +18,8 @@
     <name>api-gateway</name>
 
     <properties>
-        <java.version>21</java.version>
-        <spring-cloud.version>2024.0.3</spring-cloud.version>
+        <java.version>25</java.version>
+        <spring-cloud.version>2025.1.2</spring-cloud.version>
     </properties>
 
     <!-- ✅ HIER GEHÖRT ES REIN -->
@@ -37,10 +37,12 @@
 
     <dependencies>
 
-        <!-- Gateway -->
+        <!-- Gateway - spring-cloud-starter-gateway is deprecated as of this Spring Cloud
+             release in favor of the explicit WebFlux variant (there's now also an MVC-based
+             gateway starter; we stay reactive since the whole app already depends on WebFlux) -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-gateway</artifactId>
+            <artifactId>spring-cloud-starter-gateway-server-webflux</artifactId>
         </dependency>
 
         <!-- WebFlux ist Pflicht -->
@@ -85,6 +87,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
+            <version>1.18.46</version>
             <optional>true</optional>
         </dependency>
 
@@ -92,6 +95,20 @@
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.15.0</version>
+                <configuration>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>1.18.46</version>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>

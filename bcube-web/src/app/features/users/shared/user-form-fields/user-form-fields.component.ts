@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
@@ -6,6 +6,7 @@ import { SelectModule } from 'primeng/select';
 @Component({
   selector: 'app-user-form-fields',
   imports: [ReactiveFormsModule, InputTextModule, SelectModule],
+  changeDetection: ChangeDetectionStrategy.Eager,
   templateUrl: './user-form-fields.component.html'
 })
 export class UserFormFieldsComponent {

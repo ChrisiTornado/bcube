@@ -109,6 +109,21 @@ public class BookingServiceImpl implements BookingService {
         return EMAIL_TIME_FMT.format(booking.getStartTime()) + "–" + EMAIL_TIME_FMT.format(booking.getEndTime()) + " Uhr";
     }
 
+    /**
+     * Used by read paths (listing/detail) where the studio may since have been deleted -
+     * the frontend already renders that as "Cube gelöscht" (booking.studio?.name ?? ...), so a
+     * single stale reference must not 404 the whole list/detail response. Live-workflow paths
+     * (booking/cancelling/confirming) still call studioClient.getStudioById directly and are
+     * meant to keep throwing, since those require the studio to actually exist.
+     */
+    private StudioDto getStudioOrNull(Long studioId) {
+        try {
+            return studioClient.getStudioById(studioId);
+        } catch (StudioNotFoundException e) {
+            return null;
+        }
+    }
+
     @Transactional(readOnly = true)
     @Override
     public Page<BookingResponse> getBookings(
@@ -148,7 +163,7 @@ public class BookingServiceImpl implements BookingService {
 
         return bookings.map(booking -> {
             UserDto user = userClient.getUserById(booking.getUserId(), token);
-            StudioDto studio = studioClient.getStudioById(booking.getStudioId());
+            StudioDto studio = getStudioOrNull(booking.getStudioId());
 
             return new BookingResponse(
                     booking.getId(),
@@ -184,7 +199,7 @@ public class BookingServiceImpl implements BookingService {
 
         return bookings.map(booking -> {
             UserDto user = userClient.getUserById(booking.getUserId(), token);
-            StudioDto studio = studioClient.getStudioById(booking.getStudioId());
+            StudioDto studio = getStudioOrNull(booking.getStudioId());
 
             return new BookingResponse(
                     booking.getId(),
@@ -244,7 +259,7 @@ public class BookingServiceImpl implements BookingService {
         requester.requireSelfOrAdmin(booking.getUserId());
 
         UserDto user = userClient.getUserById(booking.getUserId(), token);
-        StudioDto studio = studioClient.getStudioById(booking.getStudioId());
+        StudioDto studio = getStudioOrNull(booking.getStudioId());
 
         // A PENDING (awaiting payment) or FAILED booking has no access code yet - only
         // CONFIRMED/DONE bookings actually had Nuki access granted.

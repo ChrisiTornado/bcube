@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -9,14 +9,19 @@ import { AuthService } from '@core/services/auth.service';
 import { BookingService } from '@features/bookings/booking.service';
 import { Booking } from '@models/booking.model';
 import { FullCalendarModule } from '@fullcalendar/angular';
-import dayGridPlugin from '@fullcalendar/daygrid';
+// v7 final moved the dayGrid/interaction plugins from standalone @fullcalendar/daygrid and
+// @fullcalendar/interaction packages to sub-path exports of @fullcalendar/angular itself.
+import dayGridPlugin from '@fullcalendar/angular/daygrid';
 // @fullcalendar/core@7.x ships a broken (empty) index.d.ts upstream - confirmed across
 // every published 7.x release (7.0.0-7.1.0-alpha.0). Falling back to `any` for its types
 // here until that's fixed upstream; the runtime behavior is unaffected.
 type CalendarOptions = any;
 type DatesSetArg = any;
 type EventInput = any;
-import interactionPlugin from '@fullcalendar/interaction';
+import interactionPlugin from '@fullcalendar/angular/interaction';
+// v7 pulled theming out of the core into its own plugin - without this, the calendar renders
+// with hashed-but-unstyled classes even though the theme's CSS is loaded via angular.json.
+import themePlugin from '@fullcalendar/angular/themes/classic';
 import { User } from '@models/user.model';
 import { LoadingSpinnerComponent } from '@shared/ui/loading-spinner/loading-spinner.component';
 import { BookingStatus } from '@models/booking-status.model';
@@ -34,6 +39,7 @@ import { buildBaseCalendarOptions } from '@shared/util/calendar-options.util';
         LoadingSpinnerComponent
     ],
     templateUrl: './calendar-view.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './calendar-view.component.css'
 })
 export class CalendarViewComponent implements OnInit {
@@ -52,7 +58,7 @@ export class CalendarViewComponent implements OnInit {
     private messageService: MessageService
   ) { }
 
-  calendarPlugins = [dayGridPlugin, interactionPlugin];
+  calendarPlugins = [dayGridPlugin, interactionPlugin, themePlugin];
   calendarEvents: EventInput[] = [];
   bookings: Booking[] = [];
 
@@ -68,7 +74,7 @@ export class CalendarViewComponent implements OnInit {
       this.markCalendarDates();
 
       this.bookingEventEntries = this.bookings.map(b => this.toCalendarEvent(b));
-      this.applyMonthSelection(this.displayedMonth, 0);
+      this.applyMonthSelection(this.displayedMonth);
       this.refreshCalendarOptions();
 
       this.isLoading = false;
@@ -90,8 +96,13 @@ export class CalendarViewComponent implements OnInit {
   }
 
   selectDate(dateStr: string): void {
+    if (this.selectedDate === dateStr) {
+      this.applyMonthSelection(this.displayedMonth);
+      this.refreshCalendarOptions();
+      return;
+    }
+
     this.selectedDate = dateStr;
-    this.displayedMonth = this.startOfMonth(new Date(dateStr));
     this.selectedDayBookings = this.bookings
       .filter(booking => toIsoDate(booking.date) === dateStr)
       .sort((a, b) => a.startTime.localeCompare(b.startTime));
@@ -141,7 +152,11 @@ export class CalendarViewComponent implements OnInit {
   private buildCalendarOptions(events: EventInput[]): CalendarOptions {
     return {
       ...buildBaseCalendarOptions(this.calendarPlugins, events),
-      dayCellClassNames: (arg: any) => this.selectedDate === toIsoDate(arg.date) ? ['fc-day-selected'] : [],
+      dayCellClass: (arg: any) => this.selectedDate === toIsoDate(arg.date) ? 'fc-day-selected' : '',
+      moreLinkClass: () => 'bcube-more-link',
+      popoverClass: 'bcube-popover',
+      buttonClass: () => 'bcube-nav-btn',
+      buttonGroupClass: () => 'bcube-nav-group',
       datesSet: (info: any) => this.handleMonthChange(info),
       moreLinkClick: (info: any) => {
         this.selectDate(toIsoDate(info.date));
@@ -159,38 +174,17 @@ export class CalendarViewComponent implements OnInit {
       return;
     }
 
-    const direction = nextMonth > currentMonth ? 1 : -1;
     this.displayedMonth = nextMonth;
-    this.applyMonthSelection(nextMonth, direction);
+    this.applyMonthSelection(nextMonth);
     this.refreshCalendarOptions();
   }
 
-  private applyMonthSelection(month: Date, direction: number): void {
-    const monthBookings = this.bookings
+  /** Shows every booking of the given month in the side list with no day cell highlighted. */
+  private applyMonthSelection(month: Date): void {
+    this.selectedDate = null;
+    this.selectedDayBookings = this.bookings
       .filter(booking => this.isSameMonth(new Date(toIsoDate(booking.date)), month))
       .sort((a, b) => toIsoDate(a.date).localeCompare(toIsoDate(b.date)) || a.startTime.localeCompare(b.startTime));
-
-    const today = this.startOfDay(new Date());
-    const currentMonth = this.startOfMonth(today);
-    const isCurrentMonth = this.isSameMonth(month, currentMonth);
-
-    let targetBooking: Booking | undefined;
-    if (isCurrentMonth) {
-      targetBooking = monthBookings.find(booking => this.startOfDay(new Date(toIsoDate(booking.date))) >= today);
-    } else if (direction < 0) {
-      targetBooking = monthBookings[monthBookings.length - 1];
-    } else {
-      targetBooking = monthBookings[0];
-    }
-
-    if (targetBooking) {
-      this.emptyStateMode = 'day';
-      this.selectDate(toIsoDate(targetBooking.date));
-      return;
-    }
-
-    this.selectedDate = toIsoDate(month);
-    this.selectedDayBookings = [];
     this.emptyStateMode = 'month';
   }
 
@@ -201,9 +195,8 @@ export class CalendarViewComponent implements OnInit {
       title: this.formatBookingTimeRange(booking),
       date: toIsoDate(booking.date),
       color: isDone ? '#6f7785' : '#ffa722',
-      textColor: isDone ? '#f5f7fb' : '#111111',
-      borderColor: isDone ? '#6f7785' : '#ffa722',
-      classNames: [isDone ? 'calendar-event-done' : 'calendar-event-confirmed']
+      contrastColor: isDone ? '#f5f7fb' : '#111111',
+      className: isDone ? 'calendar-event-done' : 'calendar-event-confirmed'
     };
   }
 

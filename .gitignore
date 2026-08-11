@@ -67,3 +67,10 @@ bcube-ios/DerivedData/
 
 # macOS Finder
 **/.DS_Store
+
+# === TERRAFORM ===
+infra/terraform/.terraform/
+infra/terraform/*.tfstate
+infra/terraform/*.tfstate.*
+infra/terraform/terraform.tfvars
+infra/terraform/*.tfplan

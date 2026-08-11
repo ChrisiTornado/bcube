@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { CompleteProfileDialogComponent } from '@features/auth/complete-profile-dialog/complete-profile-dialog.component';
 import { AuthService } from '@core/services/auth.service';
@@ -14,6 +14,7 @@ import { isProfileComplete } from '@shared/util/profile-complete.util';
 @Component({
   selector: 'app-complete-profile-page',
   imports: [CompleteProfileDialogComponent],
+  changeDetection: ChangeDetectionStrategy.Eager,
   templateUrl: './complete-profile-page.component.html'
 })
 export class CompleteProfilePageComponent implements OnInit {

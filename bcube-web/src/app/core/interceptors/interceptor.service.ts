@@ -17,7 +17,12 @@ export class InterceptorService implements HttpInterceptor {
     const token = localStorage.getItem('auth_token');
     let modifiedReq = req;
 
-    if (token && req.url.startsWith(API_BASE_URL)) {
+    // /api/auth/** is public (login/register/refresh) and must never carry a bearer token -
+    // a stale/expired token attached here trips the gateway's JWT resource-server filter even
+    // though the route itself is permitAll, breaking login with a 503.
+    const isAuthEndpoint = req.url.startsWith(environment.authUrl);
+
+    if (token && !isAuthEndpoint && req.url.startsWith(API_BASE_URL)) {
       modifiedReq = req.clone({
         setHeaders: {
           Authorization: `Bearer ${token}`

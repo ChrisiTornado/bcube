@@ -13,7 +13,7 @@
   gap: 1rem;
   margin-bottom: 0.8rem;
   flex-shrink: 0;
-  padding-left: 30px;
+  padding-left: 15px;
 }
 
 .view-header h1 {
@@ -192,96 +192,106 @@
   padding: 1rem 1.1rem;
 }
 
-/* ===== FullCalendar (fc) deep overrides ===== */
-:host ::ng-deep .fc {
+/* ===== FullCalendar (v7, "classic" theme) deep overrides =====
+   v7 no longer renders the old semantic BEM classes (.fc, .fc-daygrid-day,
+   .fc-day-today, .fc-daygrid-event, .fc-popover, ...) - the whole tree is built
+   from generated per-build utility classes instead. The theme's own look is driven
+   entirely by its documented --fc-classic-* custom properties, so we retheme through
+   those (cascades to every internal utility class) and use FullCalendar's *Class
+   hook options (dayCellClass, moreLinkClass, popoverClass, and each EventInput's
+   className) for the handful of spots we need to target directly - see
+   calendar-view.component.ts. .calendar-frame is our own literal class on
+   <full-calendar>, so it's a stable anchor regardless of internal markup churn. */
+:host ::ng-deep .calendar-frame {
   max-width: 100%;
   font-size: 0.88rem;
   border-radius: 28px;
+
+  --fc-classic-primary: var(--bcube-orange);
+  --fc-classic-primary-foreground: #111111;
+  --fc-classic-highlight: rgba(255, 167, 34, 0.22);
+  --fc-classic-today: rgba(255, 167, 34, 0.16);
+  --fc-classic-now: var(--bcube-orange);
+
+  --fc-classic-background: transparent;
+  --fc-classic-faint: rgba(255, 255, 255, 0.03);
+  --fc-classic-muted: rgba(255, 167, 34, 0.08);
+  --fc-classic-strong: rgba(255, 167, 34, 0.18);
+
+  --fc-classic-foreground: #ffffff;
+  --fc-classic-faint-foreground: rgba(255, 255, 255, 0.38);
+  --fc-classic-muted-foreground: rgba(255, 255, 255, 0.72);
+
+  --fc-classic-border: rgba(255, 167, 34, 0.14);
+  --fc-classic-strong-border: rgba(255, 167, 34, 0.32);
+
+  --fc-classic-button: rgba(255, 255, 255, 0.06);
+  --fc-classic-button-border: rgba(255, 167, 34, 0.22);
+  --fc-classic-button-strong: rgba(255, 167, 34, 0.22);
+  --fc-classic-button-strong-border: var(--bcube-orange);
+  --fc-classic-button-outline: rgba(255, 167, 34, 0.5);
+  --fc-classic-button-foreground: #ffffff;
 }
 
-:host ::ng-deep .fc .fc-scroller,
-:host ::ng-deep .fc .fc-scroller-harness {
-  overflow: hidden !important;
-}
-
-:host ::ng-deep .fc .fc-scrollgrid-sync-table {
-  table-layout: fixed !important;
-}
-
-:host ::ng-deep .fc .fc-toolbar.fc-header-toolbar {
-  margin-bottom: 0.8rem;
-}
-
-:host ::ng-deep .fc .fc-toolbar-title {
-  font-size: 1.9rem !important;
-}
-
-:host ::ng-deep .fc .fc-daygrid-day-frame {
-  min-height: 5rem;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-:host ::ng-deep .fc .fc-day-other .fc-daygrid-day-number {
-  color: rgba(255, 255, 255, 0.38) !important;
-}
-
-:host ::ng-deep .fc .fc-daygrid-day-events {
-  min-height: 0;
-}
-
-:host ::ng-deep .fc .fc-daygrid-day.fc-day-selected {
-  background: rgba(255, 167, 34, 0.22) !important;
-}
-
-:host ::ng-deep .fc .fc-daygrid-day.fc-day-selected .fc-daygrid-day-frame {
+/* Selected day: dayCellClass adds this class in calendar-view.component.ts whenever
+   the cell's date matches selectedDate - the only reliable visual "you clicked this"
+   feedback now that the framework doesn't expose a built-in selected-cell class. */
+:host ::ng-deep .calendar-frame .fc-day-selected {
   background:
-    linear-gradient(180deg, rgba(255, 167, 34, 0.18), rgba(255, 167, 34, 0.08)) !important;
-  box-shadow: inset 0 0 0 2px rgba(255, 167, 34, 0.72) !important;
-  border-radius: 0 !important;
+    linear-gradient(180deg, rgba(255, 167, 34, 0.22), rgba(255, 167, 34, 0.1)) !important;
+  box-shadow: inset 0 0 0 2px rgba(255, 167, 34, 0.75) !important;
+  transition: background-color 0.15s ease, box-shadow 0.15s ease;
 }
 
-:host ::ng-deep .fc .fc-daygrid-day.fc-day-selected .fc-daygrid-day-number {
+/* "+X mehr" link (moreLinkClass hook) */
+:host ::ng-deep .calendar-frame .bcube-more-link {
+  color: var(--bcube-orange) !important;
+  font-weight: 600;
+}
+
+/* Prev/next month buttons (buttonClass/buttonGroupClass hooks) - separated round icon
+   buttons instead of the theme's default joined slate-grey button-group. */
+:host ::ng-deep .calendar-frame .bcube-nav-group {
+  display: inline-flex !important;
+  gap: 0.5rem;
+}
+
+:host ::ng-deep .calendar-frame .bcube-nav-btn {
+  width: 2.3rem;
+  height: 2.3rem;
+  min-width: 0;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 167, 34, 0.25) !important;
   color: #ffffff !important;
-  font-weight: 800;
-  text-shadow: 0 0 14px rgba(255, 167, 34, 0.32);
+  transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
 }
 
-:host ::ng-deep .fc .fc-daygrid-day.fc-day-selected .fc-daygrid-event {
-  box-shadow: 0 0 0 1px rgba(255, 167, 34, 0.4), 0 6px 16px rgba(0, 0, 0, 0.24) !important;
+:host ::ng-deep .calendar-frame .bcube-nav-btn:hover {
+  background: rgba(255, 167, 34, 0.18) !important;
+  border-color: var(--bcube-orange) !important;
 }
 
-:host ::ng-deep .fc .fc-daygrid-event-harness {
-  margin-top: 0.18rem !important;
+:host ::ng-deep .calendar-frame .bcube-nav-btn:active {
+  transform: scale(0.92);
 }
 
-:host ::ng-deep .fc .fc-daygrid-event {
+/* calendarEvent className (set per-event in calendar-view.component.ts) */
+:host ::ng-deep .calendar-frame .calendar-event-done,
+:host ::ng-deep .calendar-frame .calendar-event-confirmed {
   border-radius: 8px !important;
   padding: 0.08rem 0.35rem !important;
   font-size: 0.76rem !important;
   line-height: 1.15 !important;
-  box-shadow: none !important;
 }
 
-:host ::ng-deep .fc .calendar-event-done {
-  background: #6f7785 !important;
-  border-color: #6f7785 !important;
-  color: #f5f7fb !important;
-}
-
-:host ::ng-deep .fc .calendar-event-confirmed {
-  background: var(--bcube-orange) !important;
-  border-color: var(--bcube-orange) !important;
-  color: #111111 !important;
-}
-
-:host ::ng-deep .fc .fc-daygrid-more-link {
-  color: var(--bcube-orange) !important;
-  font-weight: 700;
-}
-
-:host ::ng-deep .fc .fc-popover {
+/* The "+X mehr" popover (popoverClass hook) portals to <body>, outside this
+   component's DOM subtree, so it needs an unscoped selector to be reachable. */
+::ng-deep .bcube-popover {
   border-radius: 16px !important;
   border: 1px solid rgba(255, 167, 34, 0.18) !important;
   background:
@@ -289,65 +299,6 @@
     rgba(18, 18, 18, 0.98) !important;
   color: #f5f5f5 !important;
   box-shadow: 0 22px 48px rgba(0, 0, 0, 0.32) !important;
-}
-
-:host ::ng-deep .fc .fc-popover-header {
-  background: transparent !important;
-  color: #f5f5f5 !important;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 3rem;
-  padding: 0.65rem 2.5rem 0.45rem !important;
-  text-align: center;
-  font-weight: 700;
-}
-
-:host ::ng-deep .fc .fc-popover .fc-daygrid-event {
-  margin-bottom: 0.42rem;
-}
-
-:host ::ng-deep .fc .fc-popover-title {
-  width: 100%;
-  text-align: center;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 100%;
-  font-weight: 700;
-  color: #ffffff !important;
-}
-
-:host ::ng-deep .fc .fc-popover-close {
-  color: rgba(255, 255, 255, 0.78) !important;
-  position: absolute;
-  right: 0.8rem;
-  top: 50%;
-  transform: translateY(-50%);
-}
-
-:host ::ng-deep .fc .fc-popover .fc-daygrid-event .fc-event-main {
-  font-weight: 500 !important;
-  letter-spacing: 0;
-}
-
-:host ::ng-deep .fc .fc-popover .calendar-event-confirmed,
-:host ::ng-deep .fc .fc-popover .calendar-event-confirmed .fc-event-main {
-  color: #111111 !important;
-}
-
-:host ::ng-deep .fc .fc-popover .calendar-event-done,
-:host ::ng-deep .fc .fc-popover .calendar-event-done .fc-event-main {
-  color: #f5f7fb !important;
-}
-
-:host ::ng-deep .fc .fc-daygrid-day.fc-day-today {
-  background: rgba(171, 145, 38, 0.35) !important;
-}
-
-:host ::ng-deep .fc .fc-daygrid-day.fc-day-today .fc-daygrid-day-frame {
-  background: transparent !important;
 }
 
 /* ===== Responsive ===== */

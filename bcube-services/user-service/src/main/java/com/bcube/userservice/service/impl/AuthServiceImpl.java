@@ -162,7 +162,11 @@ public class AuthServiceImpl implements AuthService {
             authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(email, password)
             );
-        } catch (Exception ex) {
+        } catch (org.springframework.security.core.AuthenticationException ex) {
+            // Genuine wrong-credentials/unknown-user/locked-account cases only - anything else
+            // (e.g. a data-mapping error while loading the user) should surface as a real error
+            // instead of being misreported as "wrong password", which made a previous data bug
+            // here (a NOT NULL column holding NULL rows) completely invisible from the outside.
             throw new InvalidCredentialsException("Falsche Benutzerdaten");
         }
 

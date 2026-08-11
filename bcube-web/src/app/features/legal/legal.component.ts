@@ -1,5 +1,5 @@
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Router, RouterModule } from '@angular/router';
 
@@ -9,6 +9,7 @@ type LegalSection = 'impressum' | 'datenschutz' | 'agb';
     selector: 'app-legal',
     imports: [RouterModule],
     templateUrl: './legal.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './legal.component.css'
 })
 export class LegalComponent implements OnInit {

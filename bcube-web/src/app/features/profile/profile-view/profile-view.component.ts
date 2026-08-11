@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
@@ -28,6 +28,7 @@ import { getDashboardBasePath } from '@shared/util/dashboard-path.util';
 ],
     templateUrl: './profile-view.component.html',
     styleUrl: './profile-view.component.css',
+    changeDetection: ChangeDetectionStrategy.Eager,
     providers: [MessageService, ConfirmationService]
 })
 export class ProfileViewComponent implements OnInit {

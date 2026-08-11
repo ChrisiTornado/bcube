@@ -1,4 +1,4 @@
-import { Component, DestroyRef, OnInit } from '@angular/core';
+import { Component, DestroyRef, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { MessageService } from 'primeng/api';
@@ -20,6 +20,7 @@ import { StudioService } from '@features/studios/studio.service';
     MegaMenuModule
 ],
     templateUrl: './user-shell.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './user-shell.component.css'
 })
 export class UserShellComponent implements OnInit {

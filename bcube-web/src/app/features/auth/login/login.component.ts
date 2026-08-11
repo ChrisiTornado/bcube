@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { AuthService } from '@core/services/auth.service';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { Router } from '@angular/router';
@@ -24,6 +24,7 @@ import { environment } from '@environments/environment';
     selector: 'app-login',
     imports: [LoadingSpinnerComponent, RouterModule, ButtonModule, AuthContainerComponent, ReactiveFormsModule, ToastModule, InputTextModule],
     templateUrl: './login.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './login.component.css'
 })
 export class LoginComponent implements OnInit {

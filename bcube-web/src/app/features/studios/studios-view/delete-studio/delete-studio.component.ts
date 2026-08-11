@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { Studio } from '@models/studio.model';
 import { StudioActionService } from '@features/studios/studio-action.service';
@@ -6,6 +6,7 @@ import { StudioActionService } from '@features/studios/studio-action.service';
 @Component({
     selector: 'app-delete-studio',
     imports: [ButtonModule],
+    changeDetection: ChangeDetectionStrategy.Eager,
     template: `
   <p-button icon="pi pi-trash" styleClass="p-button-danger" [loading]="loading" ariaLabel="Cube löschen" (click)="confirmDelete()"></p-button>
 `

@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, Output, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
 import { PickedImage, filesToPickedImages } from '@shared/util/image-file.util';
 
@@ -11,6 +11,7 @@ import { PickedImage, filesToPickedImages } from '@shared/util/image-file.util';
     selector: 'app-studio-image-picker',
     imports: [DragDropModule],
     templateUrl: './studio-image-picker.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './studio-image-picker.component.css'
 })
 export class StudioImagePickerComponent {

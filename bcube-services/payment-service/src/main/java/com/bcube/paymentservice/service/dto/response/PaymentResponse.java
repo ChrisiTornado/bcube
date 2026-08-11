@@ -29,4 +29,5 @@ public class PaymentResponse {
     private String studioName;
     private LocalDate bookingDate;
     private Instant createdAt;
+    private String invoiceNumber;
 }

@@ -4,14 +4,20 @@
 
 @if (!(loading$ | async)) {
   <div class="top-actions">
-    <button pButton type="button" class="p-button-outlined back-button" icon="pi pi-arrow-left" label="Zurück"
-      [style]="darkButtonStyle" (click)="goBack()"></button>
+    <button pButton type="button" class="p-button-outlined back-button"
+      [style]="darkButtonStyle" (click)="goBack()"><i class="pi pi-arrow-left"></i> Zurück</button>
+    @if (payment?.invoiceNumber) {
+      <button pButton type="button" class="p-button-outlined invoice-download-button"
+        [disabled]="downloadingInvoice" (click)="downloadInvoice()">
+        <i class="pi pi-download"></i> Rechnung herunterladen
+      </button>
+    }
   </div>
 
   @if (loadError) {
     <div class="booking-load-error">
       <p>Der Auftrag konnte nicht geladen werden.</p>
-      <button pButton type="button" label="Erneut versuchen" icon="pi pi-refresh" (click)="retryLoadBooking()"></button>
+      <button pButton type="button" (click)="retryLoadBooking()"><i class="pi pi-refresh"></i> Erneut versuchen</button>
     </div>
   }
 
@@ -118,7 +124,7 @@
 
       @if (booking.status !== bookingStatus.CANCELLED) {
         <div class="storno-actions">
-          <button pButton type="button" label="Stornieren" (click)="triggerStorno()" severity="danger"></button>
+          <button pButton type="button" [loading]="loading" [disabled]="loading" (click)="triggerStorno()" severity="danger">Stornieren</button>
         </div>
       }
     </div>

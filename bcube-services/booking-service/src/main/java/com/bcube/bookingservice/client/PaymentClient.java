@@ -3,7 +3,7 @@ package com.bcube.bookingservice.client;
 import com.bcube.bookingservice.service.dto.Classes.PaymentIntentDto;
 import com.bcube.bookingservice.service.dto.request.CreatePaymentIntentRequest;
 import com.bcube.bookingservice.service.dto.response.ApiResponse;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;

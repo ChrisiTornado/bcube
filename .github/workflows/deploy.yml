@@ -1,0 +1,63 @@
+name: Deploy
+
+# Builds + pushes each service's image to ECR and forces an ECS redeploy. Always deploys
+# ":latest" (also tagged with the commit SHA for traceability) - simplest CD loop to start with;
+# a rollback today means re-tagging a previous SHA's image as :latest and redeploying, not a
+# one-click "previous version" button. Switching to per-commit task-definition revisions
+# (register-task-definition + update-service --task-definition) is a natural next step once
+# rollback speed actually matters.
+#
+# Needs two repo variables set (Settings -> Secrets and variables -> Actions -> Variables),
+# both come from `terraform output` after the infra is applied:
+#   AWS_DEPLOY_ROLE_ARN  - terraform output github_actions_role_arn
+#   AWS_REGION           - whatever var.aws_region is (eu-central-1 by default)
+#   ECS_CLUSTER          - terraform output ecs_cluster_name
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  id-token: write # required for OIDC -> AWS role assumption
+  contents: read
+
+jobs:
+  deploy:
+    strategy:
+      fail-fast: false
+      matrix:
+        service:
+          - user-service
+          - studio-service
+          - booking-service
+          - access-service
+          - payment-service
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - uses: aws-actions/amazon-ecr-login@v2
+        id: ecr
+
+      - name: Build and push image
+        working-directory: bcube-services/${{ matrix.service }}
+        env:
+          REGISTRY: ${{ steps.ecr.outputs.registry }}
+          REPOSITORY: bcube/${{ matrix.service }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build -t "$REGISTRY/$REPOSITORY:$IMAGE_TAG" -t "$REGISTRY/$REPOSITORY:latest" .
+          docker push "$REGISTRY/$REPOSITORY:$IMAGE_TAG"
+          docker push "$REGISTRY/$REPOSITORY:latest"
+
+      - name: Force ECS redeploy
+        run: |
+          aws ecs update-service \
+            --cluster "${{ vars.ECS_CLUSTER }}" \
+            --service "${{ matrix.service }}" \
+            --force-new-deployment

@@ -2,6 +2,8 @@ package com.bcube.paymentservice.service.impl;
 
 import com.bcube.paymentservice.client.BookingClient;
 import com.bcube.paymentservice.client.NotificationClient;
+import com.bcube.paymentservice.client.UserClient;
+import com.bcube.paymentservice.client.UserDto;
 import com.bcube.paymentservice.exception.PaymentNotFoundException;
 import com.bcube.paymentservice.persistance.entity.Payment;
 import com.bcube.paymentservice.persistance.entity.PaymentStatus;
@@ -13,11 +15,12 @@ import com.bcube.paymentservice.service.PaymentService;
 import com.bcube.paymentservice.service.dto.request.CreatePaymentIntentRequest;
 import com.bcube.paymentservice.service.dto.request.RefundRequest;
 import com.bcube.paymentservice.service.dto.response.PaymentResponse;
+import com.bcube.paymentservice.service.invoice.InvoicePdfService;
 import com.bcube.paymentservice.service.stripe.StripeService;
 import com.bcube.paymentservice.service.voucher.VoucherService;
 import com.bcube.paymentservice.persistance.entity.RedemptionStatus;
 import com.bcube.paymentservice.persistance.entity.VoucherRedemption;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import com.stripe.model.Event;
 import com.stripe.model.PaymentIntent;
 import com.stripe.model.Refund;
@@ -31,6 +34,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.Map;
@@ -44,6 +49,8 @@ public class PaymentServiceImpl implements PaymentService {
     private final StripeService stripeService;
     private final BookingClient bookingClient;
     private final NotificationClient notificationClient;
+    private final UserClient userClient;
+    private final InvoicePdfService invoicePdfService;
     private final VoucherService voucherService;
     private final VoucherRedemptionRepository voucherRedemptionRepository;
     private final ObjectMapper objectMapper;
@@ -219,6 +226,7 @@ public class PaymentServiceImpl implements PaymentService {
         voucherRedemptionRepository.save(redemption);
 
         payment.setStatus(PaymentStatus.FREE);
+        assignInvoiceNumberIfNeeded(payment);
         paymentRepository.save(payment);
 
         bookingClient.updatePaymentStatus(bookingId, "SUCCEEDED");
@@ -248,6 +256,9 @@ public class PaymentServiceImpl implements PaymentService {
         }
 
         payment.setStatus(newStatus);
+        if (newStatus == PaymentStatus.SUCCEEDED) {
+            assignInvoiceNumberIfNeeded(payment);
+        }
         paymentRepository.save(payment);
 
         String date = payment.getBookingDate() != null ? EMAIL_DATE_FMT.format(payment.getBookingDate()) : "";
@@ -258,6 +269,33 @@ public class PaymentServiceImpl implements PaymentService {
         }
 
         bookingClient.updatePaymentStatus(payment.getBookingId(), bookingCallbackStatus);
+    }
+
+    /** Assigns a stable, sequential invoice number the first time a payment becomes
+     *  billable (SUCCEEDED or voucher-covered FREE) - a no-op on any later re-entry
+     *  (e.g. a redelivered webhook), so the number and its issue date never change. */
+    private void assignInvoiceNumberIfNeeded(Payment payment) {
+        if (payment.getInvoiceNumber() != null) {
+            return;
+        }
+        Instant issuedAt = Instant.now();
+        int year = issuedAt.atZone(ZoneId.of("Europe/Vienna")).getYear();
+        payment.setInvoiceIssuedAt(issuedAt);
+        payment.setInvoiceNumber(String.format("RE-%d-%06d", year, payment.getId()));
+    }
+
+    @Override
+    public byte[] generateInvoicePdf(Long id, RequestingUser requester, String bearerToken) {
+        Payment payment = paymentRepository.findById(id)
+                .orElseThrow(() -> new PaymentNotFoundException("Zahlung nicht gefunden"));
+        requester.requireSelfOrAdmin(payment.getUserId());
+
+        if (payment.getInvoiceNumber() == null) {
+            throw new IllegalStateException("Für diese Zahlung liegt noch keine Rechnung vor");
+        }
+
+        UserDto buyer = userClient.getUserById(payment.getUserId(), bearerToken);
+        return invoicePdfService.generate(payment, buyer);
     }
 
     /**
@@ -292,7 +330,8 @@ public class PaymentServiceImpl implements PaymentService {
                 payment.getRefundedAmountCents(),
                 payment.getStudioName(),
                 payment.getBookingDate(),
-                payment.getCreatedAt()
+                payment.getCreatedAt(),
+                payment.getInvoiceNumber()
         );
     }
 }

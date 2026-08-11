@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { TableModule } from 'primeng/table';
@@ -20,6 +20,7 @@ import { extractErrorMessage } from '@shared/util/error-message.util';
     selector: 'app-payment-history-view',
     imports: [CommonModule, TableModule, ButtonModule, LoadingSpinnerComponent],
     templateUrl: './payment-history-view.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './payment-history-view.component.css'
 })
 export class PaymentHistoryViewComponent implements OnInit {
@@ -31,6 +32,7 @@ export class PaymentHistoryViewComponent implements OnInit {
   loading = false;
   page = 0;
   totalPages = 0;
+  downloadingInvoiceId: number | null = null;
 
   constructor(
     private paymentService: PaymentService,
@@ -78,5 +80,31 @@ export class PaymentHistoryViewComponent implements OnInit {
 
   formatAmount(cents: number): string {
     return new Intl.NumberFormat('de-AT', { style: 'currency', currency: 'EUR' }).format(cents / 100);
+  }
+
+  downloadInvoice(payment: PaymentResponse): void {
+    if (!payment.invoiceNumber || this.downloadingInvoiceId) return;
+
+    this.downloadingInvoiceId = payment.id;
+    this.paymentService.downloadInvoice(payment.id)
+      .pipe(finalize(() => this.downloadingInvoiceId = null))
+      .subscribe({
+        next: blob => {
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = `${payment.invoiceNumber}.pdf`;
+          link.click();
+          URL.revokeObjectURL(url);
+        },
+        error: (err: HttpErrorResponse) => {
+          this.messageService.add({
+            key: 'main',
+            severity: 'error',
+            summary: 'Fehler',
+            detail: extractErrorMessage(err, 'Rechnung konnte nicht heruntergeladen werden.')
+          });
+        }
+      });
   }
 }

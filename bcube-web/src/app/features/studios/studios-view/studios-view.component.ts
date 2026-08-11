@@ -6,7 +6,8 @@ import {
   OnInit,
   QueryList,
   ViewChild,
-  ViewChildren
+  ViewChildren,
+  ChangeDetectionStrategy
 } from '@angular/core';
 
 import { Router } from '@angular/router';
@@ -37,6 +38,7 @@ type StudioViewModel = Studio & { gallery: string[] };
     StudioMapComponent
 ],
     templateUrl: './studios-view.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './studios-view.component.css'
 })
 export class StudiosViewComponent implements OnInit, AfterViewInit, OnDestroy {

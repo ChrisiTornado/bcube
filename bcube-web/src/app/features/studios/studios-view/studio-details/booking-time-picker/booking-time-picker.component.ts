@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DatePickerModule } from 'primeng/datepicker';
 import { ButtonModule } from 'primeng/button';
@@ -9,6 +9,7 @@ import { toIsoDate } from '@shared/util/booking-time.util';
     selector: 'app-booking-time-picker',
     imports: [FormsModule, DatePickerModule, ButtonModule],
     templateUrl: './booking-time-picker.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './booking-time-picker.component.css'
 })
 export class BookingTimePickerComponent implements OnChanges {

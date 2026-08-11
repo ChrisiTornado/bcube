@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
@@ -19,6 +19,7 @@ import { handleAuthSuccess } from '@features/auth/shared/auth-success.util';
   selector: 'app-oauth-callback',
   imports: [ToastModule, AuthContainerComponent, LoadingSpinnerComponent],
   templateUrl: './oauth-callback.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './oauth-callback.component.css'
 })
 export class OauthCallbackComponent implements OnInit {

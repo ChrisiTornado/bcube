@@ -1,7 +1,6 @@
 package com.bcube.bookingservice.security;
 
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,11 +33,14 @@ public class InternalTokenProvider {
     public String generateSystemToken() {
         Date now = new Date();
         return Jwts.builder()
-                .setSubject("system:payment-webhook")
+                .subject("system:payment-webhook")
                 .claim("roles", List.of("ADMIN"))
-                .setIssuedAt(now)
-                .setExpiration(new Date(now.getTime() + 60_000))
-                .signWith(key, SignatureAlgorithm.HS256)
+                .issuedAt(now)
+                .expiration(new Date(now.getTime() + 60_000))
+                // Explicit HS256 - jjwt 0.12+'s single-arg signWith(key) picks the strongest
+                // algorithm the key size allows, which silently produced HS512 here (our shared
+                // secret is long) and broke every other service's HS256-only NimbusJwtDecoder.
+                .signWith(key, Jwts.SIG.HS256)
                 .compact();
     }
 }

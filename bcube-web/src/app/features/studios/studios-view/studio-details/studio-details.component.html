@@ -5,15 +5,16 @@
 @if (!(loading$ | async) && loadError) {
   <div class="studio-load-error">
     <p>Der Cube konnte nicht geladen werden.</p>
-    <button pButton type="button" label="Erneut versuchen" icon="pi pi-refresh" (click)="retryLoadStudio()"></button>
+    <button pButton type="button" (click)="retryLoadStudio()"><i class="pi pi-refresh"></i> Erneut versuchen</button>
   </div>
 }
 
 @if (!(loading$ | async) && studio) {
   <div class="studio-details-page">
     <div class="top-actions">
-      <button pButton type="button" class="p-button-outlined" icon="pi pi-arrow-left" label="Zurück"
+      <button pButton type="button" class="p-button-outlined"
         [style]="{ 'border-color': 'black', 'color': 'black' }" (click)="goBack()">
+        <i class="pi pi-arrow-left"></i> Zurück
       </button>
       @if (isAdmin) {
         <app-update-studio [studio]="studio" [detailMode]="true">

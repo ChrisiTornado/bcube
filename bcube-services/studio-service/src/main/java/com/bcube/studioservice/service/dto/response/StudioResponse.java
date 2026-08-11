@@ -1,5 +1,6 @@
 package com.bcube.studioservice.service.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -21,6 +22,10 @@ public class StudioResponse {
     private Double longitude;
     private String imageBase64;
     private List<String> imageGalleryBase64;
+    // Without this, Jackson's bean-property naming strips the "is" prefix from the isActive()
+    // getter and serializes the field as "active" - matches the same fix already applied to
+    // isAdmin elsewhere in this codebase (UserResponse/UserDto).
+    @JsonProperty("isActive")
     private boolean isActive;
     private Instant createdAt;
     private Integer hourlyRateCents;

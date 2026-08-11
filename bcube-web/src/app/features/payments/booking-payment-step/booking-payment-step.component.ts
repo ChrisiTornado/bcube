@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
@@ -21,6 +21,7 @@ const POLL_TIMEOUT_MS = 15000;
     selector: 'app-booking-payment-step',
     imports: [ButtonModule, InputTextModule, FormsModule, StripeCardComponent],
     templateUrl: './booking-payment-step.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './booking-payment-step.component.css'
 })
 export class BookingPaymentStepComponent implements OnInit, OnChanges {
@@ -37,6 +38,7 @@ export class BookingPaymentStepComponent implements OnInit, OnChanges {
 
   state: PaymentStepState = 'confirm';
   pollError: string | null = null;
+  cancelling = false;
 
   voucherCode = '';
   voucherPreview: VoucherPreviewResponse | null = null;
@@ -127,10 +129,13 @@ export class BookingPaymentStepComponent implements OnInit, OnChanges {
       return;
     }
 
-    this.bookingService.storno(this.booking.id).subscribe({
-      next: () => this.cancelled.emit(),
-      error: () => this.cancelled.emit()
-    });
+    this.cancelling = true;
+    this.bookingService.storno(this.booking.id)
+      .pipe(finalize(() => this.cancelling = false))
+      .subscribe({
+        next: () => this.cancelled.emit(),
+        error: () => this.cancelled.emit()
+      });
   }
 
   onCardSucceeded(): void {

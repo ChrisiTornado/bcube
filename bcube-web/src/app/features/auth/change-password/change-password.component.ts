@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 
 import {
   AbstractControl,
@@ -36,6 +36,7 @@ import { extractErrorMessage } from '@shared/util/error-message.util';
 ],
     templateUrl: './change-password.component.html',
     styleUrl: './change-password.component.css',
+    changeDetection: ChangeDetectionStrategy.Eager,
     providers: [MessageService]
 })
 export class ChangePasswordComponent implements OnInit {

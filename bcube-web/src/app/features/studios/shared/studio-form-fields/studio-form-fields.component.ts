@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ChangeDetectionStrategy } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
 import { TextareaModule } from 'primeng/textarea';
@@ -11,6 +11,7 @@ import { STUDIO_IMAGE_COUNT } from '@features/studios/shared/studio-form.util';
   selector: 'app-studio-form-fields',
   imports: [ReactiveFormsModule, InputTextModule, TextareaModule, InputNumberModule, StudioImagePickerComponent],
   templateUrl: './studio-form-fields.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './studio-form-fields.component.css'
 })
 export class StudioFormFieldsComponent {

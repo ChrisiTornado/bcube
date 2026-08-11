@@ -4,7 +4,7 @@
 
 /** The FullCalendar options shared by every calendar view in the app (month grid, toolbar,
  *  locale, "more" link rendering). Callers spread this and layer their own event handlers
- *  (dayCellClassNames, dateClick, moreLinkClick, datesSet, validRange) on top. */
+ *  (dayCellClass, dateClick, moreLinkClick, datesSet, validRange) on top. */
 export function buildBaseCalendarOptions(plugins: any[], events: any[]): any {
   return {
     plugins,

@@ -1,67 +1,77 @@
 server:
   port: ${PORT:8080}
 
+frontend:
+  url: ${FRONTEND_URL:http://localhost:4200}
+
 spring:
   application:
     name: api-gateway
 
   cloud:
     gateway:
-      routes:
-        - id: auth-service
-          uri: http://localhost:8081
-          predicates:
-            - Path=/api/auth/**
+      server:
+        webflux:
+          # CORS preflight (OPTIONS) is answered by CorsPreflightFilter instead of Spring Cloud
+          # Gateway's own globalcors config - globalcors registers a generic CorsConfigurationSource
+          # that Spring's WebFlux CORS machinery then also applies to the ACTUAL routed response,
+          # duplicating the Access-Control-Allow-Origin header each downstream service already adds
+          # itself (every service owns its own CORS per its WebSecurityConfig).
+          routes:
+            - id: auth-service
+              uri: http://localhost:8081
+              predicates:
+                - Path=/api/auth/**
 
-        - id: oauth2-authorization
-          uri: http://localhost:8081
-          predicates:
-            - Path=/oauth2/**
+            - id: oauth2-authorization
+              uri: http://localhost:8081
+              predicates:
+                - Path=/oauth2/**
 
-        - id: oauth2-login-callback
-          uri: http://localhost:8081
-          predicates:
-            - Path=/login/**
+            - id: oauth2-login-callback
+              uri: http://localhost:8081
+              predicates:
+                - Path=/login/**
 
-        - id: admin-service
-          uri: http://localhost:8081
-          predicates:
-            - Path=/api/admin/users/**
+            - id: admin-service
+              uri: http://localhost:8081
+              predicates:
+                - Path=/api/admin/users/**
 
-        - id: user-service
-          uri: http://localhost:8081
-          predicates:
-            - Path=/api/users/**
+            - id: user-service
+              uri: http://localhost:8081
+              predicates:
+                - Path=/api/users/**
 
-        - id: studio-service
-          uri: http://localhost:8082
-          predicates:
-            - Path=/api/studios/**
+            - id: studio-service
+              uri: http://localhost:8082
+              predicates:
+                - Path=/api/studios/**
 
-        - id: admin-studio-service
-          uri: http://localhost:8082
-          predicates:
-            - Path=/api/admin/studios/**
+            - id: admin-studio-service
+              uri: http://localhost:8082
+              predicates:
+                - Path=/api/admin/studios/**
 
-        - id: booking-service
-          uri: http://localhost:8083
-          predicates:
-            - Path=/api/bookings/**
+            - id: booking-service
+              uri: http://localhost:8083
+              predicates:
+                - Path=/api/bookings/**
 
-        # access-service has no user-facing endpoints (see its WebSecurityConfig) - every call
-        # to it is server-to-server from booking-service, authenticated via X-Internal-Key, so
-        # it deliberately has no public gateway route. In AWS this stays reachable only over the
-        # private network between services, never through the internet-facing ALB.
+            # access-service has no user-facing endpoints (see its WebSecurityConfig) - every call
+            # to it is server-to-server from booking-service, authenticated via X-Internal-Key, so
+            # it deliberately has no public gateway route. In AWS this stays reachable only over the
+            # private network between services, never through the internet-facing ALB.
 
-        - id: payment-service
-          uri: http://localhost:8085
-          predicates:
-            - Path=/api/payments/**
+            - id: payment-service
+              uri: http://localhost:8085
+              predicates:
+                - Path=/api/payments/**
 
-        - id: admin-payment-service
-          uri: http://localhost:8085
-          predicates:
-            - Path=/api/admin/payments/**
+            - id: admin-payment-service
+              uri: http://localhost:8085
+              predicates:
+                - Path=/api/admin/payments/**
 
 management:
   endpoints:

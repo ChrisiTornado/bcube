@@ -25,7 +25,7 @@ describe('PaymentHistoryViewComponent', () => {
       id: 1, bookingId: 1, userId: 1, studioId: 1, hourlyRateCentsSnapshot: 1500, durationHours: 1,
       baseAmountCents: 1500, discountAmountCents: 0, finalAmountCents: 1500, currency: 'eur',
       status: 'SUCCEEDED', clientSecret: null, refundedAmountCents: 0, studioName: 'Test Cube',
-      bookingDate: '2026-09-01', createdAt: '2026-08-01T10:00:00Z'
+      bookingDate: '2026-09-01', createdAt: '2026-08-01T10:00:00Z', invoiceNumber: 'RE-2026-000001'
     }],
     totalPages: 1,
     totalElements: 1,

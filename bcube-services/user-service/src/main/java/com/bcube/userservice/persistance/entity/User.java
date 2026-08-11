@@ -52,7 +52,7 @@ public class User {
 
     /** Failed verify-code attempts against the current resetCode - reset to 0 whenever a fresh
      * code is issued, invalidated once it reaches the lockout threshold (see AuthServiceImpl). */
-    @Column
+    @Column(nullable = false)
     @Builder.Default
     private int resetCodeAttempts = 0;
 

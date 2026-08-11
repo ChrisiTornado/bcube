@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 
 import { ReactiveFormsModule, AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -30,6 +30,7 @@ import { extractErrorMessage } from '@shared/util/error-message.util';
     ConfirmDialogModule
 ],
     templateUrl: './email-reset.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './email-reset.component.css'
 })
 export class EmailResetComponent implements OnInit {

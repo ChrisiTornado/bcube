@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ChangeDetectionStrategy } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
@@ -24,6 +24,7 @@ import { extractErrorMessage } from '@shared/util/error-message.util';
   selector: 'app-complete-profile-dialog',
   imports: [DialogModule, ReactiveFormsModule, ButtonModule, InputTextModule, RippleModule],
   templateUrl: './complete-profile-dialog.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './complete-profile-dialog.component.css'
 })
 export class CompleteProfileDialogComponent implements OnInit {

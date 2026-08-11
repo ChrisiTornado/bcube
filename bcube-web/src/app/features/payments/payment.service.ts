@@ -20,6 +20,12 @@ export class PaymentService {
       .pipe(map(res => res.data));
   }
 
+  getByBooking(bookingId: number): Observable<PaymentResponse> {
+    return this.http
+      .get<ApiResponse<PaymentResponse>>(`${environment.paymentApiUrl}/booking/${bookingId}`)
+      .pipe(map(res => res.data));
+  }
+
   validateVoucher(code: string, userId: number, hourlyRateCents: number, durationHours: number): Observable<VoucherPreviewResponse> {
     return this.http
       .post<ApiResponse<VoucherPreviewResponse>>(`${environment.paymentApiUrl}/vouchers/validate`, {
@@ -38,5 +44,9 @@ export class PaymentService {
     return this.http
       .post<ApiResponse<void>>(`${environment.paymentApiUrl}/${bookingId}/confirm-card-verification`, {})
       .pipe(map(() => undefined));
+  }
+
+  downloadInvoice(paymentId: number): Observable<Blob> {
+    return this.http.get(`${environment.paymentApiUrl}/${paymentId}/invoice`, { responseType: 'blob' });
   }
 }

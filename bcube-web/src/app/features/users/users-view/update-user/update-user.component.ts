@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { finalize } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -25,6 +25,7 @@ import { UserFormFieldsComponent } from '@features/users/shared/user-form-fields
     UserFormFieldsComponent
 ],
     templateUrl: './update-user.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './update-user.component.css'
 })
 export class UpdateUserComponent implements OnInit {

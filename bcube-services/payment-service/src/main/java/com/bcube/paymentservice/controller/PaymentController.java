@@ -16,6 +16,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -49,6 +52,16 @@ public class PaymentController {
     public ResponseEntity<ApiResponse<PaymentResponse>> getByBooking(@PathVariable Long bookingId, @AuthenticationPrincipal Jwt jwt) {
         PaymentResponse response = paymentService.getByBookingId(bookingId, RequestingUser.from(jwt));
         return ResponseEntity.ok(new ApiResponse<>("Zahlung erfolgreich geladen", response));
+    }
+
+    @GetMapping("/{id}/invoice")
+    public ResponseEntity<byte[]> downloadInvoice(@PathVariable Long id, @AuthenticationPrincipal Jwt jwt) {
+        byte[] pdf = paymentService.generateInvoicePdf(id, RequestingUser.from(jwt), jwt.getTokenValue());
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_PDF)
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                        ContentDisposition.attachment().filename("Rechnung-" + id + ".pdf").build().toString())
+                .body(pdf);
     }
 
     @GetMapping("/user/{userId}")

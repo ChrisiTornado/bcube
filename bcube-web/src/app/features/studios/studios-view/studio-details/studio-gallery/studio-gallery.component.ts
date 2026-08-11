@@ -1,10 +1,11 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { Studio } from '@models/studio.model';
 
 @Component({
     selector: 'app-studio-gallery',
     imports: [],
     templateUrl: './studio-gallery.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './studio-gallery.component.css'
 })
 export class StudioGalleryComponent {

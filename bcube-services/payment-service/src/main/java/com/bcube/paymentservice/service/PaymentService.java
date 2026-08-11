@@ -15,4 +15,5 @@ public interface PaymentService {
     PaymentResponse refund(Long bookingId, RefundRequest request, RequestingUser requester);
     void confirmCardVerification(Long bookingId, RequestingUser requester);
     void handleWebhookEvent(String payload, String sigHeader);
+    byte[] generateInvoicePdf(Long id, RequestingUser requester, String bearerToken);
 }

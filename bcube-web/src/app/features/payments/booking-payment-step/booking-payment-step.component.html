@@ -41,9 +41,9 @@
           pButton
           type="button"
           class="p-button-outlined"
-          [label]="validatingVoucher ? '…' : 'Anwenden'"
           [disabled]="!voucherCode.trim() || validatingVoucher || creating"
           (click)="applyVoucher()">
+          {{ validatingVoucher ? '…' : 'Anwenden' }}
         </button>
       } @else {
         <span class="voucher-applied">
@@ -54,9 +54,9 @@
           pButton
           type="button"
           class="p-button-text"
-          label="Entfernen"
           [disabled]="creating"
           (click)="removeVoucher()">
+          Entfernen
         </button>
       }
     </div>
@@ -69,17 +69,18 @@
         pButton
         type="button"
         class="p-button-outlined"
-        label="Abbrechen"
-        [disabled]="creating"
+        [loading]="cancelling"
+        [disabled]="creating || cancelling"
         (click)="cancel()">
+        Abbrechen
       </button>
       <button
         pButton
         type="button"
         class="confirm-button"
-        [label]="creating ? 'Wird vorbereitet…' : 'Jetzt buchen'"
-        [disabled]="creating"
+        [disabled]="creating || cancelling"
         (click)="confirmBooking()">
+        {{ creating ? 'Wird vorbereitet…' : 'Jetzt buchen' }}
       </button>
     </div>
   }
@@ -106,8 +107,10 @@
       pButton
       type="button"
       class="p-button-text cancel-link"
-      label="Abbrechen"
+      [loading]="cancelling"
+      [disabled]="cancelling"
       (click)="cancel()">
+      Abbrechen
     </button>
   }
 

@@ -33,7 +33,10 @@
               "src/styles.scss",
               "node_modules/primeicons/primeicons.css",
               "node_modules/primeflex/primeflex.css",
-              "mapbox-gl/dist/mapbox-gl.css"
+              "mapbox-gl/dist/mapbox-gl.css",
+              "node_modules/@fullcalendar/angular/skeleton.css",
+              "node_modules/@fullcalendar/angular/themes/classic/theme.css",
+              "node_modules/@fullcalendar/angular/themes/classic/palette.css"
             ],
             "scripts": [],
             "allowedCommonJsDependencies": ["mapbox-gl"]
@@ -113,7 +116,10 @@
               "src/styles.scss",
               "node_modules/primeicons/primeicons.css",
               "node_modules/primeflex/primeflex.css",
-              "mapbox-gl/dist/mapbox-gl.css"
+              "mapbox-gl/dist/mapbox-gl.css",
+              "node_modules/@fullcalendar/angular/skeleton.css",
+              "node_modules/@fullcalendar/angular/themes/classic/theme.css",
+              "node_modules/@fullcalendar/angular/themes/classic/palette.css"
             ],
             "scripts": []
           }

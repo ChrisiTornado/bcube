@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { User } from '@models/user.model';
 import { UserActionService } from '@features/users/user-action.service';
@@ -6,6 +6,7 @@ import { UserActionService } from '@features/users/user-action.service';
 @Component({
     selector: 'app-delete-user',
     imports: [ButtonModule],
+    changeDetection: ChangeDetectionStrategy.Eager,
     template: `
     <p-button icon="pi pi-trash"
               styleClass="p-button-danger"

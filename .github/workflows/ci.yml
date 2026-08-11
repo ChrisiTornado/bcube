@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  backend:
+    strategy:
+      fail-fast: false
+      matrix:
+        service:
+          - user-service
+          - studio-service
+          - booking-service
+          - access-service
+          - payment-service
+          - api-gateway
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: bcube-services/${{ matrix.service }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "25"
+          cache: maven
+          cache-dependency-path: bcube-services/${{ matrix.service }}/pom.xml
+
+      # -DskipTests, not -Dmaven.test.skip=true: still compiles the test sources (catches
+      # broken test code) without needing a live Postgres per service to actually run
+      # @SpringBootTest context-load tests. Full integration testing against a real DB is a
+      # documented follow-up (infra/terraform/README.md), not solved here.
+      - name: Build
+        run: mvn -B -DskipTests package
+
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: bcube-web
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: bcube-web/package-lock.json
+
+      - run: npm ci
+
+      - name: Build
+        run: npx ng build --configuration production
+
+      - name: Test
+        run: npx ng test --watch=false --browsers=ChromeHeadless

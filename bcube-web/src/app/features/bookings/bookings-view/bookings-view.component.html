@@ -4,9 +4,9 @@
     <button
       pButton
       type="button"
-      label="Kalenderansicht"
       class="calendar-switch-button"
       (click)="navigateToCalendarView()">
+      Kalenderansicht
     </button>
   }
 </div>
@@ -30,9 +30,11 @@
         <ng-template pTemplate="footer">
           @if (userFilterTotal > loadMoreThreshold) {
             <div class="p-2 text-center">
-              <button pButton type="button" icon="pi pi-plus" label="Weitere laden" class="p-button-text"
+              <button pButton type="button" class="p-button-text"
                 (mousedown)="$event.preventDefault()" (click)="$event.stopPropagation(); loadMoreUsers()"
                 [disabled]="userFilterLoading || userFilterLastPage">
+                <i class="pi pi-plus"></i>
+                Weitere laden
               </button>
             </div>
           }
@@ -49,9 +51,11 @@
       <ng-template pTemplate="footer">
         @if (studioFilterTotal > loadMoreThreshold) {
           <div class="p-2 text-center">
-            <button pButton type="button" icon="pi pi-plus" label="Weitere laden" class="p-button-text"
+            <button pButton type="button" class="p-button-text"
               (mousedown)="$event.preventDefault()" (click)="$event.stopPropagation(); loadMoreStudios()"
               [disabled]="studioFilterLoading || studioFilterLastPage">
+              <i class="pi pi-plus"></i>
+              Weitere laden
             </button>
           </div>
         }
@@ -125,14 +129,16 @@
   <!-- Pagination unten -->
   @if (totalPages > 1) {
     <div class="pager-shell flex justify-content-center gap-4 mt-4">
-      <button pButton label="<- Zurück" [style]="lightButtonStyle"
-        (click)="isAdmin ? loadAdminPage(this.bookingService.page - 1) : loadUserPage(authService.getUser()?.id!, this.bookingService.page - 1)"
+      <button pButton [style]="lightButtonStyle"
+        (click)="isAdmin ? loadAdminPage(this.bookingService.page - 1) : loadUserPage($safeNavigationMigration(authService.getUser()?.id)!, this.bookingService.page - 1)"
         [disabled]="this.bookingService.page === 0">
+        &lt;- Zurück
       </button>
       <span class="mt-2 mx-3 font-bold">Seite {{ this.bookingService.page + 1 }} von {{ totalPages }}</span>
-      <button pButton label="Weiter ->" [style]="lightButtonStyle"
-        (click)="isAdmin ? loadAdminPage(this.bookingService.page + 1) : loadUserPage(authService.getUser()?.id!, this.bookingService.page + 1)"
+      <button pButton [style]="lightButtonStyle"
+        (click)="isAdmin ? loadAdminPage(this.bookingService.page + 1) : loadUserPage($safeNavigationMigration(authService.getUser()?.id)!, this.bookingService.page + 1)"
         [disabled]="this.bookingService.page >= totalPages - 1">
+        Weiter -&gt;
       </button>
     </div>
   }

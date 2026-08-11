@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { Observable } from 'rxjs';
 import { UserService } from '@features/users/user.service';
 import { User } from '@models/user.model';
@@ -24,6 +24,7 @@ import { extractErrorMessage } from '@shared/util/error-message.util';
         DeleteUserComponent
     ],
     templateUrl: './users-view.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './users-view.component.css'
 })
 export class UsersViewComponent implements OnInit {

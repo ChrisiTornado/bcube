@@ -1,8 +1,10 @@
 <div class="view-header">
-  <button pButton type="button" class="p-button-outlined back-button" icon="pi pi-arrow-left" label="Zurück"
+  <button pButton type="button" class="p-button-outlined back-button"
     [style]="darkButtonStyle" (click)="goBack()">
+    <i class="pi pi-arrow-left"></i>
+    Zurück
   </button>
-  <h1 class="m-0 view-title">Zahlungen</h1>
+  <h1 class="m-0 view-title">Zahlungsverlauf</h1>
 </div>
 
 @if (loading) {
@@ -25,6 +27,7 @@
             <th>Cube</th>
             <th>Betrag</th>
             <th>Status</th>
+            <th>Rechnung</th>
           </tr>
         </ng-template>
         <ng-template pTemplate="body" let-payment>
@@ -33,6 +36,19 @@
             <td>{{ payment.studioName }}</td>
             <td>{{ formatAmount(payment.finalAmountCents) }}</td>
             <td>{{ getStatusLabel(payment.status) }}</td>
+            <td>
+              @if (payment.invoiceNumber) {
+                <button pButton type="button" class="p-button-text p-button-sm invoice-download-button"
+                  [style]="lightButtonStyle"
+                  [disabled]="downloadingInvoiceId === payment.id"
+                  (click)="downloadInvoice(payment)">
+                  <i class="pi pi-download"></i>
+                  Rechnung
+                </button>
+              } @else {
+                <span class="invoice-unavailable">–</span>
+              }
+            </td>
           </tr>
         </ng-template>
       </p-table>
@@ -41,14 +57,16 @@
 
   @if (totalPages > 1) {
     <div class="pager-shell flex justify-content-center gap-4 mt-4">
-      <button pButton label="<- Zurück" [style]="lightButtonStyle"
+      <button pButton [style]="lightButtonStyle"
         (click)="loadPage(page - 1)"
         [disabled]="page === 0">
+        &lt;- Zurück
       </button>
       <span class="mt-2 mx-3 font-bold">Seite {{ page + 1 }} von {{ totalPages }}</span>
-      <button pButton label="Weiter ->" [style]="lightButtonStyle"
+      <button pButton [style]="lightButtonStyle"
         (click)="loadPage(page + 1)"
         [disabled]="page >= totalPages - 1">
+        Weiter -&gt;
       </button>
     </div>
   }

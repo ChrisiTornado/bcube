@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withXhr } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { MessageService } from 'primeng/api';
 
@@ -13,7 +13,7 @@ describe('UpdateStudioComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [UpdateStudioComponent],
-      providers: [provideHttpClient(), provideHttpClientTesting(), MessageService]
+      providers: [provideHttpClient(withXhr()), provideHttpClientTesting(), MessageService]
     })
     .compileComponents();
 

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { AuthContainerComponent } from '@features/auth/auth-container/auth-container.component';
 import { Router } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -27,6 +27,7 @@ import { extractErrorMessage } from '@shared/util/error-message.util';
     ConfirmDialogModule
 ],
     templateUrl: './enter-code.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrls: ['./enter-code.component.css']
 })
 export class EnterCodeComponent implements OnInit {

@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 
 import { RouterModule } from '@angular/router';
 import {ToastModule} from "primeng/toast";
@@ -7,6 +7,7 @@ import {ToastModule} from "primeng/toast";
     selector: 'app-auth-container',
     imports: [ToastModule, RouterModule],
     templateUrl: './auth-container.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './auth-container.component.css'
 })
 export class AuthContainerComponent {

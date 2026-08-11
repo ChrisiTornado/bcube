@@ -9,8 +9,8 @@
     pButton
     type="button"
     class="w-full pay-button"
-    [label]="submitting ? 'Wird verarbeitet…' : submitLabel"
     [disabled]="submitting"
     (click)="confirmPayment()">
+    {{ submitting ? 'Wird verarbeitet…' : submitLabel }}
   </button>
 </div>

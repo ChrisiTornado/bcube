@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
@@ -10,8 +10,13 @@ import { BookingService } from '@features/bookings/booking.service';
 import { MessageService } from 'primeng/api';
 import { LoadingSpinnerComponent } from '@shared/ui/loading-spinner/loading-spinner.component';
 import { FullCalendarModule } from '@fullcalendar/angular';
-import dayGridPlugin from '@fullcalendar/daygrid';
-import interactionPlugin from '@fullcalendar/interaction';
+// v7 final moved the dayGrid/interaction plugins from standalone @fullcalendar/daygrid and
+// @fullcalendar/interaction packages to sub-path exports of @fullcalendar/angular itself.
+import dayGridPlugin from '@fullcalendar/angular/daygrid';
+import interactionPlugin from '@fullcalendar/angular/interaction';
+// v7 pulled theming out of the core into its own plugin - without this, the calendar renders
+// with hashed-but-unstyled classes even though the theme's CSS is loaded via angular.json.
+import themePlugin from '@fullcalendar/angular/themes/classic';
 // @fullcalendar/core@7.x ships a broken (empty) index.d.ts upstream - confirmed across
 // every published 7.x release (7.0.0-7.1.0-alpha.0), which also breaks @fullcalendar/interaction's
 // re-exported types. Falling back to `any` until that's fixed upstream; runtime is unaffected.
@@ -47,6 +52,7 @@ import { getDashboardBasePath } from '@shared/util/dashboard-path.util';
         BookingPaymentStepComponent
     ],
     templateUrl: './studio-details.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './studio-details.component.css'
 })
 export class StudioDetailsComponent implements OnInit {
@@ -71,7 +77,7 @@ export class StudioDetailsComponent implements OnInit {
   bookings: Booking[] = [];
   disabledDates: Date[] = [];
 
-  calendarPlugins = [dayGridPlugin, interactionPlugin];
+  calendarPlugins = [dayGridPlugin, interactionPlugin, themePlugin];
   calendarEvents: EventInput[] = [];
 
   calendarOptions: CalendarOptions = this.buildCalendarOptions(this.calendarEvents);
@@ -144,8 +150,8 @@ export class StudioDetailsComponent implements OnInit {
           title: `${formatBookingTime(b.startTime)} – ${formatBookingTime(b.endTime)}`,
           date: toIsoDate(new Date(b.date)),
           color: '#ffa722',
-          textColor: '#111111',
-          borderColor: '#ffa722'
+          contrastColor: '#111111',
+          className: 'calendar-event-confirmed'
         }));
 
         const today = new Date();
@@ -173,7 +179,11 @@ export class StudioDetailsComponent implements OnInit {
   private buildCalendarOptions(events: EventInput[], validRangeStart?: { start: string }): CalendarOptions {
     return {
       ...buildBaseCalendarOptions(this.calendarPlugins, events),
-      dayCellClassNames: (arg: any) => this.date && toIsoDate(this.date) === toIsoDate(arg.date) ? ['fc-day-selected'] : [],
+      dayCellClass: (arg: any) => this.date && toIsoDate(this.date) === toIsoDate(arg.date) ? 'fc-day-selected' : '',
+      moreLinkClass: () => 'bcube-more-link',
+      popoverClass: 'bcube-popover',
+      buttonClass: () => 'bcube-nav-btn',
+      buttonGroupClass: () => 'bcube-nav-group',
       moreLinkClick: 'popover',
       dateClick: this.handleDateClick.bind(this),
       ...(validRangeStart && { validRange: validRangeStart })
@@ -190,7 +200,7 @@ export class StudioDetailsComponent implements OnInit {
       dayMaxEvents: 2,
       moreLinkContent: (arg: any) => ({ html: `+${arg.num} Mehr` }),
       moreLinkClick: 'popover',
-      dayCellClassNames: (cellArg: any) => this.date && toIsoDate(this.date) === toIsoDate(cellArg.date) ? ['fc-day-selected'] : []
+      dayCellClass: (cellArg: any) => this.date && toIsoDate(this.date) === toIsoDate(cellArg.date) ? 'fc-day-selected' : ''
     };
   }
 

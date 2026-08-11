@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { AuthService } from '@core/services/auth.service';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { Router } from '@angular/router';
@@ -22,6 +22,7 @@ import { extractErrorMessage } from '@shared/util/error-message.util';
     selector: 'app-register',
     imports: [InputTextModule, LoadingSpinnerComponent, RouterModule, AuthContainerComponent, ButtonModule, ReactiveFormsModule],
     templateUrl: './register.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './register.component.css'
 })
 export class RegisterComponent implements OnInit {

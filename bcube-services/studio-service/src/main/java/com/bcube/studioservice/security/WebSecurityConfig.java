@@ -49,6 +49,7 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/error").permitAll()
+                        .requestMatchers("/actuator/health").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/studios/**").permitAll()
                         .requestMatchers("/api/admin/studios/**").hasRole("ADMIN")
                         .anyRequest().authenticated()

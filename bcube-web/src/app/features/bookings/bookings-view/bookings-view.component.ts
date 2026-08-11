@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { CommonModule } from '@angular/common';
@@ -36,6 +36,7 @@ import { getDashboardBasePath } from '@shared/util/dashboard-path.util';
         FormsModule
     ],
     templateUrl: './bookings-view.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrls: ['./bookings-view.component.css']
 })
 export class BookingsViewComponent implements OnInit {

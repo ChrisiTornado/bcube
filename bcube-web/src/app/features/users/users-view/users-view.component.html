@@ -47,18 +47,20 @@
       </p-table>
     </div>
     <div class="pager-shell flex justify-content-center gap-3 mt-3">
-      <button pButton label="<- Zurück"
+      <button pButton
         [style]="lightButtonStyle"
         (click)="loadPage(this.userService.page - 1)"
         [disabled]="this.userService.page === 0">
+        &lt;- Zurück
       </button>
       <span class="mt-2 mx-3 font-bold">
         Seite {{ this.userService.page + 1 }} von {{ totalPages }}
       </span>
-      <button pButton label="Weiter ->"
+      <button pButton
         [style]="lightButtonStyle"
         (click)="loadPage(this.userService.page + 1)"
         [disabled]="this.userService.page >= totalPages - 1">
+        Weiter -&gt;
       </button>
     </div>
   }

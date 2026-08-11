@@ -32,8 +32,9 @@
     }
   </div>
   <div class="info-booking-action">
-    <button pButton type="button" label="Cube buchen" [disabled]="!canBook()" class="booking-button"
+    <button pButton type="button" [disabled]="!canBook()" class="booking-button"
       (click)="requestBooking()">
+      Cube buchen
     </button>
   </div>
 </div>

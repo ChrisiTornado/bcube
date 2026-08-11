@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {finalize} from "rxjs";
 import { HttpErrorResponse } from '@angular/common/http';
 import { Studio } from '@models/studio.model';
@@ -23,6 +23,7 @@ import { StudioFormFieldsComponent } from '@features/studios/shared/studio-form-
     selector: 'app-update-studio',
     imports: [ToastModule, DialogModule, TableModule, ButtonModule, ReactiveFormsModule, StudioFormFieldsComponent],
     templateUrl: './update-studio.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './update-studio.component.css'
 })
 export class UpdateStudioComponent implements OnInit {

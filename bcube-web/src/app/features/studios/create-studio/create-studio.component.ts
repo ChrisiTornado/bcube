@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { MessageService } from "primeng/api";
 import { finalize } from "rxjs";
@@ -22,6 +22,7 @@ import { StudioFormFieldsComponent } from '@features/studios/shared/studio-form-
     selector: 'app-create-studio',
     imports: [DialogModule, TableModule, ButtonModule, ReactiveFormsModule, StudioFormFieldsComponent],
     templateUrl: './create-studio.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './create-studio.component.css'
 })
 export class CreateStudioComponent implements OnInit{

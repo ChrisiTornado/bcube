@@ -4,6 +4,10 @@
   margin-bottom: 1.25rem;
 }
 
+.invoice-download-button {
+  margin-left: auto;
+}
+
 .booking-load-error {
   display: flex;
   flex-direction: column;

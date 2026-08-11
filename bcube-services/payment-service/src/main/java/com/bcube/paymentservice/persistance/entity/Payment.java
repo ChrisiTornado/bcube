@@ -76,6 +76,14 @@ public class Payment {
     @Column(name = "booking_date")
     private LocalDate bookingDate;
 
+    // Assigned once, at the moment the payment first becomes SUCCEEDED/FREE (see
+    // PaymentServiceImpl#assignInvoiceNumberIfNeeded) - null beforehand means no invoice exists yet.
+    @Column(name = "invoice_number", unique = true)
+    private String invoiceNumber;
+
+    @Column(name = "invoice_issued_at")
+    private Instant invoiceIssuedAt;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 

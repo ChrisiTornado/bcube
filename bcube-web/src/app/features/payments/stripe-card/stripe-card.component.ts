@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { loadStripe, Stripe, StripeCardElement, StripeElements } from '@stripe/stripe-js';
 import { ButtonModule } from 'primeng/button';
 import { environment } from '@environments/environment';
@@ -9,6 +9,7 @@ import { environment } from '@environments/environment';
     selector: 'app-stripe-card',
     imports: [ButtonModule],
     templateUrl: './stripe-card.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './stripe-card.component.css'
 })
 export class StripeCardComponent implements OnInit, OnDestroy {

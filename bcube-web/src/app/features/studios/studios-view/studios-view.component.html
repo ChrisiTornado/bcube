@@ -129,11 +129,10 @@
         <button
           pButton
           type="button"
-          [label]="loadingMore ? 'Lade...' : 'Mehr anzeigen'"
           class="load-more-button"
           [disabled]="loadingMore"
           (click)="loadMoreStudios()"
-        ></button>
+        >{{ loadingMore ? 'Lade...' : 'Mehr anzeigen' }}</button>
       </div>
     }
 
@@ -216,9 +215,8 @@
                 pButton
                 type="button"
                 class="preview-button"
-                label="Details ansehen"
                 (click)="navigateToDetails(selectedStudio)"
-              ></button>
+              >Details ansehen</button>
               <button
                 type="button"
                 class="preview-text-link"

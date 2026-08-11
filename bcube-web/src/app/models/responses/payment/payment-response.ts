@@ -25,4 +25,5 @@ export interface PaymentResponse {
     studioName: string | null;
     bookingDate: string | null;
     createdAt: string;
+    invoiceNumber: string | null;
 }

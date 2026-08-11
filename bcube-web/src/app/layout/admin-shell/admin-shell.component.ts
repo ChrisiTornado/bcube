@@ -1,4 +1,4 @@
-import { Component, DestroyRef, OnInit } from '@angular/core';
+import { Component, DestroyRef, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { MegaMenuItem } from 'primeng/api';
@@ -15,6 +15,7 @@ import { filter } from 'rxjs/operators';
     selector: 'app-admin-shell',
     imports: [RouterModule, ToastModule, MegaMenuModule, ConfirmDialogModule],
     templateUrl: './admin-shell.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './admin-shell.component.css'
 })
 export class AdminShellComponent implements OnInit {
