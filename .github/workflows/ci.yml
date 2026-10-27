@@ -54,6 +54,27 @@ jobs:
 
       - run: npm ci
 
+      # environment.ts is git-ignored (environment.example.ts is an empty template), so CI
+      # writes its own. Same relative API paths as a real setup; the keys are dummies - build
+      # and unit tests never reach Stripe or Mapbox.
+      - name: Create environment.ts
+        run: |
+          cat > src/environments/environment.ts <<'EOF'
+          export const environment = {
+            adminApiUrl: '/api/admin/users',
+            userApiUrl: '/api/users',
+            authUrl: '/api/auth',
+            oauthGoogleUrl: '/oauth2/authorization/google',
+            bookingApiUrl: '/api/bookings',
+            studioApiUrl: '/api/studios',
+            adminStudioApiUrl: '/api/admin/studios',
+            accessApiUrl: '/api/access',
+            paymentApiUrl: '/api/payments',
+            stripePublishableKey: 'pk_test_ci_dummy',
+            token: 'pk.ci-dummy'
+          };
+          EOF
+
       - name: Build
         run: npx ng build --configuration production
 

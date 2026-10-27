@@ -13,6 +13,13 @@ describe('InterceptorService', () => {
   const ownApiUrl = `${environment.authUrl.replace(/\/auth$/, '')}/whatever`;
   const externalUrl = 'https://api.mapbox.com/whatever';
 
+  function fakeJwt(expiresInSeconds: number): string {
+    const base64url = (obj: unknown) => btoa(JSON.stringify(obj)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+    return `${base64url({ alg: 'HS256' })}.${base64url({ exp: Math.floor(Date.now() / 1000) + expiresInSeconds })}.fake-signature`;
+  }
+
+  const validToken = fakeJwt(3600);
+
   beforeEach(() => {
     localStorage.clear();
 
@@ -37,12 +44,12 @@ describe('InterceptorService', () => {
   });
 
   it('attaches the bearer token to our own API requests when a token is stored', () => {
-    localStorage.setItem('auth_token', 'jwt-token');
+    localStorage.setItem('auth_token', validToken);
 
     http.get(ownApiUrl).subscribe();
 
     const req = httpMock.expectOne(ownApiUrl);
-    expect(req.request.headers.get('Authorization')).toBe('Bearer jwt-token');
+    expect(req.request.headers.get('Authorization')).toBe(`Bearer ${validToken}`);
     req.flush({});
   });
 
@@ -54,8 +61,30 @@ describe('InterceptorService', () => {
     req.flush({});
   });
 
+  it('does not attach an expired token', () => {
+    localStorage.setItem('auth_token', fakeJwt(-10));
+
+    http.get(ownApiUrl).subscribe();
+
+    const req = httpMock.expectOne(ownApiUrl);
+    expect(req.request.headers.has('Authorization')).toBeFalse();
+    req.flush({});
+  });
+
+  it('does not redirect a guest (no token sent) on a 401 response', () => {
+    const navigateSpy = spyOn(router, 'navigate');
+
+    http.get(ownApiUrl).subscribe({ error: () => {} });
+
+    const req = httpMock.expectOne(ownApiUrl);
+    req.flush({}, { status: 401, statusText: 'Unauthorized' });
+
+    expect(navigateSpy).not.toHaveBeenCalled();
+    expect(sessionStorage.getItem('sessionExpiredMessage')).toBeNull();
+  });
+
   it('does not attach the bearer token to requests outside our own API, even with a token stored', () => {
-    localStorage.setItem('auth_token', 'jwt-token');
+    localStorage.setItem('auth_token', validToken);
 
     http.get(externalUrl).subscribe();
 
@@ -65,7 +94,7 @@ describe('InterceptorService', () => {
   });
 
   it('clears stored auth and redirects to /login on a 401 response', () => {
-    localStorage.setItem('auth_token', 'jwt-token');
+    localStorage.setItem('auth_token', validToken);
     localStorage.setItem('auth_user', JSON.stringify({ id: 1 }));
     const navigateSpy = spyOn(router, 'navigate');
 
@@ -81,7 +110,7 @@ describe('InterceptorService', () => {
   });
 
   it('leaves stored auth untouched and does not redirect on a non-401 error', () => {
-    localStorage.setItem('auth_token', 'jwt-token');
+    localStorage.setItem('auth_token', validToken);
     localStorage.setItem('auth_user', JSON.stringify({ id: 1 }));
     const navigateSpy = spyOn(router, 'navigate');
 
@@ -90,13 +119,13 @@ describe('InterceptorService', () => {
     const req = httpMock.expectOne(ownApiUrl);
     req.flush({ message: 'Server error' }, { status: 500, statusText: 'Internal Server Error' });
 
-    expect(localStorage.getItem('auth_token')).toBe('jwt-token');
+    expect(localStorage.getItem('auth_token')).toBe(validToken);
     expect(localStorage.getItem('auth_user')).not.toBeNull();
     expect(navigateSpy).not.toHaveBeenCalled();
   });
 
   it('propagates the error to the caller after handling a 401', () => {
-    localStorage.setItem('auth_token', 'jwt-token');
+    localStorage.setItem('auth_token', validToken);
     let caughtStatus: number | undefined;
 
     http.get(ownApiUrl).subscribe({

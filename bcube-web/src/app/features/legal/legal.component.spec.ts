@@ -70,11 +70,11 @@ describe('LegalComponent', () => {
   });
 
   it('goBack navigates to the returnUrl from router state when one was passed', () => {
-    history.replaceState({ returnUrl: '/user-dashboard/studios' }, '');
+    history.replaceState({ returnUrl: '/studios' }, '');
     setup();
     fixture.detectChanges();
 
     component.goBack();
-    expect(router.navigateByUrl).toHaveBeenCalledWith('/user-dashboard/studios');
+    expect(router.navigateByUrl).toHaveBeenCalledWith('/studios');
   });
 });

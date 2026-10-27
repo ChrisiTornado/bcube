@@ -1,7 +1,9 @@
-import { Routes } from '@angular/router';
+import { inject } from '@angular/core';
+import { Router, Routes } from '@angular/router';
 import { authGuard } from '@core/guards/auth.guard';
 import { roleGuard } from '@core/guards/role.guard';
 import { profileCompleteGuard } from '@core/guards/profile-complete.guard';
+import { guestOrUserGuard } from '@core/guards/guest-or-user.guard';
 
 export const routes: Routes = [
     {
@@ -84,11 +86,24 @@ export const routes: Routes = [
             }
         ]
     },
+    // Legacy prefix from before the user area moved to the app root - keeps old bookmarks and
+    // already-sent e-mail links working: /user-dashboard/studio-details/4 -> /studio-details/4.
     {
         path: 'user-dashboard',
+        children: [{
+            path: '**',
+            redirectTo: ({ url, queryParams, fragment }) =>
+                inject(Router).createUrlTree(url.map(segment => segment.path), { queryParams, fragment: fragment ?? undefined })
+        }]
+    },
+
+    // User area at the app root, which is also the public landing page: guests can browse cubes,
+    // studio details and the calendar tab (which then prompt them to sign in); everything tied
+    // to a personal account keeps authGuard. Must stay after every other top-level path.
+    {
+        path: '',
         loadComponent: () => import('@app/layout/user-shell/user-shell.component').then(m => m.UserShellComponent),
-        canActivate: [authGuard, profileCompleteGuard, roleGuard],
-        data: { expectedRole: 'USER' },
+        canActivate: [guestOrUserGuard],
         children: [
             { path: '', redirectTo: 'studios', pathMatch: 'full' },
             {
@@ -105,10 +120,12 @@ export const routes: Routes = [
             },
             {
                 path: 'bookings',
+                canActivate: [authGuard],
                 loadComponent: () => import('@features/bookings/bookings-view/bookings-view.component').then(m => m.BookingsViewComponent)
             },
             {
                 path: 'profile',
+                canActivate: [authGuard],
                 loadComponent: () => import('@features/profile/profile-view/profile-view.component').then(m => m.ProfileViewComponent)
             },
             {
@@ -117,15 +134,16 @@ export const routes: Routes = [
             },
             {
                 path: 'booking-details/:id',
+                canActivate: [authGuard],
                 loadComponent: () => import('@features/bookings/bookings-view/booking-details/booking-details.component').then(m => m.BookingDetailsComponent)
             },
             {
                 path: 'payment-history',
+                canActivate: [authGuard],
                 loadComponent: () => import('@features/payments/payment-history-view/payment-history-view.component').then(m => m.PaymentHistoryViewComponent)
             }
         ]
     },
 
-    { path: '', redirectTo: 'login', pathMatch: 'full' },
-    { path: '**', redirectTo: 'login' }
+    { path: '**', redirectTo: 'studios' }
 ];

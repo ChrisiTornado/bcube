@@ -24,12 +24,12 @@ describe('PasswordResetService', () => {
     });
 
     it('stores and returns the given return url', () => {
-      service.setReturnUrl('/user-dashboard/studios');
-      expect(service.getReturnUrl()).toBe('/user-dashboard/studios');
+      service.setReturnUrl('/studios');
+      expect(service.getReturnUrl()).toBe('/studios');
     });
 
     it('clearReturnUrl resets back to the /login default', () => {
-      service.setReturnUrl('/user-dashboard/studios');
+      service.setReturnUrl('/studios');
       service.clearReturnUrl();
       expect(service.getReturnUrl()).toBe('/login');
     });

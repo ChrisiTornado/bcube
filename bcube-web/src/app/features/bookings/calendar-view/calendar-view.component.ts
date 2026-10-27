@@ -49,6 +49,7 @@ export class CalendarViewComponent implements OnInit {
   selectedDayBookings: Booking[] = [];
   bookingEventEntries: EventInput[] = [];
   isLoading = true;
+  isGuest = false;
   emptyStateMode: 'day' | 'month' = 'day';
 
   constructor(
@@ -67,6 +68,14 @@ export class CalendarViewComponent implements OnInit {
   calendarOptions: CalendarOptions = this.buildCalendarOptions(this.calendarEvents);
 
   ngOnInit(): void {
+    // Guests can open this tab from the public shell, but there are no "own" sessions to show -
+    // the template renders a sign-in prompt instead, so nothing is requested from the API.
+    this.isGuest = !this.authService.isAuthenticated();
+    if (this.isGuest) {
+      this.isLoading = false;
+      return;
+    }
+
     this.user = this.authService.getUser();
 
     this.bookingService.getAllBookingsByUserId(+this.user!.id, 50).subscribe(bookings => {
@@ -89,8 +98,12 @@ export class CalendarViewComponent implements OnInit {
     });
   }
 
+  goToAuth(page: 'login' | 'register'): void {
+    this.router.navigate([`/${page}`], { queryParams: { returnUrl: this.router.url } });
+  }
+
   navigateToAllBookings(): void {
-    this.router.navigate(['/user-dashboard', 'bookings'], {
+    this.router.navigate(['/bookings'], {
       state: { returnUrl: this.router.url }
     });
   }
@@ -139,7 +152,7 @@ export class CalendarViewComponent implements OnInit {
   }
 
   showBookingDetails(booking: Booking): void {
-    this.router.navigate(['/user-dashboard', 'booking-details', booking.id], {
+    this.router.navigate(['/booking-details', booking.id], {
       state: { returnUrl: this.router.url }
     });
   }

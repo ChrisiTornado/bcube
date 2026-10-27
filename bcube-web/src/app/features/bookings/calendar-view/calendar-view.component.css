@@ -24,6 +24,42 @@
   flex-shrink: 0;
 }
 
+/* Guest: sign-in prompt instead of the personal booking calendar */
+.guest-calendar-hint {
+  margin: auto;
+  max-width: 30rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 2rem 1.5rem;
+  text-align: center;
+  border-radius: 26px;
+  border: 1px dashed rgba(255, 167, 34, 0.28);
+  background: rgba(255, 167, 34, 0.05);
+}
+
+.guest-calendar-icon {
+  font-size: 2rem;
+  color: var(--bcube-orange);
+}
+
+.guest-calendar-hint p {
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.55;
+}
+
+.guest-calendar-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem;
+}
+
+.guest-calendar-actions button {
+  gap: 0.4rem;
+}
+
 .calendar-layout {
   display: grid;
   grid-template-columns: minmax(0, 0.9fr) minmax(300px, 0.7fr);

@@ -60,11 +60,11 @@ final class StudiosListViewModel: ObservableObject {
 @MainActor
 final class StudioDetailViewModel: ObservableObject {
     @Published var studio: Studio
-    @Published var bookings: [Booking] = []
+    @Published var bookings: [BookedSlot] = []
     @Published var selectedDate = Date()
     @Published var selectedStartSlot = "12:00"
     @Published var selectedEndSlot = "15:00"
-    @Published private(set) var dayBookings: [Booking] = []
+    @Published private(set) var dayBookings: [BookedSlot] = []
     @Published private(set) var markedDates: Set<String> = []
     @Published private(set) var fullyBookedDates: Set<String> = []
     @Published private(set) var availableStartSlots: [String] = []
@@ -82,7 +82,7 @@ final class StudioDetailViewModel: ObservableObject {
     private let allQuarterHourSlots = stride(from: 0, through: 23 * 60 + 45, by: 15).map { totalMinutes in
         String(format: "%02d:%02d", totalMinutes / 60, totalMinutes % 60)
     }
-    private var cachedBookingsByDate: [String: [Booking]] = [:]
+    private var cachedBookingsByDate: [String: [BookedSlot]] = [:]
     private var cachedBookedRangesByDate: [String: [MinuteRange]] = [:]
     private var cachedAvailableStartSlotsByDate: [String: [String]] = [:]
     private var cachedAvailableEndSlotsByDate: [String: [String: [String]]] = [:]
@@ -100,7 +100,7 @@ final class StudioDetailViewModel: ObservableObject {
 
         do {
             async let latestStudio = studioService.getStudio(by: studio.id, token: token)
-            async let studioBookings = bookingService.getBookingsForStudio(studioID: studio.id, token: token)
+            async let studioBookings = bookingService.getBookedSlotsForStudio(studioID: studio.id)
 
             studio = try await latestStudio
             bookings = try await studioBookings

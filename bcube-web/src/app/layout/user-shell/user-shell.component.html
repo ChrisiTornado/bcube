@@ -17,9 +17,21 @@
     styleClass="user-top-menu">
   </p-megaMenu>
 
-  <a class="profile-avatar-button" routerLink="/user-dashboard/profile" aria-label="Zum Profil">
-    <span>{{ avatarLabel }}</span>
-  </a>
+  @if (isLoggedIn) {
+    <a class="profile-avatar-button" routerLink="/profile" aria-label="Zum Profil">
+      <span>{{ avatarLabel }}</span>
+    </a>
+  } @else {
+    <div class="guest-auth-actions">
+      <a class="guest-auth-button guest-auth-button-secondary" routerLink="/register" [queryParams]="authQueryParams">
+        Registrieren
+      </a>
+      <a class="guest-auth-button guest-auth-button-primary" routerLink="/login" [queryParams]="authQueryParams">
+        <i class="pi pi-sign-in"></i>
+        Anmelden
+      </a>
+    </div>
+  }
 </header>
 
 <div class="user-layout">

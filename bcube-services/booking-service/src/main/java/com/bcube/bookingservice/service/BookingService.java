@@ -2,9 +2,12 @@ package com.bcube.bookingservice.service;
 
 import com.bcube.bookingservice.security.RequestingUser;
 import com.bcube.bookingservice.service.dto.request.BookStudioRequest;
+import com.bcube.bookingservice.service.dto.response.BookedSlotResponse;
 import com.bcube.bookingservice.service.dto.response.BookingDetailsResponse;
 import com.bcube.bookingservice.service.dto.response.BookingResponse;
 import org.springframework.data.domain.Page;
+
+import java.util.List;
 
 public interface BookingService {
     Page<BookingResponse> getBookings(int page, int size, Long userId, Long studioId, String sortBy, String sortDirection, String token);
@@ -16,7 +19,8 @@ public interface BookingService {
 
     BookingResponse stornoBooking(Long bookingId, String ipAddress, String token, RequestingUser requester);
 
-    BookingResponse[] getBookingsByStudioId(long studioId);
+    /** Anonymous occupancy (date + time range only) of a studio - public, used by the guest-visible calendar. */
+    List<BookedSlotResponse> getBookedSlotsByStudioId(long studioId);
 
     void updatePaymentStatus(Long bookingId, String status);
 

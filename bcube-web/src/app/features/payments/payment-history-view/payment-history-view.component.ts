@@ -13,7 +13,7 @@ import { PaymentResponse } from '@models/responses/payment/payment-response';
 import { LoadingSpinnerComponent } from '@shared/ui/loading-spinner/loading-spinner.component';
 import { DARK_BUTTON_STYLE, LIGHT_BUTTON_STYLE } from '@shared/util/button-style';
 import { getPaymentStatusLabel } from '@shared/util/payment-status.util';
-import { getDashboardBasePath } from '@shared/util/dashboard-path.util';
+import { getDashboardPath } from '@shared/util/dashboard-path.util';
 import { extractErrorMessage } from '@shared/util/error-message.util';
 
 @Component({
@@ -46,8 +46,7 @@ export class PaymentHistoryViewComponent implements OnInit {
   }
 
   goBack(): void {
-    const basePath = getDashboardBasePath(this.authService.isAdmin());
-    this.router.navigate([`${basePath}/profile`]);
+    this.router.navigate([getDashboardPath(this.authService.isAdmin(), 'profile')]);
   }
 
   loadPage(page: number): void {

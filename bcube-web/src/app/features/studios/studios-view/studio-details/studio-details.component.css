@@ -87,6 +87,47 @@
   line-height: 1.55;
 }
 
+/* Guest: login prompt instead of the booking time picker */
+.guest-booking-hint {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.1rem;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 167, 34, 0.24);
+  background: rgba(255, 167, 34, 0.06);
+}
+
+.guest-booking-icon {
+  font-size: 1.4rem;
+  color: var(--bcube-orange);
+}
+
+.guest-booking-title {
+  margin: 0;
+  font-weight: 800;
+  font-size: 1.05rem;
+  color: #ffffff;
+}
+
+.guest-booking-text {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.55;
+}
+
+.guest-booking-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.guest-booking-actions button {
+  flex: 1 1 auto;
+  justify-content: center;
+  gap: 0.4rem;
+}
+
 .studio-description-content {
   margin-top: 1rem;
   line-height: 1.7;

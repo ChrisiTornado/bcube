@@ -5,6 +5,7 @@ import { EMPTY, expand, map, Observable, reduce } from 'rxjs';
 import { ApiResponse } from '@models/responses/api-response';
 import { finalize } from 'rxjs/operators';
 import { Booking } from '@models/booking.model';
+import { BookedSlot } from '@models/booked-slot.model';
 import { CreateBookingRequest } from '@models/requests/booking/create-booking-request';
 import { PageResponse } from '@models/responses/page-response';
 import { BookingDetailsResponse } from '@models/responses/booking/booking-details-response';
@@ -150,10 +151,11 @@ export class BookingService extends CollectionStore<Booking> {
     );
   }
 
-  getBookingsByStudioId(studioId: number): Observable<Booking[]> {
+  /** Public endpoint - only date/time/status of a studio's blocking bookings, no user data. */
+  getBookedSlotsByStudioId(studioId: number): Observable<BookedSlot[]> {
     this.setLoading(true);
     return this.http
-      .get<{ message: string; data: Booking[] }>(`${environment.bookingApiUrl}/studio/${studioId}`)
+      .get<ApiResponse<BookedSlot[]>>(`${environment.bookingApiUrl}/studio/${studioId}/slots`)
       .pipe(
         map(res => res.data),
         finalize(() => this.setLoading(false))

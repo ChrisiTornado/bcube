@@ -51,6 +51,7 @@ public class WebSecurityConfig {
                         .requestMatchers("/error").permitAll()
                         .requestMatchers("/actuator/health").permitAll()
                         .requestMatchers(HttpMethod.PATCH, "/api/bookings/*/payment-status").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/bookings/studio/*/slots").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/bookings").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/bookings/studio/*").hasRole("ADMIN")
                         .anyRequest().authenticated()

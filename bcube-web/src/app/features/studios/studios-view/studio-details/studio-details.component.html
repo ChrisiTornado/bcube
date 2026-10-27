@@ -61,7 +61,9 @@
       <aside class="booking-sidebar">
         <section class="clean-card sidebar-card">
           <h2>Buchungsdetails</h2>
-          <p class="sidebar-note">Wähle Datum und Zeit direkt hier aus und prüfe freie Slots im Kalender.</p>
+          @if (!isGuest) {
+            <p class="sidebar-note">Wähle Datum und Zeit direkt hier aus und prüfe freie Slots im Kalender.</p>
+          }
           @if (isUser) {
             @if (!pendingBookingTimes) {
               <app-booking-time-picker
@@ -83,6 +85,21 @@
                 (cancelled)="cancelPaymentFlow()">
               </app-booking-payment-step>
             }
+          }
+          @if (isGuest) {
+            <div class="guest-booking-hint">
+              <i class="pi pi-lock guest-booking-icon"></i>
+              <p class="guest-booking-title">Zum Buchen bitte anmelden</p>
+              <p class="guest-booking-text">Freie und belegte Zeiten siehst du im Kalender. Um einen Slot zu buchen, melde dich an oder erstelle ein Konto.</p>
+              <div class="guest-booking-actions">
+                <button pButton type="button" class="guest-booking-login" (click)="goToAuth('login')">
+                  <i class="pi pi-sign-in"></i> Anmelden
+                </button>
+                <button pButton type="button" class="p-button-outlined guest-booking-register" (click)="goToAuth('register')">
+                  Registrieren
+                </button>
+              </div>
+            </div>
           }
           @if (isAdmin) {
             <div class="admin-hint">

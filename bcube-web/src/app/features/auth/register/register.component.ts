@@ -1,7 +1,7 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { AuthService } from '@core/services/auth.service';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from "@angular/forms";
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { RouterModule } from '@angular/router';
 import { AuthContainerComponent } from '@features/auth/auth-container/auth-container.component';
@@ -16,6 +16,7 @@ import { ApiResponse } from '@models/responses/api-response';
 import { JwtResponse } from '@models/responses/user/jwt-response';
 import { InputTextModule } from 'primeng/inputtext';
 import { handleAuthSuccess } from '@features/auth/shared/auth-success.util';
+import { rememberReturnUrl } from '@shared/util/auth-return-url.util';
 import { extractErrorMessage } from '@shared/util/error-message.util';
 
 @Component({
@@ -30,9 +31,13 @@ export class RegisterComponent implements OnInit {
   loading!: boolean;
   submitted: boolean = false;
 
-  constructor(private fb: FormBuilder, private messageService: MessageService, private auth: AuthService, private router: Router) { }
+  constructor(private fb: FormBuilder, private messageService: MessageService, private auth: AuthService, private router: Router, private route: ActivatedRoute) { }
 
   ngOnInit(): void {
+    // Set by authGuard / the guest "Anmelden" buttons - remembered so the user lands back on that
+    // page afterwards, including across the Google OAuth round trip.
+    rememberReturnUrl(this.route.snapshot.queryParamMap.get('returnUrl'));
+
     this.registerForm = this.fb.group({
       email: [null, [Validators.required, Validators.email]],
       password: [null, Validators.required],

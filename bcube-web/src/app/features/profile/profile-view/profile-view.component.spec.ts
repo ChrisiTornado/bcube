@@ -33,7 +33,7 @@ describe('ProfileViewComponent', () => {
     userService = jasmine.createSpyObj('UserService', ['getById', 'updateUser', 'deleteUser']);
     userService.getById.and.returnValue(of(user ?? ({} as User)));
 
-    router = jasmine.createSpyObj('Router', ['navigate'], { url: '/user-dashboard/profile' });
+    router = jasmine.createSpyObj('Router', ['navigate'], { url: '/profile' });
 
     TestBed.configureTestingModule({
       imports: [ProfileViewComponent],
@@ -149,7 +149,7 @@ describe('ProfileViewComponent', () => {
       component.goToPasswordFlow();
 
       expect(router.navigate).toHaveBeenCalledWith(['/auth/email-reset'], {
-        state: { returnUrl: '/user-dashboard/profile' }
+        state: { returnUrl: '/profile' }
       });
     });
   });
@@ -203,7 +203,7 @@ describe('ProfileViewComponent', () => {
 
       component.openPaymentInfo();
 
-      expect(router.navigate).toHaveBeenCalledWith(['/user-dashboard', 'payment-history']);
+      expect(router.navigate).toHaveBeenCalledWith(['/payment-history']);
     });
   });
 });

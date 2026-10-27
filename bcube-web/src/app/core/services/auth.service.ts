@@ -38,7 +38,8 @@ export class AuthService {
   logout(): void {
     localStorage.removeItem(this.tokenKey);
     localStorage.removeItem(this.userKey);
-    this.router.navigate(['/login']);
+    // The landing page is public now, so signing out just drops back to browsing as a guest.
+    this.router.navigate(['/studios']);
   }
 
   resetPassword(payload: ResetPasswordRequest) {

@@ -4,6 +4,7 @@ import { CompleteProfileDialogComponent } from '@features/auth/complete-profile-
 import { AuthService } from '@core/services/auth.service';
 import { User } from '@models/user.model';
 import { isProfileComplete } from '@shared/util/profile-complete.util';
+import { getPostLoginUrl } from '@features/auth/shared/auth-success.util';
 
 /**
  * Reachable two ways: redirected here right after a Google sign-in that came back incomplete
@@ -47,6 +48,6 @@ export class CompleteProfilePageComponent implements OnInit {
   }
 
   private redirectToDashboard(user: User): void {
-    this.router.navigate([this.authService.isAdmin(user) ? '/admin-dashboard/studios' : '/user-dashboard/studios']);
+    this.router.navigateByUrl(getPostLoginUrl(this.authService, user));
   }
 }

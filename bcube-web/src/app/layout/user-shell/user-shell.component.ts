@@ -28,6 +28,7 @@ export class UserShellComponent implements OnInit {
   // "Mein Cube" only makes sense while there's exactly one studio to refer to - with several
   // studios "my cube" would be ambiguous, so the tab just doesn't appear.
   private showMyCubeTab = false;
+  isLoggedIn = false;
 
   constructor(
     private router: Router,
@@ -38,6 +39,8 @@ export class UserShellComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.isLoggedIn = this.authService.isAuthenticated();
+
     const message = sessionStorage.getItem('loginSuccessMessage');
     if (message) {
       setTimeout(() => {
@@ -96,6 +99,11 @@ export class UserShellComponent implements OnInit {
         styleClass: this.isRouteActive(['bookings', 'calendar', 'booking-details', 'booking-confirmation']) ? 'p-menuitem-link-active' : ''
       }
     ];
+  }
+
+  /** Current page as ?returnUrl=, so signing in from here lands back on it (see authGuard). */
+  get authQueryParams(): { returnUrl: string } {
+    return { returnUrl: this.router.url };
   }
 
   get avatarLabel(): string {

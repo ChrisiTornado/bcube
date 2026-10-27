@@ -36,7 +36,9 @@ build/
 # === ANGULAR / FRONTEND ===
 # node modules
 bcube-web/node_modules/
-bcube-web/src/environments/environment.local.ts
+
+# frontend env (template: environment.example.ts)
+bcube-web/src/environments/environment.ts
 
 # build output
 bcube-web/dist/

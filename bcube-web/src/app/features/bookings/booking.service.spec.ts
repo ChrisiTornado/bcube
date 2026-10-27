@@ -82,14 +82,16 @@ describe('BookingService', () => {
     });
   });
 
-  describe('getBookingsByStudioId', () => {
-    it('requests the studio-scoped endpoint', () => {
-      service.getBookingsByStudioId(3).subscribe(result => {
-        expect(result).toEqual([booking(1)]);
+  describe('getBookedSlotsByStudioId', () => {
+    it('requests the public studio slots endpoint', () => {
+      const slot = { date: '2026-10-12', startTime: '2026-10-12T08:00:00Z', endTime: '2026-10-12T10:00:00Z', status: BookingStatus.CONFIRMED };
+
+      service.getBookedSlotsByStudioId(3).subscribe(result => {
+        expect(result).toEqual([slot]);
       });
 
-      const req = httpMock.expectOne(`${environment.bookingApiUrl}/studio/3`);
-      req.flush({ message: 'ok', data: [booking(1)] });
+      const req = httpMock.expectOne(`${environment.bookingApiUrl}/studio/3/slots`);
+      req.flush({ message: 'ok', data: [slot] });
     });
   });
 

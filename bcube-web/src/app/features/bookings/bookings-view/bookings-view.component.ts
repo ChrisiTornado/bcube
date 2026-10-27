@@ -22,7 +22,7 @@ import { UserService } from '@features/users/user.service';
 import { DARK_BUTTON_STYLE, LIGHT_BUTTON_STYLE } from '@shared/util/button-style';
 import { getBookingStatusLabel } from '@shared/util/booking-status.util';
 import { extractErrorMessage } from '@shared/util/error-message.util';
-import { getDashboardBasePath } from '@shared/util/dashboard-path.util';
+import { getDashboardPath } from '@shared/util/dashboard-path.util';
 
 @Component({
     selector: 'app-bookings-view',
@@ -99,7 +99,7 @@ export class BookingsViewComponent implements OnInit {
   }
 
   get showCalendarSwitch(): boolean {
-    return !this.isAdmin && this.router.url.includes('/user-dashboard/bookings');
+    return !this.isAdmin && this.router.url.startsWith('/bookings');
   }
 
   updateFilters(): void {
@@ -183,20 +183,17 @@ export class BookingsViewComponent implements OnInit {
   }
 
   navigateToDetails(booking: Booking): void {
-    const basePath = getDashboardBasePath(this.isAdmin);
-    const navigationUrl = [basePath, 'booking-details', booking.id];
-    this.router.navigate(navigationUrl, {
+    this.router.navigate([getDashboardPath(this.isAdmin, 'booking-details', booking.id)], {
       state: { returnUrl: this.router.url }
     });
   }
 
   navigateToBookingCreation(): void {
-    const basePath = getDashboardBasePath(this.isAdmin);
-    this.router.navigate([basePath, 'studios']);
+    this.router.navigate([getDashboardPath(this.isAdmin, 'studios')]);
   }
 
   navigateToCalendarView(): void {
-    this.router.navigate(['/user-dashboard', 'calendar']);
+    this.router.navigate([getDashboardPath(false, 'calendar')]);
   }
 
   getStatusLabel(status: string): string {

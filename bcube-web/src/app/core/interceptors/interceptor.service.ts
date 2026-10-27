@@ -3,6 +3,7 @@ import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest, HttpErrorResponse
 import { Observable, catchError, throwError } from 'rxjs';
 import { Router } from '@angular/router';
 import { environment } from '@environments/environment';
+import { isJwtExpired } from '@shared/util/jwt.util';
 
 // All environment.*ApiUrl values share this origin+/api prefix (absolute in dev, relative
 // same-origin in prod) - derived once so the token is only ever sent to our own backend.
@@ -22,7 +23,11 @@ export class InterceptorService implements HttpInterceptor {
     // though the route itself is permitAll, breaking login with a 503.
     const isAuthEndpoint = req.url.startsWith(environment.authUrl);
 
-    if (token && !isAuthEndpoint && req.url.startsWith(API_BASE_URL)) {
+    // An expired token is never sent: guests may still have one lying around from an old session,
+    // and the downstream services reject any invalid bearer header - even on their public GETs.
+    const attachToken = !!token && !isJwtExpired(token) && !isAuthEndpoint && req.url.startsWith(API_BASE_URL);
+
+    if (attachToken) {
       modifiedReq = req.clone({
         setHeaders: {
           Authorization: `Bearer ${token}`
@@ -32,7 +37,9 @@ export class InterceptorService implements HttpInterceptor {
 
     return next.handle(modifiedReq).pipe(
       catchError((err: HttpErrorResponse) => {
-        if (err.status === 401) {
+        // Only a rejected *session* means "logged out" - a guest hitting a protected endpoint
+        // without a token just gets the error, no forced redirect.
+        if (err.status === 401 && attachToken) {
           localStorage.removeItem('auth_token');
           localStorage.removeItem('auth_user');
           sessionStorage.setItem('sessionExpiredMessage', 'Bitte melde dich erneut an.');

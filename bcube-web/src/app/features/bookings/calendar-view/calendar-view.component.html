@@ -2,7 +2,26 @@
   <app-loading-spinner></app-loading-spinner>
 }
 
-@if (!isLoading) {
+@if (!isLoading && isGuest) {
+  <div class="view-header">
+    <h1 class="m-0">Buchungen</h1>
+  </div>
+  <div class="guest-calendar-hint">
+    <i class="pi pi-calendar guest-calendar-icon"></i>
+    <h2 class="m-0">Melde dich an, um deine Buchungen zu sehen</h2>
+    <p class="m-0">Hier findest du nach der Anmeldung alle deine geplanten und vergangenen Cube-Sessions im Kalender.</p>
+    <div class="guest-calendar-actions">
+      <button pButton type="button" (click)="goToAuth('login')">
+        <i class="pi pi-sign-in"></i> Anmelden
+      </button>
+      <button pButton type="button" class="p-button-outlined" (click)="goToAuth('register')">
+        Registrieren
+      </button>
+    </div>
+  </div>
+}
+
+@if (!isLoading && !isGuest) {
   <div class="view-header">
     <h1 class="m-0">Buchungen</h1>
     <button

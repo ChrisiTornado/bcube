@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, Chang
 import { FormsModule } from '@angular/forms';
 import { DatePickerModule } from 'primeng/datepicker';
 import { ButtonModule } from 'primeng/button';
-import { Booking } from '@models/booking.model';
+import { BookedSlot } from '@models/booked-slot.model';
 import { toIsoDate } from '@shared/util/booking-time.util';
 
 @Component({
@@ -14,7 +14,7 @@ import { toIsoDate } from '@shared/util/booking-time.util';
 })
 export class BookingTimePickerComponent implements OnChanges {
   @Input() date: Date | null = null;
-  @Input() bookings: Booking[] = [];
+  @Input() bookings: BookedSlot[] = [];
   @Input() disabledDates: Date[] = [];
 
   @Output() bookRequested = new EventEmitter<{ startTime: Date; endTime: Date }>();

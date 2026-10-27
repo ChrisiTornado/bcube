@@ -80,4 +80,6 @@ management:
         include: health,info,gateway
 
 jwt:
-  secret: ${JWT.SECRET}
+  # From .env (local run) or docker-compose - must match every other service's JWT_SECRET,
+  # otherwise the gateway rejects every token user-service issues (401 -> "Sitzung abgelaufen").
+  secret: ${JWT_SECRET}

@@ -1,6 +1,6 @@
 # BcubeFrontend
 
-Angular 21 frontend for bcube, built with PrimeNG 21.
+Angular 22 frontend for bcube, built with PrimeNG 21.
 
 ## Development server
 

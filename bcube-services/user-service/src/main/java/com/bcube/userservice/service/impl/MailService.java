@@ -48,7 +48,7 @@ public class MailService {
     public void sendWelcomeEmail(String to, String firstName) {
         sendHtmlEmailSafely(to, "Willkommen bei bcube!", "email/welcome", Map.of(
                 "firstName", firstName,
-                "appUrl", frontendUrl + "/user-dashboard/studios"
+                "appUrl", frontendUrl + "/studios"
         ));
     }
 
@@ -64,7 +64,7 @@ public class MailService {
                 "studioName", studioName,
                 "date", date,
                 "time", time,
-                "appUrl", frontendUrl + "/user-dashboard/bookings"
+                "appUrl", frontendUrl + "/bookings"
         ));
     }
 
@@ -75,7 +75,7 @@ public class MailService {
                 "date", date,
                 "time", time,
                 "refundNote", refundNote == null ? "" : refundNote,
-                "appUrl", frontendUrl + "/user-dashboard/studios"
+                "appUrl", frontendUrl + "/studios"
         ));
     }
 
@@ -85,7 +85,7 @@ public class MailService {
                 "studioName", studioName,
                 "date", date,
                 "time", time,
-                "appUrl", frontendUrl + "/user-dashboard/bookings"
+                "appUrl", frontendUrl + "/bookings"
         ));
     }
 
@@ -103,7 +103,7 @@ public class MailService {
                 "firstName", firstName,
                 "studioName", studioName,
                 "date", date,
-                "appUrl", frontendUrl + "/user-dashboard/studios"
+                "appUrl", frontendUrl + "/studios"
         ));
     }
 

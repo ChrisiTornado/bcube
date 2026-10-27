@@ -72,7 +72,7 @@ describe('AuthService', () => {
       expect(JSON.parse(localStorage.getItem('auth_user')!)).toEqual(testUser);
     });
 
-    it('clears storage and navigates to /login on logout', () => {
+    it('clears storage and navigates to the public landing page on logout', () => {
       service.storeAuth('jwt-token', testUser);
       const navigateSpy = spyOn(router, 'navigate');
 
@@ -80,7 +80,7 @@ describe('AuthService', () => {
 
       expect(localStorage.getItem('auth_token')).toBeNull();
       expect(localStorage.getItem('auth_user')).toBeNull();
-      expect(navigateSpy).toHaveBeenCalledWith(['/login']);
+      expect(navigateSpy).toHaveBeenCalledWith(['/studios']);
     });
   });
 

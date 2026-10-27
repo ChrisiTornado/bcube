@@ -24,7 +24,7 @@ type DateClickArg = any;
 type CalendarOptions = any;
 type EventInput = any;
 import { Studio } from '@models/studio.model';
-import { Booking } from '@models/booking.model';
+import { BookedSlot } from '@models/booked-slot.model';
 import { BookingStatus } from '@models/booking-status.model';
 import { CreateBookingRequest } from '@models/requests/booking/create-booking-request';
 import { UpdateStudioComponent } from '@features/studios/studios-view/update-studio/update-studio.component';
@@ -36,7 +36,7 @@ import { StudioGalleryComponent } from '@features/studios/studios-view/studio-de
 import { BookingTimePickerComponent } from '@features/studios/studios-view/studio-details/booking-time-picker/booking-time-picker.component';
 import { BookingPaymentStepComponent } from '@features/payments/booking-payment-step/booking-payment-step.component';
 import { BookingDetailsResponse } from '@models/responses/booking/booking-details-response';
-import { getDashboardBasePath } from '@shared/util/dashboard-path.util';
+import { getDashboardPath } from '@shared/util/dashboard-path.util';
 
 @Component({
     selector: 'app-studio-details',
@@ -64,6 +64,7 @@ export class StudioDetailsComponent implements OnInit {
   studio: Studio | null = null;
   isUser = false;
   isAdmin = false;
+  isGuest = false;
   private returnUrl?: string;
   loadError = false;
   date: Date | null = null;
@@ -74,7 +75,7 @@ export class StudioDetailsComponent implements OnInit {
   pendingBooking: BookingDetailsResponse | null = null;
   creatingBooking = false;
 
-  bookings: Booking[] = [];
+  bookings: BookedSlot[] = [];
   disabledDates: Date[] = [];
 
   calendarPlugins = [dayGridPlugin, interactionPlugin, themePlugin];
@@ -103,6 +104,7 @@ export class StudioDetailsComponent implements OnInit {
   ngOnInit(): void {
     this.isUser = this.authService.isUser();
     this.isAdmin = this.authService.isAdmin();
+    this.isGuest = !this.authService.isAuthenticated();
     this.returnUrl = history.state?.returnUrl;
 
     const studioId = this.route.snapshot.paramMap.get('id');
@@ -139,9 +141,9 @@ export class StudioDetailsComponent implements OnInit {
 
   // === Data loading ===
 
-  /** Lädt Buchungen für das aktuelle Studio und baut den Kalender */
+  /** Lädt die belegten Zeiten (öffentlich, ohne Nutzerdaten) für das aktuelle Studio und baut den Kalender */
   private loadBookings(studioId: number): void {
-    this.bookingService.getBookingsByStudioId(studioId).subscribe({
+    this.bookingService.getBookedSlotsByStudioId(studioId).subscribe({
       next: (bookings) => {
         this.bookings = bookings.filter(b => this.blockingStatuses.has(b.status));
         this.markCalendarDates();
@@ -157,7 +159,7 @@ export class StudioDetailsComponent implements OnInit {
         const today = new Date();
         this.calendarOptions = this.buildCalendarOptions(
           events,
-          this.isUser ? { start: toIsoDate(today) } : undefined
+          this.isAdmin ? undefined : { start: toIsoDate(today) }
         );
       },
       // Bestehende Buchungen sind hier sicherheitsrelevant (Konfliktprüfung im Zeit-Picker) -
@@ -206,7 +208,7 @@ export class StudioDetailsComponent implements OnInit {
 
   /** Markiert Tage im Kalender, die bereits voll oder teilweise gebucht sind */
   private markCalendarDates(): void {
-    const bookingsByDate = new Map<string, Booking[]>();
+    const bookingsByDate = new Map<string, BookedSlot[]>();
 
     for (const booking of this.bookings) {
       const dateStr = booking.date;
@@ -336,7 +338,7 @@ export class StudioDetailsComponent implements OnInit {
       detail: message
     });
     this.router.navigate(
-      [`/user-dashboard/booking-details/${bookingId}`],
+      [getDashboardPath(false, 'booking-details', bookingId)],
       { state: { returnUrl: this.router.url } }
     );
   }
@@ -349,6 +351,11 @@ export class StudioDetailsComponent implements OnInit {
 
   // === Navigation & UI ===
 
+  /** Zur Anmeldung bzw. Registrierung - danach geht es zurück auf genau diese Detailseite */
+  goToAuth(page: 'login' | 'register'): void {
+    this.router.navigate([`/${page}`], { queryParams: { returnUrl: this.router.url } });
+  }
+
   /** Navigiert zurück zur vorherigen Seite */
   goBack(): void {
     if (this.returnUrl) {
@@ -356,8 +363,7 @@ export class StudioDetailsComponent implements OnInit {
       return;
     }
 
-    const basePath = getDashboardBasePath(!this.isUser);
-    this.router.navigate([`${basePath}/studios`]);
+    this.router.navigate([getDashboardPath(this.isAdmin, 'studios')]);
   }
 
   // === Helper ===
@@ -393,7 +399,7 @@ export class StudioDetailsComponent implements OnInit {
     }).format(this.date);
   }
 
-  formatBookingRange(booking: Booking): string {
+  formatBookingRange(booking: BookedSlot): string {
     return formatBookingTimeRangeUtil(booking.startTime, booking.endTime, 'Europe/Vienna');
   }
 }

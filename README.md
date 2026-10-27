@@ -31,8 +31,8 @@ This repository is designed as a portfolio project and demonstrates authenticati
 
 **Backend**
 
-- Java 21
-- Spring Boot 3
+- Java 25
+- Spring Boot 4
 - Spring Security
 - Spring Data JPA
 - Spring Web / WebFlux
@@ -66,13 +66,44 @@ The application is split into domain-focused services:
 - `api-gateway`: API routing and central JWT protection
 - `bcube-frontend`: Angular interface for user and admin workflows
 
+## Environment Setup
+
+Secrets are never committed. Every `.env` is git-ignored; a committed `.env.example` next to it lists the required variables. Run this once after cloning:
+
+```bash
+cp .env.example .env
+for s in user studio booking access payment; do
+  cp bcube-services/$s-service/.env.example bcube-services/$s-service/.env
+done
+cp bcube-services/api-gateway/.env.example bcube-services/api-gateway/.env
+cp bcube-web/src/environments/environment.example.ts bcube-web/src/environments/environment.ts
+```
+
+Then fill in the placeholders:
+
+| File | Used by | Contains |
+| --- | --- | --- |
+| `.env` (root) | `docker compose` interpolation | `DB_USER`, `DB_PASSWORD`, `JWT_SECRET` |
+| `bcube-services/<service>/.env` | that service and its Postgres container | DB settings, service secrets, service URLs |
+| `bcube-web/src/environments/environment.ts` | Angular frontend (`ng serve`, `ng build`, Docker image) | API paths, Stripe publishable key, Mapbox token |
+
+`api-gateway` only needs `JWT_SECRET`: from its own `.env` when run locally, from the root `.env` (via `docker compose`) in Docker.
+
+Values that must match across files:
+
+- `JWT_SECRET`: root `.env` and every service that has it
+- `INTERNAL_SERVICE_KEY`: user, booking, payment and access service
+- `DB_USER` / `DB_PASSWORD`: root `.env` and the `POSTGRES_*` values in each service `.env`
+
+Generate secrets with `openssl rand -base64 48` (for `ACCESS_AES_KEY` use `openssl rand -base64 32`).
+
 ## Quick Start
 
 Prerequisites:
 
 - Docker and Docker Compose
-- Java 21 and Maven, if services are started locally
-- Node.js, if the frontend is started locally
+- Java 25 (`sdk env` reads `.sdkmanrc`), if services are started locally; each service ships `./mvnw`, so Maven is not needed
+- Node.js 22 (`nvm use` reads `.nvmrc`), if the frontend is started locally
 - Service-specific `.env` files for database and secret configuration
 
 Clone and start the project:

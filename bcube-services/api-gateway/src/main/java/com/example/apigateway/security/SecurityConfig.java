@@ -32,12 +32,23 @@ public class SecurityConfig {
     @Order(1)
     public SecurityWebFilterChain publicSecurityWebFilterChain(ServerHttpSecurity http) {
         return http
-                .securityMatcher(ServerWebExchangeMatchers.pathMatchers(
-                        "/actuator/health",
-                        "/api/auth/**",
-                        "/api/payments/webhook",
-                        "/oauth2/**",
-                        "/login/**"
+                .securityMatcher(ServerWebExchangeMatchers.matchers(
+                        ServerWebExchangeMatchers.pathMatchers(
+                                "/actuator/health",
+                                "/api/auth/**",
+                                "/api/payments/webhook",
+                                "/oauth2/**",
+                                "/login/**"
+                        ),
+                        // Read-only browsing for guests: studio list/details and a studio's anonymous
+                        // occupancy (see booking-service's /slots endpoint) - GET only, so every write
+                        // on these paths still goes through the authenticated chain below.
+                        ServerWebExchangeMatchers.pathMatchers(
+                                HttpMethod.GET,
+                                "/api/studios",
+                                "/api/studios/**",
+                                "/api/bookings/studio/*/slots"
+                        )
                 ))
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .authorizeExchange(exchange -> exchange.anyExchange().permitAll())

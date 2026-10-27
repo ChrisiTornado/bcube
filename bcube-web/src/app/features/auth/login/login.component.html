@@ -41,7 +41,7 @@
           <p-button styleClass="login-primary-button" pRipple
             label="Einloggen" icon="pi pi-sign-in" iconPos="left" [loading]="loading" (click)="login()">
           </p-button>
-          <p-button severity="danger" styleClass="login-secondary-button" [routerLink]="['/register']">
+          <p-button severity="danger" styleClass="login-secondary-button" [routerLink]="['/register']" queryParamsHandling="preserve">
             Registrieren
           </p-button>
         </div>

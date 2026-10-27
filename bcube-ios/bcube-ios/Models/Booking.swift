@@ -18,15 +18,15 @@ enum BookingStatus: String, Codable, CaseIterable, Hashable {
     }
 }
 
-struct Booking: Codable, Identifiable, Hashable {
-    let id: Int
-    let studio: Studio
-    let user: User
-    let date: String
-    let startTime: String
-    let endTime: String
-    let status: BookingStatus
+/// Shared date/time helpers for anything that occupies a studio time range - a full `Booking`
+/// as well as the anonymous `BookedSlot` from the public occupancy endpoint.
+protocol BookingTimeRange {
+    var date: String { get }
+    var startTime: String { get }
+    var endTime: String { get }
+}
 
+extension BookingTimeRange {
     var dateValue: Date? {
         date.asISODate()
     }
@@ -68,6 +68,29 @@ struct Booking: Codable, Identifiable, Hashable {
         }
 
         return value
+    }
+}
+
+struct Booking: Codable, Identifiable, Hashable, BookingTimeRange {
+    let id: Int
+    let studio: Studio
+    let user: User
+    let date: String
+    let startTime: String
+    let endTime: String
+    let status: BookingStatus
+}
+
+/// Anonymous occupancy of a studio (GET /api/bookings/studio/{id}/slots) - no booking id or user,
+/// so the identity for SwiftUI lists is derived from the time range itself.
+struct BookedSlot: Codable, Identifiable, Hashable, BookingTimeRange {
+    let date: String
+    let startTime: String
+    let endTime: String
+    let status: BookingStatus
+
+    var id: String {
+        "\(date)|\(startTime)|\(endTime)"
     }
 }
 

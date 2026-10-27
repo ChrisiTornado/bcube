@@ -68,6 +68,52 @@
   box-shadow: 0 22px 42px rgba(255, 167, 34, 0.12);
 }
 
+/* ===== Guest login / register (replaces the avatar while signed out) ===== */
+.guest-auth-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.guest-auth-button {
+  height: 48px;
+  padding: 0 1.15rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 0.95rem;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: transform 0.22s ease, border-color 0.22s ease, background-color 0.22s ease, box-shadow 0.22s ease;
+}
+
+.guest-auth-button:hover {
+  transform: translateY(-1px);
+}
+
+.guest-auth-button-primary {
+  background: var(--bcube-orange);
+  color: #111111;
+  border: 1px solid var(--bcube-orange);
+  box-shadow: 0 18px 40px rgba(255, 167, 34, 0.18);
+}
+
+.guest-auth-button-primary:hover {
+  box-shadow: 0 22px 42px rgba(255, 167, 34, 0.28);
+}
+
+.guest-auth-button-secondary {
+  color: #fff6e8;
+  border: 1px solid rgba(255, 167, 34, 0.24);
+  background: rgba(12, 12, 12, 0.9);
+}
+
+.guest-auth-button-secondary:hover {
+  border-color: rgba(255, 167, 34, 0.5);
+}
+
 /* ===== Page layout ===== */
 .user-layout {
   display: block;
@@ -207,7 +253,8 @@
     flex-wrap: nowrap;
   }
 
-  .profile-avatar-button {
+  .profile-avatar-button,
+  .guest-auth-actions {
     justify-self: end;
   }
 }

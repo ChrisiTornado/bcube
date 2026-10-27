@@ -23,6 +23,7 @@ import com.bcube.bookingservice.service.dto.Classes.UserDto;
 import com.bcube.bookingservice.service.dto.request.AccessRequest;
 import com.bcube.bookingservice.service.dto.request.BookStudioRequest;
 import com.bcube.bookingservice.service.dto.request.CreatePaymentIntentRequest;
+import com.bcube.bookingservice.service.dto.response.BookedSlotResponse;
 import com.bcube.bookingservice.service.dto.response.BookingDetailsResponse;
 import com.bcube.bookingservice.service.dto.response.AccessCodeResponse;
 import com.bcube.bookingservice.service.dto.response.BookingResponse;
@@ -215,41 +216,16 @@ public class BookingServiceImpl implements BookingService {
         });
     }
 
-    /**
-     * Deliberately leaves user/studio null - this backs the public/customer-facing availability
-     * calendar (any authenticated user, not just admins, can call this for a studio they're
-     * looking to book), which only ever renders status/startTime/endTime/date. It used to also
-     * fetch and return every OTHER booking's owner's name/email/phone here - a PII leak to every
-     * caller, not just admins, and an N+1 call to user-service (plus a redundant, identical
-     * studio-service call) per booking for data nothing consumed.
-     */
-    private BookingResponse[] getBookingResponses(List<Booking> bookings) {
-        List<BookingResponse> responses = bookings.stream()
-                .map(booking -> new BookingResponse(
-                        booking.getId(),
-                        null,
-                        null,
-                        booking.getDate(),
-                        booking.getStartTime(),
-                        booking.getEndTime(),
-                        booking.getStatus(),
-                        booking.getCreatedAt(),
-                        null
-                ))
-                .toList();
-
-        return responses.toArray(new BookingResponse[0]);
-    }
-
     @Override
-    public BookingResponse[] getBookingsByStudioId(long studioId) {
+    public List<BookedSlotResponse> getBookedSlotsByStudioId(long studioId) {
         if (!studioClient.studioExists(studioId)) {
             throw new StudioNotFoundException("Studio mit ID " + studioId + " nicht gefunden");
         }
 
-        List<Booking> bookings = bookingRepository.findAllByStudioId(studioId);
-
-        return getBookingResponses(bookings);
+        return bookingRepository.findAllByStudioId(studioId).stream()
+                .filter(booking -> BLOCKING_STATUSES.contains(booking.getStatus()))
+                .map(booking -> new BookedSlotResponse(booking.getDate(), booking.getStartTime(), booking.getEndTime(), booking.getStatus()))
+                .toList();
     }
 
     @Override

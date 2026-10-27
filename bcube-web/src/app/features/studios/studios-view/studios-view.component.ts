@@ -7,7 +7,8 @@ import {
   QueryList,
   ViewChild,
   ViewChildren,
-  ChangeDetectionStrategy
+  ChangeDetectionStrategy,
+  isDevMode
 } from '@angular/core';
 
 import { Router } from '@angular/router';
@@ -22,8 +23,7 @@ import { CreateStudioComponent } from '@features/studios/create-studio/create-st
 import { UpdateStudioComponent } from '@features/studios/studios-view/update-studio/update-studio.component';
 import { DeleteStudioComponent } from '@features/studios/studios-view/delete-studio/delete-studio.component';
 import { StudioMapComponent } from '@features/studios/studios-view/studio-map/studio-map.component';
-import { environment } from '@environments/environment';
-import { getDashboardBasePath } from '@shared/util/dashboard-path.util';
+import { getDashboardPath } from '@shared/util/dashboard-path.util';
 
 type StudioViewModel = Studio & { gallery: string[] };
 
@@ -107,10 +107,7 @@ export class StudiosViewComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   navigateToDetails(studio: StudioViewModel): void {
-    const basePath = getDashboardBasePath(this.isAdmin);
-    const navigationUrl = [basePath, 'studio-details', studio.id];
-
-    this.router.navigate(navigationUrl, {
+    this.router.navigate([getDashboardPath(this.isAdmin, 'studio-details', studio.id)], {
       state: { returnUrl: this.router.url }
     });
   }
@@ -323,7 +320,7 @@ export class StudiosViewComponent implements OnInit, AfterViewInit, OnDestroy {
           }
         },
         error: err => {
-          if (!environment.production) {
+          if (isDevMode()) {
             console.error('Fehler beim Laden der Studios', err);
           }
           this.isInitialLoading = false;

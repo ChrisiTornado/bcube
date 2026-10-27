@@ -59,14 +59,13 @@ export class StudioMapComponent implements OnDestroy {
       return;
     }
 
-    // The recurring "grey map" reports have repeatedly traced back to environment.token
-    // regressing to this placeholder (environment.prod.ts is committed to git and has been
-    // silently reverted to it more than once by unrelated commits) - failing loudly here means
-    // the next regression shows up as an obvious console error instead of a mysterious grey box.
+    // The recurring "grey map" reports have repeatedly traced back to a missing/placeholder
+    // environment.token (e.g. an environment.ts freshly copied from the empty example) - failing
+    // loudly here means it shows up as an obvious console error instead of a mysterious grey box.
     if (!environment.token || environment.token === 'YOUR_MAPBOX_TOKEN') {
       console.error(
-        'Mapbox-Karte kann nicht geladen werden: environment.token ist nicht gesetzt (Platzhalter). ' +
-        'Echten Mapbox-Token in environment.ts/environment.prod.ts eintragen.'
+        'Mapbox-Karte kann nicht geladen werden: environment.token ist nicht gesetzt. ' +
+        'Echten Mapbox-Token in src/environments/environment.ts eintragen.'
       );
       return;
     }

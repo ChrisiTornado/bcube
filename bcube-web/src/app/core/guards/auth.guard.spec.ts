@@ -21,7 +21,7 @@ describe('authGuard', () => {
 
   function runGuard() {
     return TestBed.runInInjectionContext(() =>
-      authGuard({} as any, { url: '/user-dashboard' } as any)
+      authGuard({} as any, { url: '/bookings' } as any)
     );
   }
 
@@ -36,12 +36,12 @@ describe('authGuard', () => {
     expect(runGuard()).toBeTrue();
   });
 
-  it('redirects to /login when no token is stored', () => {
+  it('redirects to /login with the blocked URL as returnUrl when no token is stored', () => {
     const result = runGuard();
 
     expect(result).not.toBe(true);
     const tree = result as UrlTree;
-    expect(router.serializeUrl(tree)).toBe('/login');
+    expect(router.serializeUrl(tree)).toBe('/login?returnUrl=%2Fbookings');
   });
 
   it('redirects to /login when the stored token has expired', () => {
@@ -50,6 +50,6 @@ describe('authGuard', () => {
     const result = runGuard();
 
     expect(result).not.toBe(true);
-    expect(router.serializeUrl(result as UrlTree)).toBe('/login');
+    expect(router.serializeUrl(result as UrlTree)).toBe('/login?returnUrl=%2Fbookings');
   });
 });

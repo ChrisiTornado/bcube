@@ -8,6 +8,7 @@ import com.bcube.bookingservice.service.dto.request.AdminBookingQueryRequest;
 import com.bcube.bookingservice.service.dto.request.BookingPaymentStatusRequest;
 import com.bcube.bookingservice.service.dto.request.UserBookingQueryRequest;
 import com.bcube.bookingservice.service.dto.response.ApiResponse;
+import com.bcube.bookingservice.service.dto.response.BookedSlotResponse;
 import com.bcube.bookingservice.service.dto.response.BookingDetailsResponse;
 import com.bcube.bookingservice.service.dto.response.BookingResponse;
 import com.bcube.bookingservice.service.impl.BookingServiceImpl;
@@ -25,6 +26,7 @@ import jakarta.servlet.http.HttpServletRequest;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -111,10 +113,11 @@ public class BookingController {
         return ResponseEntity.ok(new ApiResponse<>(message, booking));
     }
 
-    @GetMapping("/studio/{studioId}")
-    public ResponseEntity<ApiResponse<BookingResponse[]>> getBookingsByStudio(@PathVariable Long studioId) {
-        BookingResponse[] bookings = bookingService.getBookingsByStudioId(studioId);
-        return ResponseEntity.ok(new ApiResponse<>("Buchungen erfolgreich geladen", bookings));
+    /** Public (no auth) - lets guests see a studio's occupancy without exposing who booked it. */
+    @GetMapping("/studio/{studioId}/slots")
+    public ResponseEntity<ApiResponse<List<BookedSlotResponse>>> getBookedSlotsByStudio(@PathVariable Long studioId) {
+        List<BookedSlotResponse> slots = bookingService.getBookedSlotsByStudioId(studioId);
+        return ResponseEntity.ok(new ApiResponse<>("Belegte Zeiten erfolgreich geladen", slots));
     }
 
     /**

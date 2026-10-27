@@ -23,8 +23,9 @@ struct BookingService {
         return envelope.data
     }
 
-    func getBookingsForStudio(studioID: Int, token: String) async throws -> [Booking] {
-        let envelope: APIEnvelope<[Booking]> = try await network.request(path: "/api/bookings/studio/\(studioID)", requiresAuth: true, token: token)
+    /// Public endpoint - only date/time/status of the studio's blocking bookings, no user data.
+    func getBookedSlotsForStudio(studioID: Int) async throws -> [BookedSlot] {
+        let envelope: APIEnvelope<[BookedSlot]> = try await network.request(path: "/api/bookings/studio/\(studioID)/slots", requiresAuth: false)
         return envelope.data
     }
 

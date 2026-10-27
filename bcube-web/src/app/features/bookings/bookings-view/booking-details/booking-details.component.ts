@@ -13,7 +13,7 @@ import { BookingDetailsResponse } from '@models/responses/booking/booking-detail
 import { BookingStatus } from '@models/booking-status.model';
 import { getBookingStatusLabel } from '@shared/util/booking-status.util';
 import { extractErrorMessage } from '@shared/util/error-message.util';
-import { getDashboardBasePath } from '@shared/util/dashboard-path.util';
+import { getDashboardPath } from '@shared/util/dashboard-path.util';
 import { DARK_BUTTON_STYLE } from '@shared/util/button-style';
 import { PaymentService } from '@features/payments/payment.service';
 import { PaymentResponse } from '@models/responses/payment/payment-response';
@@ -149,8 +149,7 @@ export class BookingDetailsComponent implements OnInit {
     this.bookingActionService.confirmStorno(
       this.booking!,
       () => {
-        const basePath = getDashboardBasePath(!this.isUser);
-        this.router.navigate([basePath + '/bookings'])
+        this.router.navigate([getDashboardPath(!this.isUser, 'bookings')])
       },
       () => {
         // optional: onError
@@ -173,8 +172,7 @@ export class BookingDetailsComponent implements OnInit {
     if (this.returnUrl) {
       this.router.navigateByUrl(this.returnUrl);
     } else {
-      const basePath = getDashboardBasePath(!this.isUser);
-      this.router.navigate([basePath + '/bookings']);
+      this.router.navigate([getDashboardPath(!this.isUser, 'bookings')]);
     }
   }
 }

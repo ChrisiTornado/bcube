@@ -1,7 +1,7 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { AuthService } from '@core/services/auth.service';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from "@angular/forms";
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { RouterModule } from '@angular/router';
 import { ButtonModule } from "primeng/button";
@@ -17,6 +17,7 @@ import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { InputTextModule } from 'primeng/inputtext';
 import { handleAuthSuccess } from '@features/auth/shared/auth-success.util';
+import { rememberReturnUrl } from '@shared/util/auth-return-url.util';
 import { extractErrorMessage } from '@shared/util/error-message.util';
 import { environment } from '@environments/environment';
 
@@ -32,9 +33,13 @@ export class LoginComponent implements OnInit {
   loading!: boolean;
   submitted: boolean = false;
 
-  constructor(private fb: FormBuilder, private messageService: MessageService, private auth: AuthService, private router: Router) { }
+  constructor(private fb: FormBuilder, private messageService: MessageService, private auth: AuthService, private router: Router, private route: ActivatedRoute) { }
 
   ngOnInit(): void {
+    // Set by authGuard / the guest "Anmelden" buttons - remembered so the user lands back on that
+    // page afterwards, including across the Google OAuth round trip.
+    rememberReturnUrl(this.route.snapshot.queryParamMap.get('returnUrl'));
+
     this.loginForm = this.fb.group({
       email: [null, [Validators.required, Validators.email]],
       password: [null, Validators.required]
