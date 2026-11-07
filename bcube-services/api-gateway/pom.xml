@@ -8,7 +8,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>4.0.7</version>
+        <version>4.0.9</version>
         <relativePath/>
     </parent>
 
@@ -19,12 +19,24 @@
 
     <properties>
         <java.version>25</java.version>
-        <spring-cloud.version>2025.1.2</spring-cloud.version>
+		<!-- Patch releases newer than the Boot-managed ones; they fix advisories flagged by the IDE
+		     (jackson-databind CVE-2026-110879, json-smart). Remove once Boot manages these. -->
+		<jackson-bom.version>3.1.8</jackson-bom.version>
+		<jackson-2-bom.version>2.21.8</jackson-2-bom.version>
+		<json-smart.version>2.6.1</json-smart.version>
+        <spring-cloud.version>2025.1.4</spring-cloud.version>
     </properties>
 
     <!-- ✅ HIER GEHÖRT ES REIN -->
     <dependencyManagement>
         <dependencies>
+            <!-- Pulled in transitively; pinned above the version Spring Cloud brings to pick up
+                 BouncyCastle security fixes. -->
+            <dependency>
+                <groupId>org.bouncycastle</groupId>
+                <artifactId>bcprov-jdk18on</artifactId>
+                <version>1.86</version>
+            </dependency>
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-dependencies</artifactId>
