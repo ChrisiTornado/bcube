@@ -1,18 +1,13 @@
 package com.bcube.studioservice.service.impl;
 
-import com.bcube.studioservice.exception.GeocodingException;
 import com.bcube.studioservice.persistance.entity.Studio;
 import com.bcube.studioservice.persistance.repository.StudioRepository;
 import com.bcube.studioservice.service.StudioService;
-import com.bcube.studioservice.service.dto.request.CreateStudioRequest;
-import com.bcube.studioservice.service.dto.request.UpdateStudioRequest;
-import com.bcube.studioservice.service.dto.response.DeleteResponse;
 import com.bcube.studioservice.service.dto.response.StudioNameResponse;
 import com.bcube.studioservice.service.dto.response.StudioResponse;
 import lombok.RequiredArgsConstructor;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -20,77 +15,35 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.net.URI;
-import java.net.URLEncoder;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class StudioServiceImpl implements StudioService {
     private final StudioRepository studioRepository;
+    private final StudioMapper studioMapper;
+    private final StudioImageService studioImageService;
 
     @Override
     public Page<StudioResponse> getStudiosPagination(int page, int size) {
-
         Pageable pageable = PageRequest.of(page, size);
-        Page<Studio> studioList = studioRepository.findAll(pageable);
-
-        return studioList.map(studio -> new StudioResponse(
-                        studio.getId(),
-                        studio.getSmartlockId(),
-                        studio.getName(),
-                        studio.getDescription(),
-                        studio.getStreet(),
-                        studio.getPlz(),
-                        studio.getCity(),
-                        studio.getCountry(),
-                        studio.getLatitude(),
-                        studio.getLongitude(),
-                        StudioImageMapper.toDataImage(studio.getImage()),
-                        StudioImageMapper.toImageGalleryBase64(studio),
-                        true,
-                        studio.getCreatedAt(),
-                        studio.getHourlyRateCents()
-                ));
+        Page<Studio> studios = studioRepository.findAll(pageable);
+        return new PageImpl<>(studioMapper.toList(studios.getContent()), pageable, studios.getTotalElements());
     }
 
     @Override
     public StudioResponse getStudioById(long id) {
-        return toResponse(findStudio(id), true);
+        Studio studio = findStudio(id);
+        return studioMapper.toDetail(studio, studioImageService.imagesOf(id));
     }
 
     @Override
     public StudioResponse getStudioSummaryById(long id) {
-        return toResponse(findStudio(id), false);
+        return studioMapper.toSummary(findStudio(id));
     }
 
     private Studio findStudio(long id) {
         return studioRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Studio mit ID " + id + " nicht gefunden"));
-    }
-
-    private StudioResponse toResponse(Studio studio, boolean includeGallery) {
-        return new StudioResponse(
-                studio.getId(),
-                studio.getSmartlockId(),
-                studio.getName(),
-                studio.getDescription(),
-                studio.getStreet(),
-                studio.getPlz(),
-                studio.getCity(),
-                studio.getCountry(),
-                studio.getLatitude(),
-                studio.getLongitude(),
-                StudioImageMapper.toDataImage(studio.getImage()),
-                includeGallery ? StudioImageMapper.toImageGalleryBase64(studio) : List.of(),
-                studio.isActive(),
-                studio.getCreatedAt(),
-                studio.getHourlyRateCents()
-        );
     }
 
     @Override
@@ -104,27 +57,6 @@ public class StudioServiceImpl implements StudioService {
 
     @Override
     public StudioResponse[] getAllStudios() {
-        List<Studio> studios = studioRepository.findAll();
-
-        List<StudioResponse> response = studios.stream()
-                .map(studio -> new StudioResponse(
-                        studio.getId(),
-                        studio.getSmartlockId(),
-                        studio.getName(),
-                        studio.getDescription(),
-                        studio.getStreet(),
-                        studio.getPlz(),
-                        studio.getCity(),
-                        studio.getCountry(),
-                        studio.getLatitude(),
-                        studio.getLongitude(),
-                        StudioImageMapper.toDataImage(studio.getImage()),
-                        StudioImageMapper.toImageGalleryBase64(studio),
-                        studio.isActive(),
-                        studio.getCreatedAt(),
-                        studio.getHourlyRateCents()
-                )).toList();
-
-        return response.toArray(new StudioResponse[0]);
+        return studioMapper.toList(studioRepository.findAll()).toArray(new StudioResponse[0]);
     }
 }

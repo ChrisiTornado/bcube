@@ -34,6 +34,8 @@ import java.util.Optional;
 public class AdminStudioImpl implements AdminStudioService {
     private final StudioRepository studioRepository;
     private final BookingClient bookingClient;
+    private final StudioImageService studioImageService;
+    private final StudioMapper studioMapper;
 
     @Override
     public StudioResponse createStudio(CreateStudioRequest createStudioRequest) {
@@ -62,35 +64,18 @@ public class AdminStudioImpl implements AdminStudioService {
                 .plz(createStudioRequest.getPlz())
                 .city(createStudioRequest.getCity())
                 .country(createStudioRequest.getCountry())
-                .image(images.isEmpty() ? null : images.get(0))
-                .imageGalleryJson(StudioImageMapper.toImageGalleryJson(images))
                 .isActive(true)
                 .latitude(latitude)
                 .longitude(longitude)
                 .hourlyRateCents(createStudioRequest.getHourlyRateCents())
                 .build();
 
-        // 4. speichern
+        // 4. speichern (Bilder werden skaliert und in studio_images abgelegt)
         Studio saved = studioRepository.save(studio);
+        studioImageService.replaceImages(saved.getId(), images);
 
         // 5. StudioResponse zurückgeben
-        return new StudioResponse(
-                saved.getId(),
-                saved.getSmartlockId(),
-                saved.getName(),
-                saved.getDescription(),
-                saved.getStreet(),
-                saved.getPlz(),
-                saved.getCity(),
-                saved.getCountry(),
-                saved.getLatitude(),
-                saved.getLongitude(),
-                StudioImageMapper.toDataImage(saved.getImage()),
-                StudioImageMapper.toImageGalleryBase64(saved),
-                saved.isActive(),
-                saved.getCreatedAt(),
-                saved.getHourlyRateCents()
-        );
+        return studioMapper.toDetail(saved, studioImageService.imagesOf(saved.getId()));
     }
 
     @Override
@@ -141,31 +126,14 @@ public class AdminStudioImpl implements AdminStudioService {
 
         List<byte[]> images = StudioImageMapper.normalizeImages(request.getImages(), request.getImage());
         if (!images.isEmpty()) {
-            studio.setImage(images.get(0));
-            studio.setImageGalleryJson(StudioImageMapper.toImageGalleryJson(images));
+            studioImageService.replaceImages(studio.getId(), images);
         }
 
         // 5. speichern
         Studio updated = studioRepository.save(studio);
 
         // 6. Response zurückgeben
-        return new StudioResponse(
-                updated.getId(),
-                updated.getSmartlockId(),
-                updated.getName(),
-                updated.getDescription(),
-                updated.getStreet(),
-                updated.getPlz(),
-                updated.getCity(),
-                updated.getCountry(),
-                updated.getLatitude(),
-                updated.getLongitude(),
-                StudioImageMapper.toDataImage(updated.getImage()),
-                StudioImageMapper.toImageGalleryBase64(updated),
-                updated.isActive(),
-                updated.getCreatedAt(),
-                updated.getHourlyRateCents()
-        );
+        return studioMapper.toDetail(updated, studioImageService.imagesOf(updated.getId()));
     }
 
     private Double geocodeLatitude(String address) {
