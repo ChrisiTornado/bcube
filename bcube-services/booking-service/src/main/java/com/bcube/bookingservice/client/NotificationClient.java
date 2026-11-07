@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.reactive.function.client.WebClientResponseException;
+import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClientResponseException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,7 +28,7 @@ public class NotificationClient {
     @Value("${internal.service-key}")
     private String internalServiceKey;
 
-    private final WebClient.Builder webClientBuilder;
+    private final RestClient.Builder restClientBuilder;
 
     public void sendBookingConfirmed(String email, String firstName, String studioName, String date, String time) {
         post("/booking-confirmed", bookingBody(email, firstName, studioName, date, time, null));
@@ -57,15 +57,14 @@ public class NotificationClient {
 
     private void post(String path, Object body) {
         try {
-            webClientBuilder.build()
+            restClientBuilder.build()
                     .post()
                     .uri(notificationServiceBaseUrl + path)
                     .headers(headers -> headers.set("X-Internal-Key", internalServiceKey))
-                    .bodyValue(body)
+                    .body(body)
                     .retrieve()
-                    .toBodilessEntity()
-                    .block();
-        } catch (WebClientResponseException e) {
+                    .toBodilessEntity();
+        } catch (RestClientResponseException e) {
             log.error("Benachrichtigung ({}) konnte nicht gesendet werden: {}", path, e.getMessage(), e);
         } catch (Exception e) {
             log.error("Benachrichtigung ({}) konnte nicht gesendet werden: {}", path, e.getMessage(), e);

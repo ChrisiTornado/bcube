@@ -3,8 +3,8 @@ package com.bcube.paymentservice.client;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.reactive.function.client.WebClientResponseException;
+import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClientResponseException;
 
 import java.util.Map;
 
@@ -17,7 +17,7 @@ public class BookingClient {
     @Value("${internal.service-key}")
     private String internalServiceKey;
 
-    private final WebClient.Builder webClientBuilder;
+    private final RestClient.Builder restClientBuilder;
 
     /**
      * Called from the Stripe webhook handler, which has no user JWT to forward.
@@ -28,15 +28,14 @@ public class BookingClient {
      */
     public void updatePaymentStatus(Long bookingId, String status) {
         try {
-            webClientBuilder.build()
+            restClientBuilder.build()
                     .patch()
                     .uri(bookingServiceBaseUrl + "/" + bookingId + "/payment-status")
                     .headers(headers -> headers.set("X-Internal-Key", internalServiceKey))
-                    .bodyValue(Map.of("status", status))
+                    .body(Map.of("status", status))
                     .retrieve()
-                    .toBodilessEntity()
-                    .block();
-        } catch (WebClientResponseException e) {
+                    .toBodilessEntity();
+        } catch (RestClientResponseException e) {
             throw new RuntimeException("Fehler beim Aktualisieren des Buchungsstatus: " + e.getMessage(), e);
         }
     }

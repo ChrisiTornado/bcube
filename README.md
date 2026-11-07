@@ -109,6 +109,9 @@ docker compose up -d      # user-db :5433, studio-db :5434, booking-db :5435, ac
 
 Each service loads `bcube-services/.env` automatically (`spring.config.import`) plus its own `bcube-services/<service>/.env`, so no IDE configuration is needed. The root `docker-compose.yml` includes this same file, so the databases are defined in one place.
 
+> The database containers have fixed names (`user-db`, ...), so the development databases and the full stack
+> cannot run at the same time. Stop one (`docker compose down`) before starting the other.
+
 ## Quick Start (full stack)
 
 Prerequisites:

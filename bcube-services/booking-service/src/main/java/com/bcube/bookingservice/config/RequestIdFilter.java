@@ -7,11 +7,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.MDC;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import org.springframework.web.reactive.function.client.ClientRequest;
-import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
-import reactor.core.publisher.Mono;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -21,7 +19,7 @@ import java.util.regex.Pattern;
  * Correlation ID for tracing one request across services. Reuses the caller's X-Request-Id when it
  * looks sane (the gateway sets one), otherwise mints a UUID. It is put into the MDC (printed via
  * logging.pattern.correlation / included in structured logs), echoed in the response, and passed
- * on by {@link #propagate()} for outgoing WebClient calls. Duplicated per service on purpose -
+ * on by {@link #propagate()} for outgoing RestClient calls. Duplicated per service on purpose -
  * services stay independently buildable.
  */
 @Component
@@ -46,14 +44,14 @@ public class RequestIdFilter extends OncePerRequestFilter {
         }
     }
 
-    /** Adds the current request's ID to outgoing WebClient requests (runs on the calling thread). */
-    public static ExchangeFilterFunction propagate() {
-        return (request, next) -> {
+    /** Adds the current request's ID to outgoing RestClient requests (runs on the calling thread). */
+    public static ClientHttpRequestInterceptor propagate() {
+        return (request, body, execution) -> {
             String requestId = MDC.get(MDC_KEY);
-            if (requestId == null) {
-                return next.exchange(request);
+            if (requestId != null) {
+                request.getHeaders().set(HEADER, requestId);
             }
-            return next.exchange(ClientRequest.from(request).header(HEADER, requestId).build());
+            return execution.execute(request, body);
         };
     }
 }

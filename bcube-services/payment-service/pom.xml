@@ -56,10 +56,6 @@
         </dependency>
 
         <!-- WebClient (for the inter-service calls to booking-service) -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-webflux</artifactId>
-        </dependency>
 
         <!-- Security -->
         <dependency>

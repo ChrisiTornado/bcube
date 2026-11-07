@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.client.RestClient;
 
 import java.util.Map;
 
@@ -20,18 +20,17 @@ public class PaymentClient {
     @Value("${payment-service.base-url}")
     private String paymentServiceBaseUrl;
 
-    private final WebClient.Builder webClientBuilder;
+    private final RestClient.Builder restClientBuilder;
 
     public void grantWelcomeVoucher(Long userId, String phone, String token) {
         try {
-            webClientBuilder.build()
+            restClientBuilder.build()
                     .post()
                     .uri(paymentServiceBaseUrl + "/vouchers/welcome-grant")
                     .headers(headers -> headers.setBearerAuth(token))
-                    .bodyValue(Map.of("userId", userId, "phone", phone))
+                    .body(Map.of("userId", userId, "phone", phone))
                     .retrieve()
-                    .toBodilessEntity()
-                    .block();
+                    .toBodilessEntity();
         } catch (Exception e) {
             log.warn("Willkommensgutschein für Nutzer {} konnte nicht vergeben werden: {}", userId, e.getMessage());
         }
