@@ -7,6 +7,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.intercept.AuthorizationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -42,22 +43,28 @@ public class WebSecurityConfig {
     /**
      * access-service has no user-facing endpoints - every route under /api/access is a
      * server-to-server call from booking-service, authenticated via the shared X-Internal-Key
-     * header checked directly in AccessController (same pattern as the internal endpoints in
+     * header checked by InternalKeyFilter (same pattern as the internal endpoints in
      * user-service's NotificationController and booking-service's payment-status callback),
      * not by validating an end-user's JWT. There is therefore nothing here for an OAuth2
      * resource server to protect.
      */
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(
+            HttpSecurity http,
+            @Value("${internal.service-key}") String internalServiceKey
+    ) throws Exception {
         http
                 .securityMatcher("/**")
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> {})
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .addFilterBefore(new InternalKeyFilter(internalServiceKey), AuthorizationFilter.class)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/actuator/health").permitAll()
-                        .anyRequest().permitAll()
+                        .requestMatchers("/api/access/**").hasRole("INTERNAL")
+                        // Deny by default: anything not listed above is closed.
+                        .anyRequest().denyAll()
                 );
         return http.build();
     }

@@ -12,6 +12,9 @@ public class ChangePasswordRequest {
     @NotBlank(message = "E-Mail-Adresse ist erforderlich")
     @Email(message = "Bitte gib eine gültige E-Mail-Adresse ein")
     private String email;
+    @NotBlank(message = "Reset-Token ist erforderlich")
+    private String resetToken;
+
     @NotBlank(message = "Passwort ist erforderlich")
     @Size(min = 8, message = "Das Passwort muss mindestens 8 Zeichen lang sein")
     private String password;

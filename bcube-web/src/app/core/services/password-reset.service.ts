@@ -10,6 +10,7 @@ import { Injectable } from '@angular/core';
 export class PasswordResetService {
   private returnUrl: string | null = null;
   private email: string | null = null;
+  private resetToken: string | null = null;
   private successMessage: string | null = null;
 
   setReturnUrl(url: string | undefined): void {
@@ -34,6 +35,16 @@ export class PasswordResetService {
 
   clearEmail(): void {
     this.email = null;
+    this.resetToken = null;
+  }
+
+  /** Single-use token from verify-code, kept in memory only and sent with change-password. */
+  setResetToken(token: string): void {
+    this.resetToken = token;
+  }
+
+  getResetToken(): string | null {
+    return this.resetToken;
   }
 
   setSuccessMessage(message: string): void {

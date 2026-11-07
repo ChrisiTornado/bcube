@@ -127,6 +127,7 @@ export class EnterCodeComponent implements OnInit {
       .pipe(finalize(() => this.loading = false))
       .subscribe({
         next: (res: ApiResponse<VerifyCodeResponse>) => {
+          this.passwordResetService.setResetToken(res.data.resetToken);
           this.passwordResetService.setSuccessMessage(res.message);
           this.router.navigate(['/auth/change-password'])
         },

@@ -50,6 +50,10 @@ public class User {
     @Column
     private Instant resetVerifiedAt;
 
+    /** SHA-256 of the single-use token returned by verify-code; required by change-password. */
+    @Column(name = "reset_token_hash", length = 64)
+    private String resetTokenHash;
+
     /** Failed verify-code attempts against the current resetCode - reset to 0 whenever a fresh
      * code is issued, invalidated once it reaches the lockout threshold (see AuthServiceImpl). */
     @Column(nullable = false)

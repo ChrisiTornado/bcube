@@ -7,4 +7,6 @@ import lombok.Data;
 @AllArgsConstructor
 public class VerifyCodeResponse {
     private boolean success;
+    /** Single-use token that change-password requires as proof the code was verified. */
+    private String resetToken;
 }

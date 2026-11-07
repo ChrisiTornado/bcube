@@ -86,6 +86,7 @@ export class ChangePasswordComponent implements OnInit {
 
     const payload: ChangePasswordRequest = {
       email: this.email!,
+      resetToken: this.passwordResetService.getResetToken() ?? '',
       password: this.password.value
     };
 
