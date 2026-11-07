@@ -1,7 +1,7 @@
 # === SPRING BOOT / JAVA ===
 HELP.md
 target/
-!.mvn/wrapper/maven-wrapper.jar
+.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
 
@@ -56,8 +56,10 @@ bcube-web/npm-debug.log*
 bcube-web/yarn-error.log*
 bcube-web/pnpm-debug.log*
 
-# env files
+# env files (real ones are never committed; .env.example templates are)
 .env
+.env.*
+!.env.example
 
 node_modules
 
@@ -69,6 +71,9 @@ bcube-ios/DerivedData/
 
 # macOS Finder
 **/.DS_Store
+
+# logs
+*.log
 
 # === TERRAFORM ===
 infra/terraform/.terraform/
