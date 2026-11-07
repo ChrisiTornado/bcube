@@ -5,15 +5,15 @@
     font-size: 2rem;
     font-weight: 700;
     margin: 0 6px;
-    border: 1px solid rgba(255, 167, 34, 0.18);
+    border: 1px solid rgba(var(--bcube-orange-rgb), 0.18);
     border-radius: 14px;
     background: rgba(42, 42, 42, 0.92);
-    color: #ffffff;
+    color: var(--bcube-text);
   }
   
   .code-input:focus {
     border-color: var(--bcube-orange);
-    box-shadow: 0 0 0 4px rgba(255, 167, 34, 0.16);
+    box-shadow: 0 0 0 4px rgba(var(--bcube-orange-rgb), 0.16);
     outline: none;
   }
   
@@ -34,7 +34,7 @@
 }
 
 .enter-code-subtitle strong {
-  color: #ffffff;
+  color: var(--bcube-text);
 }
 
 .code-actions {

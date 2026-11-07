@@ -1,0 +1,17 @@
+{
+  "defaultSeverity": "warning",
+  "overrides": [{ "files": ["**/*.scss"], "customSyntax": "postcss-scss" }],
+  "rules": {
+    "color-no-hex": [true, { "message": "Use a colour token (var(--bcube-*)) instead of a raw hex value." }],
+    "declaration-no-important": [true, { "message": "Avoid !important: raise specificity, use a PrimeNG preset token, or a variant class." }],
+    "selector-disallowed-list": [["/::ng-deep/"], { "message": "Avoid ::ng-deep: theme PrimeNG in core/theme/bcube.preset.ts or a global partial in src/styles." }],
+    "declaration-property-value-disallowed-list": [
+      {
+        "border-radius": ["/^\\d+px$/"],
+        "z-index": ["/^\\d+$/"]
+      },
+      { "message": "Use a design token: --radius-* / --z-*." }
+    ]
+  },
+  "ignoreFiles": ["src/styles/_tokens.scss"]
+}

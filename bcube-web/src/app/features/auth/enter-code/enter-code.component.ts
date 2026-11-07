@@ -14,7 +14,6 @@ import { ButtonModule } from 'primeng/button';
 import { ApiResponse } from '@models/responses/api-response';
 import { ResetPasswordResponse } from '@models/responses/user/reset-password-response';
 import { VerifyCodeResponse } from '@models/responses/user/verify-code-response';
-import { DARK_BUTTON_STYLE, LIGHT_BUTTON_STYLE } from '@shared/util/button-style';
 import { extractErrorMessage } from '@shared/util/error-message.util';
 
 @Component({
@@ -31,8 +30,6 @@ import { extractErrorMessage } from '@shared/util/error-message.util';
     styleUrls: ['./enter-code.component.css']
 })
 export class EnterCodeComponent implements OnInit {
-  readonly darkButtonStyle = DARK_BUTTON_STYLE;
-  readonly lightButtonStyle = LIGHT_BUTTON_STYLE;
 
   formGroup!: FormGroup;
   submitted = false;

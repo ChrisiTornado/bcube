@@ -12,7 +12,6 @@ import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 
 import { AuthService } from '@core/services/auth.service';
-import { DARK_BUTTON_STYLE } from '@shared/util/button-style';
 import { extractErrorMessage } from '@shared/util/error-message.util';
 import { PickedImage, pickedImagesToByteArrays } from '@shared/util/image-file.util';
 import { buildStudioForm, STUDIO_IMAGE_COUNT } from '@features/studios/shared/studio-form.util';
@@ -26,7 +25,6 @@ import { StudioFormFieldsComponent } from '@features/studios/shared/studio-form-
     styleUrl: './create-studio.component.css'
 })
 export class CreateStudioComponent implements OnInit{
-  readonly darkButtonStyle = DARK_BUTTON_STYLE;
 
   createForm!: FormGroup;
   visible: boolean = false;

@@ -15,5 +15,5 @@ export const environment = {
   accessApiUrl: '',           // e.g. '/api/access'
   paymentApiUrl: '',          // e.g. '/api/payments'
   stripePublishableKey: '',   // Stripe publishable key (pk_test_... / pk_live_...)
-  token: ''                   // Mapbox public access token (pk.ey...)
+  mapboxToken: ''                   // Mapbox public access token (pk.ey...)
 };

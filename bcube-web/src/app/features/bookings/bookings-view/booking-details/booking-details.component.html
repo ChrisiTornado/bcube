@@ -4,8 +4,7 @@
 
 @if (!(loading$ | async)) {
   <div class="top-actions">
-    <button pButton type="button" class="p-button-outlined back-button"
-      [style]="darkButtonStyle" (click)="goBack()"><i class="pi pi-arrow-left"></i> Zurück</button>
+    <app-back-button (back)="goBack()" />
     @if (payment?.invoiceNumber) {
       <button pButton type="button" class="p-button-outlined invoice-download-button"
         [disabled]="downloadingInvoice" (click)="downloadInvoice()">

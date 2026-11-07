@@ -11,21 +11,20 @@ import { AuthService } from '@core/services/auth.service';
 import { PaymentService } from '@features/payments/payment.service';
 import { PaymentResponse } from '@models/responses/payment/payment-response';
 import { LoadingSpinnerComponent } from '@shared/ui/loading-spinner/loading-spinner.component';
-import { DARK_BUTTON_STYLE, LIGHT_BUTTON_STYLE } from '@shared/util/button-style';
 import { getPaymentStatusLabel } from '@shared/util/payment-status.util';
 import { getDashboardPath } from '@shared/util/dashboard-path.util';
 import { extractErrorMessage } from '@shared/util/error-message.util';
 
+import { PagerComponent } from '@shared/ui/pager/pager.component';
+import { BackButtonComponent } from '@shared/ui/back-button/back-button.component';
 @Component({
     selector: 'app-payment-history-view',
-    imports: [CommonModule, TableModule, ButtonModule, LoadingSpinnerComponent],
+    imports: [BackButtonComponent, PagerComponent, CommonModule, TableModule, ButtonModule, LoadingSpinnerComponent],
     templateUrl: './payment-history-view.component.html',
     changeDetection: ChangeDetectionStrategy.Eager,
     styleUrl: './payment-history-view.component.css'
 })
 export class PaymentHistoryViewComponent implements OnInit {
-  readonly darkButtonStyle = DARK_BUTTON_STYLE;
-  readonly lightButtonStyle = LIGHT_BUTTON_STYLE;
   readonly size = 10;
 
   payments: PaymentResponse[] = [];

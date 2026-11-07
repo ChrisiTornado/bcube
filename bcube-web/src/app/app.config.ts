@@ -6,7 +6,7 @@ import { provideAnimations } from '@angular/platform-browser/animations';
 import { MessageService } from "primeng/api";
 import { ConfirmationService } from 'primeng/api';
 import { providePrimeNG } from 'primeng/config';
-import Aura from '@primeng/themes/aura';
+import { BcubePreset } from '@core/theme/bcube.preset';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { InterceptorService } from '@core/interceptors/interceptor.service';
 import { registerLocaleData } from '@angular/common';
@@ -18,9 +18,9 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideHttpClient(withXhr(), withInterceptorsFromDi()),
     provideAnimations(),
-    // App is fully custom-themed (black/orange) via ::ng-deep overrides in component CSS;
-    // the preset here only supplies PrimeNG's structural/base styles, not colors.
-    providePrimeNG({ theme: { preset: Aura, options: { darkModeSelector: false } } }),
+    // Black/orange brand theme: buttons are themed here (see core/theme/bcube.preset.ts);
+    // other components are still themed via global/::ng-deep CSS.
+    providePrimeNG({ theme: { preset: BcubePreset, options: { darkModeSelector: false } } }),
     MessageService,
     ConfirmationService,
     {

@@ -10,7 +10,7 @@
   align-items: baseline;
   padding: 0.75rem 0.9rem;
   border-radius: 8px;
-  background: rgba(255, 167, 34, 0.1);
+  background: rgba(var(--bcube-orange-rgb), 0.1);
 }
 
 .price-label {
@@ -50,16 +50,16 @@
   align-items: center;
   gap: 0.4rem;
   padding: 0.45rem 0.8rem;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   border: 1px solid #ffa722;
-  background: rgba(255, 167, 34, 0.12);
+  background: rgba(var(--bcube-orange-rgb), 0.12);
   color: #ffa722;
   font-size: 0.85rem;
   cursor: pointer;
 }
 
 .voucher-chip:hover:not(:disabled) {
-  background: rgba(255, 167, 34, 0.22);
+  background: rgba(var(--bcube-orange-rgb), 0.22);
 }
 
 .voucher-chip:disabled {
@@ -87,7 +87,7 @@
 }
 
 .voucher-error {
-  color: #f38b8b;
+  color: var(--bcube-danger);
 }
 
 .step-actions {
@@ -119,5 +119,5 @@
 }
 
 .poll-error {
-  color: #f38b8b;
+  color: var(--bcube-danger);
 }

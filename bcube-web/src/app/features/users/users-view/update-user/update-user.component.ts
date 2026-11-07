@@ -11,7 +11,6 @@ import { User } from '@models/user.model';
 import { UpdateUserRequest } from '@models/requests/user/update-user-request';
 import { ApiResponse } from '@models/responses/api-response';
 import { UserResponse } from '@models/responses/user/user-response';
-import { DARK_BUTTON_STYLE } from '@shared/util/button-style';
 import { extractErrorMessage } from '@shared/util/error-message.util';
 import { buildUserForm } from '@features/users/shared/user-form.util';
 import { UserFormFieldsComponent } from '@features/users/shared/user-form-fields/user-form-fields.component';
@@ -30,8 +29,6 @@ import { UserFormFieldsComponent } from '@features/users/shared/user-form-fields
 })
 export class UpdateUserComponent implements OnInit {
   @Input() user!: User;
-
-  readonly darkButtonStyle = DARK_BUTTON_STYLE;
 
   updateForm!: FormGroup;
   visible: boolean = false;

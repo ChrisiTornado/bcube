@@ -38,9 +38,10 @@ import { BookingPaymentStepComponent } from '@features/payments/booking-payment-
 import { BookingDetailsResponse } from '@models/responses/booking/booking-details-response';
 import { getDashboardPath } from '@shared/util/dashboard-path.util';
 
+import { BackButtonComponent } from '@shared/ui/back-button/back-button.component';
 @Component({
     selector: 'app-studio-details',
-    imports: [
+    imports: [BackButtonComponent, 
         CommonModule,
         ButtonModule,
         LoadingSpinnerComponent,

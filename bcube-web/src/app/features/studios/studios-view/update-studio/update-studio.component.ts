@@ -13,7 +13,6 @@ import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 
 import { ToastModule } from 'primeng/toast';
-import { DARK_BUTTON_STYLE } from '@shared/util/button-style';
 import { extractErrorMessage } from '@shared/util/error-message.util';
 import { PickedImage, pickedImagesToByteArrays } from '@shared/util/image-file.util';
 import { buildStudioForm } from '@features/studios/shared/studio-form.util';
@@ -29,7 +28,6 @@ import { StudioFormFieldsComponent } from '@features/studios/shared/studio-form-
 export class UpdateStudioComponent implements OnInit {
   @Input() studio!: Studio;
   @Input() detailMode = false;
-  readonly darkButtonStyle = DARK_BUTTON_STYLE;
   loading!: boolean;
 
   createForm!: FormGroup;

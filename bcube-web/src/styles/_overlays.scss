@@ -1,0 +1,59 @@
+// Surface colours for dialogs, cards, toasts, dropdown panels and the mask live in the
+// PrimeNG preset (core/theme/bcube.preset.ts). Only layout and non-token rules remain.
+
+.p-dialog-mask,
+.p-component-overlay {
+  backdrop-filter: blur(4px);
+}
+
+// Confirm dialog layout (surface colours/borders come from the PrimeNG preset).
+.p-confirmdialog .p-dialog-header {
+  padding: 1.5rem 1.75rem;
+}
+
+.p-confirmdialog .p-dialog-footer {
+  padding: 1.25rem 1.75rem 1.5rem;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 1.1rem;
+  flex-wrap: wrap;
+}
+
+.p-confirmdialog .p-dialog-content {
+  padding: 1.5rem 1.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.p-confirmdialog .p-dialog-footer .p-button {
+  margin: 0;
+}
+
+.p-confirmdialog .p-dialog-footer > * + * {
+  margin-left: 1.1rem;
+}
+
+.p-error {
+  color: var(--bcube-orange) !important;
+}
+
+// PrimeNG's own runtime theme CSS re-declares --p-progressspinner-color-* at :root after
+// this stylesheet loads, so the token override above loses the cascade for this one case.
+// Dropping the color-cycle animation (red/blue/green/yellow) and keeping only the spin/dash
+// animation is the reliable fix: with nothing left animating `stroke`, the !important below
+// actually sticks.
+.p-progressspinner-circle {
+  animation: p-progressspinner-dash 1.5s ease-in-out infinite !important;
+  stroke: var(--bcube-text) !important;
+}
+
+// Equal width for both buttons regardless of label length ("Ja" vs "Abbrechen" etc.) - fits
+// every label actually used across the app's confirm dialogs without stretching edge-to-edge.
+.p-confirmdialog-accept-button,
+.p-confirmdialog-reject-button {
+  min-width: 8rem;
+  justify-content: center;
+}
+

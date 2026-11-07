@@ -34,16 +34,13 @@
               }
 
               <div class="card flex justify-content-between align-items-center mt-4 code-actions">
-                <p-button pRipple label="Zurück" icon="pi pi-arrow-left" class="p-button-text text-900" (click)="goBack()"
-                [style]="darkButtonStyle"></p-button>
+                <p-button pRipple label="Zurück" icon="pi pi-arrow-left" class="p-button-text text-900" (click)="goBack()"></p-button>
 
                 <p-button pRipple label="Code erneut senden" [disabled]="resendCodeLoading" [loading]="resendCodeLoading" class="p-button-text text-900 code-action-button"
-                  (click)="resendCode()"
-                [style]="lightButtonStyle"></p-button>
+                  (click)="resendCode()"></p-button>
 
                 <p-button pRipple type="button" [disabled]="loading" label="Code verifizieren" [loading]="loading" (click)="submit()"
-                  class="code-action-button"
-                [style]="darkButtonStyle"></p-button>
+                  class="code-action-button"></p-button>
               </div>
             </form>
           </app-auth-container>

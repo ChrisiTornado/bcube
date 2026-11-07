@@ -3,14 +3,12 @@
 }
 
 :host ::ng-deep .surface-ground {
-  min-height: 100vh;
   padding: 28px;
   background:
-    radial-gradient(circle at 12% 16%, rgba(255, 167, 34, 0.2), transparent 24%),
-    radial-gradient(circle at 88% 84%, rgba(255, 167, 34, 0.16), transparent 26%),
+    radial-gradient(circle at 12% 16%, rgba(var(--bcube-orange-rgb), 0.2), transparent 24%),
+    radial-gradient(circle at 88% 84%, rgba(var(--bcube-orange-rgb), 0.16), transparent 26%),
     linear-gradient(135deg, #111111 0%, #191919 45%, #0b0b0b 100%);
   position: relative;
-  overflow: hidden;
 }
 
 .auth-shell {
@@ -25,7 +23,7 @@
   width: 100%;
   padding: 34px 34px 30px;
   border-radius: 30px;
-  border: 1px solid rgba(255, 167, 34, 0.16);
+  border: 1px solid rgba(var(--bcube-orange-rgb), 0.16);
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02)),
     rgba(9, 9, 9, 0.88);
@@ -60,13 +58,13 @@
   bottom: 0;
   width: 72px;
   height: 4px;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   transform: translateX(-50%);
   background: var(--bcube-orange);
 }
 
 :host ::ng-deep .text-900 {
-  color: #ffffff !important;
+  color: var(--bcube-text) !important;
 }
 
 @media (max-width: 640px) {
@@ -80,6 +78,6 @@
 
   :host ::ng-deep .surface-card {
     padding: 22px 20px;
-    border-radius: 24px;
+    border-radius: var(--radius-lg);
   }
 }

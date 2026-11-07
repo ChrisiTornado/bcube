@@ -1,0 +1,59 @@
+.page-content h1 {
+  margin: 0 0 1.25rem;
+  font-size: clamp(1.7rem, 3vw, 2.4rem);
+  line-height: 1;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-weight: 800;
+  color: var(--bcube-text);
+}
+
+.page-content h2,
+.page-content h3 {
+  color: var(--bcube-text);
+}
+
+.page-content > * {
+  position: relative;
+  z-index: 1;
+}
+
+.page-content .p-datatable {
+  border: 1px solid var(--bcube-line);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.015)),
+    rgba(15, 15, 15, 0.86);
+  box-shadow: var(--bcube-shadow);
+}
+
+.page-content .p-datatable-table {
+  background: transparent;
+}
+
+// Cell/row colours, padding and the sort icon live in the PrimeNG preset
+// (core/theme/bcube.preset.ts); these are the typographic and layout rules left over.
+.page-content .p-datatable-thead > tr > th {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-align: center;
+}
+
+.page-content .p-datatable-tbody > tr {
+  transition: background-color 0.2s ease;
+}
+
+.page-content .p-datatable-tbody > tr > td {
+  color: var(--bcube-text-soft);
+  font-size: 0.95rem;
+  line-height: 1.2;
+  text-align: center;
+}
+
+// Always highlight on hover, even when the table isn't flagged [rowHover]="true".
+.page-content .p-datatable .p-datatable-tbody > tr:hover {
+  background: rgba(var(--bcube-orange-rgb), 0.08);
+}

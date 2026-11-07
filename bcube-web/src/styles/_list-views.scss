@@ -1,0 +1,17 @@
+// ---- Shared list-view building blocks (bookings, payments, users) ----
+.table-shell {
+  border-radius: var(--radius-lg);
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.empty-shell {
+  padding: 2rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(var(--bcube-orange-rgb), 0.14);
+  background: rgba(255, 255, 255, 0.03);
+
+  h3 {
+    color: var(--bcube-text);
+  }
+}

@@ -1,0 +1,18 @@
+@if (totalPages() > 1) {
+  <nav class="pager" aria-label="Seitennavigation">
+    <p-button
+      [outlined]="true"
+      icon="pi pi-arrow-left"
+      label="Zurück"
+      [disabled]="isFirst()"
+      (onClick)="pageChange.emit(page() - 1)" />
+    <span class="pager-status">Seite {{ page() + 1 }} von {{ totalPages() }}</span>
+    <p-button
+      [outlined]="true"
+      icon="pi pi-arrow-right"
+      iconPos="right"
+      label="Weiter"
+      [disabled]="isLast()"
+      (onClick)="pageChange.emit(page() + 1)" />
+  </nav>
+}

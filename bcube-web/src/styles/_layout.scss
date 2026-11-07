@@ -1,0 +1,50 @@
+// App-shell layout contract (used by user-shell and admin-shell).
+//
+//   .app-shell        full-viewport grid: [header: auto] [content: 1fr]
+//   .page-content     the ONE scroll container for routed pages
+//
+// Pages never set their own viewport heights or `overflow: hidden`. A page that is
+// shorter than the panel simply fits; a taller page scrolls inside .page-content.
+// A page that must fill the panel (e.g. a table with an internal scroll area) uses
+// `:host { display: flex; flex-direction: column; height: 100%; min-height: 0 }`.
+
+.app-shell {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  height: 100dvh;
+}
+
+.page-content {
+  --page-padding: var(--space-5);
+
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  padding: var(--page-padding);
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--radius-xl);
+  border: 1px solid rgba(var(--bcube-orange-rgb), 0.14);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.018)),
+    rgba(12, 12, 12, 0.84);
+  box-shadow: 0 28px 70px rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(12px);
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(var(--bcube-orange-rgb), 0.4) transparent;
+}
+
+// Full-screen pages outside the shell (login, register, ...): the page itself scrolls
+// and content is centred without ever clipping its top edge when it is taller than the screen.
+.fullscreen-scroll {
+  height: 100dvh;
+  overflow-x: hidden;
+  overflow-y: auto;
+  display: flex;
+
+  > * {
+    margin: auto; // safe centring: collapses to the top when content overflows
+  }
+}

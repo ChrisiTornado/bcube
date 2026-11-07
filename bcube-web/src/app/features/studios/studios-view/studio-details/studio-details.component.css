@@ -65,7 +65,7 @@
 
 .clean-card {
   border-radius: 1.75rem;
-  border: 1px solid rgba(255, 167, 34, 0.14);
+  border: 1px solid rgba(var(--bcube-orange-rgb), 0.14);
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.015)),
     rgba(18, 18, 18, 0.92);
@@ -94,8 +94,8 @@
   gap: 0.75rem;
   padding: 1.1rem;
   border-radius: 18px;
-  border: 1px solid rgba(255, 167, 34, 0.24);
-  background: rgba(255, 167, 34, 0.06);
+  border: 1px solid rgba(var(--bcube-orange-rgb), 0.24);
+  background: rgba(var(--bcube-orange-rgb), 0.06);
 }
 
 .guest-booking-icon {
@@ -107,7 +107,7 @@
   margin: 0;
   font-weight: 800;
   font-size: 1.05rem;
-  color: #ffffff;
+  color: var(--bcube-text);
 }
 
 .guest-booking-text {
@@ -168,34 +168,34 @@
 :host ::ng-deep .calendar-frame {
   --fc-classic-primary: var(--bcube-orange);
   --fc-classic-primary-foreground: #111111;
-  --fc-classic-highlight: rgba(255, 167, 34, 0.22);
-  --fc-classic-today: rgba(255, 167, 34, 0.16);
+  --fc-classic-highlight: rgba(var(--bcube-orange-rgb), 0.22);
+  --fc-classic-today: rgba(var(--bcube-orange-rgb), 0.16);
   --fc-classic-now: var(--bcube-orange);
 
   --fc-classic-background: transparent;
   --fc-classic-faint: rgba(255, 255, 255, 0.03);
-  --fc-classic-muted: rgba(255, 167, 34, 0.08);
-  --fc-classic-strong: rgba(255, 167, 34, 0.18);
+  --fc-classic-muted: rgba(var(--bcube-orange-rgb), 0.08);
+  --fc-classic-strong: rgba(var(--bcube-orange-rgb), 0.18);
 
   --fc-classic-foreground: #ffffff;
   --fc-classic-faint-foreground: rgba(255, 255, 255, 0.38);
   --fc-classic-muted-foreground: rgba(255, 255, 255, 0.72);
 
-  --fc-classic-border: rgba(255, 167, 34, 0.14);
-  --fc-classic-strong-border: rgba(255, 167, 34, 0.32);
+  --fc-classic-border: rgba(var(--bcube-orange-rgb), 0.14);
+  --fc-classic-strong-border: rgba(var(--bcube-orange-rgb), 0.32);
 
   --fc-classic-button: rgba(255, 255, 255, 0.06);
-  --fc-classic-button-border: rgba(255, 167, 34, 0.22);
-  --fc-classic-button-strong: rgba(255, 167, 34, 0.22);
+  --fc-classic-button-border: rgba(var(--bcube-orange-rgb), 0.22);
+  --fc-classic-button-strong: rgba(var(--bcube-orange-rgb), 0.22);
   --fc-classic-button-strong-border: var(--bcube-orange);
-  --fc-classic-button-outline: rgba(255, 167, 34, 0.5);
+  --fc-classic-button-outline: rgba(var(--bcube-orange-rgb), 0.5);
   --fc-classic-button-foreground: #ffffff;
 }
 
 :host ::ng-deep .calendar-frame .fc-day-selected {
   background:
-    linear-gradient(180deg, rgba(255, 167, 34, 0.22), rgba(255, 167, 34, 0.1)) !important;
-  box-shadow: inset 0 0 0 2px rgba(255, 167, 34, 0.75) !important;
+    linear-gradient(180deg, rgba(var(--bcube-orange-rgb), 0.22), rgba(var(--bcube-orange-rgb), 0.1)) !important;
+  box-shadow: inset 0 0 0 2px rgba(var(--bcube-orange-rgb), 0.75) !important;
   transition: background-color 0.15s ease, box-shadow 0.15s ease;
 }
 
@@ -213,8 +213,8 @@
 }
 
 ::ng-deep .bcube-popover {
-  border-radius: 16px !important;
-  border: 1px solid rgba(255, 167, 34, 0.18) !important;
+  border-radius: var(--radius-md) !important;
+  border: 1px solid rgba(var(--bcube-orange-rgb), 0.18) !important;
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.015)),
     rgba(18, 18, 18, 0.98) !important;
@@ -237,15 +237,15 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 999px !important;
+  border-radius: var(--radius-pill) !important;
   background: rgba(255, 255, 255, 0.05) !important;
-  border: 1px solid rgba(255, 167, 34, 0.25) !important;
-  color: #ffffff !important;
+  border: 1px solid rgba(var(--bcube-orange-rgb), 0.25) !important;
+  color: var(--bcube-text) !important;
   transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
 }
 
 :host ::ng-deep .calendar-frame .bcube-nav-btn:hover {
-  background: rgba(255, 167, 34, 0.18) !important;
+  background: rgba(var(--bcube-orange-rgb), 0.18) !important;
   border-color: var(--bcube-orange) !important;
 }
 
@@ -272,8 +272,8 @@
 
 :host ::ng-deep .p-datepicker-panel {
   background: #171717 !important;
-  border: 1px solid rgba(255, 167, 34, 0.18) !important;
-  color: #ffffff !important;
+  border: 1px solid rgba(var(--bcube-orange-rgb), 0.18) !important;
+  color: var(--bcube-text) !important;
   box-shadow: 0 24px 48px rgba(0, 0, 0, 0.28) !important;
 }
 
@@ -281,7 +281,7 @@
 :host ::ng-deep .p-datepicker-panel .p-datepicker-time-picker span,
 :host ::ng-deep .p-datepicker-panel .p-datepicker-time-picker button {
   background: transparent !important;
-  color: #ffffff !important;
+  color: var(--bcube-text) !important;
 }
 
 :host ::ng-deep .p-datepicker-panel .p-datepicker-time-picker button:hover {
@@ -290,11 +290,11 @@
 
 :host ::ng-deep .p-datepicker-panel .p-datepicker-separator,
 :host ::ng-deep .p-datepicker-panel .p-datepicker-time-picker span {
-  color: #ffffff !important;
+  color: var(--bcube-text) !important;
 }
 
 /* ===== Responsive ===== */
-@media (max-width: 1160px) {
+@media (max-width: 1120px) {
   .studio-layout {
     grid-template-columns: 1fr;
   }

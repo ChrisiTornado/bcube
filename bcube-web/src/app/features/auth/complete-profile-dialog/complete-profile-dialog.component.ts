@@ -11,7 +11,6 @@ import { User } from '@models/user.model';
 import { UpdateUserRequest } from '@models/requests/user/update-user-request';
 import { UserService } from '@features/users/user.service';
 import { AuthService } from '@core/services/auth.service';
-import { DARK_BUTTON_STYLE } from '@shared/util/button-style';
 import { extractErrorMessage } from '@shared/util/error-message.util';
 
 /**
@@ -30,8 +29,6 @@ import { extractErrorMessage } from '@shared/util/error-message.util';
 export class CompleteProfileDialogComponent implements OnInit {
   @Input({ required: true }) user!: User;
   @Output() completed = new EventEmitter<User>();
-
-  readonly darkButtonStyle = DARK_BUTTON_STYLE;
 
   form!: FormGroup;
   loading = false;

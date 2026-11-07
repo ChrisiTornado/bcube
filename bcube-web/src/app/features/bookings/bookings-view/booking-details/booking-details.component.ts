@@ -14,14 +14,14 @@ import { BookingStatus } from '@models/booking-status.model';
 import { getBookingStatusLabel } from '@shared/util/booking-status.util';
 import { extractErrorMessage } from '@shared/util/error-message.util';
 import { getDashboardPath } from '@shared/util/dashboard-path.util';
-import { DARK_BUTTON_STYLE } from '@shared/util/button-style';
 import { PaymentService } from '@features/payments/payment.service';
 import { PaymentResponse } from '@models/responses/payment/payment-response';
 import { finalize } from 'rxjs';
 
+import { BackButtonComponent } from '@shared/ui/back-button/back-button.component';
 @Component({
     selector: 'app-booking-details',
-    imports: [
+    imports: [BackButtonComponent, 
         CommonModule,
         FormsModule,
         ButtonModule,
@@ -33,7 +33,6 @@ import { finalize } from 'rxjs';
 })
 export class BookingDetailsComponent implements OnInit {
   readonly bookingStatus = BookingStatus;
-  readonly darkButtonStyle = DARK_BUTTON_STYLE;
   isUser = false;
   booking: BookingDetailsResponse | null = null;
   loading!: boolean;

@@ -1,12 +1,8 @@
 :host {
-  display: block;
-  height: 100%;
-  overflow: hidden;
+  display: block; /* page-content scrolls when the profile is taller than the panel */
 }
 
 .profile-view {
-  height: 100%;
-  overflow: hidden;
   padding-right: 0.15rem;
 }
 
@@ -27,7 +23,7 @@
   width: 56px;
   height: 56px;
   border-radius: 50%;
-  border: 3px solid rgba(255, 167, 34, 0.15);
+  border: 3px solid rgba(var(--bcube-orange-rgb), 0.15);
   border-top-color: var(--bcube-orange);
   animation: profile-spin 0.85s linear infinite;
 }
@@ -40,9 +36,9 @@
   align-items: center;
   padding: 1.5rem;
   border-radius: 28px;
-  border: 1px solid rgba(255, 167, 34, 0.18);
+  border: 1px solid rgba(var(--bcube-orange-rgb), 0.18);
   background:
-    linear-gradient(135deg, rgba(255, 167, 34, 0.08), rgba(255, 167, 34, 0.02) 28%, rgba(255, 255, 255, 0.03) 100%),
+    linear-gradient(135deg, rgba(var(--bcube-orange-rgb), 0.08), rgba(var(--bcube-orange-rgb), 0.02) 28%, rgba(255, 255, 255, 0.03) 100%),
     rgba(14, 14, 14, 0.92);
   box-shadow: 0 26px 60px rgba(0, 0, 0, 0.22);
 }
@@ -54,12 +50,12 @@
   display: grid;
   place-items: center;
   background:
-    radial-gradient(circle at 30% 20%, rgba(255, 167, 34, 0.28), transparent 38%),
+    radial-gradient(circle at 30% 20%, rgba(var(--bcube-orange-rgb), 0.28), transparent 38%),
     linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.01)),
     rgba(11, 11, 11, 0.98);
-  border: 1px solid rgba(255, 167, 34, 0.3);
+  border: 1px solid rgba(var(--bcube-orange-rgb), 0.3);
   box-shadow:
-    0 0 0 8px rgba(255, 167, 34, 0.08),
+    0 0 0 8px rgba(var(--bcube-orange-rgb), 0.08),
     0 20px 36px rgba(0, 0, 0, 0.24);
 }
 
@@ -91,7 +87,7 @@
 .profile-card {
   padding: 1.4rem;
   border-radius: 26px;
-  border: 1px solid rgba(255, 167, 34, 0.16);
+  border: 1px solid rgba(var(--bcube-orange-rgb), 0.16);
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.02)),
     rgba(13, 13, 13, 0.92);
@@ -110,7 +106,7 @@
   margin: 0;
   font-size: 1.45rem;
   font-weight: 800;
-  color: #ffffff;
+  color: var(--bcube-text);
 }
 
 .profile-card-header span {
@@ -156,9 +152,9 @@
   width: 100%;
   padding: 0 1rem;
   border-radius: 18px;
-  border: 1px solid rgba(255, 167, 34, 0.18) !important;
+  border: 1px solid rgba(var(--bcube-orange-rgb), 0.18) !important;
   background: rgba(41, 41, 41, 0.88) !important;
-  color: #ffffff !important;
+  color: var(--bcube-text) !important;
   font-size: 1rem;
 }
 
@@ -187,7 +183,7 @@
   padding: 0 1.2rem;
   background: var(--bcube-orange) !important;
   border-color: var(--bcube-orange) !important;
-  color: #111111 !important;
+  color: var(--bcube-on-orange) !important;
 }
 
 /* ===== Settings list (password, payment, legal, logout, delete) ===== */
@@ -210,8 +206,8 @@
 
 .settings-item:hover {
   transform: translateY(-1px);
-  border-color: rgba(255, 167, 34, 0.28);
-  background: rgba(255, 167, 34, 0.07);
+  border-color: rgba(var(--bcube-orange-rgb), 0.28);
+  background: rgba(var(--bcube-orange-rgb), 0.07);
 }
 
 .settings-item-icon {

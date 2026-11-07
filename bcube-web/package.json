@@ -6,7 +6,8 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "lint:css": "stylelint \"src/**/*.{css,scss}\""
   },
   "private": true,
   "dependencies": {
@@ -48,6 +49,8 @@
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
     "postcss": "^8.5.4",
+    "postcss-scss": "^4.0.9",
+    "stylelint": "^18.0.0",
     "typescript": "~6.0.3"
   }
 }

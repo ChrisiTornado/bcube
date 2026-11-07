@@ -62,7 +62,6 @@
       </ng-template>
     </p-select>
     <p-button [outlined]="true" label="Filter zurücksetzen"
-      [style]="darkButtonStyle"
       (click)="userFilter = null; studioFilter = null; updateFilters()">
     </p-button>
   </div>
@@ -70,8 +69,7 @@
     <div class="empty-shell text-center my-6">
       <h3 class="mb-3">Keine Buchungen gefunden</h3>
       @if (!isAdmin) {
-        <p-button (onClick)="navigateToBookingCreation()"
-          [style]="darkButtonStyle">
+        <p-button (onClick)="navigateToBookingCreation()">
           Hier buchen
         </p-button>
       }
@@ -128,18 +126,7 @@
   }
   <!-- Pagination unten -->
   @if (totalPages > 1) {
-    <div class="pager-shell flex justify-content-center gap-4 mt-4">
-      <button pButton [style]="lightButtonStyle"
-        (click)="isAdmin ? loadAdminPage(this.bookingService.page - 1) : loadUserPage($safeNavigationMigration(authService.getUser()?.id)!, this.bookingService.page - 1)"
-        [disabled]="this.bookingService.page === 0">
-        &lt;- Zurück
-      </button>
-      <span class="mt-2 mx-3 font-bold">Seite {{ this.bookingService.page + 1 }} von {{ totalPages }}</span>
-      <button pButton [style]="lightButtonStyle"
-        (click)="isAdmin ? loadAdminPage(this.bookingService.page + 1) : loadUserPage($safeNavigationMigration(authService.getUser()?.id)!, this.bookingService.page + 1)"
-        [disabled]="this.bookingService.page >= totalPages - 1">
-        Weiter -&gt;
-      </button>
-    </div>
+    <app-pager [page]="bookingService.page" [totalPages]="totalPages"
+      (pageChange)="isAdmin ? loadAdminPage($event) : loadUserPage($safeNavigationMigration(authService.getUser()?.id)!, $event)" />
   }
 }
