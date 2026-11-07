@@ -46,16 +46,21 @@ This repository is designed as a portfolio project and demonstrates authenticati
 
 ```text
 bcube
-├── bcube-frontend
+├── bcube-web
 │   └── Angular SPA
 ├── bcube-services
 │   ├── api-gateway
 │   ├── user-service
 │   ├── studio-service
 │   ├── booking-service
-│   └── access-service
-└── docker-compose.yml
+│   ├── access-service
+│   ├── payment-service
+│   └── docker-compose.yml     (databases only, for local development)
+└── docker-compose.yml         (full stack, includes the databases above)
 ```
+
+Each service has its own README (`bcube-services/<service>/README.md`) with port, database,
+configuration, authentication and how to run its tests.
 
 The application is split into domain-focused services:
 
