@@ -33,6 +33,13 @@ public class StudioController {
         return ResponseEntity.ok(new ApiResponse<>("Studio erfolgreich gesendet", response));
     }
 
+    /** Lightweight variant of {@code /{id}} without the image gallery - used by booking-service. */
+    @GetMapping("/{id}/summary")
+    public ResponseEntity<ApiResponse<StudioResponse>> getStudioSummaryById(@PathVariable long id) {
+        StudioResponse response = studioService.getStudioSummaryById(id);
+        return ResponseEntity.ok(new ApiResponse<>("Studio erfolgreich gesendet", response));
+    }
+
     @GetMapping("/filters")
     public ResponseEntity<ApiResponse<Page<StudioNameResponse>>> getBookingsStudios(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
         Page<StudioNameResponse> studios = studioService.getAllStudioNames(page, size);

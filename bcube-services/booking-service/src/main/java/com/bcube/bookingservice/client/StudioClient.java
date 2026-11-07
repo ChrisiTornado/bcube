@@ -12,6 +12,10 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 
 @Service
 @RequiredArgsConstructor
+/**
+ * Uses studio-service's /summary variant: the full /{id} response carries the whole image gallery
+ * as Base64 (tens of MB), which exceeds the WebClient buffer limit and is never needed here.
+ */
 public class StudioClient {
     @Value("${studio-service.base-url}")
     private String studioServiceBaseUrl;
@@ -22,7 +26,7 @@ public class StudioClient {
         try {
             webClientBuilder.build()
                     .get()
-                    .uri(studioServiceBaseUrl + "/" + studioId)
+                    .uri(studioServiceBaseUrl + "/" + studioId + "/summary")
                     .retrieve()
                     .toBodilessEntity()
                     .block();
@@ -36,7 +40,7 @@ public class StudioClient {
         try {
             ApiResponse<StudioDto> response = webClientBuilder.build()
                     .get()
-                    .uri(studioServiceBaseUrl + "/" + studioId)
+                    .uri(studioServiceBaseUrl + "/" + studioId + "/summary")
                     .retrieve()
                     .bodyToMono(new ParameterizedTypeReference<ApiResponse<StudioDto>>() {})
                     .block();

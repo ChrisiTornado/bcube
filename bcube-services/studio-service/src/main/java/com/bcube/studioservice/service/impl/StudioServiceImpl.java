@@ -60,9 +60,20 @@ public class StudioServiceImpl implements StudioService {
 
     @Override
     public StudioResponse getStudioById(long id) {
-        Studio studio = studioRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Studio mit ID " + id + " nicht gefunden"));
+        return toResponse(findStudio(id), true);
+    }
 
+    @Override
+    public StudioResponse getStudioSummaryById(long id) {
+        return toResponse(findStudio(id), false);
+    }
+
+    private Studio findStudio(long id) {
+        return studioRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Studio mit ID " + id + " nicht gefunden"));
+    }
+
+    private StudioResponse toResponse(Studio studio, boolean includeGallery) {
         return new StudioResponse(
                 studio.getId(),
                 studio.getSmartlockId(),
@@ -75,14 +86,12 @@ public class StudioServiceImpl implements StudioService {
                 studio.getLatitude(),
                 studio.getLongitude(),
                 StudioImageMapper.toDataImage(studio.getImage()),
-                StudioImageMapper.toImageGalleryBase64(studio),
+                includeGallery ? StudioImageMapper.toImageGalleryBase64(studio) : List.of(),
                 studio.isActive(),
                 studio.getCreatedAt(),
                 studio.getHourlyRateCents()
         );
     }
-
-
 
     @Override
     public Page<StudioNameResponse> getAllStudioNames(int page, int size) {
