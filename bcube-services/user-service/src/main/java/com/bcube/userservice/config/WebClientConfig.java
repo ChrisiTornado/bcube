@@ -33,6 +33,7 @@ public class WebClientConfig {
                         .addHandlerLast(new WriteTimeoutHandler(RESPONSE_TIMEOUT.getSeconds(), TimeUnit.SECONDS)));
 
         return WebClient.builder()
+                .filter(RequestIdFilter.propagate())
                 .clientConnector(new ReactorClientHttpConnector(httpClient));
     }
 }

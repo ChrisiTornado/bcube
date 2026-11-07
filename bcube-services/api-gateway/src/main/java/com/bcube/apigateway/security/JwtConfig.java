@@ -1,4 +1,4 @@
-package com.example.apigateway.security;
+package com.bcube.apigateway.security;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
