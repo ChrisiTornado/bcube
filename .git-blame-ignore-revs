@@ -1,0 +1,3 @@
+# Whitespace-only commits that git blame should skip.
+# Normalize line endings to LF
+f8a0184be4e7746346b5b5e1af757d05308d0705
