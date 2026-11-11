@@ -1,0 +1,75 @@
+// Design tokens, three tiers (see styles/README.md):
+//   1. primitives - raw scales (colour, space, radius, motion, z-index)
+//   2. semantic   - intent (surface, text, line, state) built from primitives
+//   3. component  - set locally by a component/shell, e.g. --page-padding
+// Components consume tokens; they do not introduce raw px/hex values.
+:root {
+  // ---- 1. Primitives: spacing (4px base) ----
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+
+  // ---- Primitives: radius ----
+  --radius-sm: 12px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-xl: 30px;
+  --radius-pill: 999px;
+
+  // ---- Primitives: motion ----
+  --duration-fast: 0.15s;
+  --duration-base: 0.2s;
+  --ease-standard: ease;
+  --lift-hover: translateY(-1px);
+
+  // ---- Primitives: stacking ----
+  --z-raised: 1;
+  --z-sticky: 10;
+  --z-overlay: 1000;
+
+  // ---- Layout ----
+  --page-gutter: 1.75rem; // outer margin around the app shell
+  --control-height-md: 3rem;
+  --control-height-lg: 3.4rem;
+
+  // ---- 2. Semantic: interaction states (shared by buttons, menus, links) ----
+  --state-hover-bg: rgba(var(--bcube-orange-rgb), 0.16);
+  --state-hover-line: rgba(var(--bcube-orange-rgb), 0.4);
+  --state-focus-ring: 0 0 0 4px rgba(var(--bcube-orange-rgb), 0.16);
+
+  // ---- Brand & surfaces ----
+  --bcube-orange: #ffa722;
+  --bcube-orange-rgb: 255, 167, 34;
+  --bcube-danger: #f38b8b;
+  --bcube-success: #5fe07b;
+  --bcube-orange-strong: #ffb53f;
+  --bcube-on-orange: #111111; // text/icons on orange surfaces
+  --bcube-black: #0b0b0b;
+  --bcube-panel: rgba(18, 18, 18, 0.88);
+  --bcube-panel-soft: rgba(255, 255, 255, 0.04);
+  --bcube-line: rgba(var(--bcube-orange-rgb), 0.22);
+  --bcube-line-soft: rgba(255, 255, 255, 0.08);
+  --bcube-text: #ffffff;
+  --bcube-text-soft: rgba(255, 255, 255, 0.72);
+  --bcube-shadow: 0 22px 60px rgba(0, 0, 0, 0.28);
+
+  // PrimeNG's Aura preset ships light-mode text/placeholder tokens (a slate blue-gray)
+  // that were never overridden for this app's all-dark UI, so every component reading
+  // them directly - nav items, dropdown text/placeholder, generic input placeholders,
+  // the loading spinner - rendered a muddy blue instead of white.
+  --p-text-color: var(--bcube-text);
+  --p-text-muted-color: var(--bcube-text-soft);
+  --p-content-color: var(--bcube-text);
+  --p-megamenu-color: var(--bcube-text);
+  --p-megamenu-item-color: var(--bcube-text);
+  --p-megamenu-item-icon-color: var(--bcube-text-soft);
+  --p-progressspinner-color-one: var(--bcube-text);
+  --p-progressspinner-color-two: var(--bcube-text);
+  --p-progressspinner-color-three: var(--bcube-text);
+  --p-progressspinner-color-four: var(--bcube-text);
+}

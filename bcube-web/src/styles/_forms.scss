@@ -1,0 +1,39 @@
+// Text field / select colours, radius, hover and focus live in the PrimeNG preset
+// (core/theme/bcube.preset.ts). What remains cannot be expressed as theme tokens.
+
+// Plain number inputs (e.g. Smartlock ID) don't need the native increment/decrement spinner.
+input[type="number"] {
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--bcube-text) !important;
+  caret-color: var(--bcube-text) !important;
+  background-color: rgba(255, 255, 255, 0.06) !important;
+  box-shadow: 0 0 0 1000px rgba(255, 255, 255, 0.06) inset !important;
+  -webkit-box-shadow: 0 0 0 1000px rgba(255, 255, 255, 0.06) inset !important;
+  border: 1px solid rgba(var(--bcube-orange-rgb), 0.18) !important;
+  transition: background-color 9999s ease-out 0s;
+}
+
+.black-upload .p-fileupload-choose {
+  background-color: var(--bcube-orange);
+  border-color: var(--bcube-orange);
+  color: var(--bcube-on-orange);
+}
+

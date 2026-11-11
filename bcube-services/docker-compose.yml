@@ -1,0 +1,109 @@
+# Databases only - the single definition of every service's Postgres container.
+#
+# Local development: run just the databases and start the Spring services from your IDE:
+#   cd bcube-services && docker compose up -d
+# Defaults (admin/admin, bcube_<x>_service, ports 5433-5437) match each service's
+# application.properties. Override DB_USER / DB_PASSWORD in bcube-services/.env if needed.
+#
+# Full stack: the root docker-compose.yml includes this file and adds the services on top.
+
+x-postgres: &postgres
+  image: postgres:17
+  networks:
+    - bcube-network
+
+services:
+  user-db:
+    <<: *postgres
+    container_name: user-db
+    environment:
+      POSTGRES_DB: bcube_user_service
+      POSTGRES_USER: ${DB_USER:-admin}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-admin}
+    ports:
+      - "5433:5432"
+    volumes:
+      - user-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  studio-db:
+    <<: *postgres
+    container_name: studio-db
+    environment:
+      POSTGRES_DB: bcube_studio_service
+      POSTGRES_USER: ${DB_USER:-admin}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-admin}
+    ports:
+      - "5434:5432"
+    volumes:
+      - studio-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  booking-db:
+    <<: *postgres
+    container_name: booking-db
+    environment:
+      POSTGRES_DB: bcube_booking_service
+      POSTGRES_USER: ${DB_USER:-admin}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-admin}
+    ports:
+      - "5435:5432"
+    volumes:
+      - booking-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  access-db:
+    <<: *postgres
+    container_name: access-db
+    environment:
+      POSTGRES_DB: bcube_access_service
+      POSTGRES_USER: ${DB_USER:-admin}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-admin}
+    ports:
+      - "5436:5432"
+    volumes:
+      - access-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  payment-db:
+    <<: *postgres
+    container_name: payment-db
+    environment:
+      POSTGRES_DB: bcube_payment_service
+      POSTGRES_USER: ${DB_USER:-admin}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-admin}
+    ports:
+      - "5437:5432"
+    volumes:
+      - payment-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  user-data:
+  studio-data:
+  booking-data:
+  access-data:
+  payment-data:
+
+networks:
+  bcube-network:

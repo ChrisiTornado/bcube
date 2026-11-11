@@ -2,6 +2,7 @@ package com.bcube.userservice.service.impl;
 
 import com.bcube.userservice.client.PaymentClient;
 import com.bcube.userservice.exception.*;
+import com.bcube.userservice.security.RateLimiter;
 import com.bcube.userservice.persistance.entity.Role;
 import com.bcube.userservice.persistance.entity.User;
 import com.bcube.userservice.persistance.repository.UserRepository;
@@ -27,6 +28,9 @@ import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
+import java.security.SecureRandom;
+import java.util.Base64;
+import java.util.HexFormat;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -42,6 +46,12 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder passwordEncoder;
     private final MailService mailSender;
     private final PaymentClient paymentClient;
+    private final RateLimiter rateLimiter;
+    private final SecureRandom secureRandom = new SecureRandom();
+
+    private static final int MAX_LOGIN_ATTEMPTS = 10;
+    private static final int MAX_RESET_REQUESTS = 3;
+    private static final int MAX_RESET_STEPS = 10;
 
     @Override
     public JwtResponse register(RegisterRequest registerRequest) {
@@ -69,7 +79,10 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public JwtResponse login(LoginRequest loginRequest) {
-        return authenticateAndCreateJwt(loginRequest.getEmail(), loginRequest.getPassword());
+        rateLimiter.check("login", loginRequest.getEmail(), MAX_LOGIN_ATTEMPTS);
+        JwtResponse response = authenticateAndCreateJwt(loginRequest.getEmail(), loginRequest.getPassword());
+        rateLimiter.reset("login", loginRequest.getEmail());
+        return response;
     }
 
     @Override
@@ -77,6 +90,7 @@ public class AuthServiceImpl implements AuthService {
         // Deliberately doesn't throw/leak whether the email is registered - always returns the
         // same success response, only actually sending a code when an account exists. Otherwise
         // this endpoint would let anyone probe which emails have a bcube account.
+        rateLimiter.check("reset-password", resetPasswordRequest.getEmail(), MAX_RESET_REQUESTS);
         userRepository.findByEmail(resetPasswordRequest.getEmail()).ifPresent(user -> {
             String code = CodeGenerator.generateCode();
             user.setResetCode(passwordEncoder.encode(code));
@@ -90,11 +104,14 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public VerifyCodeResponse verifyCode(VerifyCodeRequest verifyCodeRequest) {
+        rateLimiter.check("verify-code", verifyCodeRequest.getEmail(), MAX_RESET_STEPS);
+        // An unknown email gets the exact same answer as a wrong code, so this endpoint cannot be
+        // used to find out which emails have an account.
         User user = userRepository.findByEmail(verifyCodeRequest.getEmail())
-                .orElseThrow(() -> new UserNotFoundException("Kein Benutzer mit der E-Mail-Adresse gefunden: " + verifyCodeRequest.getEmail()));
+                .orElseThrow(() -> new InvalidResetTokenException("Der eingegebene Code ist ungültig."));
 
         if (user.getResetCode() == null || user.getResetCodeExpiresAt() == null) {
-            throw new InvalidResetTokenException("Es ist kein gültiger Reset-Code vorhanden. Bitte fordern Sie einen neuen an.");
+            throw new InvalidResetTokenException("Der eingegebene Code ist ungültig.");
         }
 
         if (user.getResetCodeExpiresAt().isBefore(Instant.now())) {
@@ -120,34 +137,58 @@ public class AuthServiceImpl implements AuthService {
             throw new InvalidResetTokenException("Der eingegebene Code ist ungültig.");
         }
 
+        // Code is correct: it is consumed and exchanged for a single-use token that
+        // change-password must present, so knowing the email alone is never enough.
+        byte[] raw = new byte[32];
+        secureRandom.nextBytes(raw);
+        String resetToken = Base64.getUrlEncoder().withoutPadding().encodeToString(raw);
+
         user.setResetCode(null);
         user.setResetCodeExpiresAt(null);
         user.setResetCodeAttempts(0);
         user.setResetVerifiedAt(Instant.now());
+        user.setResetTokenHash(sha256(resetToken));
         userRepository.save(user);
-        return new VerifyCodeResponse(true);
+
+        return new VerifyCodeResponse(true, resetToken);
     }
 
     @Override
     public ChangePasswordResponse changePassword(ChangePasswordRequest changePasswordRequest) {
+        rateLimiter.check("change-password", changePasswordRequest.getEmail(), MAX_RESET_STEPS);
         User user = userRepository.findByEmail(changePasswordRequest.getEmail())
-                .orElseThrow(() -> new UserNotFoundException("Kein Benutzer mit der E-Mail-Adresse gefunden: " + changePasswordRequest.getEmail()));
+                .orElseThrow(() -> new InvalidResetTokenException("Der Reset-Link ist ungültig. Bitte fordere einen neuen Code an."));
 
-        if (user.getResetVerifiedAt() == null) {
-            throw new InvalidResetTokenException("Bitte bestätige zuerst den Reset-Code, bevor du ein neues Passwort setzt.");
+        if (user.getResetVerifiedAt() == null || user.getResetTokenHash() == null
+                || !MessageDigest.isEqual(
+                        sha256(changePasswordRequest.getResetToken()).getBytes(StandardCharsets.UTF_8),
+                        user.getResetTokenHash().getBytes(StandardCharsets.UTF_8))) {
+            throw new InvalidResetTokenException("Der Reset-Link ist ungültig. Bitte fordere einen neuen Code an.");
         }
 
         if (user.getResetVerifiedAt().isBefore(Instant.now().minus(15, ChronoUnit.MINUTES))) {
             user.setResetVerifiedAt(null);
+            user.setResetTokenHash(null);
             userRepository.save(user);
             throw new PasswordResetTokenExpiredException("Die Bestätigung ist abgelaufen. Bitte fordere einen neuen Code an.");
         }
 
         user.setPassword(passwordEncoder.encode(changePasswordRequest.getPassword()));
         user.setResetVerifiedAt(null);
+        user.setResetTokenHash(null);
         userRepository.save(user);
+
         mailSender.sendPasswordChangedConfirmation(user.getEmail(), user.getFirstName());
         return new ChangePasswordResponse(true);
+    }
+
+    private static String sha256(String value) {
+        try {
+            return HexFormat.of().formatHex(
+                    MessageDigest.getInstance("SHA-256").digest(value.getBytes(StandardCharsets.UTF_8)));
+        } catch (java.security.NoSuchAlgorithmException e) {
+            throw new IllegalStateException(e);
+        }
     }
 
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {

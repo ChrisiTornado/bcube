@@ -29,4 +29,8 @@ public class StudioResponse {
     private boolean isActive;
     private Instant createdAt;
     private Integer hourlyRateCents;
+    /** Thumbnail of the first image, as a URL to fetch separately (lists). */
+    private String thumbnailUrl;
+    /** Display-size images as URLs to fetch separately (detail views). */
+    private List<String> imageUrls;
 }

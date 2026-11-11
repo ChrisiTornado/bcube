@@ -1,0 +1,63 @@
+// Colours/hover for the navigation menus live in the PrimeNG preset
+// (core/theme/bcube.preset.ts). Per-variant shape and the router-active state remain here.
+// Both menus are <p-megamenu styleClass="admin-menu|user-top-menu">.
+
+.p-megamenu.admin-menu,
+.p-megamenu.user-top-menu {
+  height: 100%;
+  border: none;
+  background: transparent;
+
+  .p-megamenu-item-label {
+    font-weight: 700;
+    letter-spacing: 0;
+  }
+
+  // Item the router currently points at: solid orange with dark text.
+  .p-megamenu-item.p-menuitem-link-active > .p-megamenu-item-content,
+  .p-megamenu-item.p-menuitem-link-active > .p-megamenu-item-content:hover {
+    background: var(--bcube-orange);
+
+    .p-megamenu-item-link,
+    .p-megamenu-item-label,
+    .p-megamenu-item-icon {
+      color: var(--bcube-on-orange);
+    }
+  }
+}
+
+// Sidebar (admin): square, compact.
+.p-megamenu.admin-menu {
+  .p-megamenu-item-content,
+  .p-megamenu-item-link {
+    border-radius: 0;
+  }
+
+  .p-megamenu-item-link {
+    padding: 0.65rem 0.8rem;
+  }
+
+  .p-megamenu-item-label {
+    font-size: 0.88rem;
+  }
+
+  .p-megamenu-item-icon {
+    font-size: 0.9rem;
+  }
+}
+
+// Top nav (user): pill-shaped items.
+.p-megamenu.user-top-menu {
+  .p-megamenu-item-content,
+  .p-megamenu-item-link {
+    border-radius: var(--radius-pill);
+  }
+
+  .p-megamenu-item-link {
+    padding: 0.8rem 1.05rem;
+  }
+
+  .p-megamenu-item-label {
+    font-size: 0.96rem;
+  }
+}

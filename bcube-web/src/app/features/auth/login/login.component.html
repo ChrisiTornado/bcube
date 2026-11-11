@@ -1,33 +1,33 @@
 <app-auth-container [title]="''">
-  <div class="login-hero">
-    <div class="login-brand-badge">
-      <img src="assets/images/nice.jpg" alt="bcube logo" class="login-brand-logo">
-      <span class="login-brand-text">cube</span>
+  <div class="auth-hero">
+    <div class="auth-brand-badge">
+      <img src="assets/images/nice.jpg" alt="bcube logo" class="auth-brand-logo">
+      <span class="auth-brand-text">cube</span>
     </div>
   </div>
   <div class="login-local-title-wrap">
-    <h1 class="login-screen-title m-0">Anmelden</h1>
+    <h1 class="auth-screen-title m-0">Anmelden</h1>
   </div>
   @if (!loading) {
     <form [formGroup]="loginForm" class="login-form">
-      <div class="mb-4 login-field">
+      <div class="mb-4 auth-field">
         <label for="email" class="block text-900 font-medium mb-2 login-label">Benutzer</label>
         <input id="email" formControlName="email" type="text" placeholder="E-Mail-Adresse" pInputText pAutoFocus
           class="w-full mb-3 login-input" />
-        <div class="login-error-wrap">
+        <div class="auth-error-wrap">
           @if (email.hasError('required') && submitted) {
-            <small class="login-error">E-Mail-Adresse
+            <small class="auth-error">E-Mail-Adresse
             ist erforderlich</small>
           }
         </div>
       </div>
-      <div class="mb-4 login-field">
+      <div class="mb-4 auth-field">
         <label for="password" class="block text-900 font-medium mb-2 login-label">Passwort</label>
         <input id="password" formControlName="password" type="password" placeholder="Passwort" pInputText
           class="w-full mb-3 login-input" />
-        <div class="login-error-wrap">
+        <div class="auth-error-wrap">
           @if (password.hasError('required') && submitted) {
-            <small class="login-error">Passwort
+            <small class="auth-error">Passwort
             ist erforderlich</small>
           }
         </div>
@@ -38,10 +38,10 @@
       </div>
       <div class="card flex justify-content-center mb-4 login-actions-wrap">
         <div class="flex gap-3 login-actions">
-          <p-button styleClass="login-primary-button" pRipple
+          <p-button styleClass="auth-primary-button" pRipple
             label="Einloggen" icon="pi pi-sign-in" iconPos="left" [loading]="loading" (click)="login()">
           </p-button>
-          <p-button severity="danger" styleClass="login-secondary-button" [routerLink]="['/register']" queryParamsHandling="preserve">
+          <p-button severity="danger" styleClass="auth-secondary-button login-secondary-button" [routerLink]="['/register']" queryParamsHandling="preserve">
             Registrieren
           </p-button>
         </div>

@@ -8,8 +8,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.reactive.function.client.WebClientResponseException;
+import org.springframework.web.client.RestClient;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestClientResponseException;
 
 import java.util.Map;
 
@@ -19,31 +20,30 @@ public class PaymentClient {
     @Value("${payment-service.base-url}")
     private String paymentServiceBaseUrl;
 
-    private final WebClient.Builder webClientBuilder;
+    private final RestClient.Builder restClientBuilder;
     private final ObjectMapper objectMapper;
 
     public PaymentIntentDto createPaymentIntent(CreatePaymentIntentRequest request, String token) {
         try {
-            ApiResponse<PaymentIntentDto> response = webClientBuilder.build()
+            ApiResponse<PaymentIntentDto> response = restClientBuilder.build()
                     .post()
                     .uri(paymentServiceBaseUrl + "/intents")
                     .headers(headers -> headers.setBearerAuth(token))
-                    .bodyValue(request)
+                    .body(request)
                     .retrieve()
-                    .bodyToMono(new ParameterizedTypeReference<ApiResponse<PaymentIntentDto>>() {})
-                    .block();
+                    .body(new ParameterizedTypeReference<ApiResponse<PaymentIntentDto>>() {});
 
             return response != null ? response.getData() : null;
-        } catch (WebClientResponseException.BadRequest e) {
+        } catch (HttpClientErrorException.BadRequest e) {
             // Voucher/validation failures from payment-service - surface the real message
             // (e.g. "Gutschein wurde bereits eingelöst") instead of a generic 500.
             throw new IllegalArgumentException(extractMessage(e));
-        } catch (WebClientResponseException e) {
+        } catch (RestClientResponseException e) {
             throw new RuntimeException("Fehler beim Erstellen der Zahlung: " + e.getMessage(), e);
         }
     }
 
-    private String extractMessage(WebClientResponseException e) {
+    private String extractMessage(RestClientResponseException e) {
         try {
             ApiResponse<?> body = objectMapper.readValue(e.getResponseBodyAsString(), ApiResponse.class);
             return body.getMessage() != null ? body.getMessage() : "Zahlung konnte nicht erstellt werden";
@@ -58,17 +58,16 @@ public class PaymentClient {
      */
     public void refund(Long bookingId, int refundPercentage, String token) {
         try {
-            webClientBuilder.build()
+            restClientBuilder.build()
                     .post()
                     .uri(paymentServiceBaseUrl + "/" + bookingId + "/refund")
                     .headers(headers -> headers.setBearerAuth(token))
-                    .bodyValue(Map.of("refundPercentage", refundPercentage))
+                    .body(Map.of("refundPercentage", refundPercentage))
                     .retrieve()
-                    .toBodilessEntity()
-                    .block();
-        } catch (WebClientResponseException.NotFound ignored) {
+                    .toBodilessEntity();
+        } catch (HttpClientErrorException.NotFound ignored) {
             // No payment exists for this booking (e.g. it was never actually confirmed) - nothing to refund.
-        } catch (WebClientResponseException e) {
+        } catch (RestClientResponseException e) {
             throw new RuntimeException("Fehler bei der Rückerstattung: " + e.getMessage(), e);
         }
     }

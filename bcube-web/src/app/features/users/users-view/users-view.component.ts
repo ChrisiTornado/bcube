@@ -10,12 +10,12 @@ import { UpdateUserComponent } from '@features/users/users-view/update-user/upda
 import { DeleteUserComponent } from '@features/users/users-view/delete-user/delete-user.component';
 import { LoadingSpinnerComponent } from '@shared/ui/loading-spinner/loading-spinner.component';
 import { CommonModule } from '@angular/common';
-import { LIGHT_BUTTON_STYLE } from '@shared/util/button-style';
 import { extractErrorMessage } from '@shared/util/error-message.util';
 
+import { PagerComponent } from '@shared/ui/pager/pager.component';
 @Component({
     selector: 'app-users-view',
-    imports: [
+    imports: [PagerComponent, 
         CommonModule,
         LoadingSpinnerComponent,
         TableModule,
@@ -28,7 +28,6 @@ import { extractErrorMessage } from '@shared/util/error-message.util';
     styleUrl: './users-view.component.css'
 })
 export class UsersViewComponent implements OnInit {
-  readonly lightButtonStyle = LIGHT_BUTTON_STYLE;
 
   users$!: Observable<User[]>;
   loading$ = this.userService.loading$;

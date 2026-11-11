@@ -12,10 +12,7 @@
 @if (!(loading$ | async) && studio) {
   <div class="studio-details-page">
     <div class="top-actions">
-      <button pButton type="button" class="p-button-outlined"
-        [style]="{ 'border-color': 'black', 'color': 'black' }" (click)="goBack()">
-        <i class="pi pi-arrow-left"></i> Zurück
-      </button>
+      <app-back-button (back)="goBack()" />
       @if (isAdmin) {
         <app-update-studio [studio]="studio" [detailMode]="true">
         </app-update-studio>

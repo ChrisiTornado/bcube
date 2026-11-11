@@ -17,6 +17,12 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(new ApiResponse<>(ex.getMessage(), null), HttpStatus.NOT_FOUND);
     }
 
+    /** An uploaded file that is not a readable image (StudioImageProcessor) is a client error. */
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ApiResponse<Void>> handleIllegalArgument(IllegalArgumentException ex) {
+        return new ResponseEntity<>(new ApiResponse<>(ex.getMessage(), null), HttpStatus.BAD_REQUEST);
+    }
+
     /** getStudioById/deleteStudio/updateStudio all throw this directly - Spring already applies
      * the right status code even without this handler, but the response body was Spring Boot's
      * default error shape instead of this API's normal ApiResponse envelope. */

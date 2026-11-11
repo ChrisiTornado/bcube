@@ -15,7 +15,6 @@ import { InputTextModule } from 'primeng/inputtext';
 import { ApiResponse } from '@models/responses/api-response';
 import { ResetPasswordResponse } from '@models/responses/user/reset-password-response';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { DARK_BUTTON_STYLE } from '@shared/util/button-style';
 import { extractErrorMessage } from '@shared/util/error-message.util';
 
 @Component({
@@ -34,7 +33,6 @@ import { extractErrorMessage } from '@shared/util/error-message.util';
     styleUrl: './email-reset.component.css'
 })
 export class EmailResetComponent implements OnInit {
-  readonly darkButtonStyle = DARK_BUTTON_STYLE;
 
   formGroup!: FormGroup;
   loading = false;

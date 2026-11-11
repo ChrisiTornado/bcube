@@ -19,14 +19,14 @@ import { StudioNameResponse } from '@models/responses/studio/studio-name-respons
 import { StudioService } from '@features/studios/studio.service';
 import { UserNameResponse } from '@models/responses/user/user-name-response';
 import { UserService } from '@features/users/user.service';
-import { DARK_BUTTON_STYLE, LIGHT_BUTTON_STYLE } from '@shared/util/button-style';
 import { getBookingStatusLabel } from '@shared/util/booking-status.util';
 import { extractErrorMessage } from '@shared/util/error-message.util';
 import { getDashboardPath } from '@shared/util/dashboard-path.util';
 
+import { PagerComponent } from '@shared/ui/pager/pager.component';
 @Component({
     selector: 'app-bookings-view',
-    imports: [
+    imports: [PagerComponent, 
         CommonModule,
         TableModule,
         ButtonModule,
@@ -40,8 +40,6 @@ import { getDashboardPath } from '@shared/util/dashboard-path.util';
     styleUrls: ['./bookings-view.component.css']
 })
 export class BookingsViewComponent implements OnInit {
-  readonly darkButtonStyle = DARK_BUTTON_STYLE;
-  readonly lightButtonStyle = LIGHT_BUTTON_STYLE;
 
   bookings$!: Observable<Booking[]>;
   loading$ = this.bookingService.loading$;

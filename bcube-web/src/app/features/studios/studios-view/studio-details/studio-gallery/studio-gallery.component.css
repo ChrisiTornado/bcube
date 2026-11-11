@@ -59,21 +59,21 @@
   border: 0;
   width: 2.75rem;
   height: 2.75rem;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: rgba(255, 255, 255, 0.12);
-  color: #ffffff;
+  color: var(--bcube-text);
   font-size: 1.15rem;
   cursor: pointer;
 }
 
 /* ===== Responsive ===== */
-@media (max-width: 1160px) {
+@media (max-width: 1120px) {
   .hero-gallery {
     grid-template-columns: 1fr;
   }
 }
 
-@media (max-width: 760px) {
+@media (max-width: 800px) {
   .gallery-secondary {
     grid-template-columns: 1fr 1fr;
   }

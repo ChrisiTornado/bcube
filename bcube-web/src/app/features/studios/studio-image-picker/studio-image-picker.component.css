@@ -14,9 +14,9 @@
   gap: 0.6rem;
   align-self: flex-start;
   padding: 0.65rem 1.1rem;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 167, 34, 0.28);
-  background: rgba(255, 167, 34, 0.08);
+  border-radius: var(--radius-pill);
+  border: 1px solid rgba(var(--bcube-orange-rgb), 0.28);
+  background: rgba(var(--bcube-orange-rgb), 0.08);
   color: var(--bcube-text);
   font-family: inherit;
   font-size: 0.95rem;
@@ -26,8 +26,8 @@
 }
 
 .image-picker-choose:hover {
-  background: rgba(255, 167, 34, 0.16);
-  border-color: rgba(255, 167, 34, 0.4);
+  background: rgba(var(--bcube-orange-rgb), 0.16);
+  border-color: rgba(var(--bcube-orange-rgb), 0.4);
 }
 
 .image-picker-grid {
@@ -35,7 +35,7 @@
   flex-wrap: wrap;
   gap: 0.85rem;
   padding: 1rem;
-  border: 1px solid rgba(255, 167, 34, 0.28);
+  border: 1px solid rgba(var(--bcube-orange-rgb), 0.28);
   border-radius: 18px;
   background: rgba(34, 34, 34, 0.92);
 }
@@ -44,7 +44,7 @@
   position: relative;
   width: 7.5rem;
   height: 7.5rem;
-  border-radius: 12px;
+  border-radius: var(--radius-sm);
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.08);
   cursor: grab;
@@ -67,9 +67,9 @@
   left: 0.4rem;
   top: 0.4rem;
   padding: 0.2rem 0.5rem;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: var(--bcube-orange);
-  color: #111111;
+  color: var(--bcube-on-orange);
   font-size: 0.65rem;
   font-weight: 800;
   text-transform: uppercase;
@@ -86,9 +86,9 @@
   align-items: center;
   justify-content: center;
   border: none;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: rgba(0, 0, 0, 0.65);
-  color: #ffffff;
+  color: var(--bcube-text);
   cursor: pointer;
   font-size: 0.7rem;
   padding: 0;
@@ -116,9 +116,9 @@
   align-items: center;
   justify-content: center;
   border: none;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: rgba(0, 0, 0, 0.65);
-  color: #ffffff;
+  color: var(--bcube-text);
   cursor: pointer;
   font-size: 0.7rem;
   padding: 0;
@@ -139,7 +139,7 @@
 
 .cdk-drag-preview {
   box-shadow: 0 12px 26px rgba(0, 0, 0, 0.4);
-  border-radius: 12px;
+  border-radius: var(--radius-sm);
 }
 
 .cdk-drag-placeholder {

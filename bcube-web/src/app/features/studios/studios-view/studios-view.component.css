@@ -40,7 +40,7 @@
 
 .results-panel::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.24);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   border: 2px solid transparent;
   background-clip: padding-box;
 }
@@ -64,7 +64,7 @@
   margin: 0;
   font-size: clamp(1.95rem, 2vw, 2.55rem);
   line-height: 1.04;
-  color: #ffffff;
+  color: var(--bcube-text);
 }
 
 /* The admin sidebar eats into the available width, so the same clamp() - sized against
@@ -94,10 +94,10 @@
 }
 
 .load-more-button {
-  border-radius: 999px !important;
+  border-radius: var(--radius-pill) !important;
   border: 1px solid rgba(255, 252, 247, 0.18) !important;
   background: rgba(255, 252, 247, 0.1) !important;
-  color: #ffffff !important;
+  color: var(--bcube-text) !important;
   box-shadow: none !important;
 }
 
@@ -146,9 +146,9 @@
   width: 1.85rem;
   height: 1.85rem;
   border: 0;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: rgba(255, 255, 255, 0.94);
-  color: #111111;
+  color: var(--bcube-on-orange);
   font-size: 1.08rem;
   line-height: 1;
   display: grid;
@@ -214,7 +214,7 @@
 .media-dot {
   width: 0.48rem;
   height: 0.48rem;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: rgba(255, 255, 255, 0.56);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.16);
 }
@@ -228,7 +228,7 @@
   top: 1rem;
   left: 1rem;
   padding: 0.5rem 0.9rem;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: rgba(58, 53, 45, 0.78);
   color: #fffdfa;
   font-size: 0.85rem;
@@ -257,7 +257,7 @@
   margin: 0;
   font-size: 1.05rem;
   line-height: 1.25;
-  color: #ffffff;
+  color: var(--bcube-text);
   font-weight: 700;
 }
 
@@ -341,10 +341,10 @@
   position: absolute;
   z-index: 2;
   border: 0;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   padding: 0.72rem 1rem;
   background: rgba(255, 255, 255, 0.96);
-  color: #111111;
+  color: var(--bcube-on-orange);
   font-size: 0.9rem;
   font-weight: 700;
   box-shadow: 0 16px 36px rgba(0, 0, 0, 0.18);
@@ -418,7 +418,7 @@
 
 .map-preview-copy {
   padding: 0.8rem 0.85rem 0.85rem;
-  color: #111111;
+  color: var(--bcube-on-orange);
 }
 
 .map-preview-copy h3,
@@ -436,7 +436,7 @@
 .map-preview-copy h3 {
   font-size: 1rem;
   line-height: 1.25;
-  color: #111111;
+  color: var(--bcube-on-orange);
   font-weight: 700;
   margin-bottom: 0.5rem;
 }
@@ -454,10 +454,10 @@
 }
 
 .preview-button {
-  border-radius: 999px !important;
+  border-radius: var(--radius-pill) !important;
   border: 0 !important;
   background: #111111 !important;
-  color: #ffffff !important;
+  color: var(--bcube-text) !important;
   min-height: 2rem !important;
   font-size: 0.78rem !important;
 }
@@ -545,7 +545,7 @@
   }
 }
 
-@media (max-width: 820px) {
+@media (max-width: 800px) {
   .results-toolbar,
   .studio-heading,
   .map-preview-actions {

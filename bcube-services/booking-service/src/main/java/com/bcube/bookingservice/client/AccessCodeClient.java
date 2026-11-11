@@ -7,8 +7,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.reactive.function.client.WebClientResponseException;
+import org.springframework.web.client.RestClient;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestClientResponseException;
 
 /**
  * access-service has no user-facing endpoints - every call it receives is server-to-server from
@@ -25,57 +26,54 @@ public class AccessCodeClient {
     @Value("${internal.service-key}")
     private String internalServiceKey;
 
-    private final WebClient.Builder webClientBuilder;
+    private final RestClient.Builder restClientBuilder;
 
     public AccessCodeResponse generateAccessCode(AccessRequest request) {
         try {
-            ApiResponse<AccessCodeResponse> response = webClientBuilder.build()
+            ApiResponse<AccessCodeResponse> response = restClientBuilder.build()
                     .post()
                     .uri(accessServiceBaseUrl)
                     .headers(headers -> headers.set("X-Internal-Key", internalServiceKey))
-                    .bodyValue(request)
+                    .body(request)
                     .retrieve()
-                    .bodyToMono(new ParameterizedTypeReference<ApiResponse<AccessCodeResponse>>() {})
-                    .block();
+                    .body(new ParameterizedTypeReference<ApiResponse<AccessCodeResponse>>() {});
 
             return response != null ? response.getData() : null;
-        } catch (WebClientResponseException e) {
+        } catch (RestClientResponseException e) {
             throw new RuntimeException("Fehler beim Erstellen des Zutrittscodes: " + e.getMessage(), e);
         }
     }
 
     public AccessCodeResponse getAccessCode(Long bookingId) {
         try {
-            ApiResponse<AccessCodeResponse> response = webClientBuilder.build()
+            ApiResponse<AccessCodeResponse> response = restClientBuilder.build()
                     .get()
                     .uri(accessServiceBaseUrl + "/" + bookingId)
                     .headers(headers -> headers.set("X-Internal-Key", internalServiceKey))
                     .retrieve()
-                    .bodyToMono(new ParameterizedTypeReference<ApiResponse<AccessCodeResponse>>() {})
-                    .block();
+                    .body(new ParameterizedTypeReference<ApiResponse<AccessCodeResponse>>() {});
 
             return response != null ? response.getData() : null;
-        } catch (WebClientResponseException.NotFound e) {
+        } catch (HttpClientErrorException.NotFound e) {
             return null;
-        } catch (WebClientResponseException e) {
+        } catch (RestClientResponseException e) {
             throw new RuntimeException("Fehler beim Abrufen des Zutrittscodes: " + e.getMessage(), e);
         }
     }
 
     public void deleteAccessCode(Long bookingId) {
         try {
-            webClientBuilder.build()
+            restClientBuilder.build()
                     .delete()
                     .uri(accessServiceBaseUrl + "/" + bookingId)
                     .headers(headers -> headers.set("X-Internal-Key", internalServiceKey))
                     .retrieve()
-                    .toBodilessEntity()
-                    .block();
-        } catch (WebClientResponseException.NotFound ignored) {
+                    .toBodilessEntity();
+        } catch (HttpClientErrorException.NotFound ignored) {
             // Bereits gelöscht oder nicht vorhanden.
-        } catch (WebClientResponseException.BadRequest ignored) {
+        } catch (HttpClientErrorException.BadRequest ignored) {
             // Access-Service meldet aktuell fehlende Codes als 400.
-        } catch (WebClientResponseException e) {
+        } catch (RestClientResponseException e) {
             throw new RuntimeException("Fehler beim Löschen des Zutrittscodes: " + e.getMessage(), e);
         }
     }

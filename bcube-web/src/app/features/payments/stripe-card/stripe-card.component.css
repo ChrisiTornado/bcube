@@ -12,7 +12,7 @@
 }
 
 .card-error {
-  color: #f38b8b;
+  color: var(--bcube-danger);
 }
 
 .pay-button {

@@ -46,16 +46,21 @@ This repository is designed as a portfolio project and demonstrates authenticati
 
 ```text
 bcube
-├── bcube-frontend
+├── bcube-web
 │   └── Angular SPA
 ├── bcube-services
 │   ├── api-gateway
 │   ├── user-service
 │   ├── studio-service
 │   ├── booking-service
-│   └── access-service
-└── docker-compose.yml
+│   ├── access-service
+│   ├── payment-service
+│   └── docker-compose.yml     (databases only, for local development)
+└── docker-compose.yml         (full stack, includes the databases above)
 ```
+
+Each service has its own README (`bcube-services/<service>/README.md`) with port, database,
+configuration, authentication and how to run its tests.
 
 The application is split into domain-focused services:
 
@@ -71,7 +76,8 @@ The application is split into domain-focused services:
 Secrets are never committed. Every `.env` is git-ignored; a committed `.env.example` next to it lists the required variables. Run this once after cloning:
 
 ```bash
-cp .env.example .env
+cp .env.example .env                                  # full stack (docker compose)
+cp bcube-services/.env.example bcube-services/.env    # local development (IDE + databases only)
 for s in user studio booking access payment; do
   cp bcube-services/$s-service/.env.example bcube-services/$s-service/.env
 done
@@ -83,28 +89,37 @@ Then fill in the placeholders:
 
 | File | Used by | Contains |
 | --- | --- | --- |
-| `.env` (root) | `docker compose` interpolation | `DB_USER`, `DB_PASSWORD`, `JWT_SECRET` |
-| `bcube-services/<service>/.env` | that service and its Postgres container | DB settings, service secrets, service URLs |
+| `.env` (root) | full stack: `docker compose` in the root folder | `DB_USER`, `DB_PASSWORD`, `JWT_SECRET`, `INTERNAL_SERVICE_KEY` |
+| `bcube-services/.env` | local development: databases compose file + services started from the IDE | the same four shared values (DB values default to `admin`/`admin`) |
+| `bcube-services/<service>/.env` | that service only | service-specific secrets (Stripe, Google, SMTP, ...) and URLs |
 | `bcube-web/src/environments/environment.ts` | Angular frontend (`ng serve`, `ng build`, Docker image) | API paths, Stripe publishable key, Mapbox token |
 
-`api-gateway` only needs `JWT_SECRET`: from its own `.env` when run locally, from the root `.env` (via `docker compose`) in Docker.
-
-Values that must match across files:
-
-- `JWT_SECRET`: root `.env` and every service that has it
-- `INTERNAL_SERVICE_KEY`: user, booking, payment and access service
-- `DB_USER` / `DB_PASSWORD`: root `.env` and the `POSTGRES_*` values in each service `.env`
+Shared values are defined once per mode and passed to the containers by `docker-compose.yml`, so they are not repeated in the service `.env` files. `JWT_SECRET` and `INTERNAL_SERVICE_KEY` must be the same in the root `.env` and `bcube-services/.env` if you switch between both modes against the same data.
 
 Generate secrets with `openssl rand -base64 48` (for `ACCESS_AES_KEY` use `openssl rand -base64 32`).
 
-## Quick Start
+## Local Development
+
+Run only the databases and start the Spring services from your IDE, so code changes do not need an image rebuild:
+
+```bash
+cd bcube-services
+docker compose up -d      # user-db :5433, studio-db :5434, booking-db :5435, access-db :5436, payment-db :5437
+```
+
+Each service loads `bcube-services/.env` automatically (`spring.config.import`) plus its own `bcube-services/<service>/.env`, so no IDE configuration is needed. The root `docker-compose.yml` includes this same file, so the databases are defined in one place.
+
+> The database containers have fixed names (`user-db`, ...), so the development databases and the full stack
+> cannot run at the same time. Stop one (`docker compose down`) before starting the other.
+
+## Quick Start (full stack)
 
 Prerequisites:
 
 - Docker and Docker Compose
 - Java 25 (`sdk env` reads `.sdkmanrc`), if services are started locally; each service ships `./mvnw`, so Maven is not needed
 - Node.js 22 (`nvm use` reads `.nvmrc`), if the frontend is started locally
-- Service-specific `.env` files for database and secret configuration
+- `.env` files as described in Environment Setup
 
 Clone and start the project:
 

@@ -60,11 +60,11 @@ export class StudioMapComponent implements OnDestroy {
     }
 
     // The recurring "grey map" reports have repeatedly traced back to a missing/placeholder
-    // environment.token (e.g. an environment.ts freshly copied from the empty example) - failing
+    // environment.mapboxToken (e.g. an environment.ts freshly copied from the empty example) - failing
     // loudly here means it shows up as an obvious console error instead of a mysterious grey box.
-    if (!environment.token || environment.token === 'YOUR_MAPBOX_TOKEN') {
+    if (!environment.mapboxToken || environment.mapboxToken === 'YOUR_MAPBOX_TOKEN') {
       console.error(
-        'Mapbox-Karte kann nicht geladen werden: environment.token ist nicht gesetzt. ' +
+        'Mapbox-Karte kann nicht geladen werden: environment.mapboxToken ist nicht gesetzt. ' +
         'Echten Mapbox-Token in src/environments/environment.ts eintragen.'
       );
       return;
@@ -235,7 +235,7 @@ export class StudioMapComponent implements OnDestroy {
       zoom: 10.4,
       minZoom: 7.6,
       maxZoom: 15.2,
-      accessToken: environment.token,
+      accessToken: environment.mapboxToken,
       attributionControl: false
     });
 

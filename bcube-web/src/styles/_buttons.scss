@@ -1,0 +1,11 @@
+// Button colours, radius and weight live in the PrimeNG preset (core/theme/bcube.preset.ts).
+
+// PrimeNG's own base CSS also matches ".p-button-text:hover"/".p-button-outlined:hover" on
+// the <p-button> HOST element (which carries that class too, from styleClass/class input),
+// painting a light hover background behind it. The host has border-radius: 0 while the
+// button it wraps is rounded, so that background peeked out as a square halo at the corners.
+p-button.p-button-text:hover,
+p-button.p-button-outlined:hover {
+  background: transparent !important;
+}
+

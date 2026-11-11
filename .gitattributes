@@ -1,0 +1,24 @@
+# Normalize line endings for new/changed text files (LF in the repo). Files that are already CRLF
+# in the index are left alone until someone runs `git add --renormalize .` once.
+* text=auto
+
+# Scripts must stay LF (a CRLF shebang breaks inside Docker/Linux), Windows scripts stay CRLF.
+**/mvnw text eol=lf
+*.sh text eol=lf
+*.cmd text eol=crlf
+*.bat text eol=crlf
+
+# Binary assets - never diff or normalize.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.webp binary
+*.svg text
+*.mp4 binary
+*.pdf binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.jar binary

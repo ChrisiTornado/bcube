@@ -1,9 +1,16 @@
+# Full stack: frontend, gateway, services and databases.
+# The databases (and their volumes/network) are defined once in bcube-services/docker-compose.yml;
+# for development run only those from that folder and start the services from your IDE.
+include:
+  - path: ./bcube-services/docker-compose.yml
+    env_file: ./.env # same DB_USER / DB_PASSWORD for the containers and the datasources below
+
 services:
   frontend:
     build: ./bcube-web
     container_name: frontend
     ports:
-      - "4200:80"
+      - "4200:8080"
     depends_on:
       - api-gateway
     networks:
@@ -14,6 +21,10 @@ services:
     container_name: api-gateway
     environment:
       JWT_SECRET: ${JWT_SECRET}
+      USER_SERVICE_URL: http://user-service:8081
+      STUDIO_SERVICE_URL: http://studio-service:8082
+      BOOKING_SERVICE_URL: http://booking-service:8083
+      PAYMENT_SERVICE_URL: http://payment-service:8085
     ports:
       - "8080:8080"
     depends_on:
@@ -35,22 +46,13 @@ services:
       SPRING_DATASOURCE_USERNAME: ${DB_USER}
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
       SPRING_PROFILES_ACTIVE: docker
+      JWT_SECRET: ${JWT_SECRET}
+      INTERNAL_SERVICE_KEY: ${INTERNAL_SERVICE_KEY}
     ports:
-      - "8081:8080"
+      - "8081:8081"
     depends_on:
-      - user-db
-    networks:
-      - bcube-network
-
-  user-db:
-    image: postgres:17
-    container_name: user-db
-    env_file:
-      - ./bcube-services/user-service/.env
-    ports:
-      - "5433:5432"
-    volumes:
-      - user-data:/var/lib/postgresql/data
+      user-db:
+        condition: service_healthy
     networks:
       - bcube-network
 
@@ -64,22 +66,12 @@ services:
       SPRING_DATASOURCE_USERNAME: ${DB_USER}
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
       SPRING_PROFILES_ACTIVE: docker
+      JWT_SECRET: ${JWT_SECRET}
     ports:
-      - "8082:8080"
+      - "8082:8082"
     depends_on:
-      - studio-db
-    networks:
-      - bcube-network
-
-  studio-db:
-    image: postgres:17
-    container_name: studio-db
-    env_file:
-      - ./bcube-services/studio-service/.env
-    ports:
-      - "5434:5432"
-    volumes:
-      - studio-data:/var/lib/postgresql/data
+      studio-db:
+        condition: service_healthy
     networks:
       - bcube-network
 
@@ -93,20 +85,13 @@ services:
       SPRING_DATASOURCE_USERNAME: ${DB_USER}
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
       SPRING_PROFILES_ACTIVE: docker
+      JWT_SECRET: ${JWT_SECRET}
+      INTERNAL_SERVICE_KEY: ${INTERNAL_SERVICE_KEY}
     ports:
-      - "8083:8080"
-    networks:
-      - bcube-network
-
-  booking-db:
-    image: postgres:17
-    container_name: booking-db
-    env_file:
-      - ./bcube-services/booking-service/.env
-    ports:
-      - "5435:5432"
-    volumes:
-      - booking-data:/var/lib/postgresql/data
+      - "8083:8083"
+    depends_on:
+      booking-db:
+        condition: service_healthy
     networks:
       - bcube-network
 
@@ -116,24 +101,16 @@ services:
     env_file:
       - ./bcube-services/access-service/.env
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://access-db:5436/bcube_access_service
+      SPRING_DATASOURCE_URL: jdbc:postgresql://access-db:5432/bcube_access_service
       SPRING_DATASOURCE_USERNAME: ${DB_USER}
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
       SPRING_PROFILES_ACTIVE: docker
+      INTERNAL_SERVICE_KEY: ${INTERNAL_SERVICE_KEY}
     ports:
-      - "8084:8080"
-    networks:
-      - bcube-network
-
-  access-db:
-    image: postgres:17
-    container_name: access-db
-    env_file:
-      - ./bcube-services/access-service/.env
-    ports:
-      - "5436:5432"
-    volumes:
-      - access-data:/var/lib/postgresql/data
+      - "8084:8084"
+    depends_on:
+      access-db:
+        condition: service_healthy
     networks:
       - bcube-network
 
@@ -147,31 +124,12 @@ services:
       SPRING_DATASOURCE_USERNAME: ${DB_USER}
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
       SPRING_PROFILES_ACTIVE: docker
+      JWT_SECRET: ${JWT_SECRET}
+      INTERNAL_SERVICE_KEY: ${INTERNAL_SERVICE_KEY}
     ports:
       - "8085:8085"
     depends_on:
-      - payment-db
+      payment-db:
+        condition: service_healthy
     networks:
       - bcube-network
-
-  payment-db:
-    image: postgres:17
-    container_name: payment-db
-    env_file:
-      - ./bcube-services/payment-service/.env
-    ports:
-      - "5437:5432"
-    volumes:
-      - payment-data:/var/lib/postgresql/data
-    networks:
-      - bcube-network
-
-volumes:
-  user-data:
-  studio-data:
-  access-data:
-  booking-data:
-  payment-data:
-
-networks:
-  bcube-network:

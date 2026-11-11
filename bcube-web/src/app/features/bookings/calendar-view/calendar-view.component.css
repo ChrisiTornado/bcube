@@ -35,8 +35,8 @@
   padding: 2rem 1.5rem;
   text-align: center;
   border-radius: 26px;
-  border: 1px dashed rgba(255, 167, 34, 0.28);
-  background: rgba(255, 167, 34, 0.05);
+  border: 1px dashed rgba(var(--bcube-orange-rgb), 0.28);
+  background: rgba(var(--bcube-orange-rgb), 0.05);
 }
 
 .guest-calendar-icon {
@@ -83,7 +83,7 @@
 /* ===== Selected-day bookings panel ===== */
 .day-bookings-panel {
   border-radius: 28px;
-  border: 1px solid rgba(255, 167, 34, 0.14);
+  border: 1px solid rgba(var(--bcube-orange-rgb), 0.14);
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.015)),
     rgba(12, 12, 12, 0.78);
@@ -122,7 +122,7 @@
 
 .day-booking-card {
   border-radius: 22px;
-  border: 1px solid rgba(255, 167, 34, 0.14);
+  border: 1px solid rgba(var(--bcube-orange-rgb), 0.14);
   background: rgba(17, 17, 17, 0.92);
   padding: 1rem;
   display: flex;
@@ -144,7 +144,7 @@
 .booking-image-wrap {
   width: 72px;
   height: 72px;
-  border-radius: 16px;
+  border-radius: var(--radius-md);
   background: rgba(255, 255, 255, 0.04);
   display: flex;
   align-items: center;
@@ -196,8 +196,8 @@
   align-self: center;
   min-width: 7.4rem;
   padding: 0.28rem 0.85rem;
-  border-radius: 999px;
-  background: rgba(255, 167, 34, 0.18);
+  border-radius: var(--radius-pill);
+  background: rgba(var(--bcube-orange-rgb), 0.18);
   color: var(--bcube-orange);
   font-size: 0.78rem;
   font-weight: 800;
@@ -207,7 +207,7 @@
 
 .booking-status-badge-done {
   background: rgba(52, 168, 83, 0.2);
-  color: #5fe07b;
+  color: var(--bcube-success);
 }
 
 .booking-location,
@@ -223,7 +223,7 @@
 
 .empty-day-bookings {
   border-radius: 22px;
-  border: 1px dashed rgba(255, 167, 34, 0.18);
+  border: 1px dashed rgba(var(--bcube-orange-rgb), 0.18);
   color: rgba(255, 255, 255, 0.7);
   padding: 1rem 1.1rem;
 }
@@ -245,27 +245,27 @@
 
   --fc-classic-primary: var(--bcube-orange);
   --fc-classic-primary-foreground: #111111;
-  --fc-classic-highlight: rgba(255, 167, 34, 0.22);
-  --fc-classic-today: rgba(255, 167, 34, 0.16);
+  --fc-classic-highlight: rgba(var(--bcube-orange-rgb), 0.22);
+  --fc-classic-today: rgba(var(--bcube-orange-rgb), 0.16);
   --fc-classic-now: var(--bcube-orange);
 
   --fc-classic-background: transparent;
   --fc-classic-faint: rgba(255, 255, 255, 0.03);
-  --fc-classic-muted: rgba(255, 167, 34, 0.08);
-  --fc-classic-strong: rgba(255, 167, 34, 0.18);
+  --fc-classic-muted: rgba(var(--bcube-orange-rgb), 0.08);
+  --fc-classic-strong: rgba(var(--bcube-orange-rgb), 0.18);
 
   --fc-classic-foreground: #ffffff;
   --fc-classic-faint-foreground: rgba(255, 255, 255, 0.38);
   --fc-classic-muted-foreground: rgba(255, 255, 255, 0.72);
 
-  --fc-classic-border: rgba(255, 167, 34, 0.14);
-  --fc-classic-strong-border: rgba(255, 167, 34, 0.32);
+  --fc-classic-border: rgba(var(--bcube-orange-rgb), 0.14);
+  --fc-classic-strong-border: rgba(var(--bcube-orange-rgb), 0.32);
 
   --fc-classic-button: rgba(255, 255, 255, 0.06);
-  --fc-classic-button-border: rgba(255, 167, 34, 0.22);
-  --fc-classic-button-strong: rgba(255, 167, 34, 0.22);
+  --fc-classic-button-border: rgba(var(--bcube-orange-rgb), 0.22);
+  --fc-classic-button-strong: rgba(var(--bcube-orange-rgb), 0.22);
   --fc-classic-button-strong-border: var(--bcube-orange);
-  --fc-classic-button-outline: rgba(255, 167, 34, 0.5);
+  --fc-classic-button-outline: rgba(var(--bcube-orange-rgb), 0.5);
   --fc-classic-button-foreground: #ffffff;
 }
 
@@ -274,8 +274,8 @@
    feedback now that the framework doesn't expose a built-in selected-cell class. */
 :host ::ng-deep .calendar-frame .fc-day-selected {
   background:
-    linear-gradient(180deg, rgba(255, 167, 34, 0.22), rgba(255, 167, 34, 0.1)) !important;
-  box-shadow: inset 0 0 0 2px rgba(255, 167, 34, 0.75) !important;
+    linear-gradient(180deg, rgba(var(--bcube-orange-rgb), 0.22), rgba(var(--bcube-orange-rgb), 0.1)) !important;
+  box-shadow: inset 0 0 0 2px rgba(var(--bcube-orange-rgb), 0.75) !important;
   transition: background-color 0.15s ease, box-shadow 0.15s ease;
 }
 
@@ -300,15 +300,15 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 999px !important;
+  border-radius: var(--radius-pill) !important;
   background: rgba(255, 255, 255, 0.05) !important;
-  border: 1px solid rgba(255, 167, 34, 0.25) !important;
-  color: #ffffff !important;
+  border: 1px solid rgba(var(--bcube-orange-rgb), 0.25) !important;
+  color: var(--bcube-text) !important;
   transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
 }
 
 :host ::ng-deep .calendar-frame .bcube-nav-btn:hover {
-  background: rgba(255, 167, 34, 0.18) !important;
+  background: rgba(var(--bcube-orange-rgb), 0.18) !important;
   border-color: var(--bcube-orange) !important;
 }
 
@@ -328,8 +328,8 @@
 /* The "+X mehr" popover (popoverClass hook) portals to <body>, outside this
    component's DOM subtree, so it needs an unscoped selector to be reachable. */
 ::ng-deep .bcube-popover {
-  border-radius: 16px !important;
-  border: 1px solid rgba(255, 167, 34, 0.18) !important;
+  border-radius: var(--radius-md) !important;
+  border: 1px solid rgba(var(--bcube-orange-rgb), 0.18) !important;
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.015)),
     rgba(18, 18, 18, 0.98) !important;
@@ -338,7 +338,7 @@
 }
 
 /* ===== Responsive ===== */
-@media (max-width: 1100px) {
+@media (max-width: 1120px) {
   .calendar-layout {
     grid-template-columns: 1fr;
   }

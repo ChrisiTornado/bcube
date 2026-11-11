@@ -1,0 +1,27 @@
+.fc {
+  padding: 1rem;
+  border: 1px solid var(--bcube-line);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.015)),
+    rgba(15, 15, 15, 0.88);
+  box-shadow: var(--bcube-shadow);
+}
+
+.fc .fc-toolbar-title,
+.fc .fc-col-header-cell-cushion,
+.fc .fc-daygrid-day-number {
+  color: var(--bcube-text);
+}
+
+.fc .fc-button-primary {
+  background: var(--bcube-orange) !important;
+  border-color: var(--bcube-orange) !important;
+  color: var(--bcube-on-orange) !important;
+}
+
+.fc .fc-event {
+  background: var(--bcube-orange) !important;
+  border-color: var(--bcube-orange) !important;
+  color: var(--bcube-on-orange) !important;
+}
+

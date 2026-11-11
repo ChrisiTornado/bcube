@@ -50,6 +50,7 @@ public class WebSecurityConfig {
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/error").permitAll()
                         .requestMatchers("/actuator/health").permitAll()
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                         .requestMatchers(HttpMethod.PATCH, "/api/bookings/*/payment-status").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/bookings/studio/*/slots").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/bookings").hasRole("ADMIN")

@@ -21,7 +21,6 @@ import { AuthContainerComponent } from '@features/auth/auth-container/auth-conta
 import { AuthService } from '@core/services/auth.service';
 import { PasswordResetService } from '@core/services/password-reset.service';
 import { ChangePasswordRequest } from '@models/requests/user/change-password-request';
-import { DARK_BUTTON_STYLE } from '@shared/util/button-style';
 import { extractErrorMessage } from '@shared/util/error-message.util';
 
 @Component({
@@ -40,7 +39,6 @@ import { extractErrorMessage } from '@shared/util/error-message.util';
     providers: [MessageService]
 })
 export class ChangePasswordComponent implements OnInit {
-  readonly darkButtonStyle = DARK_BUTTON_STYLE;
 
   formGroup!: FormGroup;
   loading = false;
@@ -86,6 +84,7 @@ export class ChangePasswordComponent implements OnInit {
 
     const payload: ChangePasswordRequest = {
       email: this.email!,
+      resetToken: this.passwordResetService.getResetToken() ?? '',
       password: this.password.value
     };
 

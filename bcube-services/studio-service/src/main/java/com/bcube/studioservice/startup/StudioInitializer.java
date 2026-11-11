@@ -2,22 +2,27 @@ package com.bcube.studioservice.startup;
 
 import com.bcube.studioservice.persistance.entity.Studio;
 import com.bcube.studioservice.persistance.repository.StudioRepository;
+import com.bcube.studioservice.service.impl.StudioImageService;
 import lombok.extern.slf4j.Slf4j;
-import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.util.Base64;
+import java.util.List;
 
 @Slf4j
 @Component
+@Order(1)
 public class StudioInitializer implements CommandLineRunner {
 
     @Autowired
     private StudioRepository studioRepository;
+
+    @Autowired
+    private StudioImageService studioImageService;
 
     @Value("${studio.default.smartlock-id}")
     private Long defaultSmartlockId;
@@ -40,25 +45,14 @@ public class StudioInitializer implements CommandLineRunner {
                     .description("Unser Flaggschiff-Studio direkt am Wiener Hauptbahnhof – bestens erreichbar mit allen öffentlichen Verkehrsmitteln. Auf über 80 m² stehen dir modernste Trainingsgeräte, ein Yoga-Bereich und eine Entspannungszone zur Verfügung. Buche flexibel per App und betritt das Studio rund um die Uhr mit deinem persönlichen Zugangscode.")
                     .street("Alfred-Adler-Straße 55").plz(1100).city("Wien").country("Österreich")
                     .latitude(48.1851).longitude(16.3795)
-                    .image(render1)
-                    .imageGalleryJson(galleryJson(render1, interior1, interior2, inside1, inside2))
                     .isActive(true).hourlyRateCents(1500).build();
 
-            studioRepository.save(studio);
+            Studio saved = studioRepository.save(studio);
+            studioImageService.replaceImages(saved.getId(), List.of(render1, interior1, interior2, inside1, inside2));
             log.info("Studio erfolgreich erstellt.");
         } else {
             log.info("Studios bereits vorhanden - Initialisierung übersprungen.");
         }
-    }
-
-    private String galleryJson(byte[]... images) {
-        JSONArray array = new JSONArray();
-        for (byte[] img : images) {
-            if (img != null && img.length > 0) {
-                array.put(Base64.getEncoder().encodeToString(img));
-            }
-        }
-        return array.toString();
     }
 
     private byte[] loadImage(String path) {

@@ -1,0 +1,17 @@
+:host {
+  display: block;
+  flex-shrink: 0;
+}
+
+.pager {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  margin-top: var(--space-4);
+}
+
+.pager-status {
+  font-weight: 700;
+  color: var(--bcube-text-soft);
+}
